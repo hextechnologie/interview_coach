@@ -62,11 +62,20 @@ export default function InterviewSetupPage() {
 
       const data = await response.json()
 
+      if (!response.ok) {
+        alert(`Error: ${data.error || 'Failed to create interview'}`)
+        console.error('API error:', data)
+        return
+      }
+
       if (data.sessionId) {
         router.push(`/interview/${data.sessionId}`)
+      } else {
+        alert('Error: No session ID returned')
       }
     } catch (error) {
       console.error('Error creating interview:', error)
+      alert('Error: Failed to connect to server. Check browser console for details.')
     } finally {
       setLoading(false)
     }
