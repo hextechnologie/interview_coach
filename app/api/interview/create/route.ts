@@ -3,7 +3,19 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
   try {
-    const { jobRole, difficultyLevel } = await request.json()
+    const {
+      jobTitle,
+      industry,
+      experienceLevel,
+      jobDescription,
+      language,
+      interviewerType,
+      interviewType,
+      interviewRound,
+      yearsOfExperience,
+      mainSkills,
+      weakAreas,
+    } = await request.json()
 
     // Get authorization header
     const authHeader = request.headers.get('authorization')
@@ -11,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 })
     }
 
-    const token = authHeader.substring(7) // Remove 'Bearer ' prefix
+    const token = authHeader.substring(7) // Remove 'Bearer' prefix
 
     // Create Supabase client with the user's token
     const supabase = createClient(
@@ -53,16 +65,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Interview limit reached' }, { status: 403 })
     }
 
-    // Create new session
+    // Create new session with extended data
     const { data: session, error: sessionError } = await supabaseAdmin
       .from('interview_sessions')
       .insert({
         user_id: user.id,
-        job_role: jobRole,
-        difficulty_level: difficultyLevel.toLowerCase(),
+        job_role: jobTitle,
+        industry: industry || null,
+        difficulty_level: experienceLevel.toLowerCase(),
         status: 'in_progress',
         total_questions: 6,
         questions_answered: 0,
+        // Store extended data as JSON
+        interview_config: {
+          jobDescription,
+          language,
+          interviewerType,
+          interviewType,
+          interviewRound,
+          yearsOfExperience,
+          mainSkills,
+          weakAreas,
+        },
       })
       .select()
       .single()
