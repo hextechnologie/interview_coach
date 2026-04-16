@@ -53,13 +53,18 @@ export default function InterviewSetupPage() {
 
     try {
       // Get the current session token
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
-      if (!session) {
-        alert('Error: Not authenticated. Please log in again.')
+      console.log('Session check:', { hasSession: !!session, sessionError })
+      
+      if (sessionError || !session) {
+        alert('Error: Session expired. Please log out and log back in.')
+        console.error('Session error:', sessionError)
         router.push('/login')
         return
       }
+
+      console.log('Sending request with token...')
 
       const response = await fetch('/api/interview/create', {
         method: 'POST',
@@ -72,6 +77,8 @@ export default function InterviewSetupPage() {
           difficultyLevel,
         }),
       })
+
+      console.log('Response status:', response.status)
 
       const data = await response.json()
 
