@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       : `Continue the interview. This is question ${questionNumber} of 6 for a ${session.difficulty_level} ${session.job_role} position. Ask the next question.`
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [

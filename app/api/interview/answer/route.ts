@@ -56,7 +56,7 @@ The candidate answered an interview question with: "${answer}"
 Provide detailed structured feedback in JSON format.`
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2048,
       system: SYSTEM_PROMPT,
       messages: [
