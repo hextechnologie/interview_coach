@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       {
         auth: {
           storage: {
-            getItem: (key: string) => cookieStore.get(key)?.value,
+            getItem: (key: string) => cookieStore.get(key)?.value ?? null,
             setItem: () => {},
             removeItem: () => {},
           },
