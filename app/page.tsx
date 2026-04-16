@@ -1,21 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui'
 import { Sparkles, Target, TrendingUp, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
 
 export default function HomePage() {
-  const router = useRouter()
   const { user, loading } = useAuth()
-
-  useEffect(() => {
-    if (!loading && user) {
-      router.push('/dashboard')
-    }
-  }, [user, loading, router])
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -34,12 +25,20 @@ export default function HomePage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/login">
-                <Button variant="outline">Login</Button>
-              </Link>
-              <Link href="/signup">
-                <Button variant="primary">Get Started</Button>
-              </Link>
+              {user ? (
+                <Link href="/dashboard">
+                  <Button variant="primary">Go to Dashboard</Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="outline">Login</Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button variant="primary">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </header>
@@ -55,16 +54,26 @@ export default function HomePage() {
             improve your answers, and land your dream job with confidence.
           </p>
           <div className="flex items-center justify-center gap-4 animate-fadeIn">
-            <Link href="/signup">
-              <Button variant="primary" className="text-lg px-8 py-4">
-                Start Free Trial
-              </Button>
-            </Link>
-            <Link href="/pricing">
-              <Button variant="outline" className="text-lg px-8 py-4">
-                View Pricing
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/dashboard">
+                <Button variant="primary" className="text-lg px-8 py-4">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/signup">
+                  <Button variant="primary" className="text-lg px-8 py-4">
+                    Start Free Trial
+                  </Button>
+                </Link>
+                <Link href="/pricing">
+                  <Button variant="outline" className="text-lg px-8 py-4">
+                    View Pricing
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </section>
 
