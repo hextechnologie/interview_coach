@@ -43,55 +43,58 @@ export default function HomePage() {
           </nav>
         </header>
 
-        {/* Hero Section */}
-        <section className="container mx-auto px-6 py-20 text-center">
-          <h1 className="text-6xl font-bold mb-6 animate-fadeIn">
-            Master Your Next Interview with{' '}
-            <span className="gradient-text">AI Coaching</span>
-          </h1>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto animate-fadeIn">
-            Practice with a lifelike AI interviewer, get instant personalized feedback, 
-            and prepare with real interview simulations that mirror how companies actually hire.
-          </p>
-          <div className="flex items-center justify-center gap-4 animate-fadeIn mb-8">
-            {user ? (
-              <Link href="/dashboard">
-                <Button variant="primary" className="text-lg px-8 py-4">
-                  Go to Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/signup">
-                  <Button variant="primary" className="text-lg px-8 py-4">
-                    Start Practicing Free
-                  </Button>
-                </Link>
-                <Link href="/pricing">
-                  <Button variant="outline" className="text-lg px-8 py-4">
-                    View Pricing
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-          <p className="text-sm text-gray-500 animate-fadeIn">
-            ✨ Get 3 Free Mock Interviews · No Card Needed
-          </p>
-        </section>
+        {/* Hero Section with Video */}
+        <section className="container mx-auto px-6 py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Text Content */}
+            <div className="text-center lg:text-left">
+              <h1 className="text-5xl lg:text-6xl font-bold mb-6 animate-fadeIn">
+                Master Your Next Interview with{' '}
+                <span className="gradient-text">AI Coaching</span>
+              </h1>
+              <p className="text-xl text-gray-400 mb-8 animate-fadeIn">
+                Practice with a lifelike AI interviewer, get instant personalized feedback, 
+                and prepare with real interview simulations that mirror how companies actually hire.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fadeIn mb-6">
+                {user ? (
+                  <Link href="/dashboard">
+                    <Button variant="primary" className="text-lg px-8 py-4 w-full sm:w-auto">
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/signup">
+                      <Button variant="primary" className="text-lg px-8 py-4 w-full sm:w-auto">
+                        Start Practicing Free
+                      </Button>
+                    </Link>
+                    <Link href="/pricing">
+                      <Button variant="outline" className="text-lg px-8 py-4 w-full sm:w-auto">
+                        View Pricing
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+              <p className="text-sm text-gray-500 animate-fadeIn">
+                ✨ Get 3 Free Mock Interviews · No Card Needed
+              </p>
+            </div>
 
-        {/* Video Demo Section */}
-        <section className="container mx-auto px-6 py-12">
-          <div className="max-w-5xl mx-auto">
-            <div className="glass p-4 rounded-2xl shadow-2xl">
-              <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-900">
-                <iframe
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/cH5pNDh_E2E"
-                  title="Interview Coach Demo"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+            {/* Right: Video */}
+            <div className="animate-fadeIn">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50">
+                <div className="relative aspect-video bg-gray-900">
+                  <iframe
+                    className="w-full h-full"
+                    src="https://www.youtube.com/embed/cH5pNDh_E2E?autoplay=1&mute=1&loop=1&playlist=cH5pNDh_E2E&controls=0&modestbranding=1&showinfo=0&rel=0"
+                    title="Interview Coach Demo"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             </div>
           </div>
