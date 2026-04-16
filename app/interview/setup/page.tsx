@@ -471,7 +471,7 @@ export default function InterviewSetupPage() {
               <Button onClick={handleStartInterview} disabled={loading}>
                 {loading ? (
                   <>
-                    <LoadingSpinner size="sm" className="mr-2" />
+                    <LoadingSpinner size="sm" />
                     Creating...
                   </>
                 ) : (
