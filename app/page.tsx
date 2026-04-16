@@ -87,13 +87,18 @@ export default function HomePage() {
             <div className="animate-fadeIn">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50">
                 <div className="relative aspect-video bg-gray-900">
-                  <iframe
-                    className="w-full h-full"
-                    src="https://www.youtube.com/embed/cH5pNDh_E2E?autoplay=1&mute=1&loop=1&playlist=cH5pNDh_E2E&controls=0&modestbranding=1&showinfo=0&rel=0"
-                    title="Interview Coach Demo"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                  <video
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster="/demo-poster.jpg"
+                  >
+                    <source src="/demo.mp4" type="video/mp4" />
+                    <source src="/demo.webm" type="video/webm" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
             </div>
