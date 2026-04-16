@@ -50,7 +50,7 @@ export default function InterviewSetupPage() {
   const [language, setLanguage] = useState('en')
   
   // Step 2 - Interview Information
-  const [interviewer Type, setInterviewerType] = useState('')
+  const [interviewerType, setInterviewerType] = useState('')
   const [interviewType, setInterviewType] = useState('')
   const [interviewRound, setInterviewRound] = useState('')
   
