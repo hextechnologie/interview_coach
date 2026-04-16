@@ -85,41 +85,13 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto">
             <div className="glass p-4 rounded-2xl shadow-2xl">
               <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-900">
-                {/* Placeholder - Replace with your actual video */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer hover:bg-white/20 transition-all">
-                      <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                    <p className="text-white text-lg font-semibold">See Interview Coach in Action</p>
-                    <p className="text-gray-300 text-sm mt-2">Watch how AI helps you master interviews</p>
-                  </div>
-                </div>
-                
-                {/* Uncomment and replace with your video URL */}
-                {/* 
                 <iframe
                   className="w-full h-full"
-                  src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                  src="https://www.youtube.com/embed/cH5pNDh_E2E"
                   title="Interview Coach Demo"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
-                */}
-                
-                {/* Or use direct video file */}
-                {/*
-                <video
-                  className="w-full h-full object-cover"
-                  controls
-                  poster="/path-to-thumbnail.jpg"
-                >
-                  <source src="/path-to-video.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-                */}
               </div>
             </div>
           </div>
