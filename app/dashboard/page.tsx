@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { format } from 'date-fns'
 
 export default function DashboardPage() {
-  const { user, profile, loading: authLoading, signOut } = useAuth()
+  const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth()
   const router = useRouter()
   const [sessions, setSessions] = useState<InterviewSession[]>([])
   const [stats, setStats] = useState({
@@ -93,6 +93,16 @@ export default function DashboardPage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>
             <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={async () => {
+                  await refreshProfile()
+                  window.location.reload()
+                }}
+              >
+                🔄 Refresh
+              </Button>
               <Link href="/pricing">
                 <Button variant="outline" className="gap-2">
                   <CreditCard className="w-4 h-4" />

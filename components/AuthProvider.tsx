@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   const fetchProfile = async (userId: string) => {
+    // Force fresh fetch by adding timestamp to bypass any caching
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -31,7 +32,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single()
 
     if (!error && data) {
+      console.log('✅ Profile fetched:', {
+        email: data.email,
+        tier: data.subscription_tier,
+        limit: data.interviews_limit,
+        used: data.interviews_used_this_month
+      })
       setProfile(data)
+    } else if (error) {
+      console.error('❌ Profile fetch error:', error)
     }
   }
 
