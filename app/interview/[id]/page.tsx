@@ -31,6 +31,7 @@ export default function InterviewPage() {
   const [session, setSession] = useState<any>(null)
   const [questionCount, setQuestionCount] = useState(0)
   const [waitingForFeedback, setWaitingForFeedback] = useState(false)
+  const [hasLoadedFirstQuestion, setHasLoadedFirstQuestion] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const getAuthHeaders = async () => {
@@ -69,8 +70,10 @@ export default function InterviewPage() {
         // Load existing messages
         if (data.messages && data.messages.length > 0) {
           setMessages(data.messages)
-        } else {
-          // Get first question
+          setHasLoadedFirstQuestion(true)
+        } else if (!hasLoadedFirstQuestion) {
+          // Get first question only once
+          setHasLoadedFirstQuestion(true)
           getNextQuestion()
         }
       }
@@ -220,11 +223,58 @@ export default function InterviewPage() {
             <div key={index} className="animate-fadeIn">
               {message.role === 'assistant' && (
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
-                  <Card className="flex-1 bg-card/50">
-                    <p className="text-foreground whitespace-pre-wrap">{message.content}</p>
+                  <Card className="flex-1 bg-gradient-to-br from-primary/10 via-card/50 to-card/30 border-primary/20 shadow-lg">
+                    <div className="prose prose-invert max-w-none">
+                      {message.content.split('\n\n').map((paragraph, idx) => {
+                        // Check if it's a heading (starts with #)
+                        if (paragraph.startsWith('#')) {
+                          const level = paragraph.match(/^#+/)?.[0].length || 1
+                          const text = paragraph.replace(/^#+\s*/, '')
+                          if (level === 1) {
+                            return (
+                              <h2 key={idx} className="text-2xl font-bold text-primary mb-3 flex items-center gap-2">
+                                <span className="text-3xl">👋</span> {text}
+                              </h2>
+                            )
+                          } else if (level === 2) {
+                            return (
+                              <h3 key={idx} className="text-xl font-semibold text-blue-400 mt-4 mb-2 flex items-center gap-2">
+                                <span className="text-2xl">📝</span> {text}
+                              </h3>
+                            )
+                          }
+                        }
+                        
+                        // Check if it's a bold text (starts with **)
+                        if (paragraph.includes('**')) {
+                          const formatted = paragraph.split('**').map((part, i) => 
+                            i % 2 === 1 ? <strong key={i} className="text-primary font-bold">{part}</strong> : part
+                          )
+                          return <p key={idx} className="text-gray-200 leading-relaxed mb-3">{formatted}</p>
+                        }
+                        
+                        // Check if it's a tip (starts with >)
+                        if (paragraph.startsWith('>')) {
+                          return (
+                            <div key={idx} className="bg-blue-500/10 border-l-4 border-blue-400 pl-4 py-2 mb-3 rounded-r">
+                              <p className="text-blue-300 text-sm italic">
+                                {paragraph.replace(/^>\s*/, '')}
+                              </p>
+                            </div>
+                          )
+                        }
+                        
+                        // Regular paragraph
+                        return paragraph.trim() ? (
+                          <p key={idx} className="text-gray-200 leading-relaxed mb-2">
+                            {paragraph}
+                          </p>
+                        ) : null
+                      })}
+                    </div>
                   </Card>
                 </div>
               )}
