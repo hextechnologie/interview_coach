@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button, Card, Select, LoadingSpinner } from '@/components/ui'
 import { Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 const JOB_ROLES = [
   { value: 'software-engineer', label: 'Software Engineer' },
@@ -51,9 +52,21 @@ export default function InterviewSetupPage() {
     setLoading(true)
 
     try {
+      // Get the current session token
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        alert('Error: Not authenticated. Please log in again.')
+        router.push('/login')
+        return
+      }
+
       const response = await fetch('/api/interview/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({
           jobRole: JOB_ROLES.find((r) => r.value === jobRole)?.label,
           difficultyLevel,
