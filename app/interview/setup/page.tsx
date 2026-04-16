@@ -76,7 +76,7 @@ export default function InterviewSetupPage() {
   const validateStep = (currentStep: number) => {
     const newErrors: Record<string, boolean> = {}
     
-    if (current Step === 1) {
+    if (currentStep === 1) {
       if (!jobTitle.trim()) newErrors.jobTitle = true
       if (!industry) newErrors.industry = true
       if (!experienceLevel) newErrors.experienceLevel = true
