@@ -107,7 +107,7 @@ Write-Host "  6. Go to SQL Editor" -ForegroundColor White
 Write-Host "  7. Click 'New Query'" -ForegroundColor White
 Write-Host "  8. Copy ALL content from: c:\interview-coach\supabase\schema.sql" -ForegroundColor Yellow
 Write-Host "  9. Paste and click 'Run'" -ForegroundColor White
-Write-Host " 10. Go to Settings → API" -ForegroundColor White
+Write-Host "  10. Go to Settings - API" -ForegroundColor White
 Write-Host ""
 
 Open-URL "https://supabase.com/dashboard" "Supabase Dashboard"
@@ -230,7 +230,7 @@ Write-Host "I'm opening Vercel for you..." -ForegroundColor Yellow
 Write-Host ""
 Write-Host "📋 Instructions:" -ForegroundColor White
 Write-Host "  1. Sign in with GitHub" -ForegroundColor White
-Write-Host "  2. Click 'Add New' → 'Project'" -ForegroundColor White
+Write-Host "  2. Click 'Add New' then 'Project'" -ForegroundColor White
 Write-Host "  3. Import: 'interview-coach'" -ForegroundColor White
 Write-Host "  4. Click 'Environment Variables'" -ForegroundColor White
 Write-Host "  5. Add these variables:" -ForegroundColor White
@@ -282,7 +282,7 @@ Wait-ForUser "Deploy to Vercel and copy your deployment URL, then"
 
 # Get deployment URL
 Write-Host ""
-$deploymentUrl = Read-Host "Enter your Vercel deployment URL (e.g., https://interview-coach-xxx.vercel.app)"
+$deploymentUrl = Read-Host "Enter your Vercel deployment URL"
 
 # Update environment variable with actual URL
 Write-Host ""
@@ -299,13 +299,13 @@ if ($setupStripe -eq "y" -or $setupStripe -eq "Y") {
     Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "📋 Instructions:" -ForegroundColor White
-    Write-Host "  1. In Stripe Dashboard, go to Developers → Webhooks" -ForegroundColor White
+    Write-Host "  1. In Stripe Dashboard, go to Developers - Webhooks" -ForegroundColor White
     Write-Host "  2. Click 'Add endpoint'" -ForegroundColor White
     Write-Host "  3. Enter URL: $deploymentUrl/api/stripe/webhook" -ForegroundColor Yellow
     Write-Host "  4. Select events:" -ForegroundColor White
-    Write-Host "     • checkout.session.completed" -ForegroundColor White
-    Write-Host "     • customer.subscription.updated" -ForegroundColor White
-    Write-Host "     • customer.subscription.deleted" -ForegroundColor White
+    Write-Host "     checkout.session.completed" -ForegroundColor White
+    Write-Host "     customer.subscription.updated" -ForegroundColor White
+    Write-Host "     customer.subscription.deleted" -ForegroundColor White
     Write-Host "  5. Click 'Add endpoint'" -ForegroundColor White
     Write-Host "  6. Copy the 'Signing secret'" -ForegroundColor White
     Write-Host ""
@@ -319,7 +319,7 @@ if ($setupStripe -eq "y" -or $setupStripe -eq "Y") {
     # Update webhook secret in Vercel
     Write-Host ""
     Write-Host "📝 Update this in Vercel:" -ForegroundColor Yellow
-    Write-Host "  Go to: Project Settings → Environment Variables" -ForegroundColor White
+    Write-Host "  Go to: Project Settings - Environment Variables" -ForegroundColor White
     Write-Host "  Update: STRIPE_WEBHOOK_SECRET=$webhookSecret" -ForegroundColor White
     Write-Host "  Then: Redeploy" -ForegroundColor White
     Write-Host ""
@@ -337,12 +337,12 @@ Write-Host ""
 Write-Host "🌐 Open your app: $deploymentUrl" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "📍 What to test:" -ForegroundColor Yellow
-Write-Host "  • Sign up for an account" -ForegroundColor White
-Write-Host "  • Start a mock interview" -ForegroundColor White
-Write-Host "  • Answer questions and get AI feedback" -ForegroundColor White
-Write-Host "  • View your dashboard" -ForegroundColor White
+Write-Host "  - Sign up for an account" -ForegroundColor White
+Write-Host "  - Start a mock interview" -ForegroundColor White
+Write-Host "  - Answer questions and get AI feedback" -ForegroundColor White
+Write-Host "  - View your dashboard" -ForegroundColor White
 if ($setupStripe -eq "y" -or $setupStripe -eq "Y") {
-    Write-Host "  • Test subscription (use card: 4242 4242 4242 4242)" -ForegroundColor White
+    Write-Host "  - Test subscription (use card: 4242 4242 4242 4242)" -ForegroundColor White
 }
 Write-Host ""
 Write-Host "📊 Your Resources:" -ForegroundColor Yellow
