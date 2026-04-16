@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Button, Card, LoadingSpinner } from '@/components/ui'
 import { Sparkles, Send, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 type Message = {
   role: 'user' | 'assistant' | 'feedback'
@@ -31,6 +32,14 @@ export default function InterviewPage() {
   const [questionCount, setQuestionCount] = useState(0)
   const [waitingForFeedback, setWaitingForFeedback] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const getAuthHeaders = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return {
+      'Content-Type': 'application/json',
+      ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {})
+    }
+  }
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -73,13 +82,20 @@ export default function InterviewPage() {
   const getNextQuestion = async () => {
     setLoading(true)
     try {
+      const headers = await getAuthHeaders()
       const response = await fetch('/api/interview/question', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ sessionId }),
       })
 
       const data = await response.json()
+
+      if (!response.ok) {
+        console.error('Error getting question:', data)
+        alert(`Error: ${data.error || 'Failed to get question'}`)
+        return
+      }
 
       if (data.question) {
         setMessages((prev) => [...prev, { role: 'assistant', content: data.question }])
@@ -91,6 +107,7 @@ export default function InterviewPage() {
       }
     } catch (error) {
       console.error('Error getting question:', error)
+      alert('Failed to get next question')
     } finally {
       setLoading(false)
     }
@@ -115,9 +132,10 @@ export default function InterviewPage() {
     setLoading(true)
 
     try {
+      const headers = await getAuthHeaders()
       const response = await fetch('/api/interview/answer', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           sessionId,
           answer,
