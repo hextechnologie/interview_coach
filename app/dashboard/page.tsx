@@ -88,7 +88,7 @@ export default function DashboardPage() {
       <header className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>

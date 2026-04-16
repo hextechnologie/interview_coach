@@ -104,7 +104,7 @@ export default function SummaryPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-6 py-4">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold gradient-text">Interview Coach</span>
           </Link>
