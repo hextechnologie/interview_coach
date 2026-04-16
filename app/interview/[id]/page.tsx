@@ -33,6 +33,7 @@ export default function InterviewPage() {
   const [waitingForFeedback, setWaitingForFeedback] = useState(false)
   const [hasLoadedFirstQuestion, setHasLoadedFirstQuestion] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const isLoadingQuestionRef = useRef(false)
 
   const getAuthHeaders = async () => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -83,7 +84,15 @@ export default function InterviewPage() {
   }
 
   const getNextQuestion = async () => {
+    // Prevent duplicate calls
+    if (isLoadingQuestionRef.current || loading) {
+      console.log('Already loading question, skipping duplicate call')
+      return
+    }
+
+    isLoadingQuestionRef.current = true
     setLoading(true)
+    
     try {
       const headers = await getAuthHeaders()
       const response = await fetch('/api/interview/question', {
@@ -113,6 +122,7 @@ export default function InterviewPage() {
       alert('Failed to get next question')
     } finally {
       setLoading(false)
+      isLoadingQuestionRef.current = false
     }
   }
 
@@ -160,6 +170,9 @@ export default function InterviewPage() {
           },
         ])
 
+        setLoading(false)
+        setWaitingForFeedback(false)
+
         // Check if interview should end
         if (questionCount >= 6 || data.completed) {
           setTimeout(() => {
@@ -169,14 +182,15 @@ export default function InterviewPage() {
           // Get next question after a brief pause
           setTimeout(() => {
             getNextQuestion()
-            setWaitingForFeedback(false)
           }, 1500)
         }
+      } else {
+        setLoading(false)
+        setWaitingForFeedback(false)
       }
     } catch (error) {
       console.error('Error submitting answer:', error)
       setWaitingForFeedback(false)
-    } finally {
       setLoading(false)
     }
   }
