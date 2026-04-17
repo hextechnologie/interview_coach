@@ -51,17 +51,30 @@ CREATE TABLE IF NOT EXISTS public.subscription_history (
   ended_at TIMESTAMP WITH TIME ZONE
 );
 
+-- Create contact messages table
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'replied')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_interview_sessions_user_id ON public.interview_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_interview_sessions_status ON public.interview_sessions(status);
 CREATE INDEX IF NOT EXISTS idx_interview_answers_session_id ON public.interview_answers(session_id);
 CREATE INDEX IF NOT EXISTS idx_profiles_stripe_customer_id ON public.profiles(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_created_at ON public.contact_messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_contact_messages_status ON public.contact_messages(status);
 
 -- Enable Row Level Security
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.interview_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.interview_answers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscription_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for profiles
 CREATE POLICY "Users can view own profile"
@@ -110,6 +123,11 @@ CREATE POLICY "Users can create own answers"
 CREATE POLICY "Users can view own subscription history"
   ON public.subscription_history FOR SELECT
   USING (auth.uid() = user_id);
+
+-- RLS Policies for contact_messages
+CREATE POLICY "Anyone can insert contact messages"
+  ON public.contact_messages FOR INSERT
+  WITH CHECK (true);
 
 -- Function to reset monthly interview count
 CREATE OR REPLACE FUNCTION reset_monthly_interviews()
