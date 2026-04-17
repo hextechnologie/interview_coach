@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
-import { supabase, InterviewSession } from '@/lib/supabase'
+import { supabase, InterviewSession, InterviewAnswer } from '@/lib/supabase'
 import {
   Sparkles,
   LogOut,
@@ -77,6 +77,12 @@ export default function DashboardPage() {
   })
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [coachMetrics, setCoachMetrics] = useState({
+    confidence: 0,
+    clarity: 0,
+    fillerWords: 0,
+    improvement: 0,
+  })
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -124,6 +130,33 @@ export default function DashboardPage() {
         interviewsThisMonth,
         streakDays: calculateStreak(completed),
       })
+
+      if (allSessions.length > 0) {
+        const { data: answersData } = await supabase
+          .from('interview_answers')
+          .select('*')
+          .in('session_id', allSessions.map((session) => session.id))
+
+        const answers = (answersData || []) as InterviewAnswer[]
+        const metrics = answers
+          .map((answer) => answer.ai_feedback?.metrics)
+          .filter(Boolean) as NonNullable<InterviewAnswer['ai_feedback']>['metrics'][]
+
+        const scores = answers.map((answer) => Number(answer.score || 0)).filter(Boolean)
+        const midpoint = Math.max(1, Math.floor(scores.length / 2))
+        const earlierAvg = scores.slice(0, midpoint).reduce((sum, value) => sum + value, 0) / midpoint || 0
+        const laterCount = Math.max(1, scores.length - midpoint)
+        const laterAvg = scores.slice(midpoint).reduce((sum, value) => sum + value, 0) / laterCount || 0
+
+        if (metrics.length > 0) {
+          setCoachMetrics({
+            confidence: Math.round(metrics.reduce((sum, item) => sum + Number(item?.confidence || 0), 0) / metrics.length),
+            clarity: Math.round(metrics.reduce((sum, item) => sum + Number(item?.clarity || 0), 0) / metrics.length),
+            fillerWords: Number((metrics.reduce((sum, item) => sum + Number(item?.filler_words || 0), 0) / metrics.length).toFixed(1)),
+            improvement: Number((laterAvg - earlierAvg).toFixed(1)),
+          })
+        }
+      }
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
@@ -308,7 +341,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-2xl font-bold">Progress Overview</h2>
-                  <p className="text-gray-400 text-sm">Your last 7 completed interview scores</p>
+                  <p className="text-gray-400 text-sm">Your interview history and scores over time</p>
                 </div>
               </div>
 
@@ -446,6 +479,34 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               )}
+            </Card>
+
+            <Card>
+              <h2 className="text-2xl font-bold mb-4">Coach Metrics</h2>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-gray-300">Confidence</span>
+                    <span className="text-primary font-semibold">{coachMetrics.confidence}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full bg-green-400" style={{ width: `${coachMetrics.confidence}%` }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-gray-300">Clarity</span>
+                    <span className="text-primary font-semibold">{coachMetrics.clarity}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full bg-blue-400" style={{ width: `${coachMetrics.clarity}%` }} />
+                  </div>
+                </div>
+                <div className="rounded-xl border border-border p-3 bg-background/40">
+                  <p className="text-sm text-gray-300">Average filler words per answer: <span className="text-yellow-300 font-semibold">{coachMetrics.fillerWords}</span></p>
+                  <p className="text-sm text-gray-300 mt-1">Improvement trend: <span className={`${coachMetrics.improvement >= 0 ? 'text-green-400' : 'text-red-400'} font-semibold`}>{coachMetrics.improvement >= 0 ? '+' : ''}{coachMetrics.improvement}</span> points</p>
+                </div>
+              </div>
             </Card>
 
             <Card>

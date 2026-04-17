@@ -7,10 +7,6 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
-
 const getLanguageName = (code: string): string => {
   const languages: Record<string, string> = {
     en: 'English',
@@ -27,32 +23,36 @@ const getLanguageName = (code: string): string => {
   return languages[code] || 'English'
 }
 
-const SYSTEM_PROMPT = `You are a professional interview coach. Your role is to conduct realistic job interviews and provide constructive feedback.
+const SYSTEM_PROMPT = `You are an elite AI interview coach.
+Ask exactly one realistic interview question at a time.
+Tailor every question to the candidate's resume, target job description, role, experience level, and strongest skills.
+Keep the tone warm, direct, and professional.
+Do not provide feedback here. Only ask the next best question.`
 
-Instructions:
-1. Ask ONE interview question at a time based on the job role and difficulty level
-2. After the user answers, provide structured feedback in this EXACT JSON format:
-{
-  "score": <number 1-10>,
-  "strengths": ["strength 1", "strength 2"],
-  "weaknesses": ["weakness 1", "weakness 2"],
-  "improved_answer": "A better version of their answer with specific improvements"
+function buildFallbackQuestion(session: any, questionNumber: number) {
+  const config = session.interview_config || {}
+  const keywords = config.personalizationKeywords?.slice(0, 3).join(', ')
+  const role = session.job_role || 'candidate'
+
+  if (questionNumber === 1) {
+    return `Tell me about yourself and why you're a strong fit for this ${role} role.`
+  }
+
+  if ((config.interviewType || 'Mixed') === 'Technical') {
+    return `Walk me through a project where you used ${keywords || 'your core technical skills'} to solve a difficult problem.`
+  }
+
+  if ((config.interviewType || 'Mixed') === 'Behavioral') {
+    return `Tell me about a time you handled a challenge related to ${keywords || 'teamwork or communication'}. What was the outcome?`
+  }
+
+  return `What is one example from your background that shows you can deliver results in this ${role} position?`
 }
-
-3. After providing feedback, ask the next relevant interview question
-4. Keep questions realistic and appropriate for the specified job role and level
-5. Be encouraging but honest in your feedback
-6. For junior level: Focus on fundamentals, attitude, and learning ability
-7. For mid level: Expect solid technical knowledge and some experience
-8. For senior level: Expect deep expertise, leadership, and strategic thinking
-
-Always maintain a professional, supportive tone.`
 
 export async function POST(request: NextRequest) {
   try {
     const { sessionId } = await request.json()
 
-    // Fetch session details
     const { data: session, error: sessionError } = await supabaseAdmin
       .from('interview_sessions')
       .select('*')
@@ -65,7 +65,6 @@ export async function POST(request: NextRequest) {
 
     const questionNumber = session.questions_answered + 1
 
-    // Check if we should end the interview
     if (questionNumber > 6) {
       await supabaseAdmin
         .from('interview_sessions')
@@ -75,38 +74,60 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ completed: true })
     }
 
-    // Get interview config
     const config = session.interview_config || {}
     const language = config.language || 'en'
-    const languageInstruction = language !== 'en' 
-      ? `\n\nIMPORTANT: Conduct this entire interview in ${getLanguageName(language)}. Ask questions and provide all responses in ${getLanguageName(language)}.`
+    const keywords = (config.personalizationKeywords || []).join(', ')
+    const languageInstruction = language !== 'en'
+      ? `Respond only in ${getLanguageName(language)}.`
+      : 'Respond only in English.'
+
+    const stageInstruction = [
+      'Start with a short opener that checks background fit.',
+      'Ask a question tied to the strongest matching skill from the resume.',
+      'Ask about a measurable result or project impact.',
+      'Test problem solving or collaboration in a realistic scenario.',
+      'Ask a leadership, prioritization, or stakeholder question.',
+      'Finish with a high-signal closing question that mirrors a final-round interview.'
+    ][questionNumber - 1]
+
+    const companyMode = config.realCompanyMode && config.targetCompany
+      ? `Use the style and rigor typically expected in interviews at ${config.targetCompany}, without claiming insider knowledge.`
       : ''
 
-    // Generate question using Claude
-    const contextMessage = questionNumber === 1
-      ? `Start the interview for a ${session.difficulty_level} ${session.job_role} position${config.industry ? ` in ${config.industry}` : ''}. 
-This is a ${config.interviewType || 'general'} interview with a ${config.interviewerType || 'hiring manager'}.
-Interview Round: ${config.interviewRound || 'First Round'}
-Candidate has ${config.yearsOfExperience || 'some'} years of experience.
-${config.mainSkills && config.mainSkills.length > 0 ? `Main skills: ${config.mainSkills.join(', ')}` : ''}
-${config.weakAreas && config.weakAreas.length > 0 ? `Areas to focus on: ${config.weakAreas.join(', ')}` : ''}
-${config.jobDescription ? `\nJob Description:\n${config.jobDescription}` : ''}
+    const prompt = `
+Candidate target role: ${session.job_role}
+Experience level: ${session.difficulty_level}
+Interview type: ${config.interviewType || 'Mixed'}
+Interviewer persona: ${config.interviewerType || 'Hiring Manager'}
+Interview round: ${config.interviewRound || 'First Round'}
+Years of experience: ${config.yearsOfExperience || 0}
+Top skills and keywords: ${keywords || (config.mainSkills || []).join(', ') || 'general problem solving'}
+Resume context: ${config.resumeText || 'Not provided'}
+Job description context: ${config.jobDescription || 'Not provided'}
+Weak areas to challenge: ${(config.weakAreas || []).join(', ') || 'none'}
+${companyMode}
 ${languageInstruction}
+This is question ${questionNumber} of 6.
+${stageInstruction}
 
-Ask the first question.`
-      : `Continue the interview. This is question ${questionNumber} of 6 for a ${session.difficulty_level} ${session.job_role} position.${languageInstruction} Ask the next question.`
+Ask only the interview question.`
 
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [
-        { role: 'user', content: contextMessage },
-      ],
-    })
+    let question = buildFallbackQuestion(session, questionNumber)
 
-    const content = response.content[0]
-    const question = content.type === 'text' ? content.text : ''
+    if (process.env.ANTHROPIC_API_KEY) {
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+      const response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }],
+      })
+
+      const content = response.content[0]
+      if (content.type === 'text' && content.text.trim()) {
+        question = content.text.trim()
+      }
+    }
 
     return NextResponse.json({
       question,

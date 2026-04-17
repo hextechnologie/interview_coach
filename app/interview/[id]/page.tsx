@@ -15,7 +15,13 @@ type Message = {
     score: number
     strengths: string[]
     weaknesses: string[]
+    ideal_answer?: string
     improved_answer: string
+    metrics?: {
+      confidence: number
+      clarity: number
+      filler_words: number
+    }
   }
 }
 
@@ -32,6 +38,7 @@ export default function InterviewPage() {
   const [questionCount, setQuestionCount] = useState(0)
   const [waitingForFeedback, setWaitingForFeedback] = useState(false)
   const [hasLoadedFirstQuestion, setHasLoadedFirstQuestion] = useState(false)
+  const [revealedFeedback, setRevealedFeedback] = useState<Record<number, { ideal: boolean; improved: boolean }>>({})
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const isLoadingQuestionRef = useRef(false)
 
@@ -202,6 +209,16 @@ export default function InterviewPage() {
     }
   }
 
+  const toggleFeedbackPanel = (messageIndex: number, panel: 'ideal' | 'improved') => {
+    setRevealedFeedback((prev) => ({
+      ...prev,
+      [messageIndex]: {
+        ideal: panel === 'ideal' ? !prev[messageIndex]?.ideal : !!prev[messageIndex]?.ideal,
+        improved: panel === 'improved' ? !prev[messageIndex]?.improved : !!prev[messageIndex]?.improved,
+      },
+    }))
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -223,7 +240,7 @@ export default function InterviewPage() {
               <div className="flex items-center gap-4">
                 <div className="text-right">
                   <p className="text-sm text-gray-400">Question {questionCount} of ~6</p>
-                  <p className="text-sm font-semibold">{session.job_role} - {session.difficulty_level}</p>
+                  <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
                 </div>
               </div>
             )}
@@ -308,17 +325,31 @@ export default function InterviewPage() {
                   </div>
                   <Card className="flex-1 bg-green-500/5 border-green-500/30">
                     <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center gap-4 mb-3">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex items-center gap-4">
                           <span className="text-3xl font-bold text-primary">
                             {message.feedback.score}/10
                           </span>
                           <span className="text-gray-400">Score</span>
                         </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                          <div>
+                            <p className="text-gray-400 mb-1">Confidence</p>
+                            <div className="h-2 rounded-full bg-white/10 overflow-hidden"><div className="h-full bg-green-400" style={{ width: `${message.feedback.metrics?.confidence || 0}%` }} /></div>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 mb-1">Clarity</p>
+                            <div className="h-2 rounded-full bg-white/10 overflow-hidden"><div className="h-full bg-blue-400" style={{ width: `${message.feedback.metrics?.clarity || 0}%` }} /></div>
+                          </div>
+                          <div>
+                            <p className="text-gray-400 mb-1">Filler words</p>
+                            <p className="font-semibold text-yellow-300">{message.feedback.metrics?.filler_words || 0}</p>
+                          </div>
+                        </div>
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-green-400 mb-2">✓ Strengths</h4>
+                        <h4 className="font-semibold text-green-400 mb-2">Strengths</h4>
                         <ul className="space-y-1 text-sm text-gray-300">
                           {message.feedback.strengths.map((strength, i) => (
                             <li key={i}>• {strength}</li>
@@ -327,7 +358,7 @@ export default function InterviewPage() {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-yellow-400 mb-2">⚠ Areas to Improve</h4>
+                        <h4 className="font-semibold text-yellow-400 mb-2">Areas to Improve</h4>
                         <ul className="space-y-1 text-sm text-gray-300">
                           {message.feedback.weaknesses.map((weakness, i) => (
                             <li key={i}>• {weakness}</li>
@@ -335,12 +366,28 @@ export default function InterviewPage() {
                         </ul>
                       </div>
 
-                      <div>
-                        <h4 className="font-semibold text-blue-400 mb-2">💡 Improved Answer Example</h4>
-                        <p className="text-sm text-gray-300 italic">
-                          "{message.feedback.improved_answer}"
-                        </p>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button variant="outline" className="text-sm px-4 py-2" onClick={() => toggleFeedbackPanel(index, 'ideal')}>
+                          Show Ideal Answer
+                        </Button>
+                        <Button variant="outline" className="text-sm px-4 py-2" onClick={() => toggleFeedbackPanel(index, 'improved')}>
+                          Improve My Answer
+                        </Button>
                       </div>
+
+                      {revealedFeedback[index]?.ideal && (
+                        <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4 transition-all duration-300">
+                          <h4 className="font-semibold text-blue-400 mb-2">Ideal Answer</h4>
+                          <p className="text-sm text-gray-300 whitespace-pre-wrap">{message.feedback.ideal_answer || 'No ideal answer available yet.'}</p>
+                        </div>
+                      )}
+
+                      {revealedFeedback[index]?.improved && (
+                        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 transition-all duration-300">
+                          <h4 className="font-semibold text-primary mb-2">Improved Answer</h4>
+                          <p className="text-sm text-gray-300 whitespace-pre-wrap">{message.feedback.improved_answer}</p>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </div>

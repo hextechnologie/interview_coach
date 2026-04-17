@@ -11,9 +11,9 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { TryDemo } from '@/components/TryDemo'
 
 const demoMessages = [
-  'AI: Tell me about yourself',
-  'User: I am a software engineer with 3 years experience...',
-  'AI: Great answer! Score: 8/10. Here is your feedback...',
+  'AI: Based on your resume, tell me about the React project you led.',
+  'User: I improved load time by 42% and worked closely with design...',
+  'AI: Strong impact. Confidence 84%. Here is your ideal answer...',
 ]
 
 export default function HomePage() {
@@ -266,50 +266,37 @@ export default function HomePage() {
         <section className="container mx-auto px-6 py-20 bg-card/30 rounded-3xl">
           <div className="text-center mb-12">
             <p className="text-primary text-sm font-semibold mb-2">HOW IT WORKS</p>
-            <h2 className="text-4xl font-bold mb-4">Your Path to Interview Success</h2>
+            <h2 className="text-4xl font-bold mb-4">Three simple steps to feel interview-ready</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Personalized AI interview coaching to guide you through every stage of preparation.
+              Turn your resume and target role into a personalized mock interview in minutes.
             </p>
           </div>
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6 glass rounded-xl">
               <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-full text-2xl font-bold mb-4">
                 1
               </div>
-              <h3 className="text-xl font-bold mb-3">Choose Your Role</h3>
+              <h3 className="text-xl font-bold mb-3">Add your target job</h3>
               <p className="text-gray-400 text-sm">
-                Select your job role, industry, experience level, and interview type. 
-                Each session pulls from thousands of real interview questions.
+                Paste your resume and job description so the AI understands your background and the role you want.
               </p>
             </div>
             <div className="text-center p-6 glass rounded-xl">
               <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-full text-2xl font-bold mb-4">
                 2
               </div>
-              <h3 className="text-xl font-bold mb-3">Practice with AI</h3>
+              <h3 className="text-xl font-bold mb-3">Practice realistic questions</h3>
               <p className="text-gray-400 text-sm">
-                Answer questions in your selected language just like a real interview. 
-                Available 24/7, no scheduling needed.
+                Rehearse technical, behavioral, or mixed interviews tailored to your skills and experience level.
               </p>
             </div>
             <div className="text-center p-6 glass rounded-xl">
               <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-full text-2xl font-bold mb-4">
                 3
               </div>
-              <h3 className="text-xl font-bold mb-3">Get Instant Feedback</h3>
+              <h3 className="text-xl font-bold mb-3">Get coached to improve</h3>
               <p className="text-gray-400 text-sm">
-                Receive clear insights on content quality, STAR method structure, 
-                clarity, confidence, and areas for improvement.
-              </p>
-            </div>
-            <div className="text-center p-6 glass rounded-xl">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-primary rounded-full text-2xl font-bold mb-4">
-                4
-              </div>
-              <h3 className="text-xl font-bold mb-3">Improve & Track Progress</h3>
-              <p className="text-gray-400 text-sm">
-                Use analytics and coaching tips to refine answers, strengthen stories, 
-                and build confidence across every session.
+                See your confidence, clarity, ideal answers, and next-step feedback after every response.
               </p>
             </div>
           </div>

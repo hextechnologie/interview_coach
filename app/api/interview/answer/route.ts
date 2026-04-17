@@ -2,33 +2,33 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 import { Resend } from 'resend'
+import { estimateCommunicationMetrics, normalizeFeedback } from '@/lib/interview-personalization'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
-
-const SYSTEM_PROMPT = `You are a professional interview coach. Evaluate the candidate's answer and provide structured feedback.
-
-Provide feedback in this EXACT JSON format:
+const SYSTEM_PROMPT = `You are a senior interview coach.
+Evaluate the answer and return ONLY valid JSON in this exact shape:
 {
-  "score": <number 1-10>,
-  "strengths": ["strength 1", "strength 2"],
-  "weaknesses": ["weakness 1", "weakness 2"],
-  "improved_answer": "A better version of their answer with specific improvements"
+  "score": 1-10,
+  "strengths": ["...", "..."],
+  "weaknesses": ["...", "..."],
+  "ideal_answer": "A concise high-quality example answer that directly addresses the question.",
+  "improved_answer": "Rewrite the candidate's answer using the STAR method and stronger wording.",
+  "metrics": {
+    "confidence": 0-100,
+    "clarity": 0-100,
+    "filler_words": 0
+  }
 }
-
-Be encouraging but honest. Provide actionable feedback.`
+Be encouraging, practical, and specific.`
 
 export async function POST(request: NextRequest) {
   try {
     const { sessionId, answer, questionNumber, questionText } = await request.json()
 
-    // Fetch session and current question
     const { data: session } = await supabaseAdmin
       .from('interview_sessions')
       .select('*')
@@ -39,45 +39,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
-    // Get the last question from messages (no longer needed, we pass questionText)
-    // const { data: answers } = await supabaseAdmin
-    //   .from('interview_answers')
-    //   .select('*')
-    //   .eq('session_id', sessionId)
-    //   .order('created_at', { ascending: false })
-    //   .limit(1)
+    const config = session.interview_config || {}
+    const fallbackMetrics = estimateCommunicationMetrics(answer)
 
-    // Generate feedback using Claude
-    const prompt = `Job Role: ${session.job_role}
+    let feedback = normalizeFeedback({
+      score: 6,
+      strengths: ['You answered the question directly'],
+      weaknesses: ['Use a more specific example and outcome'],
+      ideal_answer: 'A strong answer should briefly set the context, explain your action, and show the measurable result.',
+      improved_answer: `Here is a stronger STAR-style version: ${answer}`,
+      metrics: fallbackMetrics,
+    }, answer)
+
+    if (process.env.ANTHROPIC_API_KEY) {
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+      const prompt = `
+Job Role: ${session.job_role}
 Difficulty Level: ${session.difficulty_level}
+Interview Type: ${config.interviewType || 'Mixed'}
 Question Number: ${questionNumber}
+Question Asked: ${questionText}
+Relevant Skills: ${(config.personalizationKeywords || config.mainSkills || []).join(', ')}
+Candidate Answer: ${answer}
 
-The candidate answered an interview question with: "${answer}"
+Return the coaching feedback as valid JSON only.`
 
-Provide detailed structured feedback in JSON format.`
+      const response = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }],
+      })
 
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2048,
-      system: SYSTEM_PROMPT,
-      messages: [
-        { role: 'user', content: prompt },
-      ],
-    })
+      const content = response.content[0]
+      const text = content.type === 'text' ? content.text : ''
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
 
-    const content = response.content[0]
-    const text = content.type === 'text' ? content.text : ''
-
-    // Extract JSON feedback
-    const jsonMatch = text.match(/\{[\s\S]*?\}/)
-    const feedback = jsonMatch ? JSON.parse(jsonMatch[0]) : {
-      score: 5,
-      strengths: ['Answer provided'],
-      weaknesses: ['Could be more detailed'],
-      improved_answer: 'Consider expanding your answer with specific examples.',
+      if (jsonMatch) {
+        try {
+          feedback = normalizeFeedback(JSON.parse(jsonMatch[0]), answer)
+        } catch (parseError) {
+          console.error('Feedback JSON parse error:', parseError)
+        }
+      }
     }
 
-    // Save answer and feedback to database
     const { error: insertError } = await supabaseAdmin
       .from('interview_answers')
       .insert({
@@ -132,6 +138,8 @@ Provide detailed structured feedback in JSON format.`
               <h2>Interview Summary</h2>
               <p><strong>Job role:</strong> ${session.job_role}</p>
               <p><strong>Overall score:</strong> ${averageScore}/10</p>
+              <p><strong>Confidence:</strong> ${feedback.metrics.confidence}%</p>
+              <p><strong>Clarity:</strong> ${feedback.metrics.clarity}%</p>
               <p><strong>Top strengths:</strong></p>
               <ul>${(feedback.strengths || []).slice(0, 3).map((item: string) => `<li>${item}</li>`).join('')}</ul>
               <p><strong>Top areas to improve:</strong></p>

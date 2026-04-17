@@ -32,6 +32,8 @@ export type InterviewSession = {
   questions_answered: number
   created_at: string
   interview_config?: {
+    resumeText?: string
+    resumeFileName?: string
     jobDescription?: string
     language?: string
     interviewerType?: string
@@ -40,6 +42,10 @@ export type InterviewSession = {
     yearsOfExperience?: number
     mainSkills?: string[]
     weakAreas?: string[]
+    role?: string
+    targetCompany?: string
+    realCompanyMode?: boolean
+    personalizationKeywords?: string[]
   }
 }
 
@@ -53,7 +59,13 @@ export type InterviewAnswer = {
     score: number
     strengths: string[]
     weaknesses: string[]
+    ideal_answer?: string
     improved_answer: string
+    metrics?: {
+      confidence: number
+      clarity: number
+      filler_words: number
+    }
   }
   score?: number
   created_at: string

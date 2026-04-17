@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { extractKeywords, summarizeText } from '@/lib/interview-personalization'
 
 export async function POST(request: NextRequest) {
   try {
     const {
+      resumeText,
+      resumeFileName,
       jobTitle,
       industry,
       experienceLevel,
@@ -15,17 +18,15 @@ export async function POST(request: NextRequest) {
       yearsOfExperience,
       mainSkills,
       weakAreas,
+      targetCompany,
+      realCompanyMode,
     } = await request.json()
 
-    // Get authorization header
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 })
     }
 
-    const token = authHeader.substring(7) // Remove 'Bearer' prefix
-
-    // Create Supabase client with the user's token
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -44,13 +45,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized - Invalid token' }, { status: 401 })
     }
 
-    // Use service role supabase client for database operations
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Check interview limit
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('*')
@@ -65,27 +64,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Interview limit reached' }, { status: 403 })
     }
 
-    // Create new session with extended data
+    // Normalize the onboarding inputs once so every later question can stay highly personalized.
+    const keywordSource = [resumeText || '', jobDescription || '', ...(mainSkills || [])].join('\n')
+    const personalizationKeywords = extractKeywords(keywordSource)
+    const normalizedSkills = Array.isArray(mainSkills) && mainSkills.length > 0
+      ? mainSkills
+      : personalizationKeywords.slice(0, 6)
+
     const { data: session, error: sessionError } = await supabaseAdmin
       .from('interview_sessions')
       .insert({
         user_id: user.id,
         job_role: jobTitle,
         industry: industry || null,
-        difficulty_level: experienceLevel.toLowerCase(),
+        difficulty_level: (experienceLevel || 'mid').toLowerCase(),
         status: 'in_progress',
         total_questions: 6,
         questions_answered: 0,
-        // Store extended data as JSON
         interview_config: {
-          jobDescription,
-          language,
-          interviewerType,
-          interviewType,
-          interviewRound,
-          yearsOfExperience,
-          mainSkills,
-          weakAreas,
+          resumeText: summarizeText(resumeText || '', 2500),
+          resumeFileName,
+          jobDescription: summarizeText(jobDescription || '', 2500),
+          language: language || 'en',
+          interviewerType: interviewerType || 'Hiring Manager',
+          interviewType: interviewType || 'Mixed',
+          interviewRound: interviewRound || 'First Round',
+          yearsOfExperience: yearsOfExperience || 0,
+          mainSkills: normalizedSkills,
+          weakAreas: weakAreas || [],
+          role: jobTitle,
+          targetCompany: targetCompany || '',
+          realCompanyMode: Boolean(realCompanyMode),
+          personalizationKeywords,
         },
       })
       .select()
@@ -95,13 +105,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: sessionError.message }, { status: 500 })
     }
 
-    // Update interview count
     await supabaseAdmin
       .from('profiles')
       .update({ interviews_used_this_month: profile.interviews_used_this_month + 1 })
       .eq('id', user.id)
 
-    return NextResponse.json({ sessionId: session.id })
+    return NextResponse.json({ sessionId: session.id, personalizationKeywords })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

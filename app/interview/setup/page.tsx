@@ -1,65 +1,51 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner } from '@/components/ui'
-import { Sparkles, ChevronRight, ChevronLeft, X } from 'lucide-react'
+import { Sparkles, ChevronRight, ChevronLeft, Upload, Briefcase, FileText, ShieldCheck, X } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-const INDUSTRIES = [
-  'Tech', 'Finance', 'Healthcare', 'Marketing', 'Sales', 'Education', 'Other'
+const ROLES = [
+  'Software Engineer',
+  'Product Manager',
+  'Data Scientist',
+  'Frontend Engineer',
+  'Backend Engineer',
+  'DevOps Engineer',
+  'Marketing Manager',
+  'Sales Manager',
+  'Customer Success Manager',
+  'Other',
 ]
 
 const EXPERIENCE_LEVELS = ['junior', 'mid', 'senior']
-
-const INTERVIEWER_TYPES = ['HR', 'Tech Lead', 'Manager', 'CEO/Founder']
-
 const INTERVIEW_TYPES = ['Technical', 'Behavioral', 'Mixed']
-
-const INTERVIEW_ROUNDS = ['First Round', 'Second Round', 'Final Round']
-
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Spanish' },
-  { code: 'fr', label: 'French' },
-  { code: 'de', label: 'German' },
-  { code: 'it', label: 'Italian' },
-  { code: 'pt', label: 'Portuguese' },
-  { code: 'ar', label: 'Arabic' },
-  { code: 'zh', label: 'Chinese' },
-  { code: 'ja', label: 'Japanese' },
-  { code: 'ko', label: 'Korean' },
-]
+const LANGUAGES = ['English', 'French', 'Spanish', 'Arabic']
 
 export default function InterviewSetupPage() {
   const { user, profile, loading: authLoading } = useAuth()
   const router = useRouter()
-  
-  // Form state
+
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<Record<string, boolean>>({})
-  
-  // Step 1 - Job Information
-  const [jobTitle, setJobTitle] = useState('')
-  const [industry, setIndustry] = useState('')
-  const [experienceLevel, setExperienceLevel] = useState('')
+  const [uploadingResume, setUploadingResume] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const [resumeText, setResumeText] = useState('')
+  const [resumeFileName, setResumeFileName] = useState('')
   const [jobDescription, setJobDescription] = useState('')
-  const [language, setLanguage] = useState('en')
-  
-  // Step 2 - Interview Information
-  const [interviewerType, setInterviewerType] = useState('')
-  const [interviewType, setInterviewType] = useState('')
-  const [interviewRound, setInterviewRound] = useState('')
-  
-  // Step 3 - About You
+  const [jobTitle, setJobTitle] = useState('')
+  const [experienceLevel, setExperienceLevel] = useState('')
+  const [language, setLanguage] = useState('English')
+  const [interviewType, setInterviewType] = useState('Mixed')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
-  const [mainSkills, setMainSkills] = useState<string[]>([])
-  const [weakAreas, setWeakAreas] = useState<string[]>([])
+  const [targetCompany, setTargetCompany] = useState('')
+  const [realCompanyMode, setRealCompanyMode] = useState(false)
   const [skillInput, setSkillInput] = useState('')
-  const [weakAreaInput, setWeakAreaInput] = useState('')
+  const [mainSkills, setMainSkills] = useState<string[]>([])
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -67,114 +53,115 @@ export default function InterviewSetupPage() {
     }
   }, [user, authLoading, router])
 
-  useEffect(() => {
-    if (profile && profile.interviews_used_this_month >= profile.interviews_limit) {
-      router.push('/pricing')
-    }
-  }, [profile, router])
+  const limitReached = !!profile && profile.interviews_used_this_month >= profile.interviews_limit
 
   const validateStep = (currentStep: number) => {
-    const newErrors: Record<string, boolean> = {}
-    
-    if (currentStep === 1) {
-      if (!jobTitle.trim()) newErrors.jobTitle = true
-      if (!industry) newErrors.industry = true
-      if (!experienceLevel) newErrors.experienceLevel = true
-      if (!language) newErrors.language = true
+    const nextErrors: Record<string, string> = {}
+
+    if (currentStep === 1 && resumeText.trim().length < 30) {
+      nextErrors.resumeText = 'Paste or upload enough resume content to personalize your interview.'
     }
-    
-    if (currentStep === 2) {
-      if (!interviewerType) newErrors.interviewerType = true
-      if (!interviewType) newErrors.interviewType = true
-      if (!interviewRound) newErrors.interviewRound = true
+
+    if (currentStep === 2 && jobDescription.trim().length < 30) {
+      nextErrors.jobDescription = 'Add the job description so the AI can tailor its questions.'
     }
-    
-    if (currentStep === 3) {
-      if (!yearsOfExperience) newErrors.yearsOfExperience = true
+
+    if (currentStep === 3 && !jobTitle) {
+      nextErrors.jobTitle = 'Select the role you are interviewing for.'
     }
-    
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+
+    if (currentStep === 4 && !experienceLevel) {
+      nextErrors.experienceLevel = 'Choose your experience level.'
+    }
+
+    setErrors(nextErrors)
+    return Object.keys(nextErrors).length === 0
   }
 
   const handleNext = () => {
     if (validateStep(step)) {
-      setStep(step + 1)
+      setStep((prev) => prev + 1)
     }
   }
 
   const handleBack = () => {
-    setStep(step - 1)
     setErrors({})
+    setStep((prev) => prev - 1)
+  }
+
+  const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setUploadingResume(true)
+    try {
+      const text = await file.text()
+      setResumeText(text)
+      setResumeFileName(file.name)
+    } catch (error) {
+      console.error('Resume upload error:', error)
+      alert('Could not read that file. Please paste your resume text instead.')
+    } finally {
+      setUploadingResume(false)
+    }
   }
 
   const addSkill = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && skillInput.trim()) {
       e.preventDefault()
       if (!mainSkills.includes(skillInput.trim())) {
-        setMainSkills([...mainSkills, skillInput.trim()])
+        setMainSkills((prev) => [...prev, skillInput.trim()])
       }
       setSkillInput('')
     }
   }
 
   const removeSkill = (skill: string) => {
-    setMainSkills(mainSkills.filter(s => s !== skill))
-  }
-
-  const addWeakArea = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && weakAreaInput.trim()) {
-      e.preventDefault()
-      if (!weakAreas.includes(weakAreaInput.trim())) {
-        setWeakAreas([...weakAreas, weakAreaInput.trim()])
-      }
-      setWeakAreaInput('')
-    }
-  }
-
-  const removeWeakArea = (area: string) => {
-    setWeakAreas(weakAreas.filter(a => a !== area))
+    setMainSkills((prev) => prev.filter((item) => item !== skill))
   }
 
   const handleStartInterview = async () => {
-    if (!validateStep(3)) return
+    if (!validateStep(4) || limitReached) return
 
     setLoading(true)
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      
+
       if (!session) {
-        alert('Error: Session expired. Please log out and log back in.')
         router.push('/login')
         return
       }
 
       const response = await fetch('/api/interview/create', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
+          resumeText,
+          resumeFileName,
           jobTitle,
-          industry,
+          industry: 'Tech',
           experienceLevel,
           jobDescription,
-          language,
-          interviewerType,
+          language: language === 'French' ? 'fr' : language === 'Spanish' ? 'es' : language === 'Arabic' ? 'ar' : 'en',
+          interviewerType: realCompanyMode ? 'Real Company Panel' : 'Hiring Manager',
           interviewType,
-          interviewRound,
-          yearsOfExperience: parseInt(yearsOfExperience),
+          interviewRound: realCompanyMode ? 'Final Round' : 'First Round',
+          yearsOfExperience: parseInt(yearsOfExperience || '0', 10),
           mainSkills,
-          weakAreas,
+          weakAreas: [],
+          targetCompany,
+          realCompanyMode,
         }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        alert(`Error: ${data.error || 'Failed to create interview'}`)
+        alert(data.error || 'Failed to create interview')
         return
       }
 
@@ -183,7 +170,7 @@ export default function InterviewSetupPage() {
       }
     } catch (error) {
       console.error('Error creating interview:', error)
-      alert('Error: Failed to connect to server.')
+      alert('Failed to create interview. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -197,307 +184,297 @@ export default function InterviewSetupPage() {
     )
   }
 
+  if (limitReached) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-6 py-20 max-w-3xl">
+          <Card className="text-center border-primary/30 bg-primary/5">
+            <ShieldCheck className="w-14 h-14 text-primary mx-auto mb-4" />
+            <h1 className="text-3xl font-bold mb-3">You’ve used your free interview sessions</h1>
+            <p className="text-gray-400 mb-6">
+              Upgrade your plan to unlock more tailored mock interviews, deeper analytics, and continuous coaching.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <Link href="/pricing">
+                <Button variant="primary">See Pricing</Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button variant="outline">Back to Dashboard</Button>
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold gradient-text">Interview Coach</span>
           </Link>
+          <p className="text-sm text-gray-400">Free plan: {profile?.interviews_used_this_month || 0} / {profile?.interviews_limit || 3} sessions used</p>
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-12 max-w-3xl">
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-primary">Step {step} of 3</span>
-            <span className="text-sm text-gray-400">
-              {step === 1 && 'Job Information'}
-              {step === 2 && 'Interview Details'}
-              {step === 3 && 'About You'}
-            </span>
-          </div>
-          <div className="w-full bg-gray-700 rounded-full h-2">
-            <div 
-              className="bg-gradient-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 3) * 100}%` }}
-            />
-          </div>
-        </div>
+      <div className="container mx-auto px-6 py-10 max-w-6xl">
+        <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-6 items-start">
+          <Card className="p-6 md:p-8 transition-all duration-300">
+            <div className="mb-8">
+              <p className="text-primary text-sm font-semibold mb-2">PERSONALIZED ONBOARDING</p>
+              <h1 className="text-4xl font-bold mb-2">Build your AI interview coach</h1>
+              <p className="text-gray-400">Upload your background, target the role, and get questions tailored to your next job.</p>
+            </div>
 
-        <Card className="p-8">
-          {/* Step 1: Job Information */}
-          {step === 1 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold gradient-text mb-6">Job Information</h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Job Title <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  className={`w-full bg-background border ${errors.jobTitle ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                  placeholder="e.g., Senior Software Engineer"
-                />
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-3 text-sm">
+                <span className="text-primary font-semibold">Step {step} of 4</span>
+                <span className="text-gray-400">{['Resume', 'Job Description', 'Role', 'Experience'][step - 1]}</span>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Industry <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  className={`w-full bg-background border ${errors.industry ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                >
-                  <option value="">Select industry...</option>
-                  {INDUSTRIES.map((ind) => (
-                    <option key={ind} value={ind}>{ind}</option>
-                  ))}
-                </select>
+              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full bg-gradient-primary transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }} />
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-3">
-                  Experience Level <span className="text-red-400">*</span>
-                </label>
-                <div className="grid grid-cols-3 gap-4">
-                  {EXPERIENCE_LEVELS.map((level) => (
-                    <button
-                      key={level}
-                      type="button"
-                      onClick={() => setExperienceLevel(level)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                        experienceLevel === level
-                          ? 'bg-gradient-primary text-white'
-                          : 'bg-card border border-border text-gray-300 hover:border-primary'
-                      } ${errors.experienceLevel ? 'ring-2 ring-red-500' : ''}`}
-                    >
-                      {level.charAt(0).toUpperCase() + level.slice(1)}
-                    </button>
-                  ))}
+            {step === 1 && (
+              <div className="space-y-5 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Step 1 — Upload or paste your resume</h2>
+                  <p className="text-gray-400">This helps the AI target your strongest skills, projects, and experience.</p>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Interview Language <span className="text-red-400">*</span>
+                <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm cursor-pointer hover:bg-primary/10 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  {uploadingResume ? 'Reading resume...' : resumeFileName ? `Uploaded: ${resumeFileName}` : 'Upload a resume file'}
+                  <input type="file" className="hidden" onChange={handleResumeUpload} />
                 </label>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className={`w-full bg-background border ${errors.language ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                >
-                  {LANGUAGES.map((lang) => (
-                    <option key={lang.code} value={lang.code}>{lang.label}</option>
-                  ))}
-                </select>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Job Description (Optional)
-                </label>
+                <textarea
+                  value={resumeText}
+                  onChange={(e) => setResumeText(e.target.value)}
+                  rows={10}
+                  className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.resumeText ? 'border-red-500' : 'border-border'}`}
+                  placeholder="Paste your resume here. Include skills, projects, achievements, and technologies you want the coach to focus on."
+                />
+                {errors.resumeText && <p className="text-sm text-red-400">{errors.resumeText}</p>}
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-5 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Step 2 — Paste the job description</h2>
+                  <p className="text-gray-400">The app will extract key responsibilities and keywords to simulate a more realistic interview.</p>
+                </div>
                 <textarea
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
-                  rows={6}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Paste the job description here for more tailored questions..."
+                  rows={12}
+                  className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.jobDescription ? 'border-red-500' : 'border-border'}`}
+                  placeholder="Paste the full job description here to tailor the interview to the exact role you're targeting."
                 />
+                {errors.jobDescription && <p className="text-sm text-red-400">{errors.jobDescription}</p>}
               </div>
-            </div>
-          )}
-
-          {/* Step 2: Interview Information */}
-          {step === 2 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold gradient-text mb-6">Interview Details</h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Interviewer Type <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={interviewerType}
-                  onChange={(e) => setInterviewerType(e.target.value)}
-                  className={`w-full bg-background border ${errors.interviewerType ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                >
-                  <option value="">Select interviewer type...</option>
-                  {INTERVIEWER_TYPES.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Interview Type <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={interviewType}
-                  onChange={(e) => setInterviewType(e.target.value)}
-                  className={`w-full bg-background border ${errors.interviewType ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                >
-                  <option value="">Select interview type...</option>
-                  {INTERVIEW_TYPES.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Interview Round <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={interviewRound}
-                  onChange={(e) => setInterviewRound(e.target.value)}
-                  className={`w-full bg-background border ${errors.interviewRound ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                >
-                  <option value="">Select interview round...</option>
-                  {INTERVIEW_ROUNDS.map((round) => (
-                    <option key={round} value={round}>{round}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: About You */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold gradient-text mb-6">About You</h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Years of Experience <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="50"
-                  value={yearsOfExperience}
-                  onChange={(e) => setYearsOfExperience(e.target.value)}
-                  className={`w-full bg-background border ${errors.yearsOfExperience ? 'border-red-500' : 'border-border'} rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-                  placeholder="e.g., 5"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Main Skills
-                </label>
-                <input
-                  type="text"
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyDown={addSkill}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Type a skill and press Enter..."
-                />
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {mainSkills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                    >
-                      {skill}
-                      <button onClick={() => removeSkill(skill)} className="hover:text-red-400">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Weak Areas to Practice
-                </label>
-                <input
-                  type="text"
-                  value={weakAreaInput}
-                  onChange={(e) => setWeakAreaInput(e.target.value)}
-                  onKeyDown={addWeakArea}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Type an area and press Enter..."
-                />
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {weakAreas.map((area) => (
-                    <span
-                      key={area}
-                      className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm flex items-center gap-2"
-                    >
-                      {area}
-                      <button onClick={() => removeWeakArea(area)} className="hover:text-red-400">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-            {step > 1 ? (
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={loading}
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            ) : (
-              <Link href="/dashboard">
-                <Button variant="outline">Cancel</Button>
-              </Link>
             )}
 
-            {step < 3 ? (
-              <Button onClick={handleNext}>
-                Next
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            ) : (
-              <Button onClick={handleStartInterview} disabled={loading}>
-                {loading ? (
-                  <>
-                    <LoadingSpinner size="sm" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    Start Interview
-                    <Sparkles className="w-4 h-4 ml-2" />
-                  </>
+            {step === 3 && (
+              <div className="space-y-5 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Step 3 — Select your role</h2>
+                  <p className="text-gray-400">Choose the role so the questions match the expectations of the hiring team.</p>
+                </div>
+                <select
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.jobTitle ? 'border-red-500' : 'border-border'}`}
+                >
+                  <option value="">Select your role...</option>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
+                {errors.jobTitle && <p className="text-sm text-red-400">{errors.jobTitle}</p>}
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-5 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Step 4 — Set your experience and interview mode</h2>
+                  <p className="text-gray-400">We’ll adjust the difficulty, tone, and evaluation style to fit your goals.</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-300 mb-2">Experience level</label>
+                    <select
+                      value={experienceLevel}
+                      onChange={(e) => setExperienceLevel(e.target.value)}
+                      className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.experienceLevel ? 'border-red-500' : 'border-border'}`}
+                    >
+                      <option value="">Select level...</option>
+                      {EXPERIENCE_LEVELS.map((level) => (
+                        <option key={level} value={level}>{level.charAt(0).toUpperCase() + level.slice(1)}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-300 mb-2">Interview type</label>
+                    <select
+                      value={interviewType}
+                      onChange={(e) => setInterviewType(e.target.value)}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      {INTERVIEW_TYPES.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-300 mb-2">Interview language</label>
+                    <select
+                      value={language}
+                      onChange={(e) => setLanguage(e.target.value)}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      {LANGUAGES.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Years of experience</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="40"
+                    value={yearsOfExperience}
+                    onChange={(e) => setYearsOfExperience(e.target.value)}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Example: 4"
+                  />
+                </div>
+
+                <div className="rounded-xl border border-border bg-card/40 p-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={realCompanyMode}
+                      onChange={(e) => setRealCompanyMode(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span className="font-medium">Enable real company interview mode</span>
+                  </label>
+                  <p className="text-sm text-gray-400 mt-2">Adds more realistic pressure and higher-signal questions based on your target company.</p>
+                </div>
+
+                {realCompanyMode && (
+                  <input
+                    type="text"
+                    value={targetCompany}
+                    onChange={(e) => setTargetCompany(e.target.value)}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Target company, e.g. Google, Stripe, Amazon"
+                  />
                 )}
-              </Button>
-            )}
-          </div>
-        </Card>
 
-        {/* Info Card */}
-        <Card className="mt-6 bg-primary/5 border-primary/30">
-          <div className="flex gap-3">
-            <Sparkles className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-            <div>
-              <h4 className="font-semibold text-primary mb-1">Interview Format</h4>
-              <p className="text-sm text-gray-400">
-                You'll go through 6 questions with detailed AI feedback after each answer. 
-                The interview will be conducted in your selected language.
-              </p>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Optional focus skills</label>
+                  <input
+                    type="text"
+                    value={skillInput}
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={addSkill}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Type a skill and press Enter, e.g. React, SQL, roadmap planning"
+                  />
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {mainSkills.map((skill) => (
+                      <span key={skill} className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                        {skill}
+                        <button type="button" onClick={() => removeSkill(skill)}>
+                          <X className="w-4 h-4" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+              {step > 1 ? (
+                <Button variant="outline" onClick={handleBack} disabled={loading}>
+                  <ChevronLeft className="w-4 h-4" />
+                  Back
+                </Button>
+              ) : (
+                <Link href="/dashboard">
+                  <Button variant="outline">Cancel</Button>
+                </Link>
+              )}
+
+              {step < 4 ? (
+                <Button onClick={handleNext}>
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button onClick={handleStartInterview} loading={loading}>
+                  Start personalized interview
+                  {!loading && <Sparkles className="w-4 h-4" />}
+                </Button>
+              )}
             </div>
+          </Card>
+
+          <div className="space-y-6 lg:sticky lg:top-6">
+            <Card>
+              <h3 className="text-xl font-bold mb-4">Your interview preview</h3>
+              <div className="space-y-4 text-sm">
+                <div className="flex gap-3">
+                  <FileText className="w-4 h-4 text-primary mt-0.5" />
+                  <div>
+                    <p className="font-medium">Resume context</p>
+                    <p className="text-gray-400">{resumeText ? 'Loaded and ready for personalization' : 'Add your resume to unlock tailored questions'}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Briefcase className="w-4 h-4 text-primary mt-0.5" />
+                  <div>
+                    <p className="font-medium">Target role</p>
+                    <p className="text-gray-400">{jobTitle || 'Not selected yet'}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium mb-1">Coach will tailor for:</p>
+                  <ul className="text-gray-400 space-y-1 list-disc pl-5">
+                    <li>{experienceLevel ? `${experienceLevel} level difficulty` : 'Your experience level'}</li>
+                    <li>{interviewType} interview questions</li>
+                    <li>{realCompanyMode && targetCompany ? `${targetCompany} style pressure` : 'General hiring manager style'}</li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-primary/5 border-primary/30">
+              <h3 className="text-lg font-bold mb-2">What you’ll get</h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li>• Questions tailored to your resume and target job</li>
+                <li>• Ideal answers and STAR-style rewrites</li>
+                <li>• Confidence, clarity, and filler-word coaching</li>
+                <li>• A progress dashboard to track improvement over time</li>
+              </ul>
+            </Card>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   )
