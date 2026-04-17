@@ -59,7 +59,7 @@ export async function POST(request: Request) {
         await resend.emails.send({
           from: 'Interview Coach <onboarding@resend.dev>', // Update this with your verified domain
           to: 'abdelkarim.boudara@gmail.com',
-          replyTo: email,
+          reply_to: email,
           subject: `New Contact Form Message from ${name}`,
           html: `
             <h2>New Contact Form Submission</h2>
