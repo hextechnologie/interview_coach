@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { Badge, Button, Card, LoadingSpinner } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
+import CoachNavbar from '@/components/CoachNavbar'
 import { supabase } from '@/lib/supabase'
 import { CalendarDays, DollarSign, PencilLine, Wallet } from 'lucide-react'
 
@@ -112,7 +113,9 @@ export default function CoachDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
+    <div className="min-h-screen bg-background">
+      <CoachNavbar />
+      <div className="px-6 py-8">
       <div className="mx-auto max-w-7xl space-y-6">
         {welcome && (
           <div className="rounded-2xl border border-primary/30 bg-primary/10 px-5 py-4 text-primary">
@@ -226,6 +229,7 @@ export default function CoachDashboardPage() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   )
