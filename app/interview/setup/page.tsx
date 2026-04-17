@@ -34,6 +34,7 @@ export default function InterviewSetupPage() {
   const [uploadingResume, setUploadingResume] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [resumeStatus, setResumeStatus] = useState('')
+  const [showResumeEditor, setShowResumeEditor] = useState(false)
 
   const [resumeText, setResumeText] = useState('')
   const [resumeFileName, setResumeFileName] = useState('')
@@ -63,9 +64,6 @@ export default function InterviewSetupPage() {
       nextErrors.resumeText = 'Paste or upload enough resume content to personalize your interview.'
     }
 
-    if (currentStep === 2 && jobDescription.trim().length < 30) {
-      nextErrors.jobDescription = 'Add the job description so the AI can tailor its questions.'
-    }
 
     if (currentStep === 3 && !jobTitle) {
       nextErrors.jobTitle = 'Select the role you are interviewing for.'
@@ -121,6 +119,7 @@ export default function InterviewSetupPage() {
     setUploadingResume(true)
     setResumeStatus('')
     setResumeFileName(file.name)
+    setShowResumeEditor(false)
 
     try {
       const extension = file.name.split('.').pop()?.toLowerCase()
@@ -143,7 +142,7 @@ export default function InterviewSetupPage() {
       }
 
       setResumeText(text)
-      setResumeStatus('Resume imported successfully. You can edit the extracted text below if needed.')
+      setResumeStatus('Resume imported successfully. No extra text entry is needed unless you want to edit it.')
       setErrors((prev) => ({ ...prev, resumeText: '' }))
     } catch (error) {
       console.error('Resume upload error:', error)
@@ -300,17 +299,36 @@ export default function InterviewSetupPage() {
                   <input type="file" accept=".pdf,.txt,.md" className="hidden" onChange={handleResumeUpload} />
                 </label>
 
-                <textarea
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  rows={10}
-                  className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.resumeText ? 'border-red-500' : 'border-border'}`}
-                  placeholder="Paste your resume here. Include skills, projects, achievements, and technologies you want the coach to focus on."
-                />
-                {resumeStatus && (
+                {resumeFileName && !showResumeEditor ? (
+                  <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4">
+                    <p className="text-sm text-green-400 font-medium mb-2">{resumeStatus || 'Resume imported successfully.'}</p>
+                    <p className="text-sm text-gray-300 mb-3">Your CV is already loaded and will be used to personalize the interview.</p>
+                    <Button variant="outline" className="text-sm px-4 py-2" onClick={() => setShowResumeEditor(true)}>
+                      Review or edit extracted text
+                    </Button>
+                  </div>
+                ) : (
+                  <textarea
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    rows={10}
+                    className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.resumeText ? 'border-red-500' : 'border-border'}`}
+                    placeholder="Paste your resume here only if you want to type it manually or edit the imported text."
+                  />
+                )}
+                {resumeStatus && !resumeFileName && (
                   <p className={`text-sm ${resumeText ? 'text-green-400' : 'text-yellow-300'}`}>
                     {resumeStatus}
                   </p>
+                )}
+                {resumeFileName && showResumeEditor && (
+                  <button
+                    type="button"
+                    onClick={() => setShowResumeEditor(false)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Hide extracted text
+                  </button>
                 )}
                 {errors.resumeText && <p className="text-sm text-red-400">{errors.resumeText}</p>}
               </div>
@@ -319,17 +337,16 @@ export default function InterviewSetupPage() {
             {step === 2 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Step 2 — Paste the job description</h2>
-                  <p className="text-gray-400">The app will extract key responsibilities and keywords to simulate a more realistic interview.</p>
+                  <h2 className="text-2xl font-bold mb-2">Step 2 — Add the job description (optional)</h2>
+                  <p className="text-gray-400">If you have the job post, paste it here. If not, you can leave this blank and continue.</p>
                 </div>
                 <textarea
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   rows={12}
-                  className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.jobDescription ? 'border-red-500' : 'border-border'}`}
-                  placeholder="Paste the full job description here to tailor the interview to the exact role you're targeting."
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  placeholder="Optional: paste the full job description or just a few keywords from the role."
                 />
-                {errors.jobDescription && <p className="text-sm text-red-400">{errors.jobDescription}</p>}
               </div>
             )}
 
