@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter, useParams } from 'next/navigation'
 import { Button, Card, LoadingSpinner } from '@/components/ui'
-import { Sparkles, Send, CheckCircle } from 'lucide-react'
+import { Sparkles, Send, CheckCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
@@ -39,8 +39,11 @@ export default function InterviewPage() {
   const [waitingForFeedback, setWaitingForFeedback] = useState(false)
   const [hasLoadedFirstQuestion, setHasLoadedFirstQuestion] = useState(false)
   const [revealedFeedback, setRevealedFeedback] = useState<Record<number, { ideal: boolean; improved: boolean }>>({})
+  const [isListening, setIsListening] = useState(false)
+  const [speechEnabled, setSpeechEnabled] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const isLoadingQuestionRef = useRef(false)
+  const recognitionRef = useRef<any>(null)
 
   const getAuthHeaders = async () => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -65,6 +68,18 @@ export default function InterviewPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant')
+
+    if (speechEnabled && latestAssistantMessage && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      const utterance = new SpeechSynthesisUtterance(latestAssistantMessage.content)
+      utterance.rate = 0.95
+      utterance.pitch = 1
+      window.speechSynthesis.speak(utterance)
+    }
+  }, [messages, speechEnabled])
 
   const fetchSession = async () => {
     try {
@@ -219,6 +234,56 @@ export default function InterviewPage() {
     }))
   }
 
+  const toggleVoiceInput = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+
+    if (!SpeechRecognition) {
+      alert('Voice input is not supported in this browser.')
+      return
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = true
+    recognition.continuous = true
+
+    recognition.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript
+      }
+      setCurrentAnswer(transcript.trim())
+    }
+
+    recognition.onerror = () => {
+      setIsListening(false)
+    }
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    recognitionRef.current = recognition
+    recognition.start()
+    setIsListening(true)
+  }
+
+  const replayLastQuestion = () => {
+    const lastQuestion = [...messages].reverse().find((message) => message.role === 'assistant')
+    if (!lastQuestion || !('speechSynthesis' in window)) return
+
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(lastQuestion.content)
+    utterance.rate = 0.95
+    window.speechSynthesis.speak(utterance)
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -242,6 +307,10 @@ export default function InterviewPage() {
                   <p className="text-sm text-gray-400">Question {questionCount} of ~6</p>
                   <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
                 </div>
+                <Button variant="outline" className="px-3 py-2" onClick={() => setSpeechEnabled((prev) => !prev)}>
+                  {speechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  {speechEnabled ? 'Voice On' : 'Voice Off'}
+                </Button>
               </div>
             )}
           </div>
@@ -258,6 +327,12 @@ export default function InterviewPage() {
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <Card className="flex-1 bg-gradient-to-br from-primary/10 via-card/50 to-card/30 border-primary/20 shadow-lg">
+                    <div className="flex justify-end mb-3">
+                      <Button variant="outline" className="px-3 py-2 text-xs" onClick={replayLastQuestion}>
+                        <Volume2 className="w-3 h-3" />
+                        Read aloud
+                      </Button>
+                    </div>
                     <div className="prose prose-invert max-w-none">
                       {message.content.split('\n\n').map((paragraph, idx) => {
                         // Check if it's a heading (starts with #)
@@ -418,22 +493,32 @@ export default function InterviewPage() {
               value={currentAnswer}
               onChange={(e) => setCurrentAnswer(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your answer here... (Press Enter to send)"
+              placeholder="Type your answer here or use the microphone..."
               disabled={loading || waitingForFeedback}
               rows={3}
               className="flex-1 bg-background border border-border rounded-lg px-4 py-3 text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none disabled:opacity-50"
             />
-            <Button
-              variant="primary"
-              onClick={handleSubmitAnswer}
-              disabled={!currentAnswer.trim() || loading || waitingForFeedback}
-              className="self-end"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
+            <div className="flex flex-col gap-2 self-end">
+              <Button
+                variant={isListening ? 'danger' : 'outline'}
+                onClick={toggleVoiceInput}
+                disabled={loading || waitingForFeedback}
+                className="px-4"
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSubmitAnswer}
+                disabled={!currentAnswer.trim() || loading || waitingForFeedback}
+                className="px-4"
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Tip: Be specific and use examples from your experience
+            Tip: You can answer by typing or using the microphone. The AI can also read questions aloud.
           </p>
         </Card>
       </div>
