@@ -408,30 +408,3 @@ export default function PricingPage() {
     </div>
   )
 }
-        </div>
-
-        <div className="mt-16 text-center">
-          <p className="text-gray-400 mb-4">All plans include:</p>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-300">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-400" />
-              <span>AI-powered feedback</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-400" />
-              <span>Score tracking</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-400" />
-              <span>Progress analytics</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-400" />
-              <span>Cancel anytime</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
