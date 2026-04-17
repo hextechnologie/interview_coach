@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter, useParams } from 'next/navigation'
 import { Button, Card, LoadingSpinner } from '@/components/ui'
-import { Sparkles, Send, CheckCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react'
+import { Sparkles, Send, CheckCircle, Mic, MicOff, RotateCcw, VolumeX } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
@@ -314,10 +314,6 @@ export default function InterviewPage() {
                   <p className="text-sm text-gray-400">Question {questionCount} of ~6</p>
                   <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
                 </div>
-                <Button variant="outline" className="px-3 py-2" onClick={toggleSpeech}>
-                  {speechEnabled ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                  {speechEnabled ? 'Mute' : 'Unmute'}
-                </Button>
               </div>
             )}
           </div>
@@ -334,10 +330,14 @@ export default function InterviewPage() {
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
                   <Card className="flex-1 bg-gradient-to-br from-primary/10 via-card/50 to-card/30 border-primary/20 shadow-lg">
-                    <div className="flex justify-end mb-3">
+                    <div className="flex justify-end gap-2 mb-3">
+                      <Button variant="outline" className="px-3 py-2 text-xs" onClick={toggleSpeech}>
+                        <VolumeX className="w-3 h-3" />
+                        {speechEnabled ? 'Mute' : 'Unmute'}
+                      </Button>
                       <Button variant="outline" className="px-3 py-2 text-xs" onClick={replayLastQuestion} disabled={!speechEnabled}>
-                        <Volume2 className="w-3 h-3" />
-                        Read aloud
+                        <RotateCcw className="w-3 h-3" />
+                        Replay Question
                       </Button>
                     </div>
                     <div className="prose prose-invert max-w-none">
