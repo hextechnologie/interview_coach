@@ -287,12 +287,9 @@ export default function CoachSignupPage() {
               <Button type="submit" variant="primary" fullWidth loading={loading}>Create coach account</Button>
             </form>
           ) : (
-            <div className="space-y-4 rounded-xl border border-green-500/30 bg-green-500/10 p-5">
-              <p className="text-sm text-green-200">
-                We sent a confirmation email to <strong>{email}</strong>. Open it, verify your address, then come back and log in.
-              </p>
+            <div className="pt-2">
               <Link href="/login/coach">
-                <Button variant="outline" fullWidth>Go to coach login</Button>
+                <Button variant="primary" fullWidth>Go to coach login</Button>
               </Link>
             </div>
           )}

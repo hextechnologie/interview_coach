@@ -180,7 +180,6 @@ export default function CandidateSignupPage() {
           <h1 className="mb-2 text-3xl font-bold">Candidate signup</h1>
           <p className="mb-6 text-gray-400">Create your practice account and start preparing for real interviews.</p>
 
-          {success && <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">{success}</div>}
           {error && <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
 
           {!success ? (
@@ -277,12 +276,9 @@ export default function CandidateSignupPage() {
               <Button type="submit" variant="primary" fullWidth loading={loading}>Create candidate account</Button>
             </form>
           ) : (
-            <div className="space-y-4 rounded-xl border border-green-500/30 bg-green-500/10 p-5">
-              <p className="text-sm text-green-200">
-                We sent a confirmation email to <strong>{email}</strong>. Open it, verify your address, then log in.
-              </p>
+            <div className="pt-2">
               <Link href="/login/candidate">
-                <Button variant="outline" fullWidth>Go to login</Button>
+                <Button variant="primary" fullWidth>Go to login</Button>
               </Link>
             </div>
           )}
