@@ -23,6 +23,7 @@ export default function CoachSignupPage() {
   const [avatarPreview, setAvatarPreview] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const platformFee = useMemo(() => (price * 0.2).toFixed(0), [price])
 
@@ -45,6 +46,7 @@ export default function CoachSignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
 
     if (!fullName.trim() || !email.includes('@') || password.length < 6 || !title.trim()) {
       setError('Please complete the required fields.')
@@ -105,7 +107,12 @@ export default function CoachSignupPage() {
         }
       }
 
-      window.location.href = '/coach/dashboard?welcome=1'
+      if (data.session) {
+        await supabase.auth.signOut()
+      }
+
+      setSuccess('Coach account created successfully. Please check your email, confirm your account, then log in again as a coach.')
+      return
     } catch (err: any) {
       setError(err.message || 'Unable to create your coach account right now.')
     } finally {
@@ -136,9 +143,11 @@ export default function CoachSignupPage() {
           <h1 className="mb-2 text-3xl font-bold">Coach signup</h1>
           <p className="mb-6 text-gray-400">Create your professional profile and start earning from mock interview sessions.</p>
 
+          {success && <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">{success}</div>}
           {error && <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          {!success ? (
+            <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid gap-5 md:grid-cols-2">
               <Input label="Full Name" value={fullName} onChange={setFullName} placeholder="Alex Morgan" required />
               <Input label="Email" type="email" value={email} onChange={setEmail} placeholder="coach@example.com" required />
@@ -207,6 +216,16 @@ export default function CoachSignupPage() {
 
             <Button type="submit" variant="primary" fullWidth loading={loading}>Create coach account</Button>
           </form>
+          ) : (
+            <div className="space-y-4 rounded-xl border border-green-500/30 bg-green-500/10 p-5">
+              <p className="text-sm text-green-200">
+                We sent a confirmation email to {email}. Open it, verify your address, then come back and log in.
+              </p>
+              <Link href="/login/coach">
+                <Button variant="outline" fullWidth>Go to coach login</Button>
+              </Link>
+            </div>
+          )}
         </Card>
       </div>
     </div>

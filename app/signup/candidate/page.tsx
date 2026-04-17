@@ -25,6 +25,7 @@ export default function CandidateSignupPage() {
   const [avatarPreview, setAvatarPreview] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const strength = useMemo(() => {
     if (password.length < 6) return 'Weak'
@@ -41,6 +42,7 @@ export default function CandidateSignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
 
     if (!fullName.trim() || !email.includes('@') || !jobField || !experienceLevel) {
       setError('Please complete all required fields.')
@@ -90,7 +92,12 @@ export default function CandidateSignupPage() {
         }
       }
 
-      window.location.href = '/dashboard'
+      if (data.session) {
+        await supabase.auth.signOut()
+      }
+
+      setSuccess('Account created successfully. Please confirm your email, then log in again.')
+      return
     } catch (err: any) {
       setError(err.message || 'Unable to create your account right now.')
     } finally {
@@ -116,6 +123,7 @@ export default function CandidateSignupPage() {
           <h1 className="mb-2 text-3xl font-bold">Candidate signup</h1>
           <p className="mb-6 text-gray-400">Create your practice account and start preparing for real interviews.</p>
 
+          {success && <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">{success}</div>}
           {error && <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -162,6 +170,14 @@ export default function CandidateSignupPage() {
 
             <Button type="submit" variant="primary" fullWidth loading={loading}>Create candidate account</Button>
           </form>
+
+          {success && (
+            <div className="mt-4">
+              <Link href="/login/candidate">
+                <Button variant="outline" fullWidth>Go to login</Button>
+              </Link>
+            </div>
+          )}
         </Card>
       </div>
     </div>
