@@ -5,10 +5,10 @@ import { Globe, ChevronDown } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'en', label: 'English' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'fr', label: 'Français' },
+  { code: 'es', label: 'Español' },
 ]
 
 export function LanguageSwitcher() {
@@ -42,7 +42,7 @@ export function LanguageSwitcher() {
         aria-label="Switch language"
       >
         <Globe className="w-4 h-4" />
-        <span className="font-medium">{currentLanguage.flag} {currentLanguage.label}</span>
+        <span className="font-medium">{currentLanguage.label}</span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -52,11 +52,10 @@ export function LanguageSwitcher() {
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
-              className={`w-full flex items-center gap-3 px-4 py-2 hover:bg-white/10 transition-colors text-left ${
+              className={`w-full flex items-center px-4 py-2 hover:bg-white/10 transition-colors text-left ${
                 locale === lang.code ? 'bg-white/5 text-primary' : 'text-gray-300'
               }`}
             >
-              <span className="text-xl">{lang.flag}</span>
               <span className="font-medium">{lang.label}</span>
             </button>
           ))}
