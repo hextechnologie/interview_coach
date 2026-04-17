@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CreditCard, TrendingUp } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { getCreditBalance, getCreditBalanceColor, subscribeToCreditsUpdates } from '@/lib/credits'
 
@@ -52,7 +52,7 @@ export default function CreditBalanceButton() {
       `}
     >
       <div className="flex items-center gap-2">
-        <CreditCard className={`w-4 h-4 ${colors.textColor}`} />
+        <span className="text-xl">⭐</span>
         <span className={`${colors.textColor} font-bold`}>
           {loading ? '...' : balance}
         </span>
@@ -62,9 +62,9 @@ export default function CreditBalanceButton() {
       </div>
       
       {/* Tooltip */}
-      <div className="absolute hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50">
+      <div className="absolute hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50 shadow-lg">
         {isLow ? 'Low balance! Top up now' : 'Click to top up credits'}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-[-4px] border-4 border-transparent border-t-gray-900" />
       </div>
     </button>
   )

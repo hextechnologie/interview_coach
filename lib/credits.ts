@@ -163,9 +163,9 @@ export function getCreditBalanceColor(balance: number): {
 } {
   if (balance >= 50) {
     return {
-      textColor: 'text-green-400',
-      bgColor: 'bg-green-500/10',
-      borderColor: 'border-green-500/30',
+      textColor: 'text-blue-400',
+      bgColor: 'bg-blue-500/10',
+      borderColor: 'border-blue-500/30',
     }
   } else if (balance >= 20) {
     return {

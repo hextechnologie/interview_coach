@@ -165,13 +165,13 @@ export default function CreditsPage() {
               <ArrowLeft className="w-4 h-4" /> Back
             </Link>
             <div className="flex items-center gap-2">
-              <CreditCard className="w-6 h-6 text-purple-400" />
+              <span className="text-3xl">⭐</span>
               <h1 className="text-2xl font-bold">Top Up Your Credits</h1>
             </div>
           </div>
           <div className={`px-4 py-2 rounded-lg border ${balanceColors.borderColor} ${balanceColors.bgColor}`}>
             <span className={`text-lg font-bold ${balanceColors.textColor}`}>
-              💳 {userCredits?.balance || 0} credits
+              ⭐ {userCredits?.balance || 0} credits
             </span>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function CreditsPage() {
                   <div className="text-gray-400 text-sm mb-4">
                     {pkg.base_credits} credits
                     {pkg.bonus_credits > 0 && (
-                      <span className="text-green-400"> + {pkg.bonus_credits} bonus</span>
+                      <span className="text-yellow-400"> + {pkg.bonus_credits} bonus</span>
                     )}
                   </div>
                   <div className="flex items-center justify-center gap-2 mb-4 text-sm text-gray-400">
@@ -309,11 +309,11 @@ export default function CreditsPage() {
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         txn.type === 'purchase'
-                          ? 'bg-green-500/20 text-green-400'
+                          ? 'bg-blue-500/20 text-blue-400'
                           : txn.type === 'spent'
                           ? 'bg-red-500/20 text-red-400'
                           : txn.type === 'refund'
-                          ? 'bg-blue-500/20 text-blue-400'
+                          ? 'bg-yellow-500/20 text-yellow-400'
                           : txn.type === 'earned'
                           ? 'bg-purple-500/20 text-purple-400'
                           : 'bg-gray-500/20 text-gray-400'
@@ -340,7 +340,7 @@ export default function CreditsPage() {
                     <p
                       className={`text-lg font-bold ${
                         txn.type === 'purchase' || txn.type === 'refund' || txn.type === 'earned'
-                          ? 'text-green-400'
+                          ? 'text-blue-400'
                           : 'text-red-400'
                       }`}
                     >

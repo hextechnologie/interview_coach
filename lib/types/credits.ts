@@ -98,12 +98,12 @@ export interface CreditRechargeRequest {
 export interface CreditBalance {
   balance: number
   status: 'healthy' | 'low' | 'critical'
-  color: 'green' | 'yellow' | 'red'
+  color: 'blue' | 'yellow' | 'red'
 }
 
 export const getCreditBalanceStatus = (balance: number): CreditBalance => {
   if (balance >= 50) {
-    return { balance, status: 'healthy', color: 'green' }
+    return { balance, status: 'healthy', color: 'blue' }
   } else if (balance >= 20) {
     return { balance, status: 'low', color: 'yellow' }
   } else {
