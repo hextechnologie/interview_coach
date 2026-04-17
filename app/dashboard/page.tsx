@@ -31,18 +31,10 @@ import {
 } from 'recharts'
 
 const DAILY_TIPS = [
-  {
-    title: 'Use the STAR method',
-    description: 'Keep answers structured with Situation, Task, Action, and Result.',
-  },
-  {
-    title: 'Quantify your impact',
-    description: 'Add numbers, metrics, and outcomes to make your answers stronger.',
-  },
-  {
-    title: 'Pause before answering',
-    description: 'A short pause makes you sound more confident and thoughtful.',
-  },
+  'Use the STAR method to keep your answers structured and memorable.',
+  'Add numbers and outcomes to prove the impact of your work.',
+  'Take a short pause before answering to sound more confident.',
+  'Keep each answer focused on one strong example instead of many weak ones.',
 ]
 
 function calculateStreak(completedSessions: InterviewSession[]) {
@@ -191,6 +183,10 @@ export default function DashboardPage() {
       }))
   }, [sessions])
 
+  const dailyTip = useMemo(() => {
+    return DAILY_TIPS[new Date().getDate() % DAILY_TIPS.length]
+  }, [])
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -260,7 +256,7 @@ export default function DashboardPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Total Interviews</p>
+                <p className="text-gray-400 text-sm mb-1">Total Interviews Done</p>
                 <p className="text-3xl font-bold">{stats.totalInterviews}</p>
               </div>
               <div className="w-11 h-11 bg-primary/20 rounded-lg flex items-center justify-center">
@@ -296,7 +292,7 @@ export default function DashboardPage() {
           <Card>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Streak Days</p>
+                <p className="text-gray-400 text-sm mb-1">Current Streak (days)</p>
                 <p className="text-3xl font-bold">{stats.streakDays}</p>
               </div>
               <div className="w-11 h-11 bg-orange-500/20 rounded-lg flex items-center justify-center">
@@ -358,8 +354,8 @@ export default function DashboardPage() {
               {sessions.length === 0 ? (
                 <div className="text-center py-12">
                   <Target className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No interviews yet</h3>
-                  <p className="text-gray-400 mb-6">Start your first mock interview and get instant AI feedback.</p>
+                  <h3 className="text-xl font-semibold mb-2">No interviews yet! Start your first mock interview</h3>
+                  <p className="text-gray-400 mb-6">Begin practicing now and unlock AI-powered feedback on every answer.</p>
                   <Link href="/interview/setup">
                     <Button variant="primary" className="gap-2">
                       <Plus className="w-4 h-4" />
@@ -374,10 +370,10 @@ export default function DashboardPage() {
                       <tr className="border-b border-border text-left text-gray-400">
                         <th className="py-3 pr-4">Date</th>
                         <th className="py-3 pr-4">Job Role</th>
+                        <th className="py-3 pr-4">Level</th>
                         <th className="py-3 pr-4">Score</th>
-                        <th className="py-3 pr-4">Interview Type</th>
-                        <th className="py-3 pr-4">Status</th>
-                        <th className="py-3 text-right">Action</th>
+                        <th className="py-3 pr-4">Type</th>
+                        <th className="py-3 text-right">View</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -388,6 +384,9 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-4 pr-4 font-medium">{session.job_role}</td>
                           <td className="py-4 pr-4">
+                            <Badge variant="default">{session.difficulty_level}</Badge>
+                          </td>
+                          <td className="py-4 pr-4">
                             {session.overall_score ? (
                               <span className="text-primary font-semibold">{session.overall_score}/10</span>
                             ) : (
@@ -396,11 +395,6 @@ export default function DashboardPage() {
                           </td>
                           <td className="py-4 pr-4">
                             <Badge variant="default">{getInterviewType(session)}</Badge>
-                          </td>
-                          <td className="py-4 pr-4">
-                            <Badge variant={session.status === 'completed' ? 'success' : session.status === 'in_progress' ? 'warning' : 'default'}>
-                              {session.status.replace('_', ' ')}
-                            </Badge>
                           </td>
                           <td className="py-4 text-right">
                             <div className="flex flex-col sm:flex-row items-end justify-end gap-2">
@@ -455,15 +449,10 @@ export default function DashboardPage() {
             </Card>
 
             <Card>
-              <h2 className="text-2xl font-bold mb-4">Daily Interview Tips</h2>
-              <div className="space-y-4">
-                {DAILY_TIPS.map((tip, index) => (
-                  <div key={tip.title} className="rounded-xl border border-border p-4 bg-background/40">
-                    <p className="text-primary text-xs font-semibold mb-1">TIP {index + 1}</p>
-                    <h3 className="font-semibold mb-1">{tip.title}</h3>
-                    <p className="text-sm text-gray-400">{tip.description}</p>
-                  </div>
-                ))}
+              <h2 className="text-2xl font-bold mb-4">Daily Tip</h2>
+              <div className="rounded-xl border border-border p-4 bg-background/40">
+                <p className="text-primary text-xs font-semibold mb-2">TODAY’S INTERVIEW TIP</p>
+                <p className="text-sm text-gray-300">{dailyTip}</p>
               </div>
             </Card>
           </div>

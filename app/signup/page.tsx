@@ -14,8 +14,11 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const { signUp } = useAuth()
+
+  const passwordStrength = password.length < 6 ? 'Weak' : password.length < 10 ? 'Medium' : 'Strong'
 
   const handleOAuthSignIn = async (provider: 'google' | 'facebook' | 'github') => {
     try {
@@ -34,6 +37,7 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
 
     if (!fullName.trim()) {
       setError('Full name is required')
@@ -59,6 +63,10 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, fullName)
+      setSuccess('Account created successfully ✅')
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 1500)
     } catch (err: any) {
       setError(err.message || 'Failed to create account')
     } finally {
@@ -80,6 +88,12 @@ export default function SignupPage() {
           <h1 className="text-3xl font-bold text-center mb-2">Get Started</h1>
           <p className="text-gray-400 text-center mb-8">Create your account and start practicing</p>
 
+          {success && (
+            <div className="bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded-lg mb-6">
+              {success}
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg mb-6">
               {error}
@@ -94,6 +108,7 @@ export default function SignupPage() {
               onChange={setFullName}
               placeholder="John Doe"
               required
+              error={error && !fullName.trim() ? 'Full name is required' : ''}
             />
 
             <Input
@@ -103,6 +118,7 @@ export default function SignupPage() {
               onChange={setEmail}
               placeholder="you@example.com"
               required
+              error={error && !email.includes('@') ? 'Enter a valid email' : ''}
             />
 
             <div>
@@ -124,6 +140,9 @@ export default function SignupPage() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              <p className={`mt-2 text-xs ${passwordStrength === 'Weak' ? 'text-red-400' : passwordStrength === 'Medium' ? 'text-yellow-400' : 'text-green-400'}`}>
+                Password strength: {passwordStrength}
+              </p>
             </div>
 
             <div>

@@ -97,15 +97,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
     if (error) throw error
 
-    // Update profile with full name
     if (data.user) {
       await supabase
         .from('profiles')
         .update({ full_name: fullName })
         .eq('id', data.user.id)
     }
-
-    router.push('/dashboard')
   }
 
   const signOut = async () => {

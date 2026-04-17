@@ -1,18 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Sparkles, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Button, Card } from '@/components/ui'
 
 export default function ResetPasswordPage() {
+  const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => router.push('/login'), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [success, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,7 +44,7 @@ export default function ResetPasswordPage() {
     if (error) {
       setError(error.message)
     } else {
-      setSuccess('Password updated successfully. You can now log in.')
+      setSuccess('Password updated successfully ✅ Redirecting to login...')
       setPassword('')
       setConfirmPassword('')
     }

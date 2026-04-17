@@ -47,8 +47,8 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password)
-    } catch (err: any) {
-      setError(err.message || 'Failed to login')
+    } catch {
+      setError('Invalid email or password')
     } finally {
       setLoading(false)
     }
@@ -82,6 +82,7 @@ export default function LoginPage() {
               onChange={setEmail}
               placeholder="you@example.com"
               required
+              error={error && !email.trim() ? 'Email is required' : ''}
             />
 
             <div>
@@ -98,7 +99,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full px-4 py-3 pr-12 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className={`w-full px-4 py-3 pr-12 bg-background border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${error && !password.trim() ? 'border-red-500' : 'border-border'}`}
                 />
                 <button
                   type="button"

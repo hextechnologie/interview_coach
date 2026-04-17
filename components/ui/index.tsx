@@ -100,7 +100,7 @@ export function Input({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
-        className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+        className={`w-full px-4 py-3 bg-background border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 ${error ? 'border-red-500' : 'border-border'}`}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>

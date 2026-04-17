@@ -8,7 +8,7 @@ import { Button, Input, Card } from '@/components/ui'
 export default function ContactPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [subject, setSubject] = useState('')
+  const [subject, setSubject] = useState('General Inquiry')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
