@@ -86,6 +86,12 @@ function getInterviewType(session: InterviewSession) {
   return session.interview_config?.interviewType || 'Mixed'
 }
 
+function trendLabel(val: number) {
+  if (val > 0) return <span className="text-green-400">↑ Improving</span>
+  if (val < 0) return <span className="text-red-400">↓ Declining</span>
+  return <span className="text-gray-400">→ Stable</span>
+}
+
 export default function DashboardPage() {
   const { user, profile, loading: authLoading, signOut } = useAuth()
   const router = useRouter()
@@ -309,12 +315,6 @@ export default function DashboardPage() {
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'there'
 
-  const trendLabel = (val: number) => {
-    if (val > 0) return <span className="text-green-400">↑ Improving</span>
-    if (val < 0) return <span className="text-red-400">↓ Declining</span>
-    return <span className="text-gray-400">→ Stable</span>
-  }
-
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0f1e' }}>
@@ -352,8 +352,7 @@ export default function DashboardPage() {
               <Button variant="outline" onClick={signOut} className="gap-2">
                 <LogOut className="w-4 h-4" />
                 Logout
-                </Button>
-              </Link>
+              </Button>
 
               {/* Profile dropdown */}
               <div className="relative" ref={profileRef}>
