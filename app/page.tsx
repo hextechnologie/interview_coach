@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui'
 import { Sparkles, Target, TrendingUp, CheckCircle, Play } from 'lucide-react'
 import Link from 'next/link'
@@ -8,7 +8,6 @@ import { useAuth } from '@/components/AuthProvider'
 import { VideoModal } from '@/components/VideoModal'
 import { useLanguage } from '@/components/LanguageProvider'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
-import { OrganizationSchema, WebsiteSchema, SoftwareApplicationSchema } from '@/components/StructuredData'
 import { TryDemo } from '@/components/TryDemo'
 
 export default function HomePage() {
@@ -16,13 +15,12 @@ export default function HomePage() {
   const { t } = useLanguage()
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
+  useEffect(() => {
+    // Structured data will be added via metadata in layout
+  }, [])
+
   return (
-    <>
-      <OrganizationSchema />
-      <WebsiteSchema />
-      <SoftwareApplicationSchema />
-      
-      <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       {/* Background gradients */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-background to-background" />
       <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-secondary/10 blur-3xl rounded-full" />
@@ -414,7 +412,8 @@ export default function HomePage() {
         </footer>
       </div>
 
+      {/* Video Modal */}
       <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
-    </>
+    </div>
   )
 }
