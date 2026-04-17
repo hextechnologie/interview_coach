@@ -188,7 +188,7 @@ export default function PricingPage() {
   }
 
   const getPriceId = (plan: typeof PLANS[0]) => {
-    return plan.priceId[billingCycle]
+    return plan.priceId[billingCycle] || null
   }
 
   return (
