@@ -1,0 +1,22 @@
+-- ============================================================
+-- Profile Columns Migration
+-- Adds new user profile fields: split name, status, location, linkedin
+-- Safe to run multiple times (IF NOT EXISTS guards)
+-- ============================================================
+
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS first_name      TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_name       TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_status  TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status_detail   TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS target_job_role TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country         TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city            TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url    TEXT;
+
+-- Back-fill first_name / last_name from existing full_name where not yet set
+UPDATE public.profiles
+SET
+  first_name = TRIM(SPLIT_PART(full_name, ' ', 1)),
+  last_name  = TRIM(SUBSTRING(full_name FROM POSITION(' ' IN full_name) + 1))
+WHERE full_name IS NOT NULL
+  AND first_name IS NULL;

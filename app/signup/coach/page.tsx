@@ -9,11 +9,15 @@ import { supabase } from '@/lib/supabase'
 const specializationOptions = ['Tech', 'Finance', 'Marketing', 'Sales', 'Healthcare', 'Operations', 'Design', 'Product']
 
 export default function CoachSignupPage() {
-  const [fullName, setFullName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [title, setTitle] = useState('')
   const [experience, setExperience] = useState('8')
+  const [country, setCountry] = useState('')
+  const [city, setCity] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>(['Tech'])
   const [companyInput, setCompanyInput] = useState('')
   const [companies, setCompanies] = useState<string[]>([])
@@ -21,11 +25,18 @@ export default function CoachSignupPage() {
   const [bio, setBio] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
   const platformFee = useMemo(() => (price * 0.2).toFixed(0), [price])
+
+  const strength = useMemo(() => {
+    if (password.length < 6) return 'Weak'
+    if (password.length < 10) return 'Medium'
+    return 'Strong'
+  }, [password])
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev, tag])
@@ -40,6 +51,7 @@ export default function CoachSignupPage() {
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setAvatarFile(file)
     setAvatarPreview(URL.createObjectURL(file))
   }
 
@@ -48,11 +60,14 @@ export default function CoachSignupPage() {
     setError('')
     setSuccess('')
 
-    if (!fullName.trim() || !email.includes('@') || password.length < 6 || !title.trim()) {
+    if (!firstName.trim() || !email.includes('@') || password.length < 6 || !title.trim()) {
       setError('Please complete the required fields.')
       return
     }
-
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.')
+      return
+    }
     if (bio.length > 300) {
       setError('Bio must stay under 300 characters.')
       return
@@ -60,14 +75,13 @@ export default function CoachSignupPage() {
 
     setLoading(true)
     try {
+      const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            full_name: fullName,
-            user_type: 'coach',
-          },
+          data: { full_name: fullName, user_type: 'coach' },
         },
       })
 
@@ -76,43 +90,60 @@ export default function CoachSignupPage() {
       if (data.user) {
         const userId = data.user.id
 
-        try {
-          await supabase.from('profiles').upsert({
-            id: userId,
-            email,
-            full_name: fullName,
-            user_type: 'coach',
-            avatar_url: avatarPreview || null,
-            experience_level: Number(experience) >= 8 ? 'senior' : Number(experience) >= 4 ? 'mid' : 'junior',
-          })
-
-          await supabase.from('coach_profiles').upsert({
-            user_id: userId,
-            title,
-            bio,
-            years_experience: Number(experience),
-            price_per_hour: price,
-            linkedin_url: linkedinUrl,
-            companies,
-            is_verified: false,
-          })
-
-          if (selectedTags.length > 0) {
-            await supabase.from('coach_specializations').insert(
-              selectedTags.map((specialization) => ({ coach_id: userId, specialization }))
-            )
+        let avatarUrl: string | null = null
+        if (avatarFile) {
+          const ext = avatarFile.name.split('.').pop()
+          const { data: uploadData } = await supabase.storage
+            .from('avatars')
+            .upload(`${userId}.${ext}`, avatarFile, { upsert: true })
+          if (uploadData) {
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
+            avatarUrl = urlData.publicUrl
           }
-        } catch {
-          await supabase.from('profiles').update({ full_name: fullName }).eq('id', userId)
         }
+
+        await supabase.from('profiles').upsert({
+          id: userId,
+          email,
+          full_name: fullName,
+          first_name: firstName.trim(),
+          last_name: lastName.trim() || null,
+          user_type: 'coach',
+          avatar_url: avatarUrl,
+          country: country || null,
+          city: city || null,
+          linkedin_url: linkedinUrl || null,
+          experience_level: Number(experience) >= 8 ? 'senior' : Number(experience) >= 4 ? 'mid' : 'junior',
+        })
+
+        await supabase.from('coach_profiles').upsert({
+          user_id: userId,
+          title,
+          bio,
+          years_experience: Number(experience),
+          price_per_hour: price,
+          linkedin_url: linkedinUrl,
+          companies,
+          is_verified: false,
+        })
+
+        if (selectedTags.length > 0) {
+          await supabase.from('coach_specializations').insert(
+            selectedTags.map((specialization) => ({ coach_id: userId, specialization }))
+          )
+        }
+
+        // Send welcome email (fire-and-forget)
+        fetch('/api/welcome', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, firstName: firstName.trim(), userType: 'coach', title }),
+        }).catch(() => {/* non-critical */})
       }
 
-      if (data.session) {
-        await supabase.auth.signOut()
-      }
+      if (data.session) await supabase.auth.signOut()
 
       setSuccess('Coach account created successfully. Please check your email, confirm your account, then log in again as a coach.')
-      return
     } catch (err: any) {
       setError(err.message || 'Unable to create your coach account right now.')
     } finally {
@@ -148,78 +179,113 @@ export default function CoachSignupPage() {
 
           {!success ? (
             <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input label="Full Name" value={fullName} onChange={setFullName} placeholder="Alex Morgan" required />
-              <Input label="Email" type="email" value={email} onChange={setEmail} placeholder="coach@example.com" required />
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input label="Password" type="password" value={password} onChange={setPassword} placeholder="••••••••" required />
-              <Input label="Professional Title" value={title} onChange={setTitle} placeholder="Senior Google Engineer" required />
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <Input label="Years of Experience" type="number" value={experience} onChange={setExperience} placeholder="8" required />
-              <Input label="LinkedIn URL" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="https://linkedin.com/in/yourname" />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Industries and specializations</label>
-              <div className="flex flex-wrap gap-2">
-                {specializationOptions.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`rounded-full px-3 py-2 text-sm ${selectedTags.includes(tag) ? 'bg-primary text-white' : 'bg-background border border-border text-gray-300'}`}
-                  >
-                    {tag}
-                  </button>
-                ))}
+              {/* Name */}
+              <div className="grid gap-5 md:grid-cols-2">
+                <Input label="First Name *" value={firstName} onChange={setFirstName} placeholder="Alex" required />
+                <Input label="Last Name" value={lastName} onChange={setLastName} placeholder="Morgan" />
               </div>
-            </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Companies worked at</label>
-              <div className="flex gap-2">
-                <input value={companyInput} onChange={(e) => setCompanyInput(e.target.value)} placeholder="Add company" className="flex-1 rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-                <Button type="button" variant="outline" onClick={addCompany}><Plus className="h-4 w-4" />Add</Button>
+              {/* Credentials */}
+              <Input label="Email *" type="email" value={email} onChange={setEmail} placeholder="coach@example.com" required />
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Password *</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                  <p className={`mt-1.5 text-xs ${strength === 'Strong' ? 'text-green-400' : strength === 'Medium' ? 'text-yellow-400' : 'text-red-400'}`}>Strength: {strength}</p>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Confirm Password *</label>
+                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                </div>
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {companies.map((company) => (
-                  <Badge key={company} className="flex items-center gap-1">{company}<button type="button" onClick={() => setCompanies((prev) => prev.filter((item) => item !== company))}><X className="h-3 w-3" /></button></Badge>
-                ))}
+
+              {/* Professional info */}
+              <div className="grid gap-5 md:grid-cols-2">
+                <Input label="Professional Title *" value={title} onChange={setTitle} placeholder="Senior Google Engineer" required />
+                <Input label="Years of Experience *" type="number" value={experience} onChange={setExperience} placeholder="8" required />
               </div>
-            </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Session price: ${price}/hour</label>
-              <input type="range" min="10" max="500" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="w-full accent-primary" />
-              <p className="mt-2 text-sm text-gray-400">Platform fee: ${platformFee} • You keep about ${(price * 0.8).toFixed(0)}</p>
-            </div>
+              {/* Location */}
+              <div className="grid gap-5 md:grid-cols-2">
+                <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
+                <Input label="City" value={city} onChange={setCity} placeholder="e.g. San Francisco" />
+              </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Short bio</label>
-              <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={300} rows={4} placeholder="Describe your coaching style and areas of expertise." className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-              <p className="mt-1 text-xs text-gray-400">{bio.length}/300</p>
-            </div>
+              {/* Specializations */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Industries and specializations</label>
+                <div className="flex flex-wrap gap-2">
+                  {specializationOptions.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`rounded-full px-3 py-2 text-sm ${selectedTags.includes(tag) ? 'bg-primary text-white' : 'bg-background border border-border text-gray-300'}`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Profile photo upload</label>
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-background/40 px-4 py-4 text-sm text-gray-300 hover:bg-white/5">
-                <Camera className="h-5 w-5 text-primary" />
-                <span>Choose image</span>
-                <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-              </label>
-              {avatarPreview && <img src={avatarPreview} alt="Preview" className="mt-3 h-16 w-16 rounded-full object-cover" />}
-            </div>
+              {/* Companies */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Companies worked at</label>
+                <div className="flex gap-2">
+                  <input
+                    value={companyInput}
+                    onChange={(e) => setCompanyInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCompany() } }}
+                    placeholder="Add company"
+                    className="flex-1 rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <Button type="button" variant="outline" onClick={addCompany}><Plus className="h-4 w-4" />Add</Button>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {companies.map((company) => (
+                    <Badge key={company} className="flex items-center gap-1">
+                      {company}
+                      <button type="button" onClick={() => setCompanies((prev) => prev.filter((item) => item !== company))}><X className="h-3 w-3" /></button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
 
-            <Button type="submit" variant="primary" fullWidth loading={loading}>Create coach account</Button>
-          </form>
+              {/* Price */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Session price: ${price}/hour</label>
+                <input type="range" min="10" max="500" value={price} onChange={(e) => setPrice(Number(e.target.value))} className="w-full accent-primary" />
+                <p className="mt-2 text-sm text-gray-400">Platform fee: ${platformFee} • You keep ~${(price * 0.8).toFixed(0)}</p>
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Short bio</label>
+                <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={300} rows={4} placeholder="Describe your coaching style and areas of expertise." className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                <p className="mt-1 text-xs text-gray-400">{bio.length}/300</p>
+              </div>
+
+              {/* LinkedIn */}
+              <Input label="LinkedIn URL (optional)" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="https://linkedin.com/in/yourname" />
+
+              {/* Avatar */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Profile photo (optional)</label>
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-background/40 px-4 py-4 text-sm text-gray-300 hover:bg-white/5">
+                  <Camera className="h-5 w-5 text-primary" />
+                  <span>{avatarFile ? avatarFile.name : 'Choose image'}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
+                </label>
+                {avatarPreview && <img src={avatarPreview} alt="Preview" className="mt-3 h-16 w-16 rounded-full object-cover" />}
+              </div>
+
+              <Button type="submit" variant="primary" fullWidth loading={loading}>Create coach account</Button>
+            </form>
           ) : (
             <div className="space-y-4 rounded-xl border border-green-500/30 bg-green-500/10 p-5">
               <p className="text-sm text-green-200">
-                We sent a confirmation email to {email}. Open it, verify your address, then come back and log in.
+                We sent a confirmation email to <strong>{email}</strong>. Open it, verify your address, then come back and log in.
               </p>
               <Link href="/login/coach">
                 <Button variant="outline" fullWidth>Go to coach login</Button>

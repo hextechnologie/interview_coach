@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
 import { supabase, InterviewSession, InterviewAnswer, getFirstName } from '@/lib/supabase'
+import JobOffers from '@/components/JobOffers'
 import { mockCoaches } from '@/lib/coach-marketplace'
 import {
   Sparkles,
@@ -317,7 +318,21 @@ export default function DashboardPage() {
     .concat(mockCoaches)
     .slice(0, 3)
 
-  const displayName = getFirstName(profile?.full_name, user?.email)
+  const displayName = profile?.first_name || getFirstName(profile?.full_name, user?.email)
+
+  const statusLabel = (() => {
+    if (!profile?.current_status) return null
+    const labels: Record<string, string> = {
+      student: '🎓 Student',
+      employed: '👨\u200d💼 Employed',
+      unemployed: '🔍 Job Seeking',
+      'career-change': '🔄 Career Change',
+      'fresh-graduate': '💼 Fresh Graduate',
+      other: '🌍 Other',
+    }
+    const base = labels[profile.current_status] || profile.current_status
+    return profile.status_detail ? `${base} — ${profile.status_detail}` : base
+  })()
 
   if (authLoading || loading) {
     return (
@@ -431,6 +446,9 @@ export default function DashboardPage() {
               Welcome back,{' '}
               <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{displayName}</span>! 👋
             </h1>
+            {statusLabel && (
+              <p className="text-sm text-purple-400 mb-1">{statusLabel}</p>
+            )}
             <p className="text-gray-400">
               You have used <span className="text-white font-semibold">{profile.interviews_used_this_month}</span> of{' '}
               <span className="text-white font-semibold">{profile.interviews_limit === 999999 ? '∞' : profile.interviews_limit}</span> interviews this month.
@@ -616,6 +634,18 @@ export default function DashboardPage() {
                   </table>
                 </div>
               )}
+            </DarkCard>
+
+            {/* JOB OFFERS */}
+            <DarkCard>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-bold">Remote Job Opportunities</h2>
+                  <p className="text-gray-400 text-sm">Live remote listings matched to your target role</p>
+                </div>
+                <Link href="/jobs" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">Browse All →</Link>
+              </div>
+              <JobOffers targetRole={profile?.target_job_role || profile?.target_job_field || ''} limit={4} />
             </DarkCard>
 
             {/* RECOMMENDED COACHES */}

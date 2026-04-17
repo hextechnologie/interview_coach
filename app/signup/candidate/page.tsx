@@ -6,23 +6,55 @@ import { ArrowLeft, Camera, Sparkles } from 'lucide-react'
 import { Button, Card, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 
-const jobOptions = [
-  { value: 'software-engineer', label: 'Software Engineer' },
-  { value: 'product-manager', label: 'Product Manager' },
-  { value: 'data-analyst', label: 'Data Analyst' },
-  { value: 'designer', label: 'Product Designer' },
-  { value: 'marketing-manager', label: 'Marketing Manager' },
-  { value: 'sales-executive', label: 'Sales Executive' },
+const jobRoleOptions = [
+  { value: 'Software Engineer', label: 'Software Engineer' },
+  { value: 'Product Manager', label: 'Product Manager' },
+  { value: 'Data Analyst', label: 'Data Analyst' },
+  { value: 'Product Designer', label: 'Product Designer' },
+  { value: 'Marketing Manager', label: 'Marketing Manager' },
+  { value: 'Sales Executive', label: 'Sales Executive' },
+  { value: 'Business Analyst', label: 'Business Analyst' },
+  { value: 'DevOps Engineer', label: 'DevOps Engineer' },
+  { value: 'Data Scientist', label: 'Data Scientist' },
+  { value: 'UX Researcher', label: 'UX Researcher' },
+  { value: 'Finance Analyst', label: 'Finance Analyst' },
+  { value: 'HR Specialist', label: 'HR Specialist' },
+  { value: 'Other', label: 'Other' },
 ]
 
+const statusOptions = [
+  { value: 'student', label: '🎓 Student' },
+  { value: 'employed', label: '👨‍💼 Employed' },
+  { value: 'unemployed', label: '🔍 Actively Job Seeking' },
+  { value: 'career-change', label: '🔄 Career Change' },
+  { value: 'fresh-graduate', label: '💼 Fresh Graduate' },
+  { value: 'other', label: '🌍 Other' },
+]
+
+const statusDetailConfig: Record<string, { label: string; placeholder: string }> = {
+  student:        { label: 'University & Major',           placeholder: 'e.g. MIT — Computer Science' },
+  employed:       { label: 'Current Job Title & Company',  placeholder: 'e.g. Software Engineer at Google' },
+  unemployed:     { label: 'Last Role / How Long Seeking', placeholder: 'e.g. Software Engineer — 3 months' },
+  'career-change':{ label: 'Coming From → Target Field',   placeholder: 'e.g. Finance → Software Engineering' },
+  'fresh-graduate':{ label: 'Degree & Major',              placeholder: 'e.g. BSc Computer Science' },
+  other:          { label: 'Tell us your situation',       placeholder: 'Brief description of your current status' },
+}
+
 export default function CandidateSignupPage() {
-  const [fullName, setFullName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [jobField, setJobField] = useState('')
+  const [currentStatus, setCurrentStatus] = useState('')
+  const [statusDetail, setStatusDetail] = useState('')
+  const [targetJobRole, setTargetJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
+  const [country, setCountry] = useState('')
+  const [city, setCity] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -33,9 +65,12 @@ export default function CandidateSignupPage() {
     return 'Strong'
   }, [password])
 
+  const detailConfig = currentStatus ? statusDetailConfig[currentStatus] : null
+
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    setAvatarFile(file)
     setAvatarPreview(URL.createObjectURL(file))
   }
 
@@ -44,16 +79,14 @@ export default function CandidateSignupPage() {
     setError('')
     setSuccess('')
 
-    if (!fullName.trim() || !email.includes('@') || !jobField || !experienceLevel) {
+    if (!firstName.trim() || !email.includes('@') || !currentStatus) {
       setError('Please complete all required fields.')
       return
     }
-
     if (password.length < 6) {
       setError('Password must be at least 6 characters.')
       return
     }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
       return
@@ -61,14 +94,13 @@ export default function CandidateSignupPage() {
 
     setLoading(true)
     try {
+      const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            full_name: fullName,
-            user_type: 'candidate',
-          },
+          data: { full_name: fullName, user_type: 'candidate' },
         },
       })
 
@@ -77,27 +109,47 @@ export default function CandidateSignupPage() {
       if (data.user) {
         const userId = data.user.id
 
-        try {
-          await supabase.from('profiles').upsert({
-            id: userId,
-            email,
-            full_name: fullName,
-            user_type: 'candidate',
-            avatar_url: avatarPreview || null,
-            target_job_field: jobField,
-            experience_level: experienceLevel,
-          })
-        } catch {
-          await supabase.from('profiles').update({ full_name: fullName }).eq('id', userId)
+        let avatarUrl: string | null = null
+        if (avatarFile) {
+          const ext = avatarFile.name.split('.').pop()
+          const { data: uploadData } = await supabase.storage
+            .from('avatars')
+            .upload(`${userId}.${ext}`, avatarFile, { upsert: true })
+          if (uploadData) {
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
+            avatarUrl = urlData.publicUrl
+          }
         }
+
+        await supabase.from('profiles').upsert({
+          id: userId,
+          email,
+          full_name: fullName,
+          first_name: firstName.trim(),
+          last_name: lastName.trim() || null,
+          user_type: 'candidate',
+          avatar_url: avatarUrl,
+          current_status: currentStatus,
+          status_detail: statusDetail || null,
+          target_job_role: targetJobRole || null,
+          target_job_field: targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
+          experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
+          country: country || null,
+          city: city || null,
+          linkedin_url: linkedinUrl || null,
+        })
+
+        // Send welcome email (fire-and-forget)
+        fetch('/api/welcome', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, firstName: firstName.trim(), userType: 'candidate', targetJobRole }),
+        }).catch(() => {/* non-critical */})
       }
 
-      if (data.session) {
-        await supabase.auth.signOut()
-      }
+      if (data.session) await supabase.auth.signOut()
 
-      setSuccess('Account created successfully. Please confirm your email, then log in again.')
-      return
+      setSuccess('Account created! Please check your email to confirm, then log in.')
     } catch (err: any) {
       setError(err.message || 'Unable to create your account right now.')
     } finally {
@@ -126,53 +178,104 @@ export default function CandidateSignupPage() {
           {success && <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">{success}</div>}
           {error && <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <Input label="Full Name" value={fullName} onChange={setFullName} placeholder="Jane Doe" required />
-            <Input label="Email" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" required />
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-                <p className={`mt-2 text-xs ${strength === 'Strong' ? 'text-green-400' : strength === 'Medium' ? 'text-yellow-400' : 'text-red-400'}`}>Strength: {strength}</p>
+          {!success ? (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name row */}
+              <div className="grid gap-5 md:grid-cols-2">
+                <Input label="First Name *" value={firstName} onChange={setFirstName} placeholder="Jane" required />
+                <Input label="Last Name" value={lastName} onChange={setLastName} placeholder="Doe" />
               </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">Confirm Password</label>
-                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
-              </div>
-            </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <Select label="Job field" value={jobField} onChange={setJobField} options={jobOptions} placeholder="Choose a target role" required />
+              <Input label="Email *" type="email" value={email} onChange={setEmail} placeholder="jane@example.com" required />
+
+              {/* Password row */}
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Password *</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                  <p className={`mt-1.5 text-xs ${strength === 'Strong' ? 'text-green-400' : strength === 'Medium' ? 'text-yellow-400' : 'text-red-400'}`}>Strength: {strength}</p>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-foreground">Confirm Password *</label>
+                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+                </div>
+              </div>
+
+              {/* Current status */}
               <Select
-                label="Experience level"
-                value={experienceLevel}
-                onChange={setExperienceLevel}
-                options={[
-                  { value: 'junior', label: 'Junior' },
-                  { value: 'mid', label: 'Mid' },
-                  { value: 'senior', label: 'Senior' },
-                ]}
-                placeholder="Select level"
+                label="Current Status *"
+                value={currentStatus}
+                onChange={(v) => { setCurrentStatus(v); setStatusDetail('') }}
+                options={statusOptions}
+                placeholder="What describes you best?"
                 required
               />
-            </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-foreground">Profile photo upload</label>
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-background/40 px-4 py-4 text-sm text-gray-300 hover:bg-white/5">
-                <Camera className="h-5 w-5 text-primary" />
-                <span>Choose image</span>
-                <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-              </label>
-              {avatarPreview && <img src={avatarPreview} alt="Preview" className="mt-3 h-16 w-16 rounded-full object-cover" />}
-            </div>
+              {/* Dynamic detail field */}
+              {detailConfig && (
+                <Input
+                  label={detailConfig.label}
+                  value={statusDetail}
+                  onChange={setStatusDetail}
+                  placeholder={detailConfig.placeholder}
+                />
+              )}
 
-            <Button type="submit" variant="primary" fullWidth loading={loading}>Create candidate account</Button>
-          </form>
+              {/* Target role + experience */}
+              <Select
+                label="Target Job Role"
+                value={targetJobRole}
+                onChange={setTargetJobRole}
+                options={jobRoleOptions}
+                placeholder="What role are you aiming for? (optional)"
+              />
 
-          {success && (
-            <div className="mt-4">
+              {targetJobRole && (
+                <Select
+                  label="Experience Level"
+                  value={experienceLevel}
+                  onChange={setExperienceLevel}
+                  options={[
+                    { value: 'junior', label: 'Junior (0–2 yrs)' },
+                    { value: 'mid', label: 'Mid-level (3–5 yrs)' },
+                    { value: 'senior', label: 'Senior (6+ yrs)' },
+                  ]}
+                  placeholder="Select level"
+                />
+              )}
+
+              {/* Country + City */}
+              <div className="grid gap-5 md:grid-cols-2">
+                <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
+                <Input label="City" value={city} onChange={setCity} placeholder="e.g. San Francisco" />
+              </div>
+
+              {/* LinkedIn */}
+              <Input
+                label="LinkedIn URL (optional)"
+                value={linkedinUrl}
+                onChange={setLinkedinUrl}
+                placeholder="https://linkedin.com/in/yourprofile"
+              />
+
+              {/* Avatar */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-foreground">Profile photo (optional)</label>
+                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-background/40 px-4 py-4 text-sm text-gray-300 hover:bg-white/5">
+                  <Camera className="h-5 w-5 text-primary" />
+                  <span>{avatarFile ? avatarFile.name : 'Choose image'}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
+                </label>
+                {avatarPreview && <img src={avatarPreview} alt="Preview" className="mt-3 h-16 w-16 rounded-full object-cover" />}
+              </div>
+
+              <Button type="submit" variant="primary" fullWidth loading={loading}>Create candidate account</Button>
+            </form>
+          ) : (
+            <div className="space-y-4 rounded-xl border border-green-500/30 bg-green-500/10 p-5">
+              <p className="text-sm text-green-200">
+                We sent a confirmation email to <strong>{email}</strong>. Open it, verify your address, then log in.
+              </p>
               <Link href="/login/candidate">
                 <Button variant="outline" fullWidth>Go to login</Button>
               </Link>

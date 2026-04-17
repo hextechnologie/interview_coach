@@ -32,7 +32,13 @@ export type Profile = {
   user_type?: 'candidate' | 'coach'
   avatar_url?: string
   target_job_field?: string
+  target_job_role?: string
   experience_level?: 'junior' | 'mid' | 'senior'
+  current_status?: string
+  status_detail?: string
+  country?: string
+  city?: string
+  linkedin_url?: string
   subscription_tier: 'free' | 'basic' | 'pro' | 'team'
   stripe_customer_id?: string
   stripe_subscription_id?: string
