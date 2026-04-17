@@ -1,15 +1,29 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui'
-import { Sparkles, Target, TrendingUp, CheckCircle } from 'lucide-react'
+import { Sparkles, Target, TrendingUp, CheckCircle, Play } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
+import { VideoModal } from '@/components/VideoModal'
+import { useLanguage } from '@/components/LanguageProvider'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { OrganizationSchema, WebsiteSchema, SoftwareApplicationSchema } from '@/components/StructuredData'
+import { TryDemo } from '@/components/TryDemo'
 
 export default function HomePage() {
   const { user, loading } = useAuth()
+  const { t } = useLanguage()
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <>
+      {/* Structured Data for SEO */}
+      <OrganizationSchema />
+      <WebsiteSchema />
+      <SoftwareApplicationSchema />
+      
+      <div className="min-h-screen relative overflow-hidden">
       {/* Background gradients */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-background to-background" />
       <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-secondary/10 blur-3xl rounded-full" />
@@ -25,17 +39,18 @@ export default function HomePage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </div>
             <div className="flex items-center gap-4">
+              <LanguageSwitcher />
               {user ? (
                 <Link href="/dashboard">
-                  <Button variant="primary">Go to Dashboard</Button>
+                  <Button variant="primary">{t('nav.dashboard')}</Button>
                 </Link>
               ) : (
                 <>
                   <Link href="/login">
-                    <Button variant="outline">Login</Button>
+                    <Button variant="outline">{t('nav.login')}</Button>
                   </Link>
                   <Link href="/signup">
-                    <Button variant="primary">Get Started</Button>
+                    <Button variant="primary">{t('nav.getStarted')}</Button>
                   </Link>
                 </>
               )}
@@ -49,43 +64,53 @@ export default function HomePage() {
             {/* Left: Text Content */}
             <div className="text-center lg:text-left">
               <h1 className="text-5xl lg:text-6xl font-bold mb-6 animate-fadeIn">
-                Master Your Next Interview with{' '}
-                <span className="gradient-text">AI Coaching</span>
+                {t('hero.title')}{' '}
+                <span className="gradient-text">{t('hero.titleHighlight')}</span>
               </h1>
               <p className="text-xl text-gray-400 mb-8 animate-fadeIn">
-                Practice with a lifelike AI interviewer, get instant personalized feedback, 
-                and prepare with real interview simulations that mirror how companies actually hire.
+                {t('hero.description')}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fadeIn mb-6">
                 {user ? (
                   <Link href="/dashboard">
                     <Button variant="primary" className="text-lg px-8 py-4 w-full sm:w-auto">
-                      Go to Dashboard
+                      {t('nav.dashboard')}
                     </Button>
                   </Link>
                 ) : (
                   <>
                     <Link href="/signup">
                       <Button variant="primary" className="text-lg px-8 py-4 w-full sm:w-auto">
-                        Start Practicing Free
+                        {t('hero.startFree')}
                       </Button>
                     </Link>
                     <Link href="/pricing">
                       <Button variant="outline" className="text-lg px-8 py-4 w-full sm:w-auto">
-                        View Pricing
+                        {t('hero.viewPricing')}
                       </Button>
                     </Link>
                   </>
                 )}
               </div>
+              <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
+                <button
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group"
+                >
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+                    <Play className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-medium">{t('hero.watchDemo')}</span>
+                </button>
+              </div>
               <p className="text-sm text-gray-500 animate-fadeIn">
-                ✨ Get 3 Free Mock Interviews · No Card Needed
+                ✨ {t('hero.freeInterviews')}
               </p>
             </div>
 
             {/* Right: Video */}
             <div className="animate-fadeIn">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50 group cursor-pointer" onClick={() => setIsVideoModalOpen(true)}>
                 <div className="relative aspect-video bg-gray-900">
                   <video
                     className="w-full h-full object-cover"
@@ -99,6 +124,12 @@ export default function HomePage() {
                     <source src="/demo.webm" type="video/webm" />
                     Your browser does not support the video tag.
                   </video>
+                  {/* Play button overlay */}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                      <Play className="w-10 h-10 ml-1" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -109,20 +140,20 @@ export default function HomePage() {
         <section className="container mx-auto px-6 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="glass p-6 rounded-xl">
-              <div className="text-4xl font-bold gradient-text mb-2">24/7</div>
-              <p className="text-gray-400 text-sm">Always Available</p>
+              <div className="text-4xl font-bold gradient-text mb-2">{t('stats.available')}</div>
+              <p className="text-gray-400 text-sm">{t('stats.availableLabel')}</p>
             </div>
             <div className="glass p-6 rounded-xl">
-              <div className="text-4xl font-bold gradient-text mb-2">10+</div>
-              <p className="text-gray-400 text-sm">Languages Supported</p>
+              <div className="text-4xl font-bold gradient-text mb-2">{t('stats.languages')}</div>
+              <p className="text-gray-400 text-sm">{t('stats.languagesLabel')}</p>
             </div>
             <div className="glass p-6 rounded-xl">
-              <div className="text-4xl font-bold gradient-text mb-2">AI</div>
-              <p className="text-gray-400 text-sm">Powered by Claude</p>
+              <div className="text-4xl font-bold gradient-text mb-2">{t('stats.aiPowered')}</div>
+              <p className="text-gray-400 text-sm">{t('stats.aiPoweredLabel')}</p>
             </div>
             <div className="glass p-6 rounded-xl">
-              <div className="text-4xl font-bold gradient-text mb-2">100%</div>
-              <p className="text-gray-400 text-sm">Free to Start</p>
+              <div className="text-4xl font-bold gradient-text mb-2">{t('stats.users')}</div>
+              <p className="text-gray-400 text-sm">{t('stats.usersLabel')}</p>
             </div>
           </div>
         </section>
@@ -236,6 +267,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Try Demo Section */}
+        <TryDemo />
 
         {/* Testimonials */}
         <section className="container mx-auto px-6 py-20">
@@ -363,16 +397,17 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-primary">Contact Us</a></li>
-                <li><a href="#" className="hover:text-primary">FAQ</a></li>
+                <li><Link href="/contact" className="hover:text-primary">Contact Us</Link></li>
+                <li><Link href="/faq" className="hover:text-primary">FAQ</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
+                <li><Link href="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-primary">Terms of Service</Link></li>
               </ul>
+            </div>
             </div>
           </div>
           <div className="text-center text-gray-400 text-sm pt-8 border-t border-border">
@@ -380,6 +415,10 @@ export default function HomePage() {
           </div>
         </footer>
       </div>
+
+      {/* Video Modal */}
+      <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
     </div>
+    </>
   )
 }

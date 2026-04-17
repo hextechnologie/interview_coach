@@ -2,13 +2,12 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AuthProvider } from '@/components/AuthProvider'
+import { LanguageProvider } from '@/components/LanguageProvider'
+import { createMetadata } from '@/lib/metadata'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
-export const metadata: Metadata = {
-  title: 'Interview Coach - AI-Powered Mock Interviews',
-  description: 'Practice job interviews with AI-powered feedback using Claude',
-}
+export const metadata: Metadata = createMetadata({})
 
 export default function RootLayout({
   children,
@@ -18,7 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

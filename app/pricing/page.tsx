@@ -3,16 +3,17 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
-import { Button, Card, Badge, LoadingSpinner } from '@/components/ui'
-import { Sparkles, Check } from 'lucide-react'
+import { Button, Card, Badge } from '@/components/ui'
+import { Sparkles, Check, X } from 'lucide-react'
 import Link from 'next/link'
 
 const PLANS = [
   {
     name: 'Free',
-    price: 0,
+    monthlyPrice: 0,
+    annualPrice: 0,
     interviews: 3,
-    priceId: null,
+    priceId: { monthly: null, annual: null },
     tier: 'free',
     features: [
       '3 interviews per month',
@@ -20,14 +21,27 @@ const PLANS = [
       'Limited job roles',
       'Score tracking',
     ],
+    comparison: {
+      interviews: '3/month',
+      feedback: 'Basic',
+      roles: 'Limited',
+      analytics: false,
+      history: '7 days',
+      export: false,
+      support: 'Community',
+      custom: false,
+    },
   },
   {
     name: 'Basic',
-    price: 9,
+    monthlyPrice: 9,
+    annualPrice: 75, // 2 months free
     interviews: 20,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_BASIC_PRICE_ID,
+    priceId: {
+      monthly: process.env.NEXT_PUBLIC_STRIPE_BASIC_PRICE_ID,
+      annual: process.env.NEXT_PUBLIC_STRIPE_BASIC_ANNUAL_PRICE_ID,
+    },
     tier: 'basic',
-    popular: true,
     features: [
       '20 interviews per month',
       'Detailed AI feedback',
@@ -36,22 +50,77 @@ const PLANS = [
       'Session history',
       'Email support',
     ],
+    comparison: {
+      interviews: '20/month',
+      feedback: 'Detailed',
+      roles: 'All',
+      analytics: 'Basic',
+      history: '30 days',
+      export: false,
+      support: 'Email',
+      custom: false,
+    },
   },
   {
     name: 'Pro',
-    price: 19,
+    monthlyPrice: 19,
+    annualPrice: 158, // 2 months free
     interviews: '∞',
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID,
+    priceId: {
+      monthly: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID,
+      annual: process.env.NEXT_PUBLIC_STRIPE_PRO_ANNUAL_PRICE_ID,
+    },
     tier: 'pro',
+    popular: true,
     features: [
       'Unlimited interviews',
       'Advanced AI feedback',
       'All job roles',
       'Detailed analytics',
-      'Export reports',
+      'Export reports (PDF)',
       'Priority support',
       'Custom interview scenarios',
     ],
+    comparison: {
+      interviews: 'Unlimited',
+      feedback: 'Advanced',
+      roles: 'All',
+      analytics: 'Detailed',
+      history: 'Unlimited',
+      export: 'PDF',
+      support: 'Priority',
+      custom: true,
+    },
+  },
+  {
+    name: 'Team',
+    monthlyPrice: 49,
+    annualPrice: 408, // 2 months free
+    interviews: '∞',
+    priceId: {
+      monthly: process.env.NEXT_PUBLIC_STRIPE_TEAM_PRICE_ID,
+      annual: process.env.NEXT_PUBLIC_STRIPE_TEAM_ANNUAL_PRICE_ID,
+    },
+    tier: 'team',
+    features: [
+      'Everything in Pro',
+      '5 team members',
+      'Team analytics dashboard',
+      'Bulk interview scheduling',
+      'API access',
+      'Dedicated account manager',
+      'Custom branding',
+    ],
+    comparison: {
+      interviews: 'Unlimited',
+      feedback: 'Advanced',
+      roles: 'All + Custom',
+      analytics: 'Team Dashboard',
+      history: 'Unlimited',
+      export: 'PDF + CSV',
+      support: 'Dedicated',
+      custom: true,
+    },
   },
 ]
 
@@ -59,6 +128,7 @@ export default function PricingPage() {
   const { user, profile, loading: authLoading } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
 
   const handleSubscribe = async (priceId: string | null, tier: string) => {
     if (!user) {
@@ -113,9 +183,20 @@ export default function PricingPage() {
     }
   }
 
+  const getPrice = (plan: typeof PLANS[0]) => {
+    return billingCycle === 'monthly' ? plan.monthlyPrice : plan.annualPrice
+  }
+
+  const getPriceId = (plan: typeof PLANS[0]) => {
+    return plan.priceId[billingCycle]
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card/50 backdrop-blur">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-background to-background" />
+
+      <header className="border-b border-border bg-card/50 backdrop-blur relative z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
@@ -131,12 +212,37 @@ export default function PricingPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-16">
-        <div className="text-center mb-16">
+      <div className="container mx-auto px-6 py-16 relative z-10">
+        <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4">Choose Your Plan</h1>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-gray-400 mb-8">
             Start practicing with AI-powered interview coaching
           </p>
+
+          {/* Billing Cycle Toggle */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <span className={`text-sm ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>
+              Monthly
+            </span>
+            <button
+              onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
+              className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
+                billingCycle === 'annual' ? 'bg-primary' : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                  billingCycle === 'annual' ? 'translate-x-8' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            <span className={`text-sm ${billingCycle === 'annual' ? 'text-white' : 'text-gray-400'}`}>
+              Annual
+            </span>
+            {billingCycle === 'annual' && (
+              <Badge variant="success" className="ml-2">Save 17% 🎉</Badge>
+            )}
+          </div>
         </div>
 
         {profile && profile.subscription_tier !== 'free' && (
@@ -156,34 +262,42 @@ export default function PricingPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {/* Pricing Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-20">
           {PLANS.map((plan) => (
             <Card
               key={plan.tier}
-              className={`relative p-8 ${
-                plan.popular ? 'border-primary shadow-xl shadow-primary/20' : ''
+              className={`relative p-6 ${
+                plan.popular 
+                  ? 'bg-gradient-to-br from-primary/10 to-secondary/10 border-primary shadow-xl shadow-primary/20 transform scale-105' 
+                  : 'glass'
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge variant="success">Most Popular</Badge>
+                  <Badge variant="success">🔥 Most Popular</Badge>
                 </div>
               )}
 
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
                 <div className="mb-2">
-                  <span className="text-5xl font-bold">${plan.price}</span>
-                  <span className="text-gray-400">/month</span>
+                  <span className="text-4xl font-bold gradient-text">${getPrice(plan)}</span>
+                  <span className="text-gray-400 text-sm">/{billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
                 </div>
-                <p className="text-gray-400">{plan.interviews} interviews/month</p>
+                {billingCycle === 'annual' && plan.monthlyPrice > 0 && (
+                  <p className="text-xs text-green-400">
+                    ${(getPrice(plan) / 12).toFixed(2)}/month billed annually
+                  </p>
+                )}
+                <p className="text-gray-400 mt-2 text-sm">{plan.interviews} interviews</p>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-2 mb-6">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-300">{feature}</span>
+                    <Check className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-gray-300">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -191,13 +305,110 @@ export default function PricingPage() {
               <Button
                 variant={plan.popular ? 'primary' : 'outline'}
                 fullWidth
-                onClick={() => handleSubscribe(plan.priceId || null, plan.tier)}
+                onClick={() => handleSubscribe(getPriceId(plan), plan.tier)}
                 loading={loading === plan.tier}
                 disabled={profile?.subscription_tier === plan.tier}
               >
                 {profile?.subscription_tier === plan.tier
                   ? 'Current Plan'
-                  : plan.price === 0
+                  : plan.monthlyPrice === 0
+                  ? 'Get Started'
+                  : 'Subscribe'}
+              </Button>
+            </Card>
+          ))}
+        </div>
+
+        {/* Feature Comparison Table */}
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">Compare Features</h2>
+          <div className="glass rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left p-4 font-semibold">Feature</th>
+                    {PLANS.map(plan => (
+                      <th key={plan.tier} className="p-4 font-semibold text-center">
+                        {plan.name}
+                        {plan.popular && <div className="text-xs text-primary font-normal mt-1">Popular</div>}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Monthly Interviews</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">{plan.comparison.interviews}</td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">AI Feedback Quality</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">{plan.comparison.feedback}</td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Job Roles</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">{plan.comparison.roles}</td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Analytics</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">
+                        {plan.comparison.analytics ? (
+                          typeof plan.comparison.analytics === 'string' ? plan.comparison.analytics : <Check className="w-5 h-5 text-green-400 inline" />
+                        ) : (
+                          <X className="w-5 h-5 text-gray-600 inline" />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Session History</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">{plan.comparison.history}</td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Export Reports</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">
+                        {plan.comparison.export ? plan.comparison.export : <X className="w-5 h-5 text-gray-600 inline" />}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr className="border-b border-border/50 hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Support</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">{plan.comparison.support}</td>
+                    ))}
+                  </tr>
+                  <tr className="hover:bg-white/5">
+                    <td className="p-4 text-gray-300">Custom Scenarios</td>
+                    {PLANS.map(plan => (
+                      <td key={plan.tier} className="p-4 text-center">
+                        {plan.comparison.custom ? (
+                          <Check className="w-5 h-5 text-green-400 inline" />
+                        ) : (
+                          <X className="w-5 h-5 text-gray-600 inline" />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
                   ? 'Get Started'
                   : 'Subscribe'}
               </Button>
