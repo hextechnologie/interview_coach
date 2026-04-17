@@ -52,7 +52,11 @@ export default function CoachDashboardPage() {
 
       try {
         const [{ data: bookings }, { data: reviewsData }, { data: earnings }] = await Promise.all([
-          supabase.from('bookings').select('*').eq('coach_id', user.id).order('created_at', { ascending: false }),
+          supabase
+            .from('bookings')
+            .select('*, candidate:profiles!bookings_candidate_id_fkey(full_name, first_name, last_name, email)')
+            .eq('coach_id', user.id)
+            .order('created_at', { ascending: false }),
           supabase.from('reviews').select('*').eq('coach_id', user.id).order('created_at', { ascending: false }),
           supabase.from('earnings').select('*').eq('coach_id', user.id),
         ])
@@ -165,17 +169,38 @@ export default function CoachDashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {upcoming.map((session: any) => (
-                    <div key={session.id} className="rounded-xl border border-border bg-background/40 p-4">
-                      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                        <div>
-                          <p className="font-semibold">Candidate booking</p>
-                          <p className="text-sm text-gray-400">{session.notes || 'No session notes yet'}</p>
+                  {upcoming.map((session: any) => {
+                    const candidateName = session.candidate?.full_name
+                      || [session.candidate?.first_name, session.candidate?.last_name].filter(Boolean).join(' ')
+                      || session.candidate?.email
+                      || 'Candidate'
+
+                    const scheduledText = session.scheduled_at
+                      ? new Date(session.scheduled_at).toLocaleString([], {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : 'Not scheduled yet'
+
+                    return (
+                      <div key={session.id} className="rounded-xl border border-border bg-background/40 p-4">
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <div className="space-y-2">
+                            <p className="font-semibold text-white">{candidateName}</p>
+                            <div className="space-y-1 text-sm text-gray-400">
+                              <p><span className="text-gray-500">When:</span> {scheduledText}</p>
+                              <p><span className="text-gray-500">Duration:</span> {session.duration_minutes || 60} min</p>
+                              <p><span className="text-gray-500">Notes:</span> {session.notes || 'No session notes provided'}</p>
+                            </div>
+                          </div>
+                          <Badge variant={session.status === 'confirmed' ? 'success' : 'warning'}>{session.status}</Badge>
                         </div>
-                        <Badge variant={session.status === 'confirmed' ? 'success' : 'warning'}>{session.status}</Badge>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </Card>
