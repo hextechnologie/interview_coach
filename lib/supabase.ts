@@ -61,10 +61,17 @@ export type InterviewAnswer = {
     weaknesses: string[]
     ideal_answer?: string
     improved_answer: string
+    quick_fix?: string
+    difference_points?: string[]
+    language?: string
     metrics?: {
       confidence: number
       clarity: number
       filler_words: number
+      star_method_score?: number
+      keywords_used?: number
+      answer_length?: 'Too Short' | 'Perfect' | 'Too Long'
+      tone?: 'Professional 🎯' | 'Casual 😊' | 'Nervous 😰'
     }
   }
   score?: number

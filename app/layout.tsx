@@ -7,6 +7,7 @@ import { CookieConsent } from '@/components/CookieConsent'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
 import { OrganizationSchema, WebsiteSchema, SoftwareApplicationSchema } from '@/components/StructuredData'
 import { createMetadata } from '@/lib/metadata'
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
@@ -28,6 +29,16 @@ export default function RootLayout({
             {children}
             <ScrollToTopButton />
             <CookieConsent />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: '#111827',
+                  color: '#fff',
+                  border: '1px solid rgba(139,92,246,0.35)',
+                },
+              }}
+            />
           </AuthProvider>
         </LanguageProvider>
       </body>
