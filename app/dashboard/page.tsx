@@ -5,7 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { supabase, InterviewSession } from '@/lib/supabase'
-import { Sparkles, LogOut, TrendingUp, Award, Calendar, Plus, CreditCard } from 'lucide-react'
+import { Sparkles, LogOut, TrendingUp, Award, Calendar, Plus, CreditCard, MoreVertical, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 
@@ -19,6 +19,9 @@ export default function DashboardPage() {
     completedThisMonth: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -31,6 +34,18 @@ export default function DashboardPage() {
       fetchDashboardData()
     }
   }, [user, profile])
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenMenu(null)
+      setDeleteConfirm(null)
+    }
+    
+    if (openMenu) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [openMenu])
 
   const fetchDashboardData = async () => {
     try {
@@ -67,6 +82,49 @@ export default function DashboardPage() {
       console.error('Error fetching dashboard data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDeleteInterview = async (sessionId: string) => {
+    if (!deleteConfirm || deleteConfirm !== sessionId) {
+      setDeleteConfirm(sessionId)
+      return
+    }
+
+    setDeleting(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        alert('Error: Session expired. Please log out and log back in.')
+        router.push('/login')
+        return
+      }
+
+      const response = await fetch(`/api/interview/${sessionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        alert(`Error: ${data.error || 'Failed to delete interview'}`)
+        return
+      }
+
+      // Refresh dashboard after deletion
+      await fetchDashboardData()
+      setDeleteConfirm(null)
+      setOpenMenu(null)
+      alert('Interview deleted successfully. Credits are not refunded.')
+    } catch (error) {
+      console.error('Error deleting interview:', error)
+      alert('Error: Failed to delete interview')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -204,29 +262,75 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-4">
               {sessions.map((session) => (
-                <Card key={session.id} hover>
-                  <Link href={session.status === 'completed' ? `/interview/summary/${session.id}` : `/interview/${session.id}`}>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-semibold">{session.job_role}</h3>
-                          <Badge variant={session.status === 'completed' ? 'success' : session.status === 'in_progress' ? 'warning' : 'default'}>
-                            {session.status.replace('_', ' ')}
-                          </Badge>
-                          <Badge variant="default">{session.difficulty_level}</Badge>
+                <Card key={session.id} hover className="relative">
+                  <div className="flex items-center justify-between">
+                    <Link 
+                      href={session.status === 'completed' ? `/interview/summary/${session.id}` : `/interview/${session.id}`}
+                      className="flex-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-xl font-semibold">{session.job_role}</h3>
+                            <Badge variant={session.status === 'completed' ? 'success' : session.status === 'in_progress' ? 'warning' : 'default'}>
+                              {session.status.replace('_', ' ')}
+                            </Badge>
+                            <Badge variant="default">{session.difficulty_level}</Badge>
+                          </div>
+                          <p className="text-gray-400 text-sm">
+                            {format(new Date(session.created_at), 'MMM dd, yyyy • hh:mm a')}
+                          </p>
                         </div>
-                        <p className="text-gray-400 text-sm">
-                          {format(new Date(session.created_at), 'MMM dd, yyyy • hh:mm a')}
-                        </p>
+                        {session.status === 'completed' && session.overall_score && (
+                          <div className="text-right">
+                            <p className="text-3xl font-bold text-primary">{session.overall_score}/10</p>
+                            <p className="text-gray-400 text-sm">Overall Score</p>
+                          </div>
+                        )}
                       </div>
-                      {session.status === 'completed' && session.overall_score && (
-                        <div className="text-right">
-                          <p className="text-3xl font-bold text-primary">{session.overall_score}/10</p>
-                          <p className="text-gray-400 text-sm">Overall Score</p>
+                    </Link>
+
+                    {/* Three-dot menu */}
+                    <div className="relative ml-4">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          setOpenMenu(openMenu === session.id ? null : session.id)
+                          setDeleteConfirm(null)
+                        }}
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                      >
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </button>
+
+                      {openMenu === session.id && (
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-lg shadow-lg py-2 z-10">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              handleDeleteInterview(session.id)
+                            }}
+                            disabled={deleting}
+                            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-500/10 transition-colors text-left text-red-400"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span className="font-medium">
+                              {deleteConfirm === session.id 
+                                ? (deleting ? 'Deleting...' : 'Click again to confirm') 
+                                : 'Delete Interview'}
+                            </span>
+                          </button>
+                          {deleteConfirm === session.id && (
+                            <p className="px-4 py-2 text-xs text-gray-400 border-t border-border mt-2">
+                              Credits will NOT be refunded
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
-                  </Link>
+                  </div>
                 </Card>
               ))}
             </div>
