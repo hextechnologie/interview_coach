@@ -318,7 +318,9 @@ export default function DashboardPage() {
     .concat(mockCoaches)
     .slice(0, 3)
 
-  const displayName = profile?.first_name || getFirstName(profile?.full_name, user?.email)
+  const rawName = profile?.first_name || getFirstName(profile?.full_name, user?.email)
+  const displayName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : rawName
+  const isCoach = profile?.user_type === 'coach'
 
   const statusLabel = (() => {
     if (!profile?.current_status) return null
@@ -361,7 +363,8 @@ export default function DashboardPage() {
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-3">
               <NotificationBell />
-              <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">Find a Coach</Button></Link>
+              {!isCoach && <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">Find a Coach</Button></Link>}
+              {isCoach && <Link href="/coach/dashboard"><Button variant="outline" className="text-sm gap-2">Coach Dashboard</Button></Link>}
               <Link href="/pricing">
                 <Button variant="outline" className="text-sm gap-2">
                   <CreditCard className="w-4 h-4" />
@@ -429,7 +432,8 @@ export default function DashboardPage() {
           {/* Mobile menu */}
           {menuOpen && (
             <div className="md:hidden mt-4 pb-2 border-t border-white/10 pt-4 space-y-2">
-              <Link href="/coaches" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Find a Coach</Button></Link>
+              {!isCoach && <Link href="/coaches" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Find a Coach</Button></Link>}
+              {isCoach && <Link href="/coach/dashboard" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Coach Dashboard</Button></Link>}
               <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> Billing</Button></Link>
               <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><User className="w-4 h-4 mr-2" /> My Profile</Button></Link>
               <Button variant="outline" fullWidth onClick={signOut} className="justify-start text-red-400"><LogOut className="w-4 h-4 mr-2" /> Logout</Button>
@@ -449,14 +453,20 @@ export default function DashboardPage() {
             {statusLabel && (
               <p className="text-sm text-purple-400 mb-1">{statusLabel}</p>
             )}
-            <p className="text-gray-400">
-              You have used <span className="text-white font-semibold">{profile.interviews_used_this_month}</span> of{' '}
-              <span className="text-white font-semibold">{profile.interviews_limit === 999999 ? '∞' : profile.interviews_limit}</span> interviews this month.
-            </p>
+            {!isCoach && (
+              <p className="text-gray-400">
+                You have used <span className="text-white font-semibold">{profile.interviews_used_this_month}</span> of{' '}
+                <span className="text-white font-semibold">{profile.interviews_limit === 999999 ? '∞' : profile.interviews_limit}</span> interviews this month.
+              </p>
+            )}
+            {isCoach && (
+              <p className="text-gray-400">Manage your sessions and clients from your <Link href="/coach/dashboard" className="text-purple-400 hover:underline">Coach Dashboard</Link>.</p>
+            )}
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/coaches"><Button variant="outline" className="gap-2">Find a Coach</Button></Link>
-            <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> New Interview</Button></Link>
+            {!isCoach && <Link href="/coaches"><Button variant="outline" className="gap-2">Find a Coach</Button></Link>}
+            {!isCoach && <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> New Interview</Button></Link>}
+            {isCoach && <Link href="/coach/dashboard"><Button variant="primary" className="gap-2"><ArrowRight className="w-4 h-4" /> Go to Coach Dashboard</Button></Link>}
           </div>
         </div>
 
