@@ -77,11 +77,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
     if (error) throw error
+
+    const userId = data.user?.id
+
+    if (userId) {
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('user_type')
+        .eq('id', userId)
+        .single()
+
+      router.push(userProfile?.user_type === 'coach' ? '/coach/dashboard' : '/dashboard')
+      return
+    }
+
     router.push('/dashboard')
   }
 

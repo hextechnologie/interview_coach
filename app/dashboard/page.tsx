@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
+import { NotificationBell } from '@/components/NotificationBell'
 import { supabase, InterviewSession, InterviewAnswer } from '@/lib/supabase'
+import { mockCoaches, mockUpcomingCoachSessions } from '@/lib/coach-marketplace'
 import {
   Sparkles,
   LogOut,
@@ -83,6 +85,7 @@ export default function DashboardPage() {
     fillerWords: 0,
     improvement: 0,
   })
+  const [activeCoachTab, setActiveCoachTab] = useState<'upcoming' | 'my-coaches'>('upcoming')
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -242,6 +245,12 @@ export default function DashboardPage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>
             <div className="flex flex-wrap items-center gap-3">
+              <NotificationBell />
+              <Link href="/coaches">
+                <Button variant="outline" className="gap-2">
+                  Find a Coach
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 className="gap-2"
@@ -277,12 +286,19 @@ export default function DashboardPage() {
               You have used {profile.interviews_used_this_month} of {profile.interviews_limit === 999999 ? '∞' : profile.interviews_limit} interviews this month.
             </p>
           </div>
-          <Link href="/interview/setup">
-            <Button variant="primary" className="gap-2 text-lg">
-              <Plus className="w-5 h-5" />
-              Quick Start Interview
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/coaches">
+              <Button variant="outline" className="gap-2 text-lg">
+                Find a Coach
+              </Button>
+            </Link>
+            <Link href="/interview/setup">
+              <Button variant="primary" className="gap-2 text-lg">
+                <Plus className="w-5 h-5" />
+                Quick Start Interview
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
@@ -372,6 +388,61 @@ export default function DashboardPage() {
               ) : (
                 <div className="py-12 text-center text-gray-400">
                   Complete a few interviews to unlock your score trend chart.
+                </div>
+              )}
+            </Card>
+
+            <Card>
+              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">Coach Hub</h2>
+                  <p className="text-gray-400 text-sm">Manage your upcoming coaching sessions and revisit coaches you have worked with.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveCoachTab('upcoming')}
+                    className={`rounded-lg px-3 py-2 text-sm font-semibold ${activeCoachTab === 'upcoming' ? 'bg-primary text-white' : 'border border-border text-gray-300'}`}
+                  >
+                    Upcoming Sessions with Coaches
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveCoachTab('my-coaches')}
+                    className={`rounded-lg px-3 py-2 text-sm font-semibold ${activeCoachTab === 'my-coaches' ? 'bg-primary text-white' : 'border border-border text-gray-300'}`}
+                  >
+                    My Coaches
+                  </button>
+                </div>
+              </div>
+
+              {activeCoachTab === 'upcoming' ? (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {mockUpcomingCoachSessions.map((item) => (
+                    <div key={item.id} className="rounded-xl border border-border bg-background/40 p-4">
+                      <p className="font-semibold">{item.coachName}</p>
+                      <p className="text-sm text-gray-400">{item.topic}</p>
+                      <div className="mt-3 flex items-center justify-between text-sm">
+                        <span>{item.date} • {item.time}</span>
+                        <Badge variant="success">{item.duration} min</Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {mockCoaches.slice(0, 4).map((coach) => (
+                    <Link key={coach.id} href={`/coaches/${coach.id}`}>
+                      <div className="rounded-xl border border-border bg-background/40 p-4 hover:border-primary/40">
+                        <p className="font-semibold">{coach.name}</p>
+                        <p className="text-sm text-gray-400">{coach.title}</p>
+                        <div className="mt-3 flex items-center justify-between text-sm">
+                          <span className="text-yellow-300">⭐ {coach.rating}</span>
+                          <span className="text-primary">${coach.price}/session</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               )}
             </Card>

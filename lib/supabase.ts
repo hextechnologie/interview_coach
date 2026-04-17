@@ -9,6 +9,10 @@ export type Profile = {
   id: string
   email: string
   full_name?: string
+  user_type?: 'candidate' | 'coach'
+  avatar_url?: string
+  target_job_field?: string
+  experience_level?: 'junior' | 'mid' | 'senior'
   subscription_tier: 'free' | 'basic' | 'pro' | 'team'
   stripe_customer_id?: string
   stripe_subscription_id?: string
@@ -16,6 +20,42 @@ export type Profile = {
   interviews_limit: number
   created_at: string
   updated_at: string
+}
+
+export type CoachProfile = {
+  id: string
+  user_id: string
+  title: string
+  bio?: string
+  years_experience?: number
+  price_per_hour: number
+  rating?: number
+  total_sessions?: number
+  linkedin_url?: string
+  languages?: string[]
+  companies?: string[]
+  is_verified?: boolean
+}
+
+export type CoachBooking = {
+  id: string
+  candidate_id: string
+  coach_id: string
+  duration_minutes: number
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  stripe_payment_id?: string
+  notes?: string
+  scheduled_at?: string
+  created_at: string
+}
+
+export type NotificationItem = {
+  id: string
+  title: string
+  message: string
+  type: 'booking' | 'review' | 'payment' | 'reminder'
+  read: boolean
+  created_at: string
 }
 
 export type InterviewSession = {

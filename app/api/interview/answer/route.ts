@@ -211,7 +211,7 @@ All natural-language content must be written entirely in ${languageName}.`
         try {
           const resend = new Resend(process.env.RESEND_API_KEY)
           const scoreColor = averageScore >= 8 ? '#22c55e' : averageScore >= 5 ? '#f59e0b' : '#ef4444'
-          const summaryUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://interview-coach-tau.vercel.app'}/session/${sessionId}`
+          const summaryUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://interview-coach-tau.vercel.app'}/interview/summary/${sessionId}`
           const motivation = averageScore >= 7
             ? 'Great job — keep practicing and try to beat your score next time.'
             : 'You are getting closer. Focus on one improvement area and come back stronger.'
