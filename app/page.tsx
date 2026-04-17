@@ -12,13 +12,12 @@ import { OrganizationSchema, WebsiteSchema, SoftwareApplicationSchema } from '@/
 import { TryDemo } from '@/components/TryDemo'
 
 export default function HomePage() {
-  const { user, loading } = useAuth()
+  const { user } = useAuth()
   const { t } = useLanguage()
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   return (
     <div>
-      {/* Structured Data for SEO */}
       <OrganizationSchema />
       <WebsiteSchema />
       <SoftwareApplicationSchema />
