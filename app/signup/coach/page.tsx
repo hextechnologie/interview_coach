@@ -89,7 +89,17 @@ export default function CoachSignupPage() {
 
       // Supabase silently "succeeds" for existing emails — detect via empty identities
       if (data.user && (data.user.identities?.length ?? 0) === 0) {
-        throw new Error('An account with this email already exists. Please log in instead.')
+        // Check if a profile exists (= email was confirmed before)
+        const { data: existing } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle()
+        if (existing) {
+          throw new Error('This email is already registered. Please log in instead.')
+        } else {
+          throw new Error('You already signed up with this email but haven\'t confirmed it yet. Please check your inbox (and spam folder) for the confirmation link.')
+        }
       }
 
       if (data.user) {
