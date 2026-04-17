@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Badge, Button, Card } from '@/components/ui'
 import { marketplaceSpecializations } from '@/lib/coach-marketplace'
 import { supabase } from '@/lib/supabase'
-import { Search, SlidersHorizontal, Sparkles } from 'lucide-react'
+import { ArrowLeft, Search, SlidersHorizontal, Sparkles } from 'lucide-react'
 
 type RealCoach = {
   id: string
@@ -115,6 +115,9 @@ export default function CoachesPage() {
   return (
     <div className="min-h-screen bg-background px-6 py-8">
       <div className="mx-auto max-w-7xl">
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
+          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+        </Link>
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="mb-3 flex items-center gap-2 text-primary">
@@ -184,14 +187,18 @@ export default function CoachesPage() {
 
                   return (
                     <Card key={coach.id} className="h-full bg-card/80 backdrop-blur border-primary/10 flex flex-col">
-                      <div className="mb-4 h-20 rounded-2xl bg-gradient-to-r from-violet-500 to-blue-500 flex items-center justify-center text-3xl font-bold text-white">
+                      <div className="mb-4 flex flex-col items-center gap-3">
                         {coach.avatar_url ? (
-                          <img src={coach.avatar_url} alt={name} className="h-full w-full rounded-2xl object-cover" />
-                        ) : initials}
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={coach.avatar_url} alt={name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/40" />
+                        ) : (
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-2xl font-bold text-white border-2 border-primary/40">
+                            {initials}
+                          </div>
+                        )}
+                        <h2 className="text-xl font-bold text-center">{name}</h2>
                       </div>
-
-                      <h2 className="text-xl font-bold">{name}</h2>
-                      <p className="mt-1 text-sm text-gray-400">{coach.coach_profiles?.title || 'Interview Coach'}</p>
+                      <p className="mt-1 text-sm text-gray-400 text-center">{coach.coach_profiles?.title || 'Interview Coach'}</p>
 
                       {(coach.city || coach.country) && (
                         <p className="mt-1 text-xs text-gray-500">{[coach.city, coach.country].filter(Boolean).join(', ')}</p>
