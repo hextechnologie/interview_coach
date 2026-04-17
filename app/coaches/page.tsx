@@ -90,7 +90,7 @@ export default function CoachesPage() {
   const filteredCoaches = useMemo(() => {
     return coaches
       .filter((coach) => {
-        const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || coach.email?.split('@')[0] || 'Coach'
+        const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
         const title = coach.coach_profiles?.title || ''
         const specs = coach.coach_specializations.map((s) => s.specialization)
         const price = coach.coach_profiles?.price_per_hour ?? 0
@@ -180,7 +180,7 @@ export default function CoachesPage() {
             ) : (
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {filteredCoaches.map((coach) => {
-                  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || coach.email?.split('@')[0] || 'Coach'
+                  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
                   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
                   const price = coach.coach_profiles?.price_per_hour
                   const specs = coach.coach_specializations.map((s) => s.specialization)
