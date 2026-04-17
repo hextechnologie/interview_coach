@@ -87,6 +87,11 @@ export default function CoachSignupPage() {
 
       if (signUpError) throw signUpError
 
+      // Supabase silently "succeeds" for existing emails — detect via empty identities
+      if (data.user && (data.user.identities?.length ?? 0) === 0) {
+        throw new Error('An account with this email already exists. Please log in instead.')
+      }
+
       if (data.user) {
         const userId = data.user.id
 
