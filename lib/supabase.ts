@@ -9,7 +9,7 @@ export type Profile = {
   id: string
   email: string
   full_name?: string
-  subscription_tier: 'free' | 'basic' | 'pro'
+  subscription_tier: 'free' | 'basic' | 'pro' | 'team'
   stripe_customer_id?: string
   stripe_subscription_id?: string
   interviews_used_this_month: number
@@ -31,6 +31,16 @@ export type InterviewSession = {
   total_questions: number
   questions_answered: number
   created_at: string
+  interview_config?: {
+    jobDescription?: string
+    language?: string
+    interviewerType?: string
+    interviewType?: string
+    interviewRound?: string
+    yearsOfExperience?: number
+    mainSkills?: string[]
+    weakAreas?: string[]
+  }
 }
 
 export type InterviewAnswer = {

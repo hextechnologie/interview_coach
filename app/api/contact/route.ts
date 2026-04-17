@@ -7,8 +7,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -56,8 +54,10 @@ export async function POST(request: Request) {
     // Send email notification using Resend
     if (process.env.RESEND_API_KEY) {
       try {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+
         await resend.emails.send({
-          from: 'Interview Coach <onboarding@resend.dev>', // Update this with your verified domain
+          from: 'Interview Coach <onboarding@resend.dev>',
           to: 'abdelkarim.boudara@gmail.com',
           reply_to: email,
           subject: `New Contact Form Message from ${name}`,
@@ -72,7 +72,6 @@ export async function POST(request: Request) {
           `,
         })
       } catch (emailError) {
-        // Continue even if email fails - message is saved in database
         console.error('Email notification error:', emailError)
       }
     }
