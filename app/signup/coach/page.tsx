@@ -81,11 +81,65 @@ export default function CoachSignupPage() {
         .select('user_type')
         .eq('email', email)
         .maybeSingle()
+
       if (existingProfile) {
-        if (existingProfile.user_type === 'candidate') {
-          throw new Error('This email is already registered as a candidate account. Please use a different email.')
+        if (existingProfile.user_type === 'coach' || existingProfile.user_type === 'both') {
+          throw new Error('This email is already registered as a coach. Please log in instead.')
         }
-        throw new Error('This email is already registered. Please log in instead.')
+
+        // user_type === 'candidate' → add coach role to existing account
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+        if (signInError) {
+          throw new Error('This email already has a candidate account. Enter your existing password to also activate the coach role.')
+        }
+
+        const userId = signInData.user.id
+        const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+
+        let avatarUrl: string | null = null
+        if (avatarFile) {
+          const ext = avatarFile.name.split('.').pop()
+          const { data: uploadData } = await supabase.storage
+            .from('avatars')
+            .upload(`${userId}.${ext}`, avatarFile, { upsert: true })
+          if (uploadData) {
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
+            avatarUrl = urlData.publicUrl
+          }
+        }
+
+        await supabase.from('profiles').update({
+          user_type: 'both',
+          full_name: fullName,
+          first_name: firstName.trim(),
+          last_name: lastName.trim() || null,
+          ...(avatarUrl && { avatar_url: avatarUrl }),
+          country: country || null,
+          city: city || null,
+          linkedin_url: linkedinUrl || null,
+          experience_level: Number(experience) >= 8 ? 'senior' : Number(experience) >= 4 ? 'mid' : 'junior',
+        }).eq('id', userId)
+
+        await supabase.from('coach_profiles').upsert({
+          user_id: userId,
+          title,
+          bio,
+          years_experience: Number(experience),
+          price_per_hour: price,
+          linkedin_url: linkedinUrl,
+          companies,
+          is_verified: false,
+        })
+
+        if (selectedTags.length > 0) {
+          await supabase.from('coach_specializations').insert(
+            selectedTags.map((specialization) => ({ coach_id: userId, specialization }))
+          )
+        }
+
+        await supabase.auth.signOut()
+        setSuccess('Coach role added to your account! Please log in.')
+        return
       }
 
       const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')

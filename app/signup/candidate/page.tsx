@@ -100,11 +100,52 @@ export default function CandidateSignupPage() {
         .select('user_type')
         .eq('email', email)
         .maybeSingle()
+
       if (existingProfile) {
-        if (existingProfile.user_type === 'coach') {
-          throw new Error('This email is already registered as a coach account. Please use a different email.')
+        if (existingProfile.user_type === 'candidate' || existingProfile.user_type === 'both') {
+          throw new Error('This email is already registered as a candidate. Please log in instead.')
         }
-        throw new Error('This email is already registered. Please log in instead.')
+
+        // user_type === 'coach' → add candidate role to existing account
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+        if (signInError) {
+          throw new Error('This email already has a coach account. Enter your existing password to also activate the candidate role.')
+        }
+
+        const userId = signInData.user.id
+        const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+
+        let avatarUrl: string | null = null
+        if (avatarFile) {
+          const ext = avatarFile.name.split('.').pop()
+          const { data: uploadData } = await supabase.storage
+            .from('avatars')
+            .upload(`${userId}.${ext}`, avatarFile, { upsert: true })
+          if (uploadData) {
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
+            avatarUrl = urlData.publicUrl
+          }
+        }
+
+        await supabase.from('profiles').update({
+          user_type: 'both',
+          full_name: fullName,
+          first_name: firstName.trim(),
+          last_name: lastName.trim() || null,
+          ...(avatarUrl && { avatar_url: avatarUrl }),
+          current_status: currentStatus,
+          status_detail: statusDetail || null,
+          target_job_role: targetJobRole || null,
+          target_job_field: targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
+          experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
+          country: country || null,
+          city: city || null,
+          linkedin_url: linkedinUrl || null,
+        }).eq('id', userId)
+
+        await supabase.auth.signOut()
+        setSuccess('Candidate role added to your account! Please log in.')
+        return
       }
 
       const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
