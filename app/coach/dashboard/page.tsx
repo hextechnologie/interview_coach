@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { Badge, Button, Card, LoadingSpinner } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
@@ -20,6 +21,7 @@ type CoachDashboardStats = {
 
 export default function CoachDashboardPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [welcome, setWelcome] = useState(false)
   const [loading, setLoading] = useState(true)
   const [upcoming, setUpcoming] = useState<any[]>([])
@@ -42,7 +44,10 @@ export default function CoachDashboardPage() {
 
   useEffect(() => {
     const fetchCoachData = async () => {
-      if (!user) return
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
       try {
         const [{ data: bookings }, { data: reviewsData }, { data: earnings }] = await Promise.all([
@@ -87,10 +92,16 @@ export default function CoachDashboardPage() {
       }
     }
 
-    if (!authLoading) {
+    if (!authLoading && !user) {
+      setLoading(false)
+      router.replace('/login/coach')
+      return
+    }
+
+    if (!authLoading && user) {
       fetchCoachData()
     }
-  }, [authLoading, user])
+  }, [authLoading, router, user])
 
   if (authLoading || loading) {
     return (
