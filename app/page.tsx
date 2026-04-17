@@ -17,7 +17,7 @@ export default function HomePage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   return (
-    <>
+    <React.Fragment>
       {/* Structured Data for SEO */}
       <OrganizationSchema />
       <WebsiteSchema />
@@ -419,6 +419,6 @@ export default function HomePage() {
       {/* Video Modal */}
       <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
     </div>
-    </>
+    </React.Fragment>
   )
 }
