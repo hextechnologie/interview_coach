@@ -212,9 +212,9 @@ export function subscribeToCreditsUpdates(
  * Get coach active strikes count
  */
 export async function getCoachActiveStrikesCount(coachId: string): Promise<number> {
-  const { data, error } = await supabase
+  const { count, error } = await supabase
     .from('coach_strikes')
-    .select('id', { count: 'exact', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('coach_id', coachId)
     .eq('resolved', false)
     .gt('expires_at', new Date().toISOString())
@@ -224,7 +224,7 @@ export async function getCoachActiveStrikesCount(coachId: string): Promise<numbe
     return 0
   }
 
-  return data || 0
+  return count || 0
 }
 
 /**
