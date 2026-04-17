@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { Button, Card, Input, LoadingSpinner } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
+import CoachNavbar from '@/components/CoachNavbar'
 
 export default function CoachProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -67,7 +68,9 @@ export default function CoachProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
+    <div className="min-h-screen bg-background">
+      <CoachNavbar />
+      <div className="px-6 py-8">
       <div className="mx-auto max-w-3xl">
         <Card>
           <h1 className="mb-2 text-3xl font-bold">Edit coach profile</h1>
@@ -93,6 +96,7 @@ export default function CoachProfilePage() {
             <Button variant="primary" onClick={handleSave} loading={saving}>Save changes</Button>
           </div>
         </Card>
+      </div>
       </div>
     </div>
   )

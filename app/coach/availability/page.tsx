@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Badge, Button, Card } from '@/components/ui'
+import CoachNavbar from '@/components/CoachNavbar'
 
 const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00']
@@ -16,7 +17,9 @@ export default function CoachAvailabilityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-6 py-8">
+    <div className="min-h-screen bg-background">
+      <CoachNavbar />
+      <div className="px-6 py-8">
       <div className="mx-auto max-w-7xl space-y-6">
         <div>
           <h1 className="text-4xl font-bold">Coach availability</h1>
@@ -71,6 +74,7 @@ export default function CoachAvailabilityPage() {
             </Card>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )
