@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui'
 import { Sparkles, Target, TrendingUp, CheckCircle, Play } from 'lucide-react'
 import Link from 'next/link'
@@ -17,13 +17,12 @@ export default function HomePage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   return (
-    <React.Fragment>
+    <div className="min-h-screen relative overflow-hidden">
       {/* Structured Data for SEO */}
       <OrganizationSchema />
       <WebsiteSchema />
       <SoftwareApplicationSchema />
       
-      <div className="min-h-screen relative overflow-hidden">
       {/* Background gradients */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-background to-background" />
       <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-secondary/10 blur-3xl rounded-full" />
@@ -419,6 +418,5 @@ export default function HomePage() {
       {/* Video Modal */}
       <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
     </div>
-    </React.Fragment>
   )
 }
