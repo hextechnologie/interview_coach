@@ -276,12 +276,19 @@ export default function InterviewPage() {
 
   const replayLastQuestion = () => {
     const lastQuestion = [...messages].reverse().find((message) => message.role === 'assistant')
-    if (!lastQuestion || !('speechSynthesis' in window)) return
+    if (!lastQuestion || !('speechSynthesis' in window) || !speechEnabled) return
 
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(lastQuestion.content)
     utterance.rate = 0.95
     window.speechSynthesis.speak(utterance)
+  }
+
+  const toggleSpeech = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
+    setSpeechEnabled((prev) => !prev)
   }
 
   if (authLoading) {
@@ -307,9 +314,9 @@ export default function InterviewPage() {
                   <p className="text-sm text-gray-400">Question {questionCount} of ~6</p>
                   <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
                 </div>
-                <Button variant="outline" className="px-3 py-2" onClick={() => setSpeechEnabled((prev) => !prev)}>
-                  {speechEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                  {speechEnabled ? 'Voice On' : 'Voice Off'}
+                <Button variant="outline" className="px-3 py-2" onClick={toggleSpeech}>
+                  {speechEnabled ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  {speechEnabled ? 'Mute' : 'Unmute'}
                 </Button>
               </div>
             )}
@@ -328,7 +335,7 @@ export default function InterviewPage() {
                   </div>
                   <Card className="flex-1 bg-gradient-to-br from-primary/10 via-card/50 to-card/30 border-primary/20 shadow-lg">
                     <div className="flex justify-end mb-3">
-                      <Button variant="outline" className="px-3 py-2 text-xs" onClick={replayLastQuestion}>
+                      <Button variant="outline" className="px-3 py-2 text-xs" onClick={replayLastQuestion} disabled={!speechEnabled}>
                         <Volume2 className="w-3 h-3" />
                         Read aloud
                       </Button>
