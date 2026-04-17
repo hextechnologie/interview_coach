@@ -76,6 +76,17 @@ ALTER TABLE public.interview_answers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscription_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own sessions" ON public.interview_sessions;
+DROP POLICY IF EXISTS "Users can create own sessions" ON public.interview_sessions;
+DROP POLICY IF EXISTS "Users can update own sessions" ON public.interview_sessions;
+DROP POLICY IF EXISTS "Users can view own answers" ON public.interview_answers;
+DROP POLICY IF EXISTS "Users can create own answers" ON public.interview_answers;
+DROP POLICY IF EXISTS "Users can view own subscription history" ON public.subscription_history;
+DROP POLICY IF EXISTS "Anyone can insert contact messages" ON public.contact_messages;
+
 -- RLS Policies for profiles
 CREATE POLICY "Users can view own profile"
   ON public.profiles FOR SELECT
