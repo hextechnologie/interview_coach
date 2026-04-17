@@ -248,8 +248,15 @@ export default function InterviewPage() {
       return
     }
 
+    const languageMap: Record<string, string> = {
+      en: 'en-US',
+      fr: 'fr-FR',
+      es: 'es-ES',
+      ar: 'ar-SA',
+    }
+
     const recognition = new SpeechRecognition()
-    recognition.lang = 'en-US'
+    recognition.lang = languageMap[session?.interview_config?.language || 'en'] || 'en-US'
     recognition.interimResults = true
     recognition.continuous = true
 
@@ -525,7 +532,7 @@ export default function InterviewPage() {
             </div>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Tip: You can answer by typing or using the microphone. The AI can also read questions aloud.
+            Tip: The microphone now follows your selected interview language automatically.
           </p>
         </Card>
       </div>
