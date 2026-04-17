@@ -30,9 +30,64 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        const userId = session.metadata?.userId
+        const metadata = session.metadata
+        const userId = metadata?.user_id || metadata?.userId
 
-        if (userId) {
+        if (!userId) break
+
+        // Check if this is a credit purchase
+        if (metadata?.type === 'credit_purchase') {
+          const credits = parseInt(metadata.credits || '0')
+          const bonusCredits = parseInt(metadata.bonus_credits || '0')
+          const amountPaid = session.amount_total ? session.amount_total / 100 : 0
+
+          if (credits > 0) {
+            // Get current credits
+            const { data: currentCredits } = await supabase
+              .from('user_credits')
+              .select('balance, total_purchased')
+              .eq('user_id', userId)
+              .single()
+
+            const newBalance = (currentCredits?.balance || 0) + credits
+            const newTotalPurchased = (currentCredits?.total_purchased || 0) + credits
+
+            // Update credits balance
+            await supabase
+              .from('user_credits')
+              .upsert({
+                user_id: userId,
+                balance: newBalance,
+                total_purchased: newTotalPurchased,
+                updated_at: new Date().toISOString(),
+              })
+
+            // Record transaction
+            await supabase.from('credit_transactions').insert({
+              user_id: userId,
+              type: 'purchase',
+              amount: credits,
+              balance_after: newBalance,
+              description: `Purchased ${credits} credits${bonusCredits > 0 ? ` (includes ${bonusCredits} bonus)` : ''}`,
+              stripe_payment_id: session.payment_intent as string,
+              metadata: {
+                session_id: session.id,
+                amount_paid: amountPaid,
+                bonus_credits: bonusCredits,
+              },
+            })
+
+            // Send notification
+            await supabase.from('notifications').insert({
+              user_id: userId,
+              title: 'Credits Added Successfully',
+              message: `💳 ${credits} credits have been added to your account${bonusCredits > 0 ? ` (${credits - bonusCredits} + ${bonusCredits} bonus)` : ''}!`,
+              type: 'credit_purchase',
+              read: false,
+            })
+          }
+        } else if (session.subscription) {
+          // Original subscription handling
           const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
           )
