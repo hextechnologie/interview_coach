@@ -21,20 +21,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const candidateName = String(user.user_metadata?.full_name || '').trim() || 'Candidate'
+    const coachDisplayName = String(coachName || '').trim() || 'Coach'
+
     // Create booking in database
-    const { data: booking, error: bookingError } = await supabase
+    const baseBookingPayload = {
+      candidate_id: user.id,
+      coach_id: coachId,
+      duration_minutes: durationMinutes,
+      status: 'pending',
+      notes: notes || null,
+      scheduled_at: scheduledAt,
+      google_calendar_url: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Session with ${coachDisplayName}`)}&details=${encodeURIComponent(notes || 'Coaching session')}`,
+    }
+
+    let { data: booking, error: bookingError } = await supabase
       .from('bookings')
       .insert({
-        candidate_id: user.id,
-        coach_id: coachId,
-        duration_minutes: durationMinutes,
-        status: 'pending',
-        notes: notes || null,
-        scheduled_at: scheduledAt,
-        google_calendar_url: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Session with ${coachName}`)}&details=${encodeURIComponent(notes || 'Coaching session')}`,
+        ...baseBookingPayload,
+        candidate_name_snapshot: candidateName,
+        coach_name_snapshot: coachDisplayName,
       })
       .select()
       .single()
+
+    if (bookingError && /candidate_name_snapshot|coach_name_snapshot/i.test(bookingError.message || '')) {
+      const retry = await supabase
+        .from('bookings')
+        .insert(baseBookingPayload)
+        .select()
+        .single()
+      booking = retry.data
+      bookingError = retry.error
+    }
 
     if (bookingError) {
       console.error('Booking creation error:', bookingError)
@@ -51,7 +70,7 @@ export async function POST(request: NextRequest) {
     await supabase.from('notifications').insert({
       user_id: coachId,
       title: 'New booking request',
-      message: `${user.email || 'A candidate'} booked a ${durationMinutes}-minute session for ${scheduledAt}.`,
+      message: `${candidateName} booked a ${durationMinutes}-minute session for ${scheduledAt}.`,
       type: 'booking',
       read: false,
     })

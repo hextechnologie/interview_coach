@@ -170,7 +170,8 @@ export default function CoachDashboardPage() {
               ) : (
                 <div className="space-y-3">
                   {upcoming.map((session: any) => {
-                    const candidateName = session.candidate?.full_name
+                    const candidateName = session.candidate_name_snapshot
+                      || session.candidate?.full_name
                       || [session.candidate?.first_name, session.candidate?.last_name].filter(Boolean).join(' ')
                       || 'Candidate'
 
@@ -195,7 +196,12 @@ export default function CoachDashboardPage() {
                               <p><span className="text-gray-500">Notes:</span> {session.notes || 'No session notes provided'}</p>
                             </div>
                           </div>
-                          <Badge variant={session.status === 'confirmed' ? 'success' : 'warning'}>{session.status}</Badge>
+                          <div className="flex flex-col items-end gap-2">
+                            <Badge variant={session.status === 'confirmed' ? 'success' : 'warning'}>{session.status}</Badge>
+                            <Link href={`/candidates/${session.candidate_id}`}>
+                              <Button variant="outline" className="text-xs">View Profile</Button>
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     )
