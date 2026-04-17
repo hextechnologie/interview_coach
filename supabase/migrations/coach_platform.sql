@@ -162,6 +162,11 @@ CREATE TABLE IF NOT EXISTS public.notifications (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
+-- ── ENSURE CORE COLUMNS EXIST BEFORE INDEXES ───────────────
+-- profiles may already exist without user_type; add it safely first
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS user_type text DEFAULT 'candidate';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role      text DEFAULT 'candidate';
+
 -- ── INDEXES ──────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_interview_sessions_user_id    ON public.interview_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_interview_sessions_status     ON public.interview_sessions(status);
@@ -179,11 +184,6 @@ CREATE INDEX IF NOT EXISTS idx_reviews_coach_id              ON public.reviews(c
 CREATE INDEX IF NOT EXISTS idx_messages_booking_id           ON public.messages(booking_id);
 CREATE INDEX IF NOT EXISTS idx_earnings_coach_id             ON public.earnings(coach_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id         ON public.notifications(user_id);
-
--- ── ENSURE CORE COLUMNS EXIST (safe for pre-existing tables) ─
--- profiles may have been created without user_type (some setups use `role`)
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS user_type text DEFAULT 'candidate';
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role      text DEFAULT 'candidate';
 
 -- ── NEW COLUMNS (coach platform additions) ───────────────────
 ALTER TABLE public.profiles  ADD COLUMN IF NOT EXISTS first_name text;
