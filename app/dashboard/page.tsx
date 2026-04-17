@@ -576,7 +576,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2">
                     {upcomingBookings.map((booking) => {
-                      const coachName = booking.coach?.full_name || booking.coach?.email || 'Coach'
+                      const coachName = booking.coach?.full_name || 'Coach'
                       const statusLabel = booking.status === 'confirmed' ? '🟢 Upcoming' : booking.status === 'completed' ? '✅ Completed' : '⏳ Pending'
                       const sessionTime = booking.scheduled_at ? new Date(booking.scheduled_at) : null
                       const isJoinable = sessionTime && Math.abs(sessionTime.getTime() - Date.now()) < 10 * 60 * 1000
@@ -605,7 +605,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2">
                     {myCoaches.map((booking) => {
-                      const coachName = booking.coach?.full_name || booking.coach?.email || 'Coach'
+                      const coachName = booking.coach?.full_name || 'Coach'
                       return (
                         <div key={booking.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors" style={{ background: '#0a0f1e' }}>
                           <div className="flex items-center gap-3">
@@ -689,7 +689,7 @@ export default function DashboardPage() {
                 {recommendedCoaches.length === 0 ? (
                   <div className="col-span-3 py-8 text-center text-gray-400 text-sm">No coaches registered yet. <Link href="/coaches" className="text-purple-400 hover:underline">Browse all coaches →</Link></div>
                 ) : recommendedCoaches.map((coach) => {
-                  const name = coach.full_name || (coach as any).email?.split('@')[0] || 'Coach'
+                  const name = coach.full_name || 'Coach'
                   const specs = coach.coach_specializations?.map((s: any) => s.specialization) || []
                   return (
                     <div key={coach.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors flex flex-col gap-3" style={{ background: '#0a0f1e' }}>

@@ -172,7 +172,6 @@ export default function CoachDashboardPage() {
                   {upcoming.map((session: any) => {
                     const candidateName = session.candidate?.full_name
                       || [session.candidate?.first_name, session.candidate?.last_name].filter(Boolean).join(' ')
-                      || session.candidate?.email
                       || 'Candidate'
 
                     const scheduledText = session.scheduled_at

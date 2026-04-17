@@ -17,6 +17,12 @@ type CoachDetail = {
   city: string | null
   country: string | null
   linkedin_url: string | null
+  professional_headline?: string | null
+  about_me?: string | null
+  experience_details?: string | null
+  education_details?: string | null
+  projects_details?: string | null
+  skills?: string[] | null
   coach_profiles: {
     title: string | null
     bio: string | null
@@ -49,7 +55,7 @@ export default function CoachDetailPage() {
       // Get profile row
       const { data: profile } = await supabase
         .from('profiles')
-        .select('id, full_name, first_name, last_name, email, avatar_url, city, country, linkedin_url')
+        .select('id, full_name, first_name, last_name, email, avatar_url, city, country, linkedin_url, professional_headline, about_me, experience_details, education_details, projects_details, skills')
         .eq('id', id)
         .maybeSingle()
 
@@ -75,6 +81,12 @@ export default function CoachDetailPage() {
         city: profile?.city ?? null,
         country: profile?.country ?? null,
         linkedin_url: profile?.linkedin_url ?? null,
+        professional_headline: (profile as any)?.professional_headline ?? null,
+        about_me: (profile as any)?.about_me ?? null,
+        experience_details: (profile as any)?.experience_details ?? null,
+        education_details: (profile as any)?.education_details ?? null,
+        projects_details: (profile as any)?.projects_details ?? null,
+        skills: (profile as any)?.skills ?? [],
         coach_profiles: {
           title: cp.title,
           bio: cp.bio,
@@ -99,7 +111,7 @@ export default function CoachDetailPage() {
     </div>
   )
 
-  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || coach.email?.split('@')[0] || 'Coach'
+  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
   const specs = coach.coach_specializations.map((s) => s.specialization)
   const avgRating = coach.reviews.length
@@ -160,10 +172,41 @@ export default function CoachDetailPage() {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6">
-            {coach.coach_profiles?.bio && (
+            {(coach.professional_headline || coach.about_me || coach.coach_profiles?.bio) && (
               <Card>
                 <h2 className="mb-3 text-2xl font-bold">About</h2>
-                <p className="text-gray-300">{coach.coach_profiles.bio}</p>
+                {coach.professional_headline && <p className="text-primary font-medium mb-2">{coach.professional_headline}</p>}
+                <p className="text-gray-300 whitespace-pre-line">{coach.about_me || coach.coach_profiles?.bio}</p>
+              </Card>
+            )}
+
+            {coach.experience_details && (
+              <Card>
+                <h2 className="mb-3 text-2xl font-bold">Experience</h2>
+                <p className="text-gray-300 whitespace-pre-line">{coach.experience_details}</p>
+              </Card>
+            )}
+
+            {coach.education_details && (
+              <Card>
+                <h2 className="mb-3 text-2xl font-bold">Education</h2>
+                <p className="text-gray-300 whitespace-pre-line">{coach.education_details}</p>
+              </Card>
+            )}
+
+            {coach.projects_details && (
+              <Card>
+                <h2 className="mb-3 text-2xl font-bold">Projects & Achievements</h2>
+                <p className="text-gray-300 whitespace-pre-line">{coach.projects_details}</p>
+              </Card>
+            )}
+
+            {((coach.skills ?? []).length > 0 || specs.length > 0) && (
+              <Card>
+                <h2 className="mb-4 text-2xl font-bold">Skills</h2>
+                <div className="flex flex-wrap gap-2">
+                  {([...(coach.skills ?? []), ...specs].filter((v, i, a) => !!v && a.indexOf(v) === i) as string[]).map((skill) => <Badge key={skill}>{skill}</Badge>)}
+                </div>
               </Card>
             )}
 

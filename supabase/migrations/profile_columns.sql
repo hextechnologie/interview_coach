@@ -12,9 +12,15 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_name        TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_status   TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status_detail    TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS target_job_role  TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country          TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city             TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url     TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country              TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city                 TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url         TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS professional_headline TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS about_me             TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS experience_details   TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS education_details    TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS projects_details     TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS skills               TEXT[];
 
 -- Back-fill first_name / last_name from existing full_name where not yet set
 UPDATE public.profiles

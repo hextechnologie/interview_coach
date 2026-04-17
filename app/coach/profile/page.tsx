@@ -20,6 +20,12 @@ export default function CoachProfilePage() {
   const [country,     setCountry]     = useState('')
   const [city,        setCity]        = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
+  const [headline, setHeadline] = useState('')
+  const [aboutMe, setAboutMe] = useState('')
+  const [experienceDetails, setExperienceDetails] = useState('')
+  const [educationDetails, setEducationDetails] = useState('')
+  const [projectsDetails, setProjectsDetails] = useState('')
+  const [skillsText, setSkillsText] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
   const [avatarFile,    setAvatarFile]    = useState<File | null>(null)
 
@@ -49,6 +55,12 @@ export default function CoachProfilePage() {
     setCountry(profile.country      ?? '')
     setCity(profile.city            ?? '')
     setLinkedinUrl(profile.linkedin_url ?? '')
+    setHeadline((profile as any).professional_headline ?? '')
+    setAboutMe((profile as any).about_me ?? '')
+    setExperienceDetails((profile as any).experience_details ?? '')
+    setEducationDetails((profile as any).education_details ?? '')
+    setProjectsDetails((profile as any).projects_details ?? '')
+    setSkillsText(Array.isArray((profile as any).skills) ? (profile as any).skills.join(', ') : '')
     setAvatarPreview(profile.avatar_url ?? '')
 
     // Fetch coach_profiles + specializations
@@ -122,6 +134,12 @@ export default function CoachProfilePage() {
         country:      country           || null,
         city:         city              || null,
         linkedin_url: linkedinUrl       || null,
+        professional_headline: headline.trim() || null,
+        about_me:     aboutMe.trim() || null,
+        experience_details: experienceDetails.trim() || null,
+        education_details: educationDetails.trim() || null,
+        projects_details: projectsDetails.trim() || null,
+        skills:       skillsText.split(',').map(s => s.trim()).filter(Boolean),
         avatar_url:   avatarUrl,
         updated_at:   new Date().toISOString(),
       }).eq('id', user.id)
@@ -285,6 +303,57 @@ export default function CoachProfilePage() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* LinkedIn-style profile */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Highlights</h2>
+            <Input label="Headline" value={headline} onChange={setHeadline} placeholder="e.g. Senior Engineering Coach helping candidates land offers" />
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">About</label>
+              <textarea
+                value={aboutMe}
+                onChange={e => setAboutMe(e.target.value)}
+                rows={4}
+                placeholder="Write a short professional summary, your coaching philosophy, and the impact you create..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">Experience</label>
+              <textarea
+                value={experienceDetails}
+                onChange={e => setExperienceDetails(e.target.value)}
+                rows={4}
+                placeholder="Describe your experience, major roles, leadership, interview panels, or mentorship work..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">Education / Formation</label>
+              <textarea
+                value={educationDetails}
+                onChange={e => setEducationDetails(e.target.value)}
+                rows={3}
+                placeholder="Add your education, certifications, training, or notable programs..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">Projects / Achievements</label>
+              <textarea
+                value={projectsDetails}
+                onChange={e => setProjectsDetails(e.target.value)}
+                rows={3}
+                placeholder="Mention major achievements, products shipped, interview programs led, or standout projects..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+              />
+            </div>
+            <Input label="Skills" value={skillsText} onChange={setSkillsText} placeholder="e.g. System Design, Behavioral Interviews, React, Leadership" />
           </div>
 
           {/* Messages */}
