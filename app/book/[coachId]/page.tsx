@@ -50,6 +50,7 @@ export default function BookingPage() {
   const [notes, setNotes]               = useState('')
   const [booking, setBooking]           = useState(false)
   const [confirmation, setConfirmation] = useState<{ bookingId: string } | null>(null)
+  const [error, setError]               = useState('')
 
   const days = useMemo(() => getNextDays(7), [])
 
@@ -99,12 +100,19 @@ export default function BookingPage() {
   }, [coach, duration])
 
   const handleCheckout = async () => {
-    if (!selectedDate || !selectedTime || !coach) return
+    if (!selectedDate || !selectedTime || !coach || !user) return
+    setError('')
     setBooking(true)
     try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData.session?.access_token
+
       const response = await fetch('/api/bookings/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           coachId: coach.id,
           coachName: coach.name,
@@ -114,9 +122,21 @@ export default function BookingPage() {
           amount: sessionPrice,
         }),
       })
+
       const data = await response.json()
-      if (data.url) { window.location.href = data.url; return }
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create booking')
+      }
+
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+
       setConfirmation({ bookingId: data.bookingId || `booking-${Date.now()}` })
+    } catch (err: any) {
+      setError(err.message || 'Could not create your booking. Please try again.')
     } finally {
       setBooking(false)
     }
@@ -214,7 +234,12 @@ export default function BookingPage() {
             <Card>
               <h2 className="mb-4 text-xl font-bold">Step 4 — Payment</h2>
               <p className="text-sm text-gray-400 mb-4">Payments are processed securely with Stripe. The coach receives 80% after the session.</p>
-              <Button variant="primary" className="gap-2" onClick={handleCheckout} loading={booking} disabled={!selectedDate || !selectedTime}>
+              {error && (
+                <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {error}
+                </div>
+              )}
+              <Button variant="primary" className="gap-2" onClick={handleCheckout} loading={booking} disabled={!selectedDate || !selectedTime || !user}>
                 <CreditCard className="h-4 w-4" />
                 Continue to Checkout — ${sessionPrice}
               </Button>
