@@ -168,6 +168,10 @@ export default function DashboardPage() {
   }
 
   const handleDeleteInterview = async (sessionId: string) => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
+
     const confirmed = window.confirm(
       'Delete this interview? This action cannot be undone and credits will not be refunded.'
     )

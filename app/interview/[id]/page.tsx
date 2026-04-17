@@ -173,6 +173,20 @@ export default function InterviewPage() {
   const t = UI_TEXT[feedbackLanguage]
   const awaitingChoice = messages[messages.length - 1]?.role === 'feedback'
 
+  const stopAudioPlayback = () => {
+    try {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    } catch {}
+
+    setIsListening(false)
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
+  }
+
   const getAuthHeaders = async () => {
     const { data: { session } } = await supabase.auth.getSession()
     return {
@@ -196,6 +210,20 @@ export default function InterviewPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    return () => {
+      try {
+        if (recognitionRef.current) {
+          recognitionRef.current.stop()
+        }
+      } catch {}
+
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant')
@@ -419,9 +447,7 @@ export default function InterviewPage() {
   }
 
   const toggleSpeech = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-    }
+    stopAudioPlayback()
     setSpeechEnabled((prev) => !prev)
   }
 
@@ -440,10 +466,12 @@ export default function InterviewPage() {
   const handleNextQuestion = async () => {
     setActionLoading('next')
     if (sessionComplete) {
+      stopAudioPlayback()
       router.push(`/interview/summary/${sessionId}`)
       return
     }
 
+    stopAudioPlayback()
     await getNextQuestion()
     setActionLoading(null)
   }
