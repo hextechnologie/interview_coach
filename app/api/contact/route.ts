@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       try {
         await resend.emails.send({
           from: 'Interview Coach <onboarding@resend.dev>', // Update this with your verified domain
-          to: 'abinterviewcoach@gmail.com',
+          to: 'abdelkarim.boudara@gmail.com',
           replyTo: email,
           subject: `New Contact Form Message from ${name}`,
           html: `
