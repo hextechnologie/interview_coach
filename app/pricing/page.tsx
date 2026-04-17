@@ -408,11 +408,6 @@ export default function PricingPage() {
     </div>
   )
 }
-
-                  ? 'Get Started'
-                  : 'Subscribe'}
-              </Button>
-            </Card>
           ))}
         </div>
 
