@@ -5,12 +5,18 @@
 -- This file only adds new columns/tables on top of schema.sql.
 -- ============================================================
 
--- 1. Extend profiles (schema.sql uses user_type, not role) ----
+-- 1. Extend profiles -------------------------------------------
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS first_name text;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_name  text;
--- "role" alias so app code using p.role still works
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role text
-  GENERATED ALWAYS AS (user_type) STORED;
+-- Add `role` column if not present (some DB setups omit it)
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'role'
+  ) THEN
+    ALTER TABLE public.profiles ADD COLUMN role text DEFAULT 'candidate';
+  END IF;
+END $$;
 
 -- 2. Extend bookings ------------------------------------------
 ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS session_type  text DEFAULT 'video';
@@ -146,7 +152,7 @@ CREATE POLICY "answer_scores_write" ON public.answer_scores
     EXISTS (
       SELECT 1 FROM public.bookings b
       JOIN public.profiles p ON p.id = auth.uid()
-      WHERE b.id = booking_id AND p.user_type = 'coach'
+      WHERE b.id = booking_id AND (p.role = 'coach' OR p.user_type = 'coach')
     )
   );
 
