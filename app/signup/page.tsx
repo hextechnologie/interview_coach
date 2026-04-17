@@ -4,15 +4,17 @@ import { useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { Button, Input, Card } from '@/components/ui'
 import Link from 'next/link'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const { signUp } = useAuth()
 
   const handleOAuthSignIn = async (provider: 'google' | 'facebook' | 'github') => {
@@ -33,8 +35,23 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
 
+    if (!fullName.trim()) {
+      setError('Full name is required')
+      return
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address')
+      return
+    }
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
       return
     }
 
@@ -88,14 +105,38 @@ export default function SignupPage() {
               required
             />
 
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={setPassword}
-              placeholder="••••••••"
-              required
-            />
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-4 py-3 pr-12 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Confirm Password</label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </div>
 
             <Button type="submit" variant="primary" fullWidth loading={loading}>
               Create Account

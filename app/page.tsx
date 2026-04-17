@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui'
-import { Sparkles, Target, TrendingUp, CheckCircle, Play } from 'lucide-react'
+import { Sparkles, Target, TrendingUp, Play, Menu, X, Twitter, Linkedin, Instagram } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
 import { VideoModal } from '@/components/VideoModal'
@@ -10,13 +10,25 @@ import { useLanguage } from '@/components/LanguageProvider'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { TryDemo } from '@/components/TryDemo'
 
+const demoMessages = [
+  'AI: Tell me about yourself',
+  'User: I am a software engineer with 3 years experience...',
+  'AI: Great answer! Score: 8/10. Here is your feedback...',
+]
+
 export default function HomePage() {
   const { user } = useAuth()
   const { t } = useLanguage()
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [demoStep, setDemoStep] = useState(0)
 
   useEffect(() => {
-    // Structured data will be added via metadata in layout
+    const interval = setInterval(() => {
+      setDemoStep((prev) => (prev + 1) % demoMessages.length)
+    }, 1600)
+
+    return () => clearInterval(interval)
   }, [])
 
   return (
@@ -35,7 +47,11 @@ export default function HomePage() {
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </div>
-            <div className="flex items-center gap-4">
+
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/pricing" className="text-sm text-gray-300 hover:text-primary">Pricing</Link>
+              <Link href="/faq" className="text-sm text-gray-300 hover:text-primary">FAQ</Link>
+              <Link href="/contact" className="text-sm text-gray-300 hover:text-primary">Contact</Link>
               <LanguageSwitcher />
               {user ? (
                 <Link href="/dashboard">
@@ -52,7 +68,24 @@ export default function HomePage() {
                 </>
               )}
             </div>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg border border-border"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </nav>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 glass rounded-xl p-4 space-y-3">
+              <Link href="/pricing" className="block text-gray-300" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
+              <Link href="/faq" className="block text-gray-300" onClick={() => setMobileMenuOpen(false)}>FAQ</Link>
+              <Link href="/contact" className="block text-gray-300" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+              <div className="pt-2"><LanguageSwitcher /></div>
+            </div>
+          )}
         </header>
 
         {/* Hero Section with Video */}
@@ -105,26 +138,43 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Right: Video */}
+            {/* Right: Demo Mockup */}
             <div className="animate-fadeIn">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50 group cursor-pointer" onClick={() => setIsVideoModalOpen(true)}>
-                <div className="relative aspect-video bg-gray-900">
-                  <video
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    poster="/demo-poster.jpg"
-                  >
-                    <source src="/demo.mp4" type="video/mp4" />
-                    <source src="/demo.webm" type="video/webm" />
-                    Your browser does not support the video tag.
-                  </video>
-                  {/* Play button overlay */}
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                      <Play className="w-10 h-10 ml-1" />
+              <div
+                className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50 group cursor-pointer bg-slate-950"
+                onClick={() => setIsVideoModalOpen(true)}
+              >
+                <div className="relative aspect-video p-4 md:p-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
+                  <div className="relative h-full rounded-xl border border-border bg-black/40 p-4 flex flex-col">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm font-semibold">Live Interview Demo</p>
+                        <p className="text-xs text-gray-400">Animated mock interview preview</p>
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <Play className="w-4 h-4 text-primary" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 flex-1">
+                      {demoMessages.map((message, index) => (
+                        <div
+                          key={message}
+                          className={`rounded-xl px-4 py-3 text-sm transition-all duration-500 ${
+                            index === 0 ? 'bg-primary/15 text-white' : index === 1 ? 'bg-secondary/15 text-white ml-6' : 'bg-green-500/10 text-green-300'
+                          } ${index <= demoStep ? 'opacity-100 translate-y-0' : 'opacity-20 translate-y-2'}`}
+                        >
+                          {message}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-4 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-primary transition-all duration-700"
+                        style={{ width: `${((demoStep + 1) / demoMessages.length) * 100}%` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -289,9 +339,7 @@ export default function HomePage() {
                 communication skills and highlighted achievements in a way I never could before."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold">
-                  S
-                </div>
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Sarah" className="w-10 h-10 rounded-full bg-white" />
                 <div>
                   <p className="font-semibold">Sarah Chen</p>
                   <p className="text-sm text-gray-400">Software Engineer · Google</p>
@@ -310,9 +358,7 @@ export default function HomePage() {
                 The AI helped me craft compelling stories and build confidence."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold">
-                  J
-                </div>
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica" alt="Jessica" className="w-10 h-10 rounded-full bg-white" />
                 <div>
                   <p className="font-semibold">Jessica Williams</p>
                   <p className="text-sm text-gray-400">Product Manager · Amazon</p>
@@ -331,9 +377,7 @@ export default function HomePage() {
                 Got the offer with a massive comp bump! 40% salary increase."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold">
-                  R
-                </div>
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Raj" alt="Raj" className="w-10 h-10 rounded-full bg-white" />
                 <div>
                   <p className="font-semibold">Raj Patel</p>
                   <p className="text-sm text-gray-400">Senior Engineer · Stripe</p>
@@ -403,8 +447,14 @@ export default function HomePage() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><Link href="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="hover:text-primary">Terms of Service</Link></li>
+                <li><Link href="/about" className="hover:text-primary">About</Link></li>
               </ul>
             </div>
+          </div>
+          <div className="flex items-center justify-center gap-4 pb-6">
+            <a href="#" className="text-gray-400 hover:text-primary"><Twitter className="w-5 h-5" /></a>
+            <a href="#" className="text-gray-400 hover:text-primary"><Linkedin className="w-5 h-5" /></a>
+            <a href="#" className="text-gray-400 hover:text-primary"><Instagram className="w-5 h-5" /></a>
           </div>
           <div className="text-center text-gray-400 text-sm pt-8 border-t border-border">
             <p>&copy; 2026 Interview Coach. All rights reserved. Powered by Claude AI.</p>

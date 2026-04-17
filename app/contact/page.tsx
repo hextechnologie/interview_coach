@@ -8,6 +8,7 @@ import { Button, Input, Card } from '@/components/ui'
 export default function ContactPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -28,6 +29,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           name,
           email,
+          subject,
           message,
         }),
       })
@@ -41,6 +43,7 @@ export default function ContactPage() {
       setSuccess(true)
       setName('')
       setEmail('')
+      setSubject('')
       setMessage('')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send message. Please try again.')
@@ -119,6 +122,15 @@ export default function ContactPage() {
                     value={email}
                     onChange={setEmail}
                     placeholder="you@example.com"
+                    required
+                  />
+
+                  <Input
+                    label="Subject"
+                    type="text"
+                    value={subject}
+                    onChange={setSubject}
+                    placeholder="Billing, support, partnership..."
                     required
                   />
 

@@ -10,12 +10,12 @@ const supabase = createClient(
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, message } = body
+    const { name, email, subject, message } = body
 
     // Validate input
-    if (!name || !email || !message) {
+    if (!name || !email || !subject || !message) {
       return NextResponse.json(
-        { error: 'Name, email, and message are required' },
+        { error: 'Name, email, subject, and message are required' },
         { status: 400 }
       )
     }
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         {
           name,
           email,
-          message,
+          message: `Subject: ${subject}\n\n${message}`,
           status: 'unread',
         },
       ])
@@ -60,11 +60,12 @@ export async function POST(request: Request) {
           from: 'Interview Coach <onboarding@resend.dev>',
           to: 'abdelkarim.boudara@gmail.com',
           reply_to: email,
-          subject: `New Contact Form Message from ${name}`,
+          subject: `[${subject}] New Contact Form Message from ${name}`,
           html: `
             <h2>New Contact Form Submission</h2>
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
             <p><strong>Message:</strong></p>
             <p>${message.replace(/\n/g, '<br>')}</p>
             <hr>

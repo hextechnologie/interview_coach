@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
+import { Resend } from 'resend'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -92,13 +93,64 @@ Provide detailed structured feedback in JSON format.`
       console.error('Error saving answer:', insertError)
     }
 
-    // Update session
-    await supabaseAdmin
-      .from('interview_sessions')
-      .update({ questions_answered: questionNumber })
-      .eq('id', sessionId)
+    const completed = questionNumber >= 6
 
-    return NextResponse.json({ feedback, completed: questionNumber >= 6 })
+    if (completed) {
+      const { data: allAnswers } = await supabaseAdmin
+        .from('interview_answers')
+        .select('*')
+        .eq('session_id', sessionId)
+
+      const averageScore = allAnswers && allAnswers.length > 0
+        ? Number((allAnswers.reduce((sum, item) => sum + Number(item.score || 0), 0) / allAnswers.length).toFixed(1))
+        : Number(feedback.score || 0)
+
+      await supabaseAdmin
+        .from('interview_sessions')
+        .update({
+          questions_answered: questionNumber,
+          status: 'completed',
+          overall_score: averageScore,
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', sessionId)
+
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('email, full_name')
+        .eq('id', session.user_id)
+        .single()
+
+      if (process.env.RESEND_API_KEY && profile?.email) {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY)
+          await resend.emails.send({
+            from: 'Interview Coach <onboarding@resend.dev>',
+            to: profile.email,
+            subject: `Your interview summary for ${session.job_role}`,
+            html: `
+              <h2>Interview Summary</h2>
+              <p><strong>Job role:</strong> ${session.job_role}</p>
+              <p><strong>Overall score:</strong> ${averageScore}/10</p>
+              <p><strong>Top strengths:</strong></p>
+              <ul>${(feedback.strengths || []).slice(0, 3).map((item: string) => `<li>${item}</li>`).join('')}</ul>
+              <p><strong>Top areas to improve:</strong></p>
+              <ul>${(feedback.weaknesses || []).slice(0, 3).map((item: string) => `<li>${item}</li>`).join('')}</ul>
+              <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://interview-coach.vercel.app'}/interview/summary/${sessionId}">View full session</a></p>
+            `,
+          })
+        } catch (emailError) {
+          console.error('Summary email error:', emailError)
+        }
+      }
+    } else {
+      await supabaseAdmin
+        .from('interview_sessions')
+        .update({ questions_answered: questionNumber })
+        .eq('id', sessionId)
+    }
+
+    return NextResponse.json({ feedback, completed })
   } catch (error: any) {
     console.error('Error processing answer:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })

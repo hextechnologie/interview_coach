@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { Button, Input, Card } from '@/components/ui'
 import Link from 'next/link'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const { signIn } = useAuth()
 
   const handleOAuthSignIn = async (provider: 'google' | 'facebook' | 'github') => {
@@ -31,6 +32,17 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    if (!email.trim() || !password.trim()) {
+      setError('Email and password are required.')
+      return
+    }
+
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address.')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -72,14 +84,31 @@ export default function LoginPage() {
               required
             />
 
-            <Input
-              label="Password"
-              type="password"
-              value={password}
-              onChange={setPassword}
-              placeholder="••••••••"
-              required
-            />
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-foreground">Password</label>
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+                  Forgot Password?
+                </Link>
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-4 py-3 pr-12 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
 
             <Button type="submit" variant="primary" fullWidth loading={loading}>
               Login

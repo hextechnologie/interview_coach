@@ -35,11 +35,11 @@ const PLANS = [
   {
     name: 'Basic',
     monthlyPrice: 9,
-    annualPrice: 75, // 2 months free
+    annualPrice: 7,
     interviews: 20,
     priceId: {
-      monthly: process.env.NEXT_PUBLIC_STRIPE_BASIC_PRICE_ID,
-      annual: process.env.NEXT_PUBLIC_STRIPE_BASIC_ANNUAL_PRICE_ID,
+      monthly: process.env.NEXT_PUBLIC_STRIPE_BASIC_PRICE_ID || 'price_basic_monthly',
+      annual: process.env.NEXT_PUBLIC_STRIPE_BASIC_ANNUAL_PRICE_ID || 'price_basic_annual',
     },
     tier: 'basic',
     features: [
@@ -64,11 +64,11 @@ const PLANS = [
   {
     name: 'Pro',
     monthlyPrice: 19,
-    annualPrice: 158, // 2 months free
+    annualPrice: 15,
     interviews: '∞',
     priceId: {
-      monthly: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID,
-      annual: process.env.NEXT_PUBLIC_STRIPE_PRO_ANNUAL_PRICE_ID,
+      monthly: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || 'price_pro_monthly',
+      annual: process.env.NEXT_PUBLIC_STRIPE_PRO_ANNUAL_PRICE_ID || 'price_pro_annual',
     },
     tier: 'pro',
     popular: true,
@@ -95,11 +95,11 @@ const PLANS = [
   {
     name: 'Team',
     monthlyPrice: 49,
-    annualPrice: 408, // 2 months free
+    annualPrice: 39,
     interviews: '∞',
     priceId: {
-      monthly: process.env.NEXT_PUBLIC_STRIPE_TEAM_PRICE_ID,
-      annual: process.env.NEXT_PUBLIC_STRIPE_TEAM_ANNUAL_PRICE_ID,
+      monthly: process.env.NEXT_PUBLIC_STRIPE_TEAM_PRICE_ID || 'price_team_monthly',
+      annual: process.env.NEXT_PUBLIC_STRIPE_TEAM_ANNUAL_PRICE_ID || 'price_team_annual',
     },
     tier: 'team',
     features: [
@@ -240,7 +240,7 @@ export default function PricingPage() {
               Annual
             </span>
             {billingCycle === 'annual' && (
-              <Badge variant="success" className="ml-2">Save 17% 🎉</Badge>
+              <Badge variant="success" className="ml-2">Save with annual billing</Badge>
             )}
           </div>
         </div>
@@ -274,8 +274,8 @@ export default function PricingPage() {
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge variant="success">🔥 Most Popular</Badge>
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 animate-pulse">
+                  <Badge variant="success">Most Popular</Badge>
                 </div>
               )}
 
@@ -283,11 +283,11 @@ export default function PricingPage() {
                 <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
                 <div className="mb-2">
                   <span className="text-4xl font-bold gradient-text">${getPrice(plan)}</span>
-                  <span className="text-gray-400 text-sm">/{billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                  <span className="text-gray-400 text-sm">/mo</span>
                 </div>
                 {billingCycle === 'annual' && plan.monthlyPrice > 0 && (
                   <p className="text-xs text-green-400">
-                    ${(getPrice(plan) / 12).toFixed(2)}/month billed annually
+                    billed annually at the discounted rate
                   </p>
                 )}
                 <p className="text-gray-400 mt-2 text-sm">{plan.interviews} interviews</p>
@@ -315,6 +315,12 @@ export default function PricingPage() {
                   ? 'Get Started'
                   : 'Subscribe'}
               </Button>
+
+              {plan.monthlyPrice > 0 && (
+                <p className="mt-3 text-center text-xs text-green-400">
+                  30-day money back guarantee
+                </p>
+              )}
             </Card>
           ))}
         </div>
@@ -401,6 +407,28 @@ export default function PricingPage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <div className="mt-16 max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">Pricing FAQ</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card>
+                <h3 className="font-semibold mb-2">Can I cancel anytime?</h3>
+                <p className="text-sm text-gray-400">Yes. You can cancel or change plans whenever you want from your billing portal.</p>
+              </Card>
+              <Card>
+                <h3 className="font-semibold mb-2">Do you offer refunds?</h3>
+                <p className="text-sm text-gray-400">Yes. Every paid plan includes a 30-day money back guarantee.</p>
+              </Card>
+              <Card>
+                <h3 className="font-semibold mb-2">What happens when I upgrade?</h3>
+                <p className="text-sm text-gray-400">Your interview limits and premium features update automatically after checkout.</p>
+              </Card>
+              <Card>
+                <h3 className="font-semibold mb-2">Can I switch between monthly and annual?</h3>
+                <p className="text-sm text-gray-400">Absolutely. You can change your billing cadence whenever it makes sense for you.</p>
+              </Card>
             </div>
           </div>
         </div>

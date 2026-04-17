@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AuthProvider } from '@/components/AuthProvider'
 import { LanguageProvider } from '@/components/LanguageProvider'
+import { CookieConsent } from '@/components/CookieConsent'
+import { ScrollToTopButton } from '@/components/ScrollToTopButton'
 import { OrganizationSchema, WebsiteSchema, SoftwareApplicationSchema } from '@/components/StructuredData'
 import { createMetadata } from '@/lib/metadata'
 
@@ -22,7 +24,11 @@ export default function RootLayout({
         <WebsiteSchema />
         <SoftwareApplicationSchema />
         <LanguageProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <ScrollToTopButton />
+            <CookieConsent />
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>
