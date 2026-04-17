@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS public.interview_sessions (
   completed_at TIMESTAMP WITH TIME ZONE,
   total_questions INTEGER DEFAULT 0,
   questions_answered INTEGER DEFAULT 0,
+  interview_config JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 

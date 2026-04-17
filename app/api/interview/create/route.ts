@@ -71,35 +71,56 @@ export async function POST(request: NextRequest) {
       ? mainSkills
       : personalizationKeywords.slice(0, 6)
 
-    const { data: session, error: sessionError } = await supabaseAdmin
+    const baseSessionPayload = {
+      user_id: user.id,
+      job_role: jobTitle,
+      industry: industry || null,
+      difficulty_level: (experienceLevel || 'mid').toLowerCase(),
+      status: 'in_progress' as const,
+      total_questions: 6,
+      questions_answered: 0,
+    }
+
+    const enhancedSessionPayload = {
+      ...baseSessionPayload,
+      interview_config: {
+        resumeText: summarizeText(resumeText || '', 2500),
+        resumeFileName,
+        jobDescription: summarizeText(jobDescription || '', 2500),
+        language: language || 'en',
+        interviewerType: interviewerType || 'Hiring Manager',
+        interviewType: interviewType || 'Mixed',
+        interviewRound: interviewRound || 'First Round',
+        yearsOfExperience: yearsOfExperience || 0,
+        mainSkills: normalizedSkills,
+        weakAreas: weakAreas || [],
+        role: jobTitle,
+        targetCompany: targetCompany || '',
+        realCompanyMode: Boolean(realCompanyMode),
+        personalizationKeywords,
+      },
+    }
+
+    // Some deployed databases may still be missing the newer interview_config column.
+    // Retry without that field so interview creation still works instead of blocking the user.
+    let { data: session, error: sessionError } = await supabaseAdmin
       .from('interview_sessions')
-      .insert({
-        user_id: user.id,
-        job_role: jobTitle,
-        industry: industry || null,
-        difficulty_level: (experienceLevel || 'mid').toLowerCase(),
-        status: 'in_progress',
-        total_questions: 6,
-        questions_answered: 0,
-        interview_config: {
-          resumeText: summarizeText(resumeText || '', 2500),
-          resumeFileName,
-          jobDescription: summarizeText(jobDescription || '', 2500),
-          language: language || 'en',
-          interviewerType: interviewerType || 'Hiring Manager',
-          interviewType: interviewType || 'Mixed',
-          interviewRound: interviewRound || 'First Round',
-          yearsOfExperience: yearsOfExperience || 0,
-          mainSkills: normalizedSkills,
-          weakAreas: weakAreas || [],
-          role: jobTitle,
-          targetCompany: targetCompany || '',
-          realCompanyMode: Boolean(realCompanyMode),
-          personalizationKeywords,
-        },
-      })
+      .insert(enhancedSessionPayload)
       .select()
       .single()
+
+    if (sessionError?.message?.toLowerCase().includes('interview_config')) {
+      console.warn('interview_config column missing; retrying with base session payload')
+
+      const fallbackResult = await supabaseAdmin
+        .from('interview_sessions')
+        .insert(baseSessionPayload)
+        .select()
+        .single()
+
+      session = fallbackResult.data
+      sessionError = fallbackResult.error
+    }
 
     if (sessionError) {
       return NextResponse.json({ error: sessionError.message }, { status: 500 })
