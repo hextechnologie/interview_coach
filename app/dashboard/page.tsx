@@ -13,7 +13,6 @@ import {
   Calendar,
   Plus,
   CreditCard,
-  MoreVertical,
   Trash2,
   Flame,
   ArrowRight,
@@ -85,7 +84,6 @@ export default function DashboardPage() {
     streakDays: 0,
   })
   const [loading, setLoading] = useState(true)
-  const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -100,19 +98,6 @@ export default function DashboardPage() {
     }
   }, [user, profile])
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('.menu-container')) {
-        setOpenMenu(null)
-      }
-    }
-
-    if (openMenu) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [openMenu])
 
   const fetchDashboardData = async () => {
     try {
@@ -186,7 +171,6 @@ export default function DashboardPage() {
       }
 
       await fetchDashboardData()
-      setOpenMenu(null)
       alert('Interview deleted. Credits were not refunded.')
     } catch (error) {
       console.error('Error deleting interview:', error)
@@ -419,48 +403,25 @@ export default function DashboardPage() {
                             </Badge>
                           </td>
                           <td className="py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex flex-col sm:flex-row items-end justify-end gap-2">
+                              <Button
+                                variant="danger"
+                                className="px-3 py-2 text-xs gap-1"
+                                onClick={() => handleDeleteInterview(session.id)}
+                                loading={deletingId === session.id}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                Delete
+                              </Button>
+
                               <Link href={session.status === 'completed' ? `/interview/summary/${session.id}` : `/interview/${session.id}`}>
                                 <Button variant="outline" className="px-3 py-2 text-xs gap-1">
                                   {session.status === 'completed' ? 'View' : 'Continue'}
                                   <ArrowRight className="w-3 h-3" />
                                 </Button>
                               </Link>
-
-                              <div className="relative menu-container">
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault()
-                                    e.stopPropagation()
-                                    setOpenMenu(openMenu === session.id ? null : session.id)
-                                  }}
-                                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                                  aria-label="Session actions"
-                                >
-                                  <MoreVertical className="w-4 h-4 text-gray-400" />
-                                </button>
-
-                                {openMenu === session.id && (
-                                  <div className="absolute right-0 top-full mt-2 w-56 bg-card border border-border rounded-lg shadow-lg py-2 z-50">
-                                    <button
-                                      onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        handleDeleteInterview(session.id)
-                                      }}
-                                      disabled={deletingId === session.id}
-                                      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-500/10 transition-colors text-left text-red-400 disabled:opacity-50"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                      <span>{deletingId === session.id ? 'Deleting...' : 'Delete interview'}</span>
-                                    </button>
-                                    <p className="px-4 pt-2 text-xs text-gray-500">
-                                      Credits are not refunded after deletion.
-                                    </p>
-                                  </div>
-                                )}
-                              </div>
                             </div>
+                            <p className="mt-2 text-xs text-gray-500">Credits are not refunded.</p>
                           </td>
                         </tr>
                       ))}
