@@ -9,11 +9,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 export function getFirstName(fullName?: string | null, email?: string | null): string {
   if (fullName && fullName.trim()) {
     const first = fullName.trim().split(/\s+/)[0]
-    return first.charAt(0).toUpperCase() + first.slice(1)
+    return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()
   }
   if (email) {
-    const prefix = email.split('@')[0].replace(/[._\-]/g, ' ').trim().split(/\s+/)[0]
-    return prefix.charAt(0).toUpperCase() + prefix.slice(1)
+    // Split on dots/underscores/dashes, take first meaningful segment, strip trailing digits
+    const parts = email.split('@')[0].split(/[._\-]/)
+    const word = parts[0].replace(/\d+$/, '').trim()
+    if (word.length >= 2) return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    // If first part is too short (e.g. just numbers), try second part
+    const fallback = (parts[1] || parts[0]).replace(/\d+$/, '').trim()
+    if (fallback.length >= 2) return fallback.charAt(0).toUpperCase() + fallback.slice(1).toLowerCase()
   }
   return 'there'
 }
