@@ -174,7 +174,6 @@ export default function CoachSignupPage() {
           <h1 className="mb-2 text-3xl font-bold">Coach signup</h1>
           <p className="mb-6 text-gray-400">Create your professional profile and start earning from mock interview sessions.</p>
 
-          {success && <div className="mb-4 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">{success}</div>}
           {error && <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
 
           {!success ? (
