@@ -136,7 +136,7 @@ export default function CoachProfilePage() {
         price_per_hour:   Number(price)   || 0,
         years_experience: Number(yearsExperience) || 0,
         companies:        companies,
-      })
+      }, { onConflict: 'user_id' })
       if (coachError) throw coachError
 
       // 4. Sync specializations (delete + re-insert)
