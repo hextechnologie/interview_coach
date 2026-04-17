@@ -23,9 +23,9 @@ export default function ForgotPasswordPage() {
     })
 
     if (error) {
-      setError(error.message)
+      setError("We couldn't send a reset email. Please check the address and try again.")
     } else {
-      setMessage('Password reset link sent. Please check your inbox.')
+      setMessage('Check your inbox — a password reset link has been sent.')
     }
 
     setLoading(false)

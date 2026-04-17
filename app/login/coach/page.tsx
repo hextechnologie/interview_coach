@@ -7,6 +7,21 @@ import { Button, Card, Input, Badge } from '@/components/ui'
 import { useAuth } from '@/components/AuthProvider'
 import { supabase } from '@/lib/supabase'
 
+function friendlyError(msg: string): string {
+  const m = msg.toLowerCase()
+  if (m.includes('invalid login credentials') || m.includes('invalid credentials'))
+    return 'Incorrect email or password. Please double-check and try again.'
+  if (m.includes('email not confirmed'))
+    return 'Your email address is not verified yet. Check your inbox for a confirmation link.'
+  if (m.includes('too many requests') || m.includes('rate limit'))
+    return 'Too many login attempts. Please wait a few minutes and try again.'
+  if (m.includes('user not found') || m.includes('no user found'))
+    return 'No account found with this email. Did you mean to sign up?'
+  if (m.includes('network') || m.includes('fetch'))
+    return 'Network error. Please check your connection and try again.'
+  return msg || 'An unexpected error occurred. Please try again.'
+}
+
 export default function CoachLoginPage() {
   const { signIn } = useAuth()
   const [email, setEmail] = useState('')
@@ -33,7 +48,7 @@ export default function CoachLoginPage() {
     try {
       await signIn(email, password)
     } catch (err: any) {
-      setError(err.message || 'Unable to login right now.')
+      setError(friendlyError(err.message))
     } finally {
       setLoading(false)
     }
@@ -90,6 +105,9 @@ export default function CoachLoginPage() {
               </div>
             </div>
 
+            <div className="flex items-center justify-end">
+              <Link href="/forgot-password" className="text-xs text-gray-400 hover:text-primary transition-colors">Forgot password?</Link>
+            </div>
             <Button type="submit" variant="primary" fullWidth loading={loading}>Enter coach dashboard</Button>
           </form>
 
