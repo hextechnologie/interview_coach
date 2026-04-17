@@ -33,6 +33,7 @@ export default function InterviewSetupPage() {
   const [loading, setLoading] = useState(false)
   const [uploadingResume, setUploadingResume] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [resumeStatus, setResumeStatus] = useState('')
 
   const [resumeText, setResumeText] = useState('')
   const [resumeFileName, setResumeFileName] = useState('')
@@ -89,18 +90,65 @@ export default function InterviewSetupPage() {
     setStep((prev) => prev - 1)
   }
 
+  const extractPdfText = async (file: File) => {
+    // Use PDF.js so uploaded PDF resumes are converted into readable text instead of raw binary data.
+    const pdfjsLib = await import('pdfjs-dist')
+    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.mjs',
+      import.meta.url
+    ).toString()
+
+    const arrayBuffer = await file.arrayBuffer()
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+    const pages: string[] = []
+
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber)
+      const textContent = await page.getTextContent()
+      const pageText = textContent.items
+        .map((item: any) => ('str' in item ? item.str : ''))
+        .join(' ')
+      pages.push(pageText)
+    }
+
+    return pages.join('\n').replace(/\s+/g, ' ').trim()
+  }
+
   const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
     setUploadingResume(true)
+    setResumeStatus('')
+    setResumeFileName(file.name)
+
     try {
-      const text = await file.text()
+      const extension = file.name.split('.').pop()?.toLowerCase()
+      let text = ''
+
+      if (file.type === 'application/pdf' || extension === 'pdf') {
+        text = await extractPdfText(file)
+      } else if (file.type.startsWith('text/') || extension === 'txt' || extension === 'md') {
+        text = await file.text()
+      } else {
+        setResumeText('')
+        setResumeStatus('This file type is not supported for automatic parsing yet. Please upload a PDF or paste your resume text.')
+        return
+      }
+
+      if (!text || text.trim().length < 30) {
+        setResumeText('')
+        setResumeStatus('I could not extract enough readable text from that file. Please paste your resume text or upload a text-based PDF.')
+        return
+      }
+
       setResumeText(text)
-      setResumeFileName(file.name)
+      setResumeStatus('Resume imported successfully. You can edit the extracted text below if needed.')
+      setErrors((prev) => ({ ...prev, resumeText: '' }))
     } catch (error) {
       console.error('Resume upload error:', error)
-      alert('Could not read that file. Please paste your resume text instead.')
+      setResumeText('')
+      setResumeStatus('That resume could not be parsed. Please paste your resume text or use a text-based PDF.')
     } finally {
       setUploadingResume(false)
     }
@@ -249,7 +297,7 @@ export default function InterviewSetupPage() {
                 <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm cursor-pointer hover:bg-primary/10 transition-colors">
                   <Upload className="w-4 h-4" />
                   {uploadingResume ? 'Reading resume...' : resumeFileName ? `Uploaded: ${resumeFileName}` : 'Upload a resume file'}
-                  <input type="file" className="hidden" onChange={handleResumeUpload} />
+                  <input type="file" accept=".pdf,.txt,.md" className="hidden" onChange={handleResumeUpload} />
                 </label>
 
                 <textarea
@@ -259,6 +307,11 @@ export default function InterviewSetupPage() {
                   className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.resumeText ? 'border-red-500' : 'border-border'}`}
                   placeholder="Paste your resume here. Include skills, projects, achievements, and technologies you want the coach to focus on."
                 />
+                {resumeStatus && (
+                  <p className={`text-sm ${resumeText ? 'text-green-400' : 'text-yellow-300'}`}>
+                    {resumeStatus}
+                  </p>
+                )}
                 {errors.resumeText && <p className="text-sm text-red-400">{errors.resumeText}</p>}
               </div>
             )}
