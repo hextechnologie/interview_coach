@@ -42,7 +42,6 @@ export default function CoachesPage() {
           coach_profiles!inner(title, bio, years_experience, price_per_hour, is_verified),
           coach_specializations(specialization)
         `)
-        .in('user_type', ['coach', 'both'])
 
       if (!error && data) {
         setCoaches(data as unknown as RealCoach[])

@@ -259,10 +259,15 @@ export default function InterviewSetupPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <span className="text-2xl font-bold gradient-text">Interview Coach</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
+              <ChevronLeft className="w-4 h-4" /> Back to Dashboard
+            </Link>
+            <Link href="/" className="flex items-center gap-2">
+              <Sparkles className="w-8 h-8 text-primary" />
+              <span className="text-2xl font-bold gradient-text">Interview Coach</span>
+            </Link>
+          </div>
           <p className="text-sm text-gray-400">Free plan: {profile?.interviews_used_this_month || 0} / {profile?.interviews_limit || 3} sessions used</p>
         </div>
       </header>
