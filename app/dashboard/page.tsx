@@ -7,7 +7,6 @@ import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
 import { supabase, InterviewSession, InterviewAnswer, getFirstName } from '@/lib/supabase'
 import JobOffers from '@/components/JobOffers'
-import { mockCoaches } from '@/lib/coach-marketplace'
 import {
   Sparkles,
   LogOut,
@@ -106,6 +105,7 @@ export default function DashboardPage() {
   const [profileOpen, setProfileOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [tipIndex, setTipIndex] = useState(0)
+  const [realCoaches, setRealCoaches] = useState<{ id: string; full_name: string | null; coach_profiles: { title: string | null; price_per_hour: number | null } | null; coach_specializations: { specialization: string }[] }[]>([])
   const profileRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -122,6 +122,7 @@ export default function DashboardPage() {
     if (user && profile) {
       fetchDashboardData()
       fetchBookings()
+      fetchRealCoaches()
     }
   }, [user, profile])
 
@@ -148,6 +149,18 @@ export default function DashboardPage() {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
+
+  const fetchRealCoaches = async () => {
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, coach_profiles(title, price_per_hour), coach_specializations(specialization)')
+        .in('user_type', ['coach', 'both'])
+        .not('coach_profiles', 'is', null)
+        .limit(6)
+      setRealCoaches((data || []) as any)
+    } catch { /* ignore */ }
+  }
 
   const fetchBookings = async () => {
     if (!user) return
@@ -309,14 +322,7 @@ export default function DashboardPage() {
     { id: 'perfect', label: 'Perfect 10', icon: '💎', earned: sessions.some((s) => Number(s.overall_score) >= 10) },
   ]
 
-  const recommendedCoaches = mockCoaches
-    .filter((c) => {
-      const field = (profile?.target_job_field || '').toLowerCase()
-      return !field || c.specializations.some((sp) => field.includes(sp.toLowerCase()))
-    })
-    .slice(0, 3)
-    .concat(mockCoaches)
-    .slice(0, 3)
+  const recommendedCoaches = realCoaches.slice(0, 3)
 
   const rawName = profile?.first_name || getFirstName(profile?.full_name, user?.email)
   const displayName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : rawName
@@ -665,21 +671,26 @@ export default function DashboardPage() {
                 <Link href="/coaches" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">See All →</Link>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
-                {recommendedCoaches.map((coach) => (
-                  <div key={coach.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors flex flex-col gap-3" style={{ background: '#0a0f1e' }}>
-                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${coach.avatar} flex items-center justify-center text-lg font-bold`}>{coach.name.charAt(0)}</div>
-                    <div className="flex-1">
-                      <p className="font-semibold">{coach.name}</p>
-                      <p className="text-xs text-gray-400 mb-2 line-clamp-1">{coach.title}</p>
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="text-yellow-300">⭐ {coach.rating}</span>
-                        <span className="text-gray-500">({coach.reviewCount})</span>
-                        <span className="text-purple-400 ml-auto">${coach.price}/sess</span>
+                {recommendedCoaches.length === 0 ? (
+                  <div className="col-span-3 py-8 text-center text-gray-400 text-sm">No coaches registered yet. <Link href="/coaches" className="text-purple-400 hover:underline">Browse all coaches →</Link></div>
+                ) : recommendedCoaches.map((coach) => {
+                  const name = coach.full_name || 'Coach'
+                  const specs = coach.coach_specializations?.map((s: any) => s.specialization) || []
+                  return (
+                    <div key={coach.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors flex flex-col gap-3" style={{ background: '#0a0f1e' }}>
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-lg font-bold">{name.charAt(0).toUpperCase()}</div>
+                      <div className="flex-1">
+                        <p className="font-semibold">{name}</p>
+                        <p className="text-xs text-gray-400 mb-2 line-clamp-1">{coach.coach_profiles?.title || 'Interview Coach'}</p>
+                        <div className="flex items-center gap-2 text-xs">
+                          {specs.slice(0, 2).map((s: string) => <span key={s} className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">{s}</span>)}
+                          {coach.coach_profiles?.price_per_hour && <span className="text-purple-400 ml-auto">${coach.coach_profiles.price_per_hour}/hr</span>}
+                        </div>
                       </div>
+                      <Link href={`/coaches/${coach.id}`}><Button variant="outline" fullWidth className="text-xs">View Profile</Button></Link>
                     </div>
-                    <Link href={`/coaches/${coach.id}`}><Button variant="outline" fullWidth className="text-xs">View Profile</Button></Link>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </DarkCard>
 
