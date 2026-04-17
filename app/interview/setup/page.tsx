@@ -57,6 +57,22 @@ export default function InterviewSetupPage() {
 
   const limitReached = !!profile && profile.interviews_used_this_month >= profile.interviews_limit
 
+  // Check if profile is complete
+  const isProfileComplete = () => {
+    if (!profile) return false
+    const p = profile as any
+    
+    const hasHeadline = !!p.professional_headline?.trim()
+    const hasAbout = !!p.about_me?.trim()
+    const hasExperience = p.experience_details === 'No experience' || !!p.experience_details?.trim()
+    const hasEducation = !!p.education_details?.trim()
+    const hasSkills = Array.isArray(p.skills) && p.skills.length > 0
+
+    return hasHeadline && hasAbout && hasExperience && hasEducation && hasSkills
+  }
+
+  const profileIncomplete = !isProfileComplete()
+
   const validateStep = (currentStep: number) => {
     const nextErrors: Record<string, string> = {}
 
@@ -227,6 +243,30 @@ export default function InterviewSetupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
+      </div>
+    )
+  }
+
+  if (profileIncomplete) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-6 py-20 max-w-3xl">
+          <Card className="text-center border-red-500/30 bg-red-500/5">
+            <FileText className="w-14 h-14 text-red-400 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold mb-3">Complete Your Profile First</h1>
+            <p className="text-gray-400 mb-6">
+              Before starting an interview, you need to complete your profile with your professional headline, about section, experience, education, and skills.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <Link href="/profile">
+                <Button variant="primary">Complete Profile</Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button variant="outline">Back to Dashboard</Button>
+              </Link>
+            </div>
+          </Card>
+        </div>
       </div>
     )
   }
