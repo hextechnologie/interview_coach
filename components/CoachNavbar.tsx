@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import { supabase, getFirstName } from '@/lib/supabase'
+import CreditBalanceButton from '@/components/CreditBalanceButton'
 import {
   Sparkles,
   CalendarDays,
@@ -109,8 +110,11 @@ export default function CoachNavbar() {
             ))}
           </nav>
 
-          {/* Right: notifications + profile */}
+          {/* Right: credits + notifications + profile */}
           <div className="hidden md:flex items-center gap-2">
+            {/* Credits Balance */}
+            <CreditBalanceButton />
+
             {/* Notification bell */}
             <div className="relative" ref={notifRef}>
               <button

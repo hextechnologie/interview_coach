@@ -5,6 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
+import CreditBalanceButton from '@/components/CreditBalanceButton'
 import { supabase, InterviewSession, InterviewAnswer, getFirstName } from '@/lib/supabase'
 import JobOffers from '@/components/JobOffers'
 import {
@@ -383,6 +384,7 @@ export default function DashboardPage() {
 
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-3">
+              <CreditBalanceButton />
               <NotificationBell />
               {!isCoach && <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">Find a Coach</Button></Link>}
               {isCoach && <Link href="/coach/dashboard"><Button variant="outline" className="text-sm gap-2">Coach Dashboard</Button></Link>}
