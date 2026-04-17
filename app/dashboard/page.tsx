@@ -36,14 +36,18 @@ export default function DashboardPage() {
   }, [user, profile])
 
   useEffect(() => {
-    const handleClickOutside = () => {
-      setOpenMenu(null)
-      setDeleteConfirm(null)
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      // Don't close if clicking inside the menu
+      if (!target.closest('.menu-container')) {
+        setOpenMenu(null)
+        setDeleteConfirm(null)
+      }
     }
     
     if (openMenu) {
-      document.addEventListener('click', handleClickOutside)
-      return () => document.removeEventListener('click', handleClickOutside)
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [openMenu])
 
@@ -291,7 +295,7 @@ export default function DashboardPage() {
                     </Link>
 
                     {/* Three-dot menu */}
-                    <div className="relative ml-4">
+                    <div className="relative ml-4 menu-container">
                       <button
                         onClick={(e) => {
                           e.preventDefault()
@@ -305,7 +309,7 @@ export default function DashboardPage() {
                       </button>
 
                       {openMenu === session.id && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-lg shadow-lg py-2 z-10">
+                        <div className="absolute right-0 top-full mt-2 w-64 bg-card border border-border rounded-lg shadow-lg py-2 z-10">
                           <button
                             onClick={(e) => {
                               e.preventDefault()
@@ -313,7 +317,7 @@ export default function DashboardPage() {
                               handleDeleteInterview(session.id)
                             }}
                             disabled={deleting}
-                            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-500/10 transition-colors text-left text-red-400"
+                            className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-500/10 transition-colors text-left text-red-400 disabled:opacity-50"
                           >
                             <Trash2 className="w-4 h-4" />
                             <span className="font-medium">
@@ -324,7 +328,7 @@ export default function DashboardPage() {
                           </button>
                           {deleteConfirm === session.id && (
                             <p className="px-4 py-2 text-xs text-gray-400 border-t border-border mt-2">
-                              Credits will NOT be refunded
+                              ⚠️ Credits will NOT be refunded
                             </p>
                           )}
                         </div>
