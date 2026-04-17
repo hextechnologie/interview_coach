@@ -12,6 +12,7 @@ type CoachDetail = {
   full_name: string | null
   first_name: string | null
   last_name: string | null
+  email: string | null
   avatar_url: string | null
   city: string | null
   country: string | null
@@ -48,7 +49,7 @@ export default function CoachDetailPage() {
       // Get profile row
       const { data: profile } = await supabase
         .from('profiles')
-        .select('id, full_name, first_name, last_name, avatar_url, city, country, linkedin_url')
+        .select('id, full_name, first_name, last_name, email, avatar_url, city, country, linkedin_url')
         .eq('id', id)
         .maybeSingle()
 
@@ -69,6 +70,7 @@ export default function CoachDetailPage() {
         full_name: profile?.full_name ?? null,
         first_name: profile?.first_name ?? null,
         last_name: profile?.last_name ?? null,
+        email: profile?.email ?? null,
         avatar_url: profile?.avatar_url ?? null,
         city: profile?.city ?? null,
         country: profile?.country ?? null,
@@ -97,7 +99,7 @@ export default function CoachDetailPage() {
     </div>
   )
 
-  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
+  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || coach.email?.split('@')[0] || 'Coach'
   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
   const specs = coach.coach_specializations.map((s) => s.specialization)
   const avgRating = coach.reviews.length

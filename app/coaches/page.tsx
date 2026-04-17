@@ -12,6 +12,7 @@ type RealCoach = {
   full_name: string | null
   first_name: string | null
   last_name: string | null
+  email: string | null
   avatar_url: string | null
   city: string | null
   country: string | null
@@ -47,7 +48,7 @@ export default function CoachesPage() {
       // Step 2: get profile rows for those user ids
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, full_name, first_name, last_name, avatar_url, city, country')
+        .select('id, full_name, first_name, last_name, email, avatar_url, city, country')
         .in('id', userIds)
 
       // Step 3: get specializations for those coaches
@@ -65,6 +66,7 @@ export default function CoachesPage() {
           full_name: profile?.full_name ?? null,
           first_name: profile?.first_name ?? null,
           last_name: profile?.last_name ?? null,
+          email: profile?.email ?? null,
           avatar_url: profile?.avatar_url ?? null,
           city: profile?.city ?? null,
           country: profile?.country ?? null,
@@ -88,7 +90,7 @@ export default function CoachesPage() {
   const filteredCoaches = useMemo(() => {
     return coaches
       .filter((coach) => {
-        const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ')
+        const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || coach.email?.split('@')[0] || 'Coach'
         const title = coach.coach_profiles?.title || ''
         const specs = coach.coach_specializations.map((s) => s.specialization)
         const price = coach.coach_profiles?.price_per_hour ?? 0
@@ -175,7 +177,7 @@ export default function CoachesPage() {
             ) : (
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {filteredCoaches.map((coach) => {
-                  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
+                  const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || coach.email?.split('@')[0] || 'Coach'
                   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
                   const price = coach.coach_profiles?.price_per_hour
                   const specs = coach.coach_specializations.map((s) => s.specialization)

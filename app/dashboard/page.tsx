@@ -160,7 +160,7 @@ export default function DashboardPage() {
       const userIds = cpData.map((c) => c.user_id)
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, email')
         .in('id', userIds)
       const { data: specsData } = await supabase
         .from('coach_specializations')
@@ -169,6 +169,7 @@ export default function DashboardPage() {
       const merged = cpData.map((cp) => ({
         id: cp.user_id,
         full_name: profileData?.find((p) => p.id === cp.user_id)?.full_name ?? null,
+        email: profileData?.find((p) => p.id === cp.user_id)?.email ?? null,
         coach_profiles: { title: cp.title, price_per_hour: cp.price_per_hour },
         coach_specializations: (specsData ?? []).filter((s) => s.coach_id === cp.user_id).map((s) => ({ specialization: s.specialization })),
       }))
@@ -688,7 +689,7 @@ export default function DashboardPage() {
                 {recommendedCoaches.length === 0 ? (
                   <div className="col-span-3 py-8 text-center text-gray-400 text-sm">No coaches registered yet. <Link href="/coaches" className="text-purple-400 hover:underline">Browse all coaches →</Link></div>
                 ) : recommendedCoaches.map((coach) => {
-                  const name = coach.full_name || 'Coach'
+                  const name = coach.full_name || (coach as any).email?.split('@')[0] || 'Coach'
                   const specs = coach.coach_specializations?.map((s: any) => s.specialization) || []
                   return (
                     <div key={coach.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors flex flex-col gap-3" style={{ background: '#0a0f1e' }}>
