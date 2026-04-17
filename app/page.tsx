@@ -407,7 +407,6 @@ export default function HomePage() {
                 <li><Link href="/terms" className="hover:text-primary">Terms of Service</Link></li>
               </ul>
             </div>
-            </div>
           </div>
           <div className="text-center text-gray-400 text-sm pt-8 border-t border-border">
             <p>&copy; 2026 Interview Coach. All rights reserved. Powered by Claude AI.</p>
