@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui'
 import { Sparkles, Target, TrendingUp, CheckCircle, Play } from 'lucide-react'
 import Link from 'next/link'
