@@ -213,11 +213,52 @@ export default function PricingPage() {
       </header>
 
       <div className="container mx-auto px-6 py-16 relative z-10">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4">Choose Your Plan</h1>
-          <p className="text-xl text-gray-400 mb-8">
-            Start practicing with AI-powered interview coaching
+
+        {/* ── CHOOSE YOUR PATH ── */}
+        <div className="text-center mb-16">
+          <p className="text-primary text-sm font-semibold mb-2">CHOOSE YOUR PATH</p>
+          <h1 className="text-5xl font-bold mb-4">Two Ways to Prepare</h1>
+          <p className="text-xl text-gray-400 mb-10">Use AI, work with a real coach, or combine both.</p>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* AI Plans */}
+            <div className="glass rounded-2xl p-8 border border-primary/30 text-left">
+              <div className="text-4xl mb-4">🤖</div>
+              <h2 className="text-2xl font-bold mb-2">AI Practice Plans</h2>
+              <p className="text-gray-400 mb-4 text-sm">Unlimited mock interviews, instant feedback, and score tracking. Pick the subscription that fits your pace.</p>
+              <ul className="space-y-2 text-sm text-gray-400 mb-6">
+                <li>✓ 3 free interviews per month — forever</li>
+                <li>✓ Upgrade for unlimited practice</li>
+                <li>✓ Works 24/7, any device</li>
+              </ul>
+              <p className="text-xs text-gray-500">See plans below ↓</p>
+            </div>
+
+            {/* Coach Sessions */}
+            <div className="glass rounded-2xl p-8 border border-green-500/30 text-left">
+              <div className="text-4xl mb-4">👨‍💼</div>
+              <h2 className="text-2xl font-bold mb-2">Coach Sessions</h2>
+              <p className="text-gray-400 mb-4 text-sm">Book a 1-on-1 session with a real expert from Google, Amazon, McKinsey and more. Pay per session — no subscription needed.</p>
+              <ul className="space-y-2 text-sm text-gray-400 mb-6">
+                <li>✓ 30 min session — from <span className="text-green-400 font-semibold">$15</span></li>
+                <li>✓ 60 min session — from <span className="text-green-400 font-semibold">$30</span></li>
+                <li>✓ 90 min session — from <span className="text-green-400 font-semibold">$50</span></li>
+              </ul>
+              <Link href="/coaches">
+                <Button variant="outline" fullWidth className="border-green-500/40 text-green-400 hover:border-green-500 gap-2">Find a Coach →</Button>
+              </Link>
+            </div>
+          </div>
+
+          <p className="text-sm text-purple-400 mt-6">
+            💡 Pro plan members get <strong>10% off</strong> all coach sessions.
           </p>
+        </div>
+
+        {/* ── AI PLANS (existing billing toggle + cards) ── */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-2">🤖 AI Practice Plans</h2>
+          <p className="text-gray-400 mb-8">Choose the subscription that fits your interview schedule.</p>
 
           {/* Billing Cycle Toggle */}
           <div className="flex items-center justify-center gap-4 mb-8">

@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 
 const siteConfig = {
-  name: 'Interview Coach',
-  description: 'Master your next job interview with AI-powered coaching. Practice with realistic interview simulations, get instant feedback, and prepare in 10+ languages.',
+  name: 'Interview Coach — AI Practice + Expert Human Coaches',
+  description: 'Practice with AI mock interviews and book 1-on-1 sessions with real expert coaches. Get instant feedback, improve faster, and land your dream job.',
   url: 'https://interview-coach.vercel.app',
   ogImage: '/og-image.jpg',
   links: {
@@ -36,11 +36,18 @@ export function createMetadata({
       'job interview practice',
       'interview feedback',
       'AI coaching',
+      'human coaching',
+      'career coaching',
       'career preparation',
       'interview simulator',
       'Claude AI',
       'technical interview',
       'behavioral interview',
+      'interview coach',
+      'expert coach',
+      'Google interview prep',
+      'Amazon interview prep',
+      'remote jobs',
     ],
     authors: [{ name: 'Interview Coach' }],
     creator: 'Interview Coach',
