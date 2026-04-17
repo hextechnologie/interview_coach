@@ -154,9 +154,8 @@ export default function DashboardPage() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('id, full_name, coach_profiles(title, price_per_hour), coach_specializations(specialization)')
+        .select('id, full_name, coach_profiles!inner(title, price_per_hour), coach_specializations(specialization)')
         .in('user_type', ['coach', 'both'])
-        .not('coach_profiles', 'is', null)
         .limit(6)
       setRealCoaches((data || []) as any)
     } catch { /* ignore */ }

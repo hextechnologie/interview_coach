@@ -39,11 +39,10 @@ export default function CoachesPage() {
         .from('profiles')
         .select(`
           id, full_name, first_name, last_name, avatar_url, city, country,
-          coach_profiles(title, bio, years_experience, price_per_hour, is_verified),
+          coach_profiles!inner(title, bio, years_experience, price_per_hour, is_verified),
           coach_specializations(specialization)
         `)
         .in('user_type', ['coach', 'both'])
-        .not('coach_profiles', 'is', null)
 
       if (!error && data) {
         setCoaches(data as unknown as RealCoach[])

@@ -40,7 +40,7 @@ export default function CoachDetailPage() {
         .from('profiles')
         .select(`
           id, full_name, first_name, last_name, avatar_url, city, country, linkedin_url,
-          coach_profiles(title, bio, years_experience, price_per_hour, companies, is_verified),
+          coach_profiles!inner(title, bio, years_experience, price_per_hour, companies, is_verified),
           coach_specializations(specialization),
           reviews(id, rating, comment, created_at, candidate:profiles!reviews_candidate_id_fkey(full_name))
         `)
