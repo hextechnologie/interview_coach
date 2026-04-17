@@ -17,7 +17,7 @@ export default function HomePage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   return (
-    <div>
+    <>
       <OrganizationSchema />
       <WebsiteSchema />
       <SoftwareApplicationSchema />
@@ -414,8 +414,7 @@ export default function HomePage() {
         </footer>
       </div>
 
-      {/* Video Modal */}
       <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
-    </div>
+    </>
   )
 }
