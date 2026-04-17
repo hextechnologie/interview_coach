@@ -5,7 +5,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
-import { supabase, InterviewSession, InterviewAnswer } from '@/lib/supabase'
+import { supabase, InterviewSession, InterviewAnswer, getFirstName } from '@/lib/supabase'
 import { mockCoaches } from '@/lib/coach-marketplace'
 import {
   Sparkles,
@@ -111,7 +111,11 @@ export default function DashboardPage() {
     if (!authLoading && !user) {
       router.push('/login')
     }
-  }, [user, authLoading, router])
+    // Coaches must never see the candidate dashboard
+    if (!authLoading && user && profile?.user_type === 'coach') {
+      router.replace('/coach/dashboard')
+    }
+  }, [user, authLoading, profile, router])
 
   useEffect(() => {
     if (user && profile) {
@@ -313,7 +317,7 @@ export default function DashboardPage() {
     .concat(mockCoaches)
     .slice(0, 3)
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'there'
+  const displayName = getFirstName(profile?.full_name, user?.email)
 
   if (authLoading || loading) {
     return (

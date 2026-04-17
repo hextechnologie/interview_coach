@@ -5,10 +5,25 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+/** Extract the first name from a full_name or email */
+export function getFirstName(fullName?: string | null, email?: string | null): string {
+  if (fullName && fullName.trim()) {
+    const first = fullName.trim().split(/\s+/)[0]
+    return first.charAt(0).toUpperCase() + first.slice(1)
+  }
+  if (email) {
+    const prefix = email.split('@')[0].replace(/[._\-]/g, ' ').trim().split(/\s+/)[0]
+    return prefix.charAt(0).toUpperCase() + prefix.slice(1)
+  }
+  return 'there'
+}
+
 export type Profile = {
   id: string
   email: string
   full_name?: string
+  first_name?: string
+  last_name?: string
   user_type?: 'candidate' | 'coach'
   avatar_url?: string
   target_job_field?: string
