@@ -180,6 +180,11 @@ CREATE INDEX IF NOT EXISTS idx_messages_booking_id           ON public.messages(
 CREATE INDEX IF NOT EXISTS idx_earnings_coach_id             ON public.earnings(coach_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id         ON public.notifications(user_id);
 
+-- ── ENSURE CORE COLUMNS EXIST (safe for pre-existing tables) ─
+-- profiles may have been created without user_type (some setups use `role`)
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS user_type text DEFAULT 'candidate';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role      text DEFAULT 'candidate';
+
 -- ── NEW COLUMNS (coach platform additions) ───────────────────
 ALTER TABLE public.profiles  ADD COLUMN IF NOT EXISTS first_name text;
 ALTER TABLE public.profiles  ADD COLUMN IF NOT EXISTS last_name  text;
@@ -410,8 +415,13 @@ CREATE TRIGGER update_profiles_updated_at
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, user_type)
-  VALUES (new.id, new.email, COALESCE(new.raw_user_meta_data->>'user_type', 'candidate'))
+  INSERT INTO public.profiles (id, email, user_type, role)
+  VALUES (
+    new.id,
+    new.email,
+    COALESCE(new.raw_user_meta_data->>'user_type', 'candidate'),
+    COALESCE(new.raw_user_meta_data->>'user_type', 'candidate')
+  )
   ON CONFLICT (id) DO NOTHING;
   RETURN new;
 END;
