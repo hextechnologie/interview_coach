@@ -163,7 +163,7 @@ export function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   )
 }
 
-export function Badge({ children, variant = 'default' }: { children: ReactNode; variant?: 'default' | 'success' | 'warning' | 'danger' }) {
+export function Badge({ children, variant = 'default', className = '' }: { children: ReactNode; variant?: 'default' | 'success' | 'warning' | 'danger'; className?: string }) {
   const variants = {
     default: 'bg-gray-700 text-gray-300',
     success: 'bg-green-900/30 text-green-400',
@@ -172,7 +172,7 @@ export function Badge({ children, variant = 'default' }: { children: ReactNode; 
   }
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${variants[variant]}`}>
+    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${variants[variant]} ${className}`}>
       {children}
     </span>
   )
