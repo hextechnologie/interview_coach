@@ -1,18 +1,15 @@
 -- ============================================================
--- Coach Public Profiles Policy
--- Allows anyone to read profiles of users who are coaches
--- Required for the /coaches browse page to work
+-- Public Profiles Policy
+-- Makes all profile rows publicly readable (names, locations, etc.)
+-- Required for the /coaches browse page and all coach listings to work.
+-- The old restrictive policy (auth.uid() = id) blocked reads of other users' profiles.
 -- Safe to run multiple times (DROP IF EXISTS guards)
 -- ============================================================
 
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Coach profile rows are publicly readable" ON public.profiles;
 
-CREATE POLICY "Coach profile rows are publicly readable"
+CREATE POLICY "Profiles are publicly readable"
   ON public.profiles
   FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.coach_profiles
-      WHERE coach_profiles.user_id = profiles.id
-    )
-  );
+  USING (true);
