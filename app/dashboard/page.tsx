@@ -152,11 +152,27 @@ export default function DashboardPage() {
 
   const fetchRealCoaches = async () => {
     try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, coach_profiles!inner(title, price_per_hour), coach_specializations(specialization)')
+      const { data: cpData } = await supabase
+        .from('coach_profiles')
+        .select('user_id, title, price_per_hour')
         .limit(6)
-      setRealCoaches((data || []) as any)
+      if (!cpData || cpData.length === 0) return
+      const userIds = cpData.map((c) => c.user_id)
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds)
+      const { data: specsData } = await supabase
+        .from('coach_specializations')
+        .select('coach_id, specialization')
+        .in('coach_id', userIds)
+      const merged = cpData.map((cp) => ({
+        id: cp.user_id,
+        full_name: profileData?.find((p) => p.id === cp.user_id)?.full_name ?? null,
+        coach_profiles: { title: cp.title, price_per_hour: cp.price_per_hour },
+        coach_specializations: (specsData ?? []).filter((s) => s.coach_id === cp.user_id).map((s) => ({ specialization: s.specialization })),
+      }))
+      setRealCoaches(merged as any)
     } catch { /* ignore */ }
   }
 

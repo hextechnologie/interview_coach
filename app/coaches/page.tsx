@@ -35,17 +35,51 @@ export default function CoachesPage() {
 
   useEffect(() => {
     const fetchCoaches = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id, full_name, first_name, last_name, avatar_url, city, country,
-          coach_profiles!inner(title, bio, years_experience, price_per_hour, is_verified),
-          coach_specializations(specialization)
-        `)
+      // Step 1: get all coach_profiles (public table, no RLS issues)
+      const { data: cpData, error: cpError } = await supabase
+        .from('coach_profiles')
+        .select('user_id, title, bio, years_experience, price_per_hour, is_verified')
 
-      if (!error && data) {
-        setCoaches(data as unknown as RealCoach[])
-      }
+      if (cpError || !cpData || cpData.length === 0) { setLoading(false); return }
+
+      const userIds = cpData.map((c) => c.user_id)
+
+      // Step 2: get profile rows for those user ids
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, full_name, first_name, last_name, avatar_url, city, country')
+        .in('id', userIds)
+
+      // Step 3: get specializations for those coaches
+      const { data: specsData } = await supabase
+        .from('coach_specializations')
+        .select('coach_id, specialization')
+        .in('coach_id', userIds)
+
+      // Step 4: merge into RealCoach shape
+      const merged: RealCoach[] = cpData.map((cp) => {
+        const profile = profileData?.find((p) => p.id === cp.user_id)
+        const specs = specsData?.filter((s) => s.coach_id === cp.user_id) ?? []
+        return {
+          id: cp.user_id,
+          full_name: profile?.full_name ?? null,
+          first_name: profile?.first_name ?? null,
+          last_name: profile?.last_name ?? null,
+          avatar_url: profile?.avatar_url ?? null,
+          city: profile?.city ?? null,
+          country: profile?.country ?? null,
+          coach_profiles: {
+            title: cp.title,
+            bio: cp.bio,
+            years_experience: cp.years_experience,
+            price_per_hour: cp.price_per_hour,
+            is_verified: cp.is_verified,
+          },
+          coach_specializations: specs.map((s) => ({ specialization: s.specialization })),
+        }
+      })
+
+      setCoaches(merged)
       setLoading(false)
     }
     fetchCoaches()

@@ -36,23 +36,54 @@ export default function CoachDetailPage() {
 
   useEffect(() => {
     const fetchCoach = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id, full_name, first_name, last_name, avatar_url, city, country, linkedin_url,
-          coach_profiles!inner(title, bio, years_experience, price_per_hour, companies, is_verified),
-          coach_specializations(specialization),
-          reviews(id, rating, comment, created_at, candidate:profiles!reviews_candidate_id_fkey(full_name))
-        `)
-        .eq('id', id)
-        .in('user_type', ['coach', 'both'])
+      // Get coach_profile for this user id
+      const { data: cp, error: cpError } = await supabase
+        .from('coach_profiles')
+        .select('user_id, title, bio, years_experience, price_per_hour, companies, is_verified')
+        .eq('user_id', id)
         .maybeSingle()
 
-      if (error || !data) {
-        setNotFound(true)
-      } else {
-        setCoach(data as unknown as CoachDetail)
-      }
+      if (cpError || !cp) { setNotFound(true); setLoading(false); return }
+
+      // Get profile row
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name, first_name, last_name, avatar_url, city, country, linkedin_url')
+        .eq('id', id)
+        .maybeSingle()
+
+      // Get specializations
+      const { data: specs } = await supabase
+        .from('coach_specializations')
+        .select('specialization')
+        .eq('coach_id', id)
+
+      // Get reviews
+      const { data: reviews } = await supabase
+        .from('reviews')
+        .select('id, rating, comment, created_at')
+        .eq('coach_id', id)
+
+      setCoach({
+        id,
+        full_name: profile?.full_name ?? null,
+        first_name: profile?.first_name ?? null,
+        last_name: profile?.last_name ?? null,
+        avatar_url: profile?.avatar_url ?? null,
+        city: profile?.city ?? null,
+        country: profile?.country ?? null,
+        linkedin_url: profile?.linkedin_url ?? null,
+        coach_profiles: {
+          title: cp.title,
+          bio: cp.bio,
+          years_experience: cp.years_experience,
+          price_per_hour: cp.price_per_hour,
+          companies: cp.companies,
+          is_verified: cp.is_verified,
+        },
+        coach_specializations: (specs ?? []).map((s) => ({ specialization: s.specialization })),
+        reviews: (reviews ?? []).map((r) => ({ ...r, candidate: null })),
+      })
       setLoading(false)
     }
     if (id) fetchCoach()
