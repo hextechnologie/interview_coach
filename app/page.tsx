@@ -396,19 +396,21 @@ export default function HomePage() {
               <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
                 Join thousands of professionals using AI interview practice to land better roles faster.
               </p>
-              {user ? (
-                <Link href="/interview/setup">
-                  <Button variant="primary" className="text-lg px-10 py-4">
-                    Start Practicing Now
-                  </Button>
-                </Link>
-              ) : (
-                <Link href="/signup">
-                  <Button variant="primary" className="text-lg px-10 py-4">
-                    Start Practicing Free
-                  </Button>
-                </Link>
-              )}
+              <div className="flex justify-center">
+                {user ? (
+                  <Link href="/interview/setup">
+                    <Button variant="primary" className="text-lg px-10 py-4 justify-center">
+                      Start Practicing Now
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/signup">
+                    <Button variant="primary" className="text-lg px-10 py-4 justify-center">
+                      Start Practicing Free
+                    </Button>
+                  </Link>
+                )}
+              </div>
               <p className="text-sm text-gray-500 mt-4">
                 ✨ Get 3 Free Mock Interviews · No Card Needed
               </p>
