@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Camera, CheckCircle, Loader2, Sparkles } from 'lucide-react'
+import { ArrowLeft, Camera, CheckCircle, Loader2, Sparkles, X } from 'lucide-react'
 import { Button, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
@@ -49,8 +49,11 @@ export default function ProfilePage() {
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [headline, setHeadline] = useState('')
   const [aboutMe, setAboutMe] = useState('')
-  const [experienceDetails, setExperienceDetails] = useState('')
-  const [educationDetails, setEducationDetails] = useState('')
+  const [experienceList, setExperienceList] = useState<string[]>([])
+  const [experienceInput, setExperienceInput] = useState('')
+  const [hasNoExperience, setHasNoExperience] = useState(false)
+  const [educationList, setEducationList] = useState<string[]>([])
+  const [educationInput, setEducationInput] = useState('')
   const [projectsDetails, setProjectsDetails] = useState('')
   const [skillsText, setSkillsText] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
@@ -86,8 +89,16 @@ export default function ProfilePage() {
     setLinkedinUrl(profile.linkedin_url ?? '')
     setHeadline((profile as any).professional_headline ?? '')
     setAboutMe((profile as any).about_me ?? '')
-    setExperienceDetails((profile as any).experience_details ?? '')
-    setEducationDetails((profile as any).education_details ?? '')
+    const exp = (profile as any).experience_details
+    if (exp) {
+      const expList = exp.split('\n').filter((e: string) => e.trim())
+      setExperienceList(expList)
+      setHasNoExperience(expList.length === 0)
+    }
+    const edu = (profile as any).education_details
+    if (edu) {
+      setEducationList(edu.split('\n').filter((e: string) => e.trim()))
+    }
     setProjectsDetails((profile as any).projects_details ?? '')
     setSkillsText(Array.isArray((profile as any).skills) ? (profile as any).skills.join(', ') : '')
     setAvatarPreview(profile.avatar_url ?? '')
@@ -100,9 +111,50 @@ export default function ProfilePage() {
     setAvatarPreview(URL.createObjectURL(file))
   }
 
+  const addExperience = () => {
+    if (experienceInput.trim() && !experienceList.includes(experienceInput.trim())) {
+      setExperienceList([...experienceList, experienceInput.trim()])
+      setExperienceInput('')
+    }
+  }
+
+  const removeExperience = (exp: string) => setExperienceList(experienceList.filter(e => e !== exp))
+
+  const addEducation = () => {
+    if (educationInput.trim() && !educationList.includes(educationInput.trim())) {
+      setEducationList([...educationList, educationInput.trim()])
+      setEducationInput('')
+    }
+  }
+
+  const removeEducation = (edu: string) => setEducationList(educationList.filter(e => e !== edu))
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+
+    // Validation
+    if (!headline.trim()) {
+      setError('Professional headline is required')
+      return
+    }
+    if (!aboutMe.trim()) {
+      setError('About section is required')
+      return
+    }
+    if (!hasNoExperience && experienceList.length === 0) {
+      setError('Please add at least one experience entry or check "I have no experience"')
+      return
+    }
+    if (educationList.length === 0) {
+      setError('Please add at least one education entry')
+      return
+    }
+    if (!skillsText.trim()) {
+      setError('Skills are required')
+      return
+    }
+
     setError('')
     setSaved(false)
     setSaving(true)
@@ -137,10 +189,10 @@ export default function ProfilePage() {
           country:         country    || null,
           city:            city       || null,
           linkedin_url:    linkedinUrl || null,
-          professional_headline: headline.trim() || null,
-          about_me:        aboutMe.trim() || null,
-          experience_details: experienceDetails.trim() || null,
-          education_details: educationDetails.trim() || null,
+          professional_headline: headline.trim(),
+          about_me:        aboutMe.trim(),
+          experience_details: hasNoExperience ? 'No experience' : experienceList.join('\n'),
+          education_details: educationList.join('\n'),
           projects_details: projectsDetails.trim() || null,
           skills:          skillsText.split(',').map(s => s.trim()).filter(Boolean),
           avatar_url:      avatarUrl,
@@ -292,15 +344,16 @@ export default function ProfilePage() {
 
           {/* LinkedIn-style profile */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Profile</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Profile <span className="text-red-400">*</span></h2>
             <Input
               label="Professional Headline"
               value={headline}
               onChange={setHeadline}
               placeholder="e.g. Software Engineer focused on backend systems and distributed apps"
+              required
             />
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">About</label>
+              <label className="mb-2 block text-sm font-medium text-gray-200">About <span className="text-red-400">*</span></label>
               <textarea
                 value={aboutMe}
                 onChange={(e) => setAboutMe(e.target.value)}
@@ -308,29 +361,78 @@ export default function ProfilePage() {
                 placeholder="Write a short summary about yourself, your goals, and what makes you stand out..."
                 className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
                 style={{ background: '#0a0f1e' }}
+                required
               />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Experience</label>
-              <textarea
-                value={experienceDetails}
-                onChange={(e) => setExperienceDetails(e.target.value)}
-                rows={4}
-                placeholder="List your work experience, internships, achievements, and responsibilities..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-              />
+              <label className="mb-2 block text-sm font-medium text-gray-200">
+                Experience {!hasNoExperience && <span className="text-red-400">*</span>}
+              </label>
+              <label className="flex items-center gap-2 mb-3 text-sm text-gray-400 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={hasNoExperience}
+                  onChange={(e) => {
+                    setHasNoExperience(e.target.checked)
+                    if (e.target.checked) setExperienceList([])
+                  }}
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-purple-600 focus:ring-2 focus:ring-purple-500"
+                />
+                I have no professional experience yet
+              </label>
+              {!hasNoExperience && (
+                <>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {experienceList.map(exp => (
+                      <span key={exp} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-purple-600/20 text-purple-200 border border-purple-500/30">
+                        {exp}
+                        <button type="button" onClick={() => removeExperience(exp)} className="hover:text-white transition-colors">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={experienceInput}
+                      onChange={(e) => setExperienceInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addExperience())}
+                      placeholder="e.g. Software Engineer at Google (2020-2023)"
+                      className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      style={{ background: '#0a0f1e' }}
+                    />
+                    <Button type="button" onClick={addExperience} variant="outline">Add</Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Add each work experience, internship, or role separately.</p>
+                </>
+              )}
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Education / Formation</label>
-              <textarea
-                value={educationDetails}
-                onChange={(e) => setEducationDetails(e.target.value)}
-                rows={3}
-                placeholder="Add your degree, university, certifications, bootcamps, or training..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-              />
+              <label className="mb-2 block text-sm font-medium text-gray-200">Education / Formation <span className="text-red-400">*</span></label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {educationList.map(edu => (
+                  <span key={edu} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-blue-600/20 text-blue-200 border border-blue-500/30">
+                    {edu}
+                    <button type="button" onClick={() => removeEducation(edu)} className="hover:text-white transition-colors">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={educationInput}
+                  onChange={(e) => setEducationInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addEducation())}
+                  placeholder="e.g. BSc Computer Science - MIT (2016-2020)"
+                  className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  style={{ background: '#0a0f1e' }}
+                />
+                <Button type="button" onClick={addEducation} variant="outline">Add</Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Add each degree, certification, bootcamp, or training separately.</p>
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-200">Projects</label>
@@ -348,6 +450,7 @@ export default function ProfilePage() {
               value={skillsText}
               onChange={setSkillsText}
               placeholder="e.g. React, TypeScript, SQL, Leadership, Public Speaking"
+              required
             />
           </div>
 

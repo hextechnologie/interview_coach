@@ -117,17 +117,31 @@ export default function CandidatePublicProfilePage() {
               </Card>
             )}
 
-            {profile.experience_details && (
+            {profile.experience_details && profile.experience_details !== 'No experience' && (
               <Card>
                 <h2 className="mb-3 text-2xl font-bold">Experience</h2>
-                <p className="text-gray-300 whitespace-pre-line">{profile.experience_details}</p>
+                <ul className="space-y-2">
+                  {profile.experience_details.split('\n').filter(e => e.trim()).map((exp, i) => (
+                    <li key={i} className="flex items-start gap-2 text-gray-300">
+                      <span className="text-purple-400 mt-1">•</span>
+                      <span>{exp}</span>
+                    </li>
+                  ))}
+                </ul>
               </Card>
             )}
 
             {profile.education_details && (
               <Card>
                 <h2 className="mb-3 text-2xl font-bold">Education / Formation</h2>
-                <p className="text-gray-300 whitespace-pre-line">{profile.education_details}</p>
+                <ul className="space-y-2">
+                  {profile.education_details.split('\n').filter(e => e.trim()).map((edu, i) => (
+                    <li key={i} className="flex items-start gap-2 text-gray-300">
+                      <span className="text-blue-400 mt-1">•</span>
+                      <span>{edu}</span>
+                    </li>
+                  ))}
+                </ul>
               </Card>
             )}
 
