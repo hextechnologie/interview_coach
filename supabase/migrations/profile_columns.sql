@@ -4,14 +4,17 @@
 -- Safe to run multiple times (IF NOT EXISTS guards)
 -- ============================================================
 
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS first_name      TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_name       TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_status  TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status_detail   TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS target_job_role TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country         TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city            TEXT;
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url    TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url       TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS target_job_field TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS experience_level TEXT CHECK (experience_level IN ('junior', 'mid', 'senior'));
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS first_name       TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_name        TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_status   TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status_detail    TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS target_job_role  TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country          TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city             TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url     TEXT;
 
 -- Back-fill first_name / last_name from existing full_name where not yet set
 UPDATE public.profiles

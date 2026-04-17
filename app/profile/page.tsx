@@ -42,6 +42,7 @@ export default function ProfilePage() {
   const [currentStatus, setCurrentStatus] = useState('')
   const [statusDetail,  setStatusDetail]  = useState('')
   const [targetJobRole, setTargetJobRole] = useState('')
+  const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [country, setCountry] = useState('')
   const [city,    setCity]    = useState('')
@@ -65,7 +66,14 @@ export default function ProfilePage() {
     setLastName(profile.last_name  || (profile.full_name?.split(' ').slice(1).join(' ') ?? ''))
     setCurrentStatus(profile.current_status  ?? '')
     setStatusDetail(profile.status_detail    ?? '')
-    setTargetJobRole(profile.target_job_role ?? '')
+    const savedRole = profile.target_job_role ?? ''
+    const isKnownRole = jobRoleOptions.some(o => o.value === savedRole)
+    if (isKnownRole || savedRole === '') {
+      setTargetJobRole(savedRole)
+    } else {
+      setTargetJobRole('Other')
+      setCustomJobRole(savedRole)
+    }
     setExperienceLevel(profile.experience_level ?? '')
     setCountry(profile.country ?? '')
     setCity(profile.city       ?? '')
@@ -111,8 +119,8 @@ export default function ProfilePage() {
           full_name:       fullName         || null,
           current_status:  currentStatus    || null,
           status_detail:   statusDetail     || null,
-          target_job_role: targetJobRole    || null,
-          target_job_field: targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
+          target_job_role: targetJobRole === 'Other' ? (customJobRole.trim() || null) : (targetJobRole || null),
+          target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
           country:         country    || null,
           city:            city       || null,
@@ -237,10 +245,18 @@ export default function ProfilePage() {
             <Select
               label="Target Job Role"
               value={targetJobRole}
-              onChange={setTargetJobRole}
+              onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole('') }}
               options={jobRoleOptions}
               placeholder="What role are you aiming for?"
             />
+            {targetJobRole === 'Other' && (
+              <Input
+                label="What's your exact role?"
+                value={customJobRole}
+                onChange={setCustomJobRole}
+                placeholder="e.g. Growth Hacker, AI Researcher, Prompt Engineer…"
+              />
+            )}
             {targetJobRole && (
               <Select
                 label="Experience Level"
