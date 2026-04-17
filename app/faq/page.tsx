@@ -8,45 +8,55 @@ import { FAQPageSchema } from '@/components/StructuredData'
 
 const faqs = [
   {
-    question: "How does the AI interview coach work?",
-    answer: "Our AI interview coach uses Claude, one of the most advanced AI models, to simulate real interview scenarios. You select your job role and experience level, then engage in a realistic conversation where the AI asks relevant questions, evaluates your answers, and provides detailed feedback on your performance."
+    question: 'How does the AI interview work?',
+    answer:
+      'The platform simulates a realistic interview based on your role, level, and interview type. The AI asks questions, reviews your answers, scores your performance, and gives personalized feedback to help you improve quickly.',
   },
   {
-    question: "Is my interview data private and secure?",
-    answer: "Yes, absolutely. All your interview sessions, answers, and personal data are encrypted and stored securely. We never share your information with third parties. You can delete your data at any time from your account settings."
+    question: 'How many free interviews do I get?',
+    answer:
+      'Free users receive 3 mock interviews each month. You can upgrade at any time if you want more practice sessions and deeper analytics.',
   },
   {
-    question: "How many interviews can I practice for free?",
-    answer: "Free users get 3 mock interview sessions per month. This allows you to experience the platform and see how AI coaching can improve your interview skills. For unlimited interviews, check out our Pro plan."
+    question: 'Can I cancel my subscription anytime?',
+    answer:
+      'Yes. You can cancel at any time from your billing settings, and your access will remain active until the end of your current billing cycle.',
   },
   {
-    question: "What languages are supported?",
-    answer: "We currently support 10+ languages including English, French, Spanish, German, Italian, Portuguese, Arabic, Chinese, Japanese, and Korean. You can select your preferred language when setting up each interview session."
+    question: 'What job roles are supported?',
+    answer:
+      'You can practice for software engineering, product, design, marketing, sales, finance, operations, customer support, and many other professional roles.',
   },
   {
-    question: "Can I practice for specific companies or roles?",
-    answer: "Yes! You can customize your interview by specifying the job title, industry, company type, and experience level. The AI will tailor questions to match your target role, whether it's a software engineer at a tech startup or a marketing manager at a Fortune 500 company."
+    question: 'Is my data private?',
+    answer:
+      'Yes. Your interview data is stored securely and used only to run your sessions and generate feedback. We do not sell your personal information.',
   },
   {
-    question: "How is the AI feedback generated?",
-    answer: "After each answer, our AI analyzes your response using multiple criteria: content quality, STAR method structure, clarity, confidence, and relevance. You receive a detailed score, strengths and weaknesses breakdown, and an improved version of your answer as a learning tool."
+    question: 'How is my score calculated?',
+    answer:
+      'Your score is based on answer relevance, clarity, structure, confidence, and depth. The AI also checks how well you support your answers with examples and measurable impact.',
   },
   {
-    question: "Can I review my past interview sessions?",
-    answer: "Yes, your dashboard provides a complete history of all your interview sessions. You can review questions asked, your answers, AI feedback, scores, and track your improvement over time with detailed analytics."
+    question: 'Can I practice in Arabic or other languages?',
+    answer:
+      'Yes. The app supports Arabic and multiple other languages including English, French, and Spanish, so you can practice in the language you are most comfortable with.',
   },
   {
-    question: "What types of interviews can I practice?",
-    answer: "You can practice Technical interviews, Behavioral interviews, or Mixed interviews. You can also choose the interview round (First Round, Second Round, Final Round) and the interviewer type (HR, Tech Lead, Manager, CEO/Founder)."
+    question: 'How is this different from ChatGPT?',
+    answer:
+      'Interview Coach is built specifically for interview preparation. It gives structured mock interviews, tracks progress, stores sessions, and provides targeted scoring and coaching rather than general conversation only.',
   },
   {
-    question: "How do I cancel my subscription?",
-    answer: "You can cancel your subscription anytime from your account dashboard. Go to Settings → Subscription → Cancel Plan. You'll retain access until the end of your billing period, and no further charges will be made."
+    question: 'Do I need to install anything?',
+    answer:
+      'No installation is required. You can use the app directly in your browser on desktop or mobile.',
   },
   {
-    question: "Do you offer refunds?",
-    answer: "We offer a 7-day money-back guarantee for all paid plans. If you're not satisfied within the first 7 days, contact our support team and we'll process a full refund, no questions asked."
-  }
+    question: 'How do I upgrade my plan?',
+    answer:
+      'Visit the pricing page, choose the plan that fits your needs, and complete checkout. Your account limits will update automatically after payment.',
+  },
 ]
 
 export default function FAQPage() {

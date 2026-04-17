@@ -94,18 +94,10 @@ export function FAQPageSchema() {
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'How does the AI interview coach work?',
+        name: 'How does the AI interview work?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Our AI interview coach uses advanced Claude AI to simulate realistic interview scenarios. It asks relevant questions based on your job role and experience, listens to your answers, and provides detailed feedback on your performance.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Is my data private and secure?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Yes, absolutely. We use industry-standard encryption and never share your personal data or interview responses with third parties. Your interviews are stored securely and only you can access them.',
+          text: 'The platform simulates a realistic interview based on your role, level, and interview type, then scores your answers and provides detailed feedback.',
         },
       },
       {
@@ -113,15 +105,31 @@ export function FAQPageSchema() {
         name: 'How many free interviews do I get?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Our free tier includes 3 mock interviews per month. This allows you to try the platform and experience the AI coaching before upgrading to a paid plan.',
+          text: 'Free users receive 3 mock interviews each month before needing to upgrade.',
         },
       },
       {
         '@type': 'Question',
-        name: 'What languages are supported?',
+        name: 'Can I cancel my subscription anytime?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'We support over 10 languages including English, Spanish, French, German, Arabic, Chinese, Japanese, Portuguese, Italian, and Russian.',
+          text: 'Yes, you can cancel your subscription at any time from your billing settings.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What job roles are supported?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'The app supports many roles including engineering, product, design, marketing, sales, finance, and more.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is my data private?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes, your interview data is stored securely and used only to power your interview practice experience.',
         },
       },
     ],
