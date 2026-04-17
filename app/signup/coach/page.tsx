@@ -75,6 +75,19 @@ export default function CoachSignupPage() {
 
     setLoading(true)
     try {
+      // Pre-check: email already registered?
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('user_type')
+        .eq('email', email)
+        .maybeSingle()
+      if (existingProfile) {
+        if (existingProfile.user_type === 'candidate') {
+          throw new Error('This email is already registered as a candidate account. Please use a different email.')
+        }
+        throw new Error('This email is already registered. Please log in instead.')
+      }
+
       const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
 
       const { data, error: signUpError } = await supabase.auth.signUp({
