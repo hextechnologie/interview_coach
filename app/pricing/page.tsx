@@ -251,13 +251,15 @@ export default function PricingPage() {
               <p className="text-lg mb-4">
                 You're currently on the <strong className="text-primary">{profile.subscription_tier.charAt(0).toUpperCase() + profile.subscription_tier.slice(1)}</strong> plan
               </p>
-              <Button
-                variant="outline"
-                onClick={handleManageSubscription}
-                loading={loading === 'manage'}
-              >
-                Manage Subscription
-              </Button>
+              <div className="flex justify-center">
+                <Button
+                  variant="outline"
+                  onClick={handleManageSubscription}
+                  loading={loading === 'manage'}
+                >
+                  Manage Subscription
+                </Button>
+              </div>
             </Card>
           </div>
         )}
@@ -302,19 +304,21 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <Button
-                variant={plan.popular ? 'primary' : 'outline'}
-                fullWidth
-                onClick={() => handleSubscribe(getPriceId(plan), plan.tier)}
-                loading={loading === plan.tier}
-                disabled={profile?.subscription_tier === plan.tier}
-              >
-                {profile?.subscription_tier === plan.tier
-                  ? 'Current Plan'
-                  : plan.monthlyPrice === 0
-                  ? 'Get Started'
-                  : 'Subscribe'}
-              </Button>
+              <div className="flex justify-center">
+                <Button
+                  variant={plan.popular ? 'primary' : 'outline'}
+                  className="min-w-[180px] justify-center"
+                  onClick={() => handleSubscribe(getPriceId(plan), plan.tier)}
+                  loading={loading === plan.tier}
+                  disabled={profile?.subscription_tier === plan.tier}
+                >
+                  {profile?.subscription_tier === plan.tier
+                    ? 'Current Plan'
+                    : plan.monthlyPrice === 0
+                    ? 'Get Started'
+                    : 'Subscribe'}
+                </Button>
+              </div>
 
               {plan.monthlyPrice > 0 && (
                 <p className="mt-3 text-center text-xs text-green-400">
