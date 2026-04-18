@@ -1013,16 +1013,16 @@ function StatCard({
   const isEmpty = value === '0' || value === '0/10' || value === '0 days'
   
   return (
-    <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 flex flex-col" style={{ background: '#111827', height: '220px' }}>
-      <div className="flex items-start justify-between mb-2 h-20">
+    <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300" style={{ background: '#111827', height: '220px', display: 'flex', flexDirection: 'column' }}>
+      <div className="flex items-start justify-between" style={{ height: '80px' }}>
         <div className="flex-1">
-          <p className="text-gray-400 text-xs mb-1 h-8 line-clamp-2">{label}</p>
-          <p className="text-2xl font-bold leading-tight">{value}</p>
+          <p className="text-gray-400 text-xs mb-1">{label}</p>
+          <p className="text-2xl font-bold">{value}</p>
         </div>
         <div className={`w-10 h-10 ${accent} rounded-lg flex items-center justify-center shrink-0 ml-3`}>{icon}</div>
       </div>
       {isEmpty && emptyMessage && (
-        <div className="mt-auto pt-3 border-t border-white/10">
+        <div className="pt-3 border-t border-white/10" style={{ marginTop: 'auto' }}>
           <p className="text-xs text-gray-500 mb-2">{emptyMessage}</p>
           {emptyAction && (
             <Link href={emptyAction.href}>
