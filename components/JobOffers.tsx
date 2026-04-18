@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Briefcase, ExternalLink, Globe, Loader2, MapPin, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui'
+import { fetchAllJobs } from '@/lib/jobs-api'
+import type { Job } from '@/lib/types/jobs'
 
 export interface RemotiveJob {
   id: number
@@ -46,7 +48,7 @@ function timeAgo(dateStr: string) {
 }
 
 export default function JobOffers({ targetRole = '', limit = 6, fullPage = false, userCountry = '', userCity = '' }: Props) {
-  const [jobs, setJobs] = useState<RemotiveJob[]>([])
+  const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState(targetRole || 'software engineer')
@@ -75,25 +77,20 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(
-        `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(query)}&limit=50`
-      )
-      if (!res.ok) throw new Error('Failed to fetch jobs')
-      const data = await res.json()
-      
-      let fetchedJobs = data.jobs || []
+      // Use our new multi-API integration
+      let fetchedJobs = await fetchAllJobs(query)
       
       // Filter by country if user has a country set
       if (userCountry) {
-        fetchedJobs = fetchedJobs.filter((job: RemotiveJob) => {
-          const score = calculateCityScore(job.candidate_required_location)
+        fetchedJobs = fetchedJobs.filter((job: Job) => {
+          const score = calculateCityScore(job.location)
           return score >= 0 // Include only jobs from the same country
         })
         
         // Sort by city proximity (same city first, then same country)
-        fetchedJobs.sort((a: RemotiveJob, b: RemotiveJob) => {
-          const scoreA = calculateCityScore(a.candidate_required_location)
-          const scoreB = calculateCityScore(b.candidate_required_location)
+        fetchedJobs.sort((a: Job, b: Job) => {
+          const scoreA = calculateCityScore(a.location)
+          const scoreB = calculateCityScore(b.location)
           return scoreB - scoreA // Higher score first
         })
       }
@@ -111,7 +108,7 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search])
 
-  const filtered = typeFilter === 'all' ? jobs : jobs.filter((j) => j.job_type.toLowerCase().includes(typeFilter))
+  const filtered = typeFilter === 'all' ? jobs : jobs.filter((j) => j.job_type?.toLowerCase().includes(typeFilter))
 
   if (!fullPage) {
     // Dashboard widget — compact view
@@ -225,11 +222,18 @@ function formatJobType(type: string): string {
     .join(' ')
 }
 
-function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean }) {
+function JobCard({ job, compact = false }: { job: Job; compact?: boolean }) {
   // Truncate title to max 60 characters for compact view
   const displayTitle = compact && job.title.length > 60 
     ? job.title.slice(0, 60) + '...' 
     : job.title
+
+  // Format salary display
+  const salaryDisplay = job.salary_min && job.salary_max 
+    ? `${job.salary_currency || '$'}${job.salary_min.toLocaleString()}-${job.salary_max.toLocaleString()}`
+    : job.salary_min 
+    ? `${job.salary_currency || '$'}${job.salary_min.toLocaleString()}+`
+    : null
 
   return (
     <div className={`rounded-xl border border-white/10 hover:border-purple-500/30 transition-all ${compact ? 'p-4' : 'p-5'}`} style={{ background: '#0a0f1e' }}>
@@ -238,7 +242,7 @@ function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean
         <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600/30 to-blue-600/30 border border-white/10 overflow-hidden flex items-center justify-center">
           {job.company_logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={job.company_logo} alt={job.company_name} className="w-full h-full object-cover" />
+            <img src={job.company_logo} alt={job.company} className="w-full h-full object-cover" />
           ) : (
             <Briefcase className="w-4 h-4 text-purple-400" />
           )}
@@ -250,22 +254,27 @@ function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean
           >
             {displayTitle}
           </h3>
-          <p className="text-gray-400 text-xs mt-0.5">{job.company_name}</p>
+          <p className="text-gray-400 text-xs mt-0.5">{job.company}</p>
         </div>
-        <span className="text-xs text-gray-500 shrink-0">{timeAgo(job.publication_date)}</span>
+        <span className="text-xs text-gray-500 shrink-0">{timeAgo(job.posted_at)}</span>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${typeColor(job.job_type.toLowerCase())}`}>
-          {formatJobType(job.job_type)}
-        </span>
-        {job.candidate_required_location && (
-          <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-            <MapPin className="w-3 h-3" /> {job.candidate_required_location.length > 30 ? job.candidate_required_location.slice(0, 30) + '…' : job.candidate_required_location}
+        {job.job_type && (
+          <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${typeColor(job.job_type.toLowerCase())}`}>
+            {formatJobType(job.job_type)}
           </span>
         )}
-        {job.salary && (
-          <span className="text-xs text-green-400">{job.salary}</span>
+        {job.location && (
+          <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+            <MapPin className="w-3 h-3" /> {job.location.length > 30 ? job.location.slice(0, 30) + '…' : job.location}
+          </span>
+        )}
+        {salaryDisplay && (
+          <span className="text-xs text-green-400">{salaryDisplay}</span>
+        )}
+        {job.source && (
+          <span className="text-xs text-purple-400/70">via {job.source}</span>
         )}
       </div>
 
@@ -274,13 +283,13 @@ function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean
       )}
 
       <div className="mt-3 flex gap-2">
-        <a href={job.url} target="_blank" rel="noopener noreferrer" className="flex-1">
+        <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="flex-1">
           <Button variant="primary" fullWidth className={`gap-1 ${compact ? 'text-xs py-1.5' : 'text-sm'}`}>
             <ExternalLink className="w-3 h-3" /> View Job
           </Button>
         </a>
         {!compact && (
-          <a href={job.url} target="_blank" rel="noopener noreferrer">
+          <a href={job.apply_url} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" className="gap-1 text-sm">
               <Globe className="w-3 h-3" />
             </Button>

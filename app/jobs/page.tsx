@@ -32,7 +32,7 @@ export default function JobsPage() {
             <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Remote Role</span>
           </h1>
           <p className="text-gray-400 max-w-xl">
-            Browse thousands of remote-first positions. Powered by Remotive — updated daily.
+            Browse thousands of jobs from LinkedIn, Indeed, Glassdoor, Remotive & more — updated daily.
           </p>
         </div>
 
