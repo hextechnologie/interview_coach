@@ -455,7 +455,7 @@ export default function DashboardPage() {
                           <User className="w-4 h-4" /> My Profile
                         </button>
                       </Link>
-                      <Link href="/settings" onClick={() => setProfileOpen(false)}>
+                      <Link href="/profile" onClick={() => setProfileOpen(false)}>
                         <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
                           <Settings className="w-4 h-4" /> Settings
                         </button>
@@ -502,7 +502,7 @@ export default function DashboardPage() {
               {!isCoach && <Link href="/bookings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Calendar className="w-4 h-4 mr-2" /> My Bookings</Button></Link>}
               {isCoach && <Link href="/coach/dashboard" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Coach Dashboard</Button></Link>}
               <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><User className="w-4 h-4 mr-2" /> My Profile</Button></Link>
-              <Link href="/settings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Settings className="w-4 h-4 mr-2" /> Settings</Button></Link>
+              <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Settings className="w-4 h-4 mr-2" /> Settings</Button></Link>
               <Link href="/credits" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Wallet className="w-4 h-4 mr-2" /> My Credits</Button></Link>
               <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> Pro Plan</Button></Link>
               <div className="border-t border-white/10 my-2"></div>
@@ -711,7 +711,9 @@ export default function DashboardPage() {
                   <Target className="w-12 h-12 text-purple-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">No interviews yet!</h3>
                   <p className="text-gray-400 mb-6">Begin practicing now and unlock AI-powered feedback.</p>
-                  <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> Start Your First Interview</Button></Link>
+                  <div className="flex justify-center">
+                    <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> Start Your First Interview</Button></Link>
+                  </div>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

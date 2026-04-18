@@ -102,6 +102,22 @@ export default function ProfilePage() {
     if (!user) return
 
     // Validation
+    if (!firstName.trim()) {
+      setError('First name is required')
+      return
+    }
+    if (!lastName.trim()) {
+      setError('Last name is required')
+      return
+    }
+    if (!country.trim()) {
+      setError('Country is required')
+      return
+    }
+    if (!city.trim()) {
+      setError('City is required')
+      return
+    }
     if (!headline.trim()) {
       setError('Professional headline is required')
       return
@@ -222,17 +238,17 @@ export default function ProfilePage() {
         <form onSubmit={handleSave} className="space-y-5">
           {/* Name */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Personal Info</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Personal Info <span className="text-red-400">*</span></h2>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" />
-              <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe"  />
+              <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" required />
+              <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe" required />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
-              <Input label="City"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco"  />
+              <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" required />
+              <Input label="City"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco" required />
             </div>
             <Input
-              label="LinkedIn URL"
+              label="LinkedIn URL (optional)"
               value={linkedinUrl}
               onChange={setLinkedinUrl}
               placeholder="https://linkedin.com/in/yourprofile"
