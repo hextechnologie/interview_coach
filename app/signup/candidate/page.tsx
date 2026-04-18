@@ -66,9 +66,8 @@ export default function CandidateSignupPage() {
     const hasUpperCase = /[A-Z]/.test(password)
     const hasLowerCase = /[a-z]/.test(password)
     const hasNumber = /[0-9]/.test(password)
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
     
-    if (password.length >= 10 && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
+    if (password.length >= 10 && hasUpperCase && hasLowerCase && hasNumber) {
       return 'Strong'
     }
     
@@ -94,7 +93,7 @@ export default function CandidateSignupPage() {
       return
     }
     if (strength !== 'Strong') {
-      setError('Password must be strong (at least 10 characters with a mix of letters, numbers, and symbols).')
+      setError('Password must be strong (at least 10 characters with uppercase, lowercase, and numbers).')
       return
     }
     if (password !== confirmPassword) {
@@ -277,7 +276,7 @@ export default function CandidateSignupPage() {
                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                   <p className={`mt-1.5 text-xs ${strength === 'Strong' ? 'text-green-400' : strength === 'Medium' ? 'text-yellow-400' : 'text-red-400'}`}>Strength: {strength}</p>
                   {strength !== 'Strong' && (
-                    <p className="mt-1 text-xs text-gray-400">Must be 10+ characters with uppercase, lowercase, number & symbol</p>
+                    <p className="mt-1 text-xs text-gray-400">Must be 10+ characters with uppercase, lowercase & number</p>
                   )}
                 </div>
                 <div>
