@@ -110,21 +110,35 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       if (userCountry) {
         console.log(`🌍 Filtering by country: "${userCountry}", city: "${userCity}"`)
         
-        // Log first 5 jobs BEFORE sorting
-        console.log('BEFORE SORTING (first 5):')
+        // Log first 5 jobs BEFORE filtering
+        console.log('BEFORE FILTERING (first 5):')
         fetchedJobs.slice(0, 5).forEach((job, i) => {
           const score = calculateLocationScore(job.location)
           console.log(`  ${i+1}. "${job.title}" at "${job.location}" - Score: ${score}`)
         })
         
+        // FILTER: Only show jobs with score > 0 (matching country)
+        const matchingJobs = fetchedJobs.filter(job => calculateLocationScore(job.location) > 0)
+        const nonMatchingCount = fetchedJobs.length - matchingJobs.length
+        
+        console.log(`✅ ${matchingJobs.length} jobs match "${userCountry}", ❌ ${nonMatchingCount} filtered out`)
+        
+        // If we have matching jobs, use only those. Otherwise show all (fallback)
+        if (matchingJobs.length > 0) {
+          fetchedJobs = matchingJobs
+        } else {
+          console.log(`⚠️ No jobs found for "${userCountry}", showing all jobs as fallback`)
+        }
+        
+        // Sort by score (city matches first, then country)
         fetchedJobs.sort((a: Job, b: Job) => {
           const scoreA = calculateLocationScore(a.location)
           const scoreB = calculateLocationScore(b.location)
           return scoreB - scoreA // Higher score first
         })
         
-        // Log first 5 jobs AFTER sorting
-        console.log('AFTER SORTING (first 5):')
+        // Log first 5 jobs AFTER filtering and sorting
+        console.log('AFTER FILTERING & SORTING (first 5):')
         fetchedJobs.slice(0, 5).forEach((job, i) => {
           const score = calculateLocationScore(job.location)
           console.log(`  ${i+1}. "${job.title}" at "${job.location}" - Score: ${score}`)
