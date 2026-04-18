@@ -264,6 +264,7 @@ function SkillTag({ skill, onRemove }: { skill: CoachSkill; onRemove: () => void
       <div className={`w-2 h-2 rounded-full ${colors.dot}`}></div>
       <span className="text-white text-sm">{skill.skill_name}</span>
       <button
+        type="button"
         onClick={onRemove}
         className="ml-1 p-0.5 hover:bg-gray-700 rounded transition"
         title="Remove skill"
