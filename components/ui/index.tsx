@@ -114,6 +114,7 @@ type SelectProps = {
   options: { value: string; label: string }[]
   placeholder?: string
   required?: boolean
+  disabled?: boolean
 }
 
 export function Select({
@@ -123,6 +124,7 @@ export function Select({
   options,
   placeholder,
   required = false,
+  disabled = false,
 }: SelectProps) {
   return (
     <div className="w-full">
@@ -136,7 +138,8 @@ export function Select({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        disabled={disabled}
+        className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map((option) => (
