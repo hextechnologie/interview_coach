@@ -177,7 +177,7 @@ export default function BookingsPage() {
                       <Badge variant={
                         booking.status === 'confirmed' ? 'default' :
                         booking.status === 'completed' ? 'success' :
-                        'secondary'
+                        'danger'
                       }>
                         {booking.status}
                       </Badge>
