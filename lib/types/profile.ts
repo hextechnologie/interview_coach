@@ -177,6 +177,9 @@ export const SKILL_SUGGESTIONS: Record<SkillCategory, string[]> = {
     'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes',
     'Machine Learning', 'Data Science', 'AI', 'Deep Learning',
     'HTML', 'CSS', 'Tailwind CSS', 'Bootstrap',
+    'VHDL', 'Verilog', 'SystemVerilog', 'FPGA', 'ASIC Design', 'RTL Design',
+    'Embedded Systems', 'Microcontrollers', 'ARM', 'RISC-V',
+    'Circuit Design', 'PCB Design', 'Analog Design', 'Digital Signal Processing',
   ],
   'Soft Skills': [
     'Leadership', 'Communication', 'Problem Solving', 'Teamwork', 'Time Management',
@@ -192,6 +195,8 @@ export const SKILL_SUGGESTIONS: Record<SkillCategory, string[]> = {
     'Figma', 'Adobe XD', 'Sketch', 'Photoshop', 'Illustrator',
     'VS Code', 'IntelliJ', 'Eclipse', 'Vim',
     'Salesforce', 'HubSpot', 'SAP', 'Oracle', 'Tableau', 'Power BI',
+    'Xilinx Vivado', 'Intel Quartus', 'ModelSim', 'Cadence', 'Synopsys',
+    'Altium Designer', 'Eagle', 'KiCad', 'MATLAB', 'Simulink', 'LabVIEW',
   ],
 }
 
