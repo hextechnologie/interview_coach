@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: process.env.RESEND_FROM_EMAIL || 'noreply@interview-coach.app',
+        from: process.env.RESEND_FROM_EMAIL || 'Interview Coach <onboarding@resend.dev>',
         to: email,
         subject,
         html,
