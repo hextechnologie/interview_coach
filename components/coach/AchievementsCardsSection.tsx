@@ -11,7 +11,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const ACHIEVEMENT_TYPES: Array<{ value: AchievementType; label: string; icon: any; emoji: string }> = [
-  { value: 'Professional', label: 'Professional', icon: Trophy, emoji: '🏆' },
+  { value: 'Professional Achievement', label: 'Professional', icon: Trophy, emoji: '🏆' },
   { value: 'Project', label: 'Project', icon: Code, emoji: '💻' },
   { value: 'Public Speaking', label: 'Public Speaking', icon: Mic, emoji: '📣' },
   { value: 'Publication', label: 'Publication', icon: FileText, emoji: '📝' },
@@ -38,7 +38,8 @@ export default function AchievementsCardsSection({ coachId }: AchievementsCardsS
       .from('coach_achievements')
       .select('*')
       .eq('coach_id', coachId)
-      .order('achievement_date', { ascending: false, nullsFirst: false })
+      .order('achievement_year', { ascending: false, nullsFirst: false })
+      .order('achievement_month', { ascending: false, nullsFirst: false })
 
     if (!error && data) {
       setAchievements(data)
@@ -146,9 +147,12 @@ function AchievementCard({
   const Icon = typeConfig?.icon || Star
 
   const formatDate = () => {
-    if (!achievement.achievement_date) return null
-    const date = new Date(achievement.achievement_date)
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    if (!achievement.achievement_year) return null
+    if (achievement.achievement_month) {
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      return `${monthNames[achievement.achievement_month - 1]} ${achievement.achievement_year}`
+    }
+    return achievement.achievement_year.toString()
   }
 
   return (
@@ -226,13 +230,12 @@ interface AchievementModalProps {
 
 function AchievementModal({ coachId, achievement, onClose, onSave }: AchievementModalProps) {
   const [formData, setFormData] = useState({
-    achievement_type: achievement?.achievement_type || 'Professional' as AchievementType,
+    achievement_type: achievement?.achievement_type || 'Professional Achievement' as AchievementType,
     title: achievement?.title || '',
     description: achievement?.description || '',
-    achievement_date: achievement?.achievement_date || null,
-    achievement_month: achievement?.achievement_date ? new Date(achievement.achievement_date).getMonth() + 1 : null,
-    achievement_year: achievement?.achievement_date ? new Date(achievement.achievement_date).getFullYear() : null,
-    achievement_url: achievement?.achievement_url || null,
+    achievement_month: achievement?.achievement_month || null,
+    achievement_year: achievement?.achievement_year || null,
+    achievement_url: achievement?.url || null,
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSaving, setIsSaving] = useState(false)
@@ -260,19 +263,14 @@ function AchievementModal({ coachId, achievement, onClose, onSave }: Achievement
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-    // Build date if both month and year provided
-    let achievementDate = null
-    if (formData.achievement_month && formData.achievement_year) {
-      achievementDate = new Date(formData.achievement_year, formData.achievement_month - 1, 1).toISOString()
-    }
-
     const payload = {
       coach_id: coachId,
       achievement_type: formData.achievement_type,
       title: formData.title.trim(),
       description: formData.description.trim() || null,
-      achievement_date: achievementDate,
-      achievement_url: formData.achievement_url?.trim() || null,
+      achievement_month: formData.achievement_month,
+      achievement_year: formData.achievement_year,
+      url: formData.achievement_url?.trim() || null,
     }
 
     if (achievement?.id) {
