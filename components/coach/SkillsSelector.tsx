@@ -28,6 +28,7 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
   const [suggestions, setSuggestions] = useState<Array<{skill: string, category: SkillCategory}>>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     loadSkills()
@@ -54,6 +55,23 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
       setShowSuggestions(false)
     }
   }, [searchQuery, skills])
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const loadSkills = async () => {
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -92,6 +110,10 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
       await loadSkills()
       setSearchQuery('')
       setShowSuggestions(false)
+      inputRef.current?.blur() // Blur input to close suggestions
+    } else {
+      console.error('Error adding skill:', error)
+      alert('Failed to add skill. Please try again.')
     }
   }
 
@@ -101,9 +123,13 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
       .from('coach_skills')
       .delete()
       .eq('id', id)
+      .eq('coach_id', coachId)
 
     if (!error) {
       await loadSkills()
+    } else {
+      console.error('Error removing skill:', error)
+      alert('Failed to remove skill. Please try again.')
     }
   }
 
@@ -159,12 +185,18 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
 
         {/* Suggestions Dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div 
+            ref={dropdownRef}
+            className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+          >
             {suggestions.map(({ skill, category }) => (
               <button
                 key={skill}
                 type="button"
-                onClick={() => addSkill(skill, category)}
+                onMouseDown={(e) => {
+                  e.preventDefault() // Prevent input blur
+                  addSkill(skill, category)
+                }}
                 className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition flex items-center gap-2"
               >
                 <div className={`w-2 h-2 rounded-full ${CATEGORY_COLORS[category].dot}`}></div>
@@ -175,7 +207,8 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
             {searchQuery && !suggestions.some(s => s.skill.toLowerCase() === searchQuery.toLowerCase()) && (
               <button
                 type="button"
-                onClick={() => {
+                onMouseDown={(e) => {
+                  e.preventDefault() // Prevent input blur
                   const category = detectCategory(searchQuery)
                   addSkill(searchQuery.trim(), category)
                 }}
