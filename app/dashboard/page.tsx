@@ -1023,7 +1023,7 @@ function StatCard({
       </div>
       {isEmpty && emptyMessage && (
         <div className="pt-3 border-t border-white/10" style={{ marginTop: 'auto' }}>
-          <p className="text-xs text-gray-500 mb-2">{emptyMessage}</p>
+          <p className="text-xs text-gray-500 mb-2" style={{ height: '32px', lineHeight: '16px' }}>{emptyMessage}</p>
           {emptyAction && (
             <Link href={emptyAction.href}>
               <Button variant="outline" className="w-full text-xs py-1.5">{emptyAction.text}</Button>
