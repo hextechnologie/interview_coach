@@ -123,7 +123,9 @@ export default function CandidateSignupPage() {
 
         const userId = signInData.user.id
         const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
 
+        // Upload avatar if provided
         let avatarUrl: string | null = null
         if (avatarFile) {
           const ext = avatarFile.name.split('.').pop()
@@ -136,8 +138,7 @@ export default function CandidateSignupPage() {
           }
         }
 
-        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
-
+        // Update profile with candidate fields
         await supabase.from('profiles').update({
           user_type: 'both',
           full_name: fullName,
@@ -148,7 +149,7 @@ export default function CandidateSignupPage() {
           status_detail: statusDetail || null,
           target_job_role: finalJobRole || null,
           target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
-          experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
+          experience_level: experienceLevel || null,
           country: country || null,
           city: city || null,
           linkedin_url: linkedinUrl || null,
@@ -160,12 +161,26 @@ export default function CandidateSignupPage() {
       }
 
       const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+      const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { full_name: fullName, user_type: 'candidate' },
+          data: { 
+            full_name: fullName, 
+            user_type: 'candidate',
+            first_name: firstName.trim(),
+            last_name: lastName.trim() || null,
+            current_status: currentStatus,
+            status_detail: statusDetail || null,
+            target_job_role: finalJobRole || null,
+            target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
+            experience_level: experienceLevel || null,
+            country: country || null,
+            city: city || null,
+            linkedin_url: linkedinUrl || null,
+          },
         },
       })
 
@@ -189,7 +204,7 @@ export default function CandidateSignupPage() {
       if (data.user) {
         const userId = data.user.id
 
-        let avatarUrl: string | null = null
+        // Upload avatar if provided and update profile
         if (avatarFile) {
           const ext = avatarFile.name.split('.').pop()
           const { data: uploadData } = await supabase.storage
@@ -197,31 +212,17 @@ export default function CandidateSignupPage() {
             .upload(`${userId}.${ext}`, avatarFile, { upsert: true })
           if (uploadData) {
             const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
-            avatarUrl = urlData.publicUrl
+            const avatarUrl = urlData.publicUrl
+            
+            // Update profile with avatar URL
+            await supabase.from('profiles').update({
+              avatar_url: avatarUrl
+            }).eq('id', userId)
           }
         }
 
-        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
-
-        await supabase.from('profiles').upsert({
-          id: userId,
-          email,
-          full_name: fullName,
-          first_name: firstName.trim(),
-          last_name: lastName.trim() || null,
-          user_type: 'candidate',
-          avatar_url: avatarUrl,
-          current_status: currentStatus,
-          status_detail: statusDetail || null,
-          target_job_role: finalJobRole || null,
-          target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
-          experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
-          country: country || null,
-          city: city || null,
-          linkedin_url: linkedinUrl || null,
-        })
-
         // Send welcome email (fire-and-forget)
+        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
         fetch('/api/welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
