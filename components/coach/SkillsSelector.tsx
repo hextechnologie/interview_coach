@@ -156,7 +156,7 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
   }
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-white">Skills</h3>
@@ -167,7 +167,7 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
       </div>
 
       {/* Search Input */}
-      <div className="relative mb-4">
+      <div className="relative mb-4 max-w-full">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
@@ -187,7 +187,7 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
         {showSuggestions && suggestions.length > 0 && (
           <div 
             ref={dropdownRef}
-            className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+            className="absolute z-10 left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto overflow-x-hidden"
           >
             {suggestions.map(({ skill, category }) => (
               <button
@@ -223,7 +223,7 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
 
       {/* Skills Tags */}
       {skills.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 min-h-[3rem]">
           {skills.map((skill) => (
             <SkillTag
               key={skill.id}
@@ -233,7 +233,7 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-8 text-gray-500 border border-gray-700 rounded-lg">
+        <div className="text-center py-8 text-gray-500 border border-gray-700 rounded-lg min-h-[3rem]">
           No skills added yet. Start typing to search and add skills.
         </div>
       )}
@@ -259,14 +259,14 @@ function SkillTag({ skill, onRemove }: { skill: CoachSkill; onRemove: () => void
 
   return (
     <div
-      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition ${colors.bg}`}
+      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition max-w-full ${colors.bg}`}
     >
-      <div className={`w-2 h-2 rounded-full ${colors.dot}`}></div>
-      <span className="text-white text-sm">{skill.skill_name}</span>
+      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${colors.dot}`}></div>
+      <span className="text-white text-sm truncate">{skill.skill_name}</span>
       <button
         type="button"
         onClick={onRemove}
-        className="ml-1 p-0.5 hover:bg-gray-700 rounded transition"
+        className="ml-1 p-0.5 hover:bg-gray-700 rounded transition flex-shrink-0"
         title="Remove skill"
       >
         <X className="w-3 h-3 text-gray-400" />
