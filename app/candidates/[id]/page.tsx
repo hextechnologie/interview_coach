@@ -16,8 +16,7 @@ type CandidateProfile = {
   city: string | null
   country: string | null
   linkedin_url: string | null
-  professional_headline: string | null
-  about_me: string | null
+  bio: string | null
   experience_details: string | null
   education_details: string | null
   projects_details: string | null
@@ -38,7 +37,7 @@ export default function CandidatePublicProfilePage() {
     const fetchProfile = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, first_name, last_name, avatar_url, city, country, linkedin_url, professional_headline, about_me, experience_details, education_details, projects_details, skills, current_status, status_detail, target_job_role, experience_level')
+        .select('id, full_name, first_name, last_name, avatar_url, city, country, linkedin_url, bio, experience_details, education_details, projects_details, skills, current_status, status_detail, target_job_role, experience_level')
         .eq('id', id)
         .maybeSingle()
 
@@ -91,7 +90,6 @@ export default function CandidatePublicProfilePage() {
               )}
               <div>
                 <h1 className="text-3xl font-bold">{name}</h1>
-                {profile.professional_headline && <p className="mt-1 text-gray-300">{profile.professional_headline}</p>}
                 <div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-400">
                   {(profile.city || profile.country) && <span>{[profile.city, profile.country].filter(Boolean).join(', ')}</span>}
                   {profile.target_job_role && <span>{profile.target_job_role}</span>}
@@ -110,10 +108,10 @@ export default function CandidatePublicProfilePage() {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
           <div className="space-y-6">
-            {profile.about_me && (
+            {profile.bio && (
               <Card>
                 <h2 className="mb-3 text-2xl font-bold">About</h2>
-                <p className="text-gray-300 whitespace-pre-line">{profile.about_me}</p>
+                <p className="text-gray-300 whitespace-pre-line">{profile.bio}</p>
               </Card>
             )}
 

@@ -62,13 +62,12 @@ export default function InterviewSetupPage() {
     if (!profile) return false
     const p = profile as any
     
-    const hasHeadline = !!p.professional_headline?.trim()
-    const hasAbout = !!p.about_me?.trim()
+    const hasBio = !!p.bio?.trim()
     const hasExperience = p.experience_details === 'No experience' || !!p.experience_details?.trim()
     const hasEducation = !!p.education_details?.trim()
     const hasSkills = Array.isArray(p.skills) && p.skills.length > 0
 
-    return hasHeadline && hasAbout && hasExperience && hasEducation && hasSkills
+    return hasBio && hasExperience && hasEducation && hasSkills
   }
 
   const profileIncomplete = !isProfileComplete()

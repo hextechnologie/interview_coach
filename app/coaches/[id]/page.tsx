@@ -17,8 +17,7 @@ type CoachDetail = {
   city: string | null
   country: string | null
   linkedin_url: string | null
-  professional_headline?: string | null
-  about_me?: string | null
+  bio?: string | null
   experience_details?: string | null
   education_details?: string | null
   projects_details?: string | null
@@ -55,7 +54,7 @@ export default function CoachDetailPage() {
       // Get profile row
       const { data: profile } = await supabase
         .from('profiles')
-        .select('id, full_name, first_name, last_name, email, avatar_url, city, country, linkedin_url, professional_headline, about_me, experience_details, education_details, projects_details, skills')
+        .select('id, full_name, first_name, last_name, email, avatar_url, city, country, linkedin_url, bio, experience_details, education_details, projects_details, skills')
         .eq('id', id)
         .maybeSingle()
 
@@ -81,8 +80,7 @@ export default function CoachDetailPage() {
         city: profile?.city ?? null,
         country: profile?.country ?? null,
         linkedin_url: profile?.linkedin_url ?? null,
-        professional_headline: (profile as any)?.professional_headline ?? null,
-        about_me: (profile as any)?.about_me ?? null,
+        bio: (profile as any)?.bio ?? null,
         experience_details: (profile as any)?.experience_details ?? null,
         education_details: (profile as any)?.education_details ?? null,
         projects_details: (profile as any)?.projects_details ?? null,
@@ -172,11 +170,10 @@ export default function CoachDetailPage() {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6">
-            {(coach.professional_headline || coach.about_me || coach.coach_profiles?.bio) && (
+            {(coach.bio || coach.coach_profiles?.bio) && (
               <Card>
                 <h2 className="mb-3 text-2xl font-bold">About</h2>
-                {coach.professional_headline && <p className="text-primary font-medium mb-2">{coach.professional_headline}</p>}
-                <p className="text-gray-300 whitespace-pre-line">{coach.about_me || coach.coach_profiles?.bio}</p>
+                <p className="text-gray-300 whitespace-pre-line">{coach.bio || coach.coach_profiles?.bio}</p>
               </Card>
             )}
 

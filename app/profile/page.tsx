@@ -53,8 +53,7 @@ export default function ProfilePage() {
   const [region, setRegion] = useState('')
   const [city,    setCity]    = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
-  const [headline, setHeadline] = useState('')
-  const [aboutMe, setAboutMe] = useState('')
+  const [bio, setBio] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
   const [avatarFile,    setAvatarFile]    = useState<File | null>(null)
 
@@ -129,8 +128,7 @@ export default function ProfilePage() {
     setRegion((profile as any).region ?? '')
     setCity(profile.city       ?? '')
     setLinkedinUrl(profile.linkedin_url ?? '')
-    setHeadline((profile as any).professional_headline ?? '')
-    setAboutMe((profile as any).about_me ?? '')
+    setBio((profile as any).bio ?? '')
 
     setAvatarPreview(profile.avatar_url ?? '')
   }, [profile])
@@ -167,12 +165,8 @@ export default function ProfilePage() {
       setError('City is required')
       return
     }
-    if (!headline.trim()) {
-      setError('Professional headline is required')
-      return
-    }
-    if (!aboutMe.trim()) {
-      setError('About section is required')
+    if (!bio.trim()) {
+      setError('Bio is required')
       return
     }
 
@@ -211,8 +205,7 @@ export default function ProfilePage() {
           region:          region     || null,
           city:            city       || null,
           linkedin_url:    linkedinUrl || null,
-          professional_headline: headline.trim(),
-          about_me:        aboutMe.trim(),
+          bio:             bio.trim(),
           avatar_url:      avatarUrl,
           updated_at:      new Date().toISOString(),
         })
@@ -329,6 +322,23 @@ export default function ProfilePage() {
             />
           </div>
 
+          {/* Bio */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Bio <span className="text-red-400">*</span></h2>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">About You <span className="text-red-400">*</span></label>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows={5}
+                placeholder="Write a professional summary about yourself, your background, goals, and what makes you unique..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+                required
+              />
+            </div>
+          </div>
+
           {/* Career */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
             <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Career Info</h2>
@@ -382,30 +392,6 @@ export default function ProfilePage() {
                 placeholder="Select level"
               />
             )}
-          </div>
-
-          {/* Professional Profile - Headline & About */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Profile <span className="text-red-400">*</span></h2>
-            <Input
-              label="Professional Headline"
-              value={headline}
-              onChange={setHeadline}
-              placeholder="e.g. Software Engineer focused on backend systems and distributed apps"
-              required
-            />
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">About <span className="text-red-400">*</span></label>
-              <textarea
-                value={aboutMe}
-                onChange={(e) => setAboutMe(e.target.value)}
-                rows={4}
-                placeholder="Write a short summary about yourself, your goals, and what makes you stand out..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-                required
-              />
-            </div>
           </div>
 
           {/* Experience Section */}

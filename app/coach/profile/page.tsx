@@ -26,8 +26,7 @@ export default function CoachProfilePage() {
   const [region,      setRegion]      = useState('')
   const [city,        setCity]        = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
-  const [headline, setHeadline] = useState('')
-  const [aboutMe, setAboutMe] = useState('')
+  const [profileBio, setProfileBio] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
   const [avatarFile,    setAvatarFile]    = useState<File | null>(null)
 
@@ -100,8 +99,7 @@ export default function CoachProfilePage() {
     setRegion((profile as any).region ?? '')
     setCity(profile.city            ?? '')
     setLinkedinUrl(profile.linkedin_url ?? '')
-    setHeadline((profile as any).professional_headline ?? '')
-    setAboutMe((profile as any).about_me ?? '')
+    setProfileBio((profile as any).bio ?? '')
     setAvatarPreview(profile.avatar_url ?? '')
 
     // Fetch coach_profiles + specializations
@@ -151,12 +149,8 @@ export default function CoachProfilePage() {
     if (!user) return
 
     // Validation
-    if (!headline.trim()) {
-      setError('Professional headline is required')
-      return
-    }
-    if (!aboutMe.trim()) {
-      setError('About section is required')
+    if (!profileBio.trim()) {
+      setError('Bio is required')
       return
     }
 
@@ -187,8 +181,7 @@ export default function CoachProfilePage() {
         region:       region            || null,
         city:         city              || null,
         linkedin_url: linkedinUrl       || null,
-        professional_headline: headline.trim(),
-        about_me:     aboutMe.trim(),
+        bio:          profileBio.trim(),
         avatar_url:   avatarUrl,
         updated_at:   new Date().toISOString(),
       }).eq('id', user.id)
@@ -306,6 +299,23 @@ export default function CoachProfilePage() {
             <Input label="LinkedIn URL" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="https://linkedin.com/in/yourprofile" />
           </div>
 
+          {/* Bio */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Bio <span className="text-red-400">*</span></h2>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">Professional Summary <span className="text-red-400">*</span></label>
+              <textarea
+                value={profileBio}
+                onChange={e => setProfileBio(e.target.value)}
+                rows={5}
+                placeholder="Write a professional summary about your background, coaching style, expertise, and how you help candidates..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+                required
+              />
+            </div>
+          </div>
+
           {/* Coach Info */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
             <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Coaching Info</h2>
@@ -372,24 +382,6 @@ export default function CoachProfilePage() {
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* LinkedIn-style profile */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Highlights <span className="text-red-400">*</span></h2>
-            <Input label="Headline" value={headline} onChange={setHeadline} placeholder="e.g. Senior Engineering Coach helping candidates land offers" required />
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">About <span className="text-red-400">*</span></label>
-              <textarea
-                value={aboutMe}
-                onChange={e => setAboutMe(e.target.value)}
-                rows={4}
-                placeholder="Write a short professional summary, your coaching philosophy, and the impact you create..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-                required
-              />
             </div>
           </div>
 
