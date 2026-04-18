@@ -118,8 +118,8 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
     setError('')
     setDebugInfo('') // Clear previous debug info
     try {
-      // Use our new multi-API integration
-      let fetchedJobs = await fetchAllJobs(query)
+      // Use our new multi-API integration with user country
+      let fetchedJobs = await fetchAllJobs(query, userCountry)
       
       console.log(`📊 Fetched ${fetchedJobs.length} total jobs`)
       

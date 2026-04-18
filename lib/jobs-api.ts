@@ -197,9 +197,9 @@ function extractTags(description: string): string[] {
 /**
  * Fetch jobs from all sources and merge
  */
-export async function fetchAllJobs(query: string = 'software'): Promise<Job[]> {
+export async function fetchAllJobs(query: string = 'software', userCountry: string = ''): Promise<Job[]> {
   // Check cache first
-  const cacheKey = `jobs-${query}`
+  const cacheKey = `jobs-${query}-${userCountry}`
   const cached = cache.get(cacheKey)
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return cached.data
@@ -211,8 +211,8 @@ export async function fetchAllJobs(query: string = 'software'): Promise<Job[]> {
   const results = await Promise.allSettled([
     fetchRemotiveJobs(query),
     fetchTheMuseJobs(query),
-    fetchAdzunaJobs(query),
-    fetchJSearchJobs(query),
+    fetchAdzunaJobs(query, userCountry),
+    fetchJSearchJobs(query, userCountry),
     fetchArbeitnowJobs(),
   ])
 
@@ -274,14 +274,30 @@ async function fetchTheMuseJobs(query: string): Promise<Job[]> {
   }
 }
 
-async function fetchAdzunaJobs(query: string): Promise<Job[]> {
+async function fetchAdzunaJobs(query: string, userCountry: string = ''): Promise<Job[]> {
   if (!ADZUNA_APP_ID || !ADZUNA_API_KEY) {
     console.warn('Adzuna API credentials not configured')
     return []
   }
+  
+  // Map user country to Adzuna country code
+  const countryMap: { [key: string]: string } = {
+    'france': 'fr',
+    'germany': 'de',
+    'spain': 'es',
+    'italy': 'it',
+    'uk': 'gb',
+    'united kingdom': 'gb',
+    'usa': 'us',
+    'united states': 'us',
+    'canada': 'ca'
+  }
+  
+  const adzunaCountry = userCountry ? countryMap[userCountry.toLowerCase()] || 'us' : 'us'
+  
   try {
     const res = await fetch(
-      `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_API_KEY}&what=${encodeURIComponent(query)}&results_per_page=50`
+      `https://api.adzuna.com/v1/api/jobs/${adzunaCountry}/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_API_KEY}&what=${encodeURIComponent(query)}&results_per_page=50`
     )
     if (!res.ok) throw new Error('Adzuna API failed')
     const data = await res.json()
@@ -292,14 +308,18 @@ async function fetchAdzunaJobs(query: string): Promise<Job[]> {
   }
 }
 
-async function fetchJSearchJobs(query: string): Promise<Job[]> {
+async function fetchJSearchJobs(query: string, userCountry: string = ''): Promise<Job[]> {
   if (!RAPIDAPI_KEY) {
     console.warn('RapidAPI key not configured')
     return []
   }
+  
+  // Add country to search query for better location targeting
+  const searchQuery = userCountry ? `${query} in ${userCountry}` : query
+  
   try {
     const res = await fetch(
-      `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=1&num_pages=3`,
+      `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(searchQuery)}&page=1&num_pages=3`,
       {
         headers: {
           'X-RapidAPI-Key': RAPIDAPI_KEY,
