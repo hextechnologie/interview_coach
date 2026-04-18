@@ -225,14 +225,6 @@ Sample locations (sorted, France-mentions first): ${sampleJobs.map((j, i) => `\n
   // Full-page view
   return (
     <div>
-      {/* Debug Info Banner (only show if filtering is active) */}
-      {debugInfo && (
-        <div className="mb-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 text-xs font-mono text-yellow-200">
-          <div className="font-bold text-yellow-300 mb-2">🐛 DEBUG INFO (Location Filtering)</div>
-          <pre className="whitespace-pre-wrap">{debugInfo}</pre>
-        </div>
-      )}
-
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
