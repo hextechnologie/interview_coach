@@ -219,44 +219,34 @@ CREATE TRIGGER update_user_credits_timestamp
 -- Function to calculate coach cancellation rate
 CREATE OR REPLACE FUNCTION get_coach_cancellation_rate(coach_uuid uuid, days integer DEFAULT 30)
 RETURNS numeric AS $$
-DECLARE
-  total_sessions integer;
-  cancelled_sessions integer;
-BEGIN
-  SELECT COUNT(*) INTO total_sessions
-  FROM public.bookings
-  WHERE coach_id = coach_uuid
-    AND scheduled_at >= now() - (days * interval '1 day')
-    AND status IN ('completed', 'cancelled');
-  
-  IF total_sessions = 0 THEN
-    RETURN 0;
-  END IF;
-  
-  SELECT COUNT(*) INTO cancelled_sessions
-  FROM public.cancellations c
-  JOIN public.bookings b ON c.booking_id = b.id
-  WHERE b.coach_id = coach_uuid
-    AND c.cancelled_by = 'coach'
-    AND c.cancelled_at >= now() - (days * interval '1 day');
-  
-  RETURN ROUND((cancelled_sessions::numeric / total_sessions::numeric) * 100, 2);
-END;
-$$ LANGUAGE plpgsql;
+  SELECT CASE 
+    WHEN total_count = 0 THEN 0
+    ELSE ROUND((cancelled_count::numeric / total_count::numeric) * 100, 2)
+  END
+  FROM (
+    SELECT 
+      COUNT(*) FILTER (WHERE status IN ('completed', 'cancelled')) as total_count,
+      COUNT(*) FILTER (
+        WHERE EXISTS (
+          SELECT 1 FROM public.cancellations c 
+          WHERE c.booking_id = b.id AND c.cancelled_by = 'coach'
+        )
+      ) as cancelled_count
+    FROM public.bookings b
+    WHERE b.coach_id = coach_uuid
+      AND b.scheduled_at >= now() - (days * interval '1 day')
+  ) counts;
+$$ LANGUAGE sql STABLE;
 
 -- Function to get active coach strikes count
 CREATE OR REPLACE FUNCTION get_active_strikes_count(coach_uuid uuid)
 RETURNS integer AS $$
-BEGIN
-  RETURN (
-    SELECT COUNT(*)
-    FROM public.coach_strikes
-    WHERE coach_id = coach_uuid
-      AND resolved = false
-      AND expires_at > now()
-  );
-END;
-$$ LANGUAGE plpgsql;
+  SELECT COUNT(*)::integer
+  FROM public.coach_strikes
+  WHERE coach_id = coach_uuid
+    AND resolved = false
+    AND expires_at > now();
+$$ LANGUAGE sql STABLE;
 
 -- Comments for documentation
 COMMENT ON TABLE public.user_credits IS 'Stores credit balance for each user';
