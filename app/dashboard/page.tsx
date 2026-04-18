@@ -27,6 +27,7 @@ import {
   Settings,
   Wallet,
   Bell,
+  Lock,
 } from 'lucide-react'
 import Link from 'next/link'
 import { format, subDays } from 'date-fns'
@@ -537,10 +538,38 @@ export default function DashboardPage() {
             </div>
           )) : (
             <>
-              <StatCard label="Total Interviews Done" value={String(stats.totalInterviews)} icon={<Calendar className="w-5 h-5 text-purple-400" />} accent="bg-purple-500/20" />
-              <StatCard label="Average Score" value={`${stats.avgScore}/10`} icon={<TrendingUp className="w-5 h-5 text-blue-400" />} accent="bg-blue-500/20" />
-              <StatCard label="This Month" value={String(stats.interviewsThisMonth)} icon={<Award className="w-5 h-5 text-green-400" />} accent="bg-green-500/20" />
-              <StatCard label="Streak 🔥" value={`${stats.streakDays} days`} icon={<Flame className="w-5 h-5 text-orange-400" />} accent="bg-orange-500/20" />
+              <StatCard 
+                label="Total Interviews Done" 
+                value={String(stats.totalInterviews)} 
+                icon={<Calendar className="w-5 h-5 text-purple-400" />} 
+                accent="bg-purple-500/20"
+                emptyMessage="Start your first interview to begin tracking your progress!"
+                emptyAction={{ text: "Start Interview", href: "/interview/setup" }}
+              />
+              <StatCard 
+                label="Average Score" 
+                value={`${stats.avgScore}/10`} 
+                icon={<TrendingUp className="w-5 h-5 text-blue-400" />} 
+                accent="bg-blue-500/20"
+                emptyMessage="Complete interviews to see your average performance score"
+                emptyAction={{ text: "Practice Now", href: "/interview/setup" }}
+              />
+              <StatCard 
+                label="This Month" 
+                value={String(stats.interviewsThisMonth)} 
+                icon={<Award className="w-5 h-5 text-green-400" />} 
+                accent="bg-green-500/20"
+                emptyMessage="Practice this month to track your monthly progress"
+                emptyAction={{ text: "Start Practicing", href: "/interview/setup" }}
+              />
+              <StatCard 
+                label="Streak 🔥" 
+                value={`${stats.streakDays} days`} 
+                icon={<Flame className="w-5 h-5 text-orange-400" />} 
+                accent="bg-orange-500/20"
+                emptyMessage="Start a streak by practicing daily to build consistency!"
+                emptyAction={{ text: "Begin Streak", href: "/interview/setup" }}
+              />
             </>
           )}
         </div>
@@ -714,7 +743,7 @@ export default function DashboardPage() {
                 </div>
                 <Link href="/jobs" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">Browse All →</Link>
               </div>
-              <JobOffers targetRole={profile?.target_job_role || profile?.target_job_field || ''} limit={4} />
+              <JobOffers targetRole={profile?.target_job_role || profile?.target_job_field || ''} limit={6} />
             </DarkCard>
 
             {/* RECOMMENDED COACHES */}
@@ -774,25 +803,109 @@ export default function DashboardPage() {
 
             {/* ACHIEVEMENTS */}
             <DarkCard>
-              <div className="mb-4"><h2 className="text-xl font-bold">Your Achievements</h2><p className="text-gray-400 text-sm">Badges earned from your interview sessions</p></div>
-              {completedCount === 0 ? (
-                <p className="text-gray-400 text-sm py-4">0 badges earned yet → Complete your first interview to start earning! 🏅</p>
-              ) : (
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                  {achievements.map((ach) => (
-                    <div key={ach.id} title={ach.earned ? 'Earned!' : 'Not yet earned'}
-                      className={`flex flex-col items-center gap-1 rounded-xl p-3 border transition-all ${ach.earned ? 'border-purple-500/40 bg-purple-500/10' : 'border-white/5 bg-white/5 opacity-40 grayscale'}`}>
-                      <span className="text-2xl">{ach.icon}</span>
-                      <span className="text-[11px] text-center text-gray-300 leading-tight">{ach.label}</span>
+              <div className="mb-4">
+                <h2 className="text-xl font-bold">Your Achievements</h2>
+                <p className="text-gray-400 text-sm">
+                  {completedCount > 0 ? `${completedCount}/${achievements.length} badges unlocked` : 'Complete interviews to unlock badges! 🏅'}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {achievements.map((ach) => (
+                  <div 
+                    key={ach.id}
+                    className={`relative rounded-xl p-4 border transition-all duration-300 group ${
+                      ach.earned 
+                        ? 'border-purple-500/40 bg-gradient-to-br from-purple-500/10 to-blue-500/10 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/20' 
+                        : 'border-white/5 bg-white/5'
+                    }`}
+                  >
+                    {/* Badge Icon */}
+                    <div className="flex flex-col items-center gap-2">
+                      <div className={`relative ${ach.earned ? '' : 'opacity-30 blur-[2px] grayscale'}`}>
+                        <span className={`text-4xl ${ach.earned ? 'animate-bounce' : ''}`}>{ach.icon}</span>
+                        {!ach.earned && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Lock className="w-6 h-6 text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center">
+                        <p className={`text-xs font-semibold leading-tight ${ach.earned ? 'text-white' : 'text-gray-500'}`}>
+                          {ach.label}
+                        </p>
+                        {ach.earned && (
+                          <p className="text-[10px] text-purple-400 mt-1">✓ Unlocked</p>
+                        )}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
             </DarkCard>
           </div>
 
           {/* RIGHT SIDEBAR */}
           <div className="space-y-6">
+            {/* CREDITS CARD */}
+            <DarkCard className={balance === 0 ? 'border-red-500/50 bg-red-500/5' : balance < 20 ? 'border-yellow-500/30' : ''}>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xl font-bold">💳 Credits</h2>
+                {balance === 0 && <span className="text-xs text-red-400 font-semibold animate-pulse">Out of Credits!</span>}
+              </div>
+              
+              {/* Balance Display */}
+              <div className="rounded-xl border border-white/10 p-4 mb-4 text-center" style={{ background: '#0a0f1e' }}>
+                <p className="text-xs text-gray-400 mb-1">Current Balance</p>
+                <p className={`text-4xl font-bold ${balance === 0 ? 'text-red-400' : balance < 20 ? 'text-yellow-400' : 'text-purple-400'}`}>
+                  {balance}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">credits</p>
+              </div>
+
+              {/* Top Up Button */}
+              <Link href="/pricing">
+                <Button 
+                  variant={balance === 0 ? 'danger' : 'primary'} 
+                  fullWidth 
+                  className="gap-2 mb-4"
+                >
+                  <Wallet className="w-4 h-4" /> 
+                  {balance === 0 ? 'Buy Credits Now' : 'Top Up Credits'}
+                </Button>
+              </Link>
+
+              {/* Quick Recharge Options */}
+              <div className="space-y-2">
+                <p className="text-xs text-gray-400 mb-2">Quick Recharge:</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <Link href="/pricing?amount=50" className="block">
+                    <button className="w-full rounded-lg border border-white/10 bg-white/5 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all px-3 py-2 text-sm font-semibold">
+                      50
+                    </button>
+                  </Link>
+                  <Link href="/pricing?amount=100" className="block">
+                    <button className="w-full rounded-lg border border-white/10 bg-white/5 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all px-3 py-2 text-sm font-semibold">
+                      100
+                    </button>
+                  </Link>
+                  <Link href="/pricing?amount=200" className="block">
+                    <button className="w-full rounded-lg border border-white/10 bg-white/5 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all px-3 py-2 text-sm font-semibold">
+                      200
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Last Transaction (placeholder - can be implemented later) */}
+              {balance > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <p className="text-xs text-gray-500">
+                    Used for interviews, coach bookings, and premium features
+                  </p>
+                </div>
+              )}
+            </DarkCard>
+
             {/* QUICK START */}
             <DarkCard>
               <h2 className="text-xl font-bold mb-1">Quick Start</h2>
@@ -863,13 +976,42 @@ export default function DashboardPage() {
   )
 }
 
-function StatCard({ label, value, icon, accent }: { label: string; value: string; icon: React.ReactNode; accent: string }) {
+function StatCard({ 
+  label, 
+  value, 
+  icon, 
+  accent, 
+  emptyMessage, 
+  emptyAction 
+}: { 
+  label: string
+  value: string
+  icon: React.ReactNode
+  accent: string
+  emptyMessage?: string
+  emptyAction?: { text: string; href: string }
+}) {
+  const isEmpty = value === '0' || value === '0/10' || value === '0 days'
+  
   return (
     <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 transition-colors" style={{ background: '#111827' }}>
-      <div className="flex items-start justify-between">
-        <div><p className="text-gray-400 text-xs mb-1">{label}</p><p className="text-2xl font-bold">{value}</p></div>
-        <div className={`w-10 h-10 ${accent} rounded-lg flex items-center justify-center`}>{icon}</div>
+      <div className="flex items-start justify-between mb-2">
+        <div>
+          <p className="text-gray-400 text-xs mb-1">{label}</p>
+          <p className="text-2xl font-bold">{value}</p>
+        </div>
+        <div className={`w-10 h-10 ${accent} rounded-lg flex items-center justify-center shrink-0`}>{icon}</div>
       </div>
+      {isEmpty && emptyMessage && (
+        <div className="mt-3 pt-3 border-t border-white/10">
+          <p className="text-xs text-gray-500 mb-2">{emptyMessage}</p>
+          {emptyAction && (
+            <Link href={emptyAction.href}>
+              <Button variant="outline" className="w-full text-xs py-1.5">{emptyAction.text}</Button>
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   )
 }

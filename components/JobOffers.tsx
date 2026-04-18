@@ -179,7 +179,20 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   )
 }
 
+function formatJobType(type: string): string {
+  // Convert API job types to readable format: "full_time" → "Full Time"
+  return type
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+}
+
 function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean }) {
+  // Truncate title to max 60 characters for compact view
+  const displayTitle = compact && job.title.length > 60 
+    ? job.title.slice(0, 60) + '...' 
+    : job.title
+
   return (
     <div className={`rounded-xl border border-white/10 hover:border-purple-500/30 transition-all ${compact ? 'p-4' : 'p-5'}`} style={{ background: '#0a0f1e' }}>
       <div className="flex items-start gap-3">
@@ -193,7 +206,12 @@ function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className={`font-semibold text-white leading-tight line-clamp-1 ${compact ? 'text-sm' : 'text-base'}`}>{job.title}</h3>
+          <h3 
+            className={`font-semibold text-white leading-tight line-clamp-1 ${compact ? 'text-sm' : 'text-base'}`}
+            title={job.title} // Tooltip shows full title
+          >
+            {displayTitle}
+          </h3>
           <p className="text-gray-400 text-xs mt-0.5">{job.company_name}</p>
         </div>
         <span className="text-xs text-gray-500 shrink-0">{timeAgo(job.publication_date)}</span>
@@ -201,7 +219,7 @@ function JobCard({ job, compact = false }: { job: RemotiveJob; compact?: boolean
 
       <div className="mt-3 flex flex-wrap gap-2">
         <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border ${typeColor(job.job_type.toLowerCase())}`}>
-          {job.job_type}
+          {formatJobType(job.job_type)}
         </span>
         {job.candidate_required_location && (
           <span className="inline-flex items-center gap-1 text-xs text-gray-400">
