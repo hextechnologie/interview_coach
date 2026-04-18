@@ -7,6 +7,10 @@ import { ArrowLeft, Camera, CheckCircle, Loader2, Sparkles, X } from 'lucide-rea
 import { Button, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
+import ExperienceSection from '@/components/profile/ExperienceSection'
+import EducationSection from '@/components/profile/EducationSection'
+import SkillsSection from '@/components/profile/SkillsSection'
+import AchievementsSection from '@/components/profile/AchievementsSection'
 
 const statusOptions = [
   { value: 'student',        label: '🎓 Student' },
