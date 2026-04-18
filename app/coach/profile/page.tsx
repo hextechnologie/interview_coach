@@ -12,9 +12,6 @@ import { marketplaceSpecializations } from '@/lib/coach-marketplace'
 import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
-import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
-import EducationCardsSection from '@/components/coach/EducationCardsSection'
-import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 
 export default function CoachProfilePage() {
