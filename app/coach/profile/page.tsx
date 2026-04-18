@@ -1,10 +1,10 @@
 'use client'
 
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react'
+import { ChangeEvent, KeyboardEvent, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Camera, CheckCircle, Loader2, X } from 'lucide-react'
-import { Button, Input } from '@/components/ui'
+import { Button, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
 import CoachNavbar from '@/components/CoachNavbar'
@@ -13,6 +13,7 @@ import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
+import { getCountryOptions, getCityOptions, getCitiesForCountry } from '@/lib/countries'
 
 export default function CoachProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -41,6 +42,30 @@ export default function CoachProfilePage() {
   const [saving, setSaving] = useState(false)
   const [saved,  setSaved]  = useState(false)
   const [error,  setError]  = useState('')
+
+  // Get country and city options
+  const countryOptions = useMemo(() => getCountryOptions(), [])
+  const cityOptions = useMemo(() => {
+    const cities = getCityOptions(country)
+    // If current city is set but not in the list (legacy data), add it
+    if (city && !cities.some(opt => opt.value === city)) {
+      return [{ value: city, label: city }, ...cities]
+    }
+    return cities
+  }, [country, city])
+
+  // Reset city when country changes
+  const handleCountryChange = (newCountry: string) => {
+    const oldCountry = country
+    setCountry(newCountry)
+    // Only reset city if it's not valid for the new country
+    if (oldCountry !== newCountry) {
+      const validCities = getCitiesForCountry(newCountry)
+      if (city && !validCities.includes(city)) {
+        setCity('')
+      }
+    }
+  }
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login')
@@ -233,8 +258,21 @@ export default function CoachProfilePage() {
               <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe" />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
-              <Input label="City"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco" />
+              <Select 
+                label="Country" 
+                value={country} 
+                onChange={handleCountryChange} 
+                options={countryOptions} 
+                placeholder="Select your country" 
+              />
+              <Select 
+                label="City" 
+                value={city} 
+                onChange={setCity} 
+                options={cityOptions} 
+                placeholder={country ? "Select your city" : "Select country first"} 
+                disabled={!country}
+              />
             </div>
             <Input label="LinkedIn URL" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="https://linkedin.com/in/yourprofile" />
           </div>

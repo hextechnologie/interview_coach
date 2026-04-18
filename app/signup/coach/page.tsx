@@ -3,8 +3,9 @@
 import { ChangeEvent, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Camera, Plus, Sparkles, X } from 'lucide-react'
-import { Button, Card, Input, Badge } from '@/components/ui'
+import { Button, Card, Input, Badge, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
+import { getCountryOptions, getCityOptions } from '@/lib/countries'
 
 const specializationOptions = ['Tech', 'Finance', 'Marketing', 'Sales', 'Healthcare', 'Operations', 'Design', 'Product']
 
@@ -31,6 +32,16 @@ export default function CoachSignupPage() {
   const [success, setSuccess] = useState('')
 
   const platformFee = useMemo(() => (price * 0.2).toFixed(0), [price])
+
+  // Get country and city options
+  const countryOptions = useMemo(() => getCountryOptions(), [])
+  const cityOptions = useMemo(() => getCityOptions(country), [country])
+
+  // Reset city when country changes
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry)
+    setCity('') // Reset city when country changes
+  }
 
   const strength = useMemo(() => {
     if (password.length < 6) return 'Weak'
@@ -289,8 +300,23 @@ export default function CoachSignupPage() {
 
               {/* Location */}
               <div className="grid gap-5 md:grid-cols-2">
-                <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
-                <Input label="City *" value={city} onChange={setCity} placeholder="e.g. San Francisco" required />
+                <Select 
+                  label="Country *" 
+                  value={country} 
+                  onChange={handleCountryChange} 
+                  options={countryOptions} 
+                  placeholder="Select your country" 
+                  required 
+                />
+                <Select 
+                  label="City *" 
+                  value={city} 
+                  onChange={setCity} 
+                  options={cityOptions} 
+                  placeholder={country ? "Select your city" : "Select country first"} 
+                  required 
+                  disabled={!country}
+                />
               </div>
 
               {/* Specializations */}

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Camera, Sparkles } from 'lucide-react'
 import { Button, Card, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
+import { getCountryOptions, getCityOptions } from '@/lib/countries'
 
 const jobRoleOptions = [
   { value: 'Software Engineer', label: 'Software Engineer' },
@@ -75,6 +76,16 @@ export default function CandidateSignupPage() {
   }, [password])
 
   const detailConfig = currentStatus ? statusDetailConfig[currentStatus] : null
+
+  // Get country and city options
+  const countryOptions = useMemo(() => getCountryOptions(), [])
+  const cityOptions = useMemo(() => getCityOptions(country), [country])
+
+  // Reset city when country changes
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry)
+    setCity('') // Reset city when country changes
+  }
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -342,8 +353,23 @@ export default function CandidateSignupPage() {
 
               {/* Country + City */}
               <div className="grid gap-5 md:grid-cols-2">
-                <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
-                <Input label="City *" value={city} onChange={setCity} placeholder="e.g. San Francisco" required />
+                <Select 
+                  label="Country *" 
+                  value={country} 
+                  onChange={handleCountryChange} 
+                  options={countryOptions} 
+                  placeholder="Select your country" 
+                  required 
+                />
+                <Select 
+                  label="City *" 
+                  value={city} 
+                  onChange={setCity} 
+                  options={cityOptions} 
+                  placeholder={country ? "Select your city" : "Select country first"} 
+                  required 
+                  disabled={!country}
+                />
               </div>
 
               {/* LinkedIn */}

@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Camera, CheckCircle, Loader2, Sparkles, X } from 'lucide-react'
@@ -11,6 +11,7 @@ import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
+import { getCountryOptions, getCityOptions, getCitiesForCountry } from '@/lib/countries'
 
 const statusOptions = [
   { value: 'student',        label: '🎓 Student' },
@@ -59,6 +60,30 @@ export default function ProfilePage() {
   const [saving,   setSaving]   = useState(false)
   const [saved,    setSaved]    = useState(false)
   const [error,    setError]    = useState('')
+
+  // Get country and city options
+  const countryOptions = useMemo(() => getCountryOptions(), [])
+  const cityOptions = useMemo(() => {
+    const cities = getCityOptions(country)
+    // If current city is set but not in the list (legacy data), add it
+    if (city && !cities.some(opt => opt.value === city)) {
+      return [{ value: city, label: city }, ...cities]
+    }
+    return cities
+  }, [country, city])
+
+  // Reset city when country changes
+  const handleCountryChange = (newCountry: string) => {
+    const oldCountry = country
+    setCountry(newCountry)
+    // Only reset city if it's not valid for the new country
+    if (oldCountry !== newCountry) {
+      const validCities = getCitiesForCountry(newCountry)
+      if (city && !validCities.includes(city)) {
+        setCity('')
+      }
+    }
+  }
 
   // Redirect if not logged in
   useEffect(() => {
@@ -244,8 +269,23 @@ export default function ProfilePage() {
               <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe" required />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" required />
-              <Input label="City"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco" required />
+              <Select 
+                label="Country" 
+                value={country} 
+                onChange={handleCountryChange} 
+                options={countryOptions} 
+                placeholder="Select your country" 
+                required 
+              />
+              <Select 
+                label="City" 
+                value={city} 
+                onChange={setCity} 
+                options={cityOptions} 
+                placeholder={country ? "Select your city" : "Select country first"} 
+                required 
+                disabled={!country}
+              />
             </div>
             <Input
               label="LinkedIn URL (optional)"
