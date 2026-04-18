@@ -25,7 +25,6 @@ import {
   ChevronDown,
   Menu,
   X,
-  Settings,
   Wallet,
   Bell,
   Lock,
@@ -455,11 +454,6 @@ export default function DashboardPage() {
                           <User className="w-4 h-4" /> My Profile
                         </button>
                       </Link>
-                      <Link href="/profile" onClick={() => setProfileOpen(false)}>
-                        <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
-                          <Settings className="w-4 h-4" /> Settings
-                        </button>
-                      </Link>
                       <Link href="/credits" onClick={() => setProfileOpen(false)}>
                         <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
                           <Wallet className="w-4 h-4" /> My Credits
@@ -502,7 +496,6 @@ export default function DashboardPage() {
               {!isCoach && <Link href="/bookings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Calendar className="w-4 h-4 mr-2" /> My Bookings</Button></Link>}
               {isCoach && <Link href="/coach/dashboard" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Coach Dashboard</Button></Link>}
               <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><User className="w-4 h-4 mr-2" /> My Profile</Button></Link>
-              <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Settings className="w-4 h-4 mr-2" /> Settings</Button></Link>
               <Link href="/credits" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Wallet className="w-4 h-4 mr-2" /> My Credits</Button></Link>
               <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> Pro Plan</Button></Link>
               <div className="border-t border-white/10 my-2"></div>
