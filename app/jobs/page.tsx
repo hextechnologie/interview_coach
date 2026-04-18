@@ -7,10 +7,11 @@ import JobOffers from '@/components/JobOffers'
 import { supabase } from '@/lib/supabase'
 
 export default function JobsPage() {
-  const [userProfile, setUserProfile] = useState<{ country: string | null; city: string | null; targetRole: string | null }>({
+  const [userProfile, setUserProfile] = useState<{ country: string | null; city: string | null; targetRole: string | null; isLoading: boolean }>({
     country: null,
     city: null,
-    targetRole: null
+    targetRole: null,
+    isLoading: true // Start as loading to prevent initial fetch
   })
 
   useEffect(() => {
@@ -28,9 +29,15 @@ export default function JobsPage() {
           setUserProfile({
             country: profile.country,
             city: profile.city,
-            targetRole: profile.target_job_role
+            targetRole: profile.target_job_role,
+            isLoading: false
           })
+        } else {
+          setUserProfile({ country: null, city: null, targetRole: null, isLoading: false })
         }
+      } else {
+        // Not logged in
+        setUserProfile({ country: null, city: null, targetRole: null, isLoading: false })
       }
     }
     
@@ -74,15 +81,19 @@ export default function JobsPage() {
         </div>
 
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: '#111827' }}>
-          <Suspense fallback={<div className="text-gray-400 text-sm text-center py-10">Loading jobs...</div>}>
-            <JobOffers 
-              fullPage 
-              limit={20} 
-              userCountry={userProfile.country || ''}
-              userCity={userProfile.city || ''}
-              targetRole={userProfile.targetRole || ''}
-            />
-          </Suspense>
+          {userProfile.isLoading ? (
+            <div className="text-gray-400 text-sm text-center py-10">Loading profile...</div>
+          ) : (
+            <Suspense fallback={<div className="text-gray-400 text-sm text-center py-10">Loading jobs...</div>}>
+              <JobOffers 
+                fullPage 
+                limit={20} 
+                userCountry={userProfile.country || ''}
+                userCity={userProfile.city || ''}
+                targetRole={userProfile.targetRole || ''}
+              />
+            </Suspense>
+          )}
         </div>
       </div>
     </div>
