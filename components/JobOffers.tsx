@@ -71,7 +71,7 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
     return 50
   }
 
-  const fetchJobs = async (query: string) {
+  const fetchJobs = async (query: string) => {
     setLoading(true)
     setError('')
     try {
