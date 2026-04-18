@@ -59,15 +59,39 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   const calculateLocationScore = (jobLocation: string): number => {
     if (!userCountry) return 0
     
-    const location = jobLocation.toLowerCase()
-    const country = userCountry.toLowerCase()
-    const city = userCity.toLowerCase()
+    // Normalize both strings: lowercase, remove extra spaces, remove special chars
+    const normalizeLocation = (loc: string) => 
+      loc.toLowerCase()
+        .trim()
+        .replace(/[,.-]/g, ' ')
+        .replace(/\s+/g, ' ')
+    
+    const location = normalizeLocation(jobLocation)
+    const country = normalizeLocation(userCountry)
+    const city = userCity ? normalizeLocation(userCity) : ''
+    
+    // Split location into words for better matching
+    const locationWords = location.split(' ')
+    const countryWords = country.split(' ')
     
     // Exact city match - highest priority
-    if (city && location.includes(city)) return 1000
+    if (city && location.includes(city)) {
+      return 1000
+    }
     
-    // Country match - high priority  
-    if (location.includes(country)) return 500
+    // Country match - check if all country words are in location
+    const countryMatches = countryWords.every(word => 
+      word.length > 2 && locationWords.includes(word)
+    )
+    
+    if (countryMatches) {
+      return 500
+    }
+    
+    // Partial country match (e.g., "France" matches "French")
+    if (location.includes(country.substring(0, 4))) {
+      return 400
+    }
     
     // No match - lower priority but still show
     return 0
@@ -82,9 +106,17 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       
       // Sort by location proximity if user has a country set (France jobs first)
       if (userCountry) {
+        console.log('Filter by country:', userCountry)
+        
         fetchedJobs.sort((a: Job, b: Job) => {
           const scoreA = calculateLocationScore(a.location)
           const scoreB = calculateLocationScore(b.location)
+          
+          // Debug: log first few jobs
+          if (fetchedJobs.indexOf(a) < 5) {
+            console.log(`Job: "${a.title}" at "${a.location}" - Score: ${scoreA}`)
+          }
+          
           return scoreB - scoreA // Higher score first
         })
       }
