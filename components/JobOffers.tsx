@@ -169,7 +169,7 @@ Sample locations: ${sampleJobs.map((j, i) => `\n${i+1}. "${j.location}" (score: 
   useEffect(() => {
     fetchJobs(search)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search])
+  }, [search, userCountry]) // Re-fetch when search OR userCountry changes
 
   const filtered = typeFilter === 'all' ? jobs : jobs.filter((j) => j.job_type?.toLowerCase().includes(typeFilter))
 
