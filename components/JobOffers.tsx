@@ -117,11 +117,22 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
     setLoading(true)
     setError('')
     setDebugInfo('') // Clear previous debug info
+    
+    // Capture the current country to prevent race conditions
+    const requestCountry = userCountry
+    
     try {
       // Use our new multi-API integration with user country
-      let fetchedJobs = await fetchAllJobs(query, userCountry)
+      let fetchedJobs = await fetchAllJobs(query, requestCountry)
       
-      console.log(`📊 Fetched ${fetchedJobs.length} total jobs`)
+      // CRITICAL: Only use results if country hasn't changed since request started
+      // This prevents old US job requests from overwriting new French job results
+      if (requestCountry !== userCountry) {
+        console.log(`⚠️ Discarding stale results for "${requestCountry}", current country is "${userCountry}"`)
+        return // Discard these results, don't update state
+      }
+      
+      console.log(`📊 Fetched ${fetchedJobs.length} total jobs for "${requestCountry}"`)
       
       // Sort by location proximity if user has a country set (France jobs first)
       if (userCountry) {
