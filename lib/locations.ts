@@ -19,7 +19,19 @@ export interface Country {
 
 export const COUNTRIES: Country[] = [
   // A
-  { value: 'afghanistan', label: 'Afghanistan', letter: 'A', regions: [{ name: 'Kabul', cities: ['Kabul', 'Mazar-i-Sharif', 'Kandahar', 'Herat', 'Jalalabad'] }] },
+  {
+    value: 'afghanistan',
+    label: 'Afghanistan',
+    letter: 'A',
+    regions: [
+      { name: 'Kabul', cities: ['Kabul', 'Paghman', 'Chaharasyab', 'Mir Bacha Kot'] },
+      { name: 'Balkh', cities: ['Mazar-i-Sharif', 'Balkh', 'Dehdadi', 'Dowlatabad'] },
+      { name: 'Kandahar', cities: ['Kandahar', 'Spin Boldak', 'Maywand', 'Arghandab'] },
+      { name: 'Herat', cities: ['Herat', 'Guzara', 'Injil', 'Pashtun Zarghun'] },
+      { name: 'Nangarhar', cities: ['Jalalabad', 'Behsud', 'Surkhrod', 'Kama'] },
+      { name: 'Kunduz', cities: ['Kunduz', 'Imam Sahib', 'Khan Abad', 'Char Dara'] },
+    ]
+  },
   { value: 'albania', label: 'Albania', letter: 'A', regions: [{ name: 'Central', cities: ['Tirana', 'Durrës', 'Vlorë', 'Shkodër', 'Fier'] }] },
   {
     value: 'algeria',
@@ -32,7 +44,18 @@ export const COUNTRIES: Country[] = [
     ]
   },
   { value: 'andorra', label: 'Andorra', letter: 'A', regions: [{ name: 'Central', cities: ['Andorra la Vella', 'Escaldes-Engordany', 'Encamp', 'La Massana'] }] },
-  { value: 'angola', label: 'Angola', letter: 'A', regions: [{ name: 'Luanda', cities: ['Luanda', 'Huambo', 'Lobito', 'Benguela', 'Lubango'] }] },
+  {
+    value: 'angola',
+    label: 'Angola',
+    letter: 'A',
+    regions: [
+      { name: 'Luanda', cities: ['Luanda', 'Viana', 'Cacuaco', 'Belas', 'Cazenga'] },
+      { name: 'Huambo', cities: ['Huambo', 'Longonjo', 'Caicúnda', 'Mungo'] },
+      { name: 'Benguela', cities: ['Benguela', 'Lobito', 'Catumbela', 'Ganda', 'Balombo'] },
+      { name: 'Huíla', cities: ['Lubango', 'Chibia', 'Quilengues', 'Chicomba'] },
+      { name: 'Bie', cities: ['Kuito', 'Andulo', 'Camacupa', 'Catabola'] },
+    ]
+  },
   { value: 'antigua-barbuda', label: 'Antigua and Barbuda', letter: 'A', regions: [{ name: 'Central', cities: ['St. John\'s', 'All Saints', 'Liberta', 'Potters Village'] }] },
   {
     value: 'argentina',
@@ -92,7 +115,19 @@ export const COUNTRIES: Country[] = [
     ]
   },
   { value: 'barbados', label: 'Barbados', letter: 'B', regions: [{ name: 'Central', cities: ['Bridgetown', 'Speightstown', 'Oistins', 'Bathsheba', 'Holetown'] }] },
-  { value: 'belarus', label: 'Belarus', letter: 'B', regions: [{ name: 'Minsk', cities: ['Minsk', 'Gomel', 'Mogilev', 'Vitebsk', 'Grodno', 'Brest'] }] },
+  {
+    value: 'belarus',
+    label: 'Belarus',
+    letter: 'B',
+    regions: [
+      { name: 'Minsk', cities: ['Minsk', 'Borisov', 'Soligorsk', 'Molodechno', 'Dzerzhinsk', 'Slutsk'] },
+      { name: 'Gomel', cities: ['Gomel', 'Mozyr', 'Zhlobin', 'Svetlogorsk', 'Rechitsa'] },
+      { name: 'Mogilev', cities: ['Mogilev', 'Bobruisk', 'Orsha', 'Krichev', 'Gorki'] },
+      { name: 'Vitebsk', cities: ['Vitebsk', 'Orsha', 'Novopolotsk', 'Polotsk', 'Glubokoe'] },
+      { name: 'Grodno', cities: ['Grodno', 'Lida', 'Volkovysk', 'Slonim', 'Smorgon'] },
+      { name: 'Brest', cities: ['Brest', 'Baranovichi', 'Pinsk', 'Kobrin', 'Luninets'] },
+    ]
+  },
   {
     value: 'belgium',
     label: 'Belgium',
@@ -108,7 +143,19 @@ export const COUNTRIES: Country[] = [
   { value: 'belize', label: 'Belize', letter: 'B', regions: [{ name: 'Central', cities: ['Belize City', 'San Ignacio', 'Belmopan', 'Orange Walk', 'Dangriga'] }] },
   { value: 'benin', label: 'Benin', letter: 'B', regions: [{ name: 'Central', cities: ['Cotonou', 'Porto-Novo', 'Parakou', 'Djougou', 'Abomey'] }] },
   { value: 'bhutan', label: 'Bhutan', letter: 'B', regions: [{ name: 'Central', cities: ['Thimphu', 'Phuntsholing', 'Paro', 'Punakha', 'Wangdue'] }] },
-  { value: 'bolivia', label: 'Bolivia', letter: 'B', regions: [{ name: 'La Paz', cities: ['La Paz', 'Santa Cruz', 'Cochabamba', 'Sucre', 'Oruro', 'Tarija'] }] },
+  {
+    value: 'bolivia',
+    label: 'Bolivia',
+    letter: 'B',
+    regions: [
+      { name: 'La Paz', cities: ['La Paz', 'El Alto', 'Viacha', 'Achocalla', 'Laja'] },
+      { name: 'Santa Cruz', cities: ['Santa Cruz de la Sierra', 'Montero', 'Warnes', 'La Guardia', 'Cotaóka'] },
+      { name: 'Cochabamba', cities: ['Cochabamba', 'Sacaba', 'Quillacollo', 'Colcapirhua', 'Tiquipaya'] },
+      { name: 'Chuquisaca', cities: ['Sucre', 'Yotala', 'Poroma', 'Tarabuco'] },
+      { name: 'Oruro', cities: ['Oruro', 'Huanuni', 'Challapata', 'Machacamarca'] },
+      { name: 'Tarija', cities: ['Tarija', 'Yacuiba', 'Villamontes', 'Bermejo'] },
+    ]
+  },
   { value: 'bosnia', label: 'Bosnia and Herzegovina', letter: 'B', regions: [{ name: 'Central', cities: ['Sarajevo', 'Banja Luka', 'Tuzla', 'Zenica', 'Mostar'] }] },
   { value: 'botswana', label: 'Botswana', letter: 'B', regions: [{ name: 'Central', cities: ['Gaborone', 'Francistown', 'Molepolole', 'Maun', 'Selebi-Phikwe'] }] },
   {
@@ -129,13 +176,48 @@ export const COUNTRIES: Country[] = [
     ]
   },
   { value: 'brunei', label: 'Brunei', letter: 'B', regions: [{ name: 'Central', cities: ['Bandar Seri Begawan', 'Kuala Belait', 'Seria', 'Tutong', 'Bangar'] }] },
-  { value: 'bulgaria', label: 'Bulgaria', letter: 'B', regions: [{ name: 'Sofia', cities: ['Sofia', 'Plovdiv', 'Varna', 'Burgas', 'Ruse', 'Stara Zagora'] }] },
+  {
+    value: 'bulgaria',
+    label: 'Bulgaria',
+    letter: 'B',
+    regions: [
+      { name: 'Sofia City', cities: ['Sofia', 'Bankya', 'Novi Iskar'] },
+      { name: 'Plovdiv', cities: ['Plovdiv', 'Asenovgrad', 'Karlovo', 'Pârvomay'] },
+      { name: 'Varna', cities: ['Varna', 'Devnya', 'Aksakovo', 'Beloslav'] },
+      { name: 'Burgas', cities: ['Burgas', 'Nessebar', 'Pomorie', 'Sozopol', 'Aytos'] },
+      { name: 'Ruse', cities: ['Ruse', 'Razgrad', 'Silistra', 'Byala'] },
+      { name: 'Stara Zagora', cities: ['Stara Zagora', 'Kazanlak', 'Nova Zagora', 'Chirpan'] },
+    ]
+  },
   { value: 'burkina-faso', label: 'Burkina Faso', letter: 'B', regions: [{ name: 'Central', cities: ['Ouagadougou', 'Bobo-Dioulasso', 'Koudougou', 'Ouahigouya', 'Banfora'] }] },
   { value: 'burundi', label: 'Burundi', letter: 'B', regions: [{ name: 'Central', cities: ['Gitega', 'Bujumbura', 'Muyinga', 'Ruyigi', 'Ngozi'] }] },
 
   // C
-  { value: 'cambodia', label: 'Cambodia', letter: 'C', regions: [{ name: 'Phnom Penh', cities: ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville', 'Kampong Cham'] }] },
-  { value: 'cameroon', label: 'Cameroon', letter: 'C', regions: [{ name: 'Central', cities: ['Yaoundé', 'Douala', 'Garoua', 'Bafoussam', 'Bamenda'] }] },
+  {
+    value: 'cambodia',
+    label: 'Cambodia',
+    letter: 'C',
+    regions: [
+      { name: 'Phnom Penh', cities: ['Phnom Penh', 'Chbar Ampov', 'Dangkao', 'Mean Chey', 'Russey Keo'] },
+      { name: 'Siem Reap', cities: ['Siem Reap', 'Angkor Thom', 'Prasat Bakong', 'Puok'] },
+      { name: 'Battambang', cities: ['Battambang', 'Pailin', 'Samlout', 'Mongkol Borei'] },
+      { name: 'Preah Sihanouk', cities: ['Sihanoukville', 'Koh Kong', 'Kampot', 'Kep'] },
+      { name: 'Kampong Cham', cities: ['Kampong Cham', 'Suong', 'Prey Chhor', 'Dambae'] },
+    ]
+  },
+  {
+    value: 'cameroon',
+    label: 'Cameroon',
+    letter: 'C',
+    regions: [
+      { name: 'Centre', cities: ['Yaoundé', 'Mbalmayo', 'Akonolinga', 'Bafia'] },
+      { name: 'Littoral', cities: ['Douala', 'Edea', 'Nkongsamba', 'Mbanga'] },
+      { name: 'North', cities: ['Garoua', 'Maroua', 'Ngaoundéré', 'Guider'] },
+      { name: 'West', cities: ['Bafoussam', 'Dschang', 'Mbouda', 'Bafang'] },
+      { name: 'North-West', cities: ['Bamenda', 'Kumbo', 'Wum', 'Ndop'] },
+      { name: 'South-West', cities: ['Buea', 'Limbe', 'Kumba', 'Tiko'] },
+    ]
+  },
   {
     value: 'canada',
     label: 'Canada',
@@ -198,7 +280,19 @@ export const COUNTRIES: Country[] = [
   { value: 'congo-brazzaville', label: 'Congo (Brazzaville)', letter: 'C', regions: [{ name: 'Central', cities: ['Brazzaville', 'Pointe-Noire', 'Dolisie', 'Nkayi', 'Ouesso'] }] },
   { value: 'congo-kinshasa', label: 'Congo (Kinshasa)', letter: 'C', regions: [{ name: 'Kinshasa', cities: ['Kinshasa', 'Lubumbashi', 'Mbuji-Mayi', 'Kananga', 'Kisangani'] }] },
   { value: 'costa-rica', label: 'Costa Rica', letter: 'C', regions: [{ name: 'San José', cities: ['San José', 'Limón', 'Alajuela', 'Heredia', 'Cartago', 'Puntarenas'] }] },
-  { value: 'croatia', label: 'Croatia', letter: 'C', regions: [{ name: 'Central', cities: ['Zagreb', 'Split', 'Rijeka', 'Osijek', 'Zadar', 'Pula'] }] },
+  {
+    value: 'croatia',
+    label: 'Croatia',
+    letter: 'C',
+    regions: [
+      { name: 'Zagreb', cities: ['Zagreb', 'Sesvete', 'Velika Gorica', 'Samobor', 'Zaprešić'] },
+      { name: 'Split-Dalmatia', cities: ['Split', 'Kaštela', 'Solin', 'Sinj', 'Omiš'] },
+      { name: 'Primorje-Gorski Kotar', cities: ['Rijeka', 'Opatija', 'Crikvenica', 'Kastav', 'Krk'] },
+      { name: 'Osijek-Baranja', cities: ['Osijek', 'Đakovo', 'Valpovo', 'Beli Manastir', 'Donji Miholjac'] },
+      { name: 'Zadar', cities: ['Zadar', 'Biograd na Moru', 'Benkovac', 'Nin'] },
+      { name: 'Istria', cities: ['Pula', 'Rovinj', 'Poreč', 'Umag', 'Labin'] },
+    ]
+  },
   { value: 'cuba', label: 'Cuba', letter: 'C', regions: [{ name: 'Havana', cities: ['Havana', 'Santiago de Cuba', 'Camagüey', 'Holguín', 'Santa Clara'] }] },
   { value: 'cyprus', label: 'Cyprus', letter: 'C', regions: [{ name: 'Central', cities: ['Nicosia', 'Limassol', 'Larnaca', 'Paphos', 'Famagusta'] }] },
   {
@@ -229,10 +323,34 @@ export const COUNTRIES: Country[] = [
   },
   { value: 'djibouti', label: 'Djibouti', letter: 'D', regions: [{ name: 'Central', cities: ['Djibouti City', 'Ali Sabieh', 'Tadjoura', 'Obock', 'Dikhil'] }] },
   { value: 'dominica', label: 'Dominica', letter: 'D', regions: [{ name: 'Central', cities: ['Roseau', 'Portsmouth', 'Marigot', 'Berekua', 'Mahaut'] }] },
-  { value: 'dominican-republic', label: 'Dominican Republic', letter: 'D', regions: [{ name: 'Santo Domingo', cities: ['Santo Domingo', 'Santiago', 'La Romana', 'San Pedro', 'Puerto Plata'] }] },
+  {
+    value: 'dominican-republic',
+    label: 'Dominican Republic',
+    letter: 'D',
+    regions: [
+      { name: 'Distrito Nacional', cities: ['Santo Domingo', 'Santo Domingo Este', 'Santo Domingo Oeste', 'Santo Domingo Norte'] },
+      { name: 'Santiago', cities: ['Santiago de los Caballeros', 'Villa González', 'Tamboril', 'Licey al Medio'] },
+      { name: 'La Romana', cities: ['La Romana', 'Villa Hermosa', 'Guaymate'] },
+      { name: 'San Pedro de Macorís', cities: ['San Pedro de Macorís', 'Los Llanos', 'Ramón Santana'] },
+      { name: 'Puerto Plata', cities: ['Puerto Plata', 'Sosúa', 'Cabarete', 'Luperón'] },
+      { name: 'La Vega', cities: ['La Vega', 'Constanza', 'Jarabacoa', 'Moca'] },
+    ]
+  },
 
   // E
-  { value: 'ecuador', label: 'Ecuador', letter: 'E', regions: [{ name: 'Pichincha', cities: ['Quito', 'Guayaquil', 'Cuenca', 'Santo Domingo', 'Machala', 'Manta'] }] },
+  {
+    value: 'ecuador',
+    label: 'Ecuador',
+    letter: 'E',
+    regions: [
+      { name: 'Pichincha', cities: ['Quito', 'Cayambe', 'Mejía', 'Rumiahui', 'San Miguel de los Bancos'] },
+      { name: 'Guayas', cities: ['Guayaquil', 'Durán', 'Milagro', 'Daule', 'Samborondón'] },
+      { name: 'Azuay', cities: ['Cuenca', 'Gualaceo', 'Paúte', 'Sig Sig', 'Girón'] },
+      { name: 'Manabí', cities: ['Manta', 'Portoviejo', 'Montecristi', 'Jaramijó', 'Chone'] },
+      { name: 'Santo Domingo', cities: ['Santo Domingo', 'La Concordia', 'Valle Hermoso'] },
+      { name: 'El Oro', cities: ['Machala', 'Huaquillas', 'Santa Rosa', 'El Guabo', 'Arenillas'] },
+    ]
+  },
   {
     value: 'egypt',
     label: 'Egypt',
@@ -341,14 +459,36 @@ export const COUNTRIES: Country[] = [
     ]
   },
   { value: 'grenada', label: 'Grenada', letter: 'G', regions: [{ name: 'Central', cities: ['St. George\'s', 'Gouyave', 'Grenville', 'Victoria', 'Sauteurs'] }] },
-  { value: 'guatemala', label: 'Guatemala', letter: 'G', regions: [{ name: 'Guatemala', cities: ['Guatemala City', 'Mixco', 'Villa Nueva', 'Quetzaltenango', 'Escuintla'] }] },
+  {
+    value: 'guatemala',
+    label: 'Guatemala',
+    letter: 'G',
+    regions: [
+      { name: 'Guatemala Department', cities: ['Guatemala City', 'Mixco', 'Villa Nueva', 'San Miguel Petapa', 'Amatitlán'] },
+      { name: 'Quetzaltenango', cities: ['Quetzaltenango', 'Salcajá', 'San Martín Sacatepéquez', 'Olintepeque'] },
+      { name: 'Escuintla', cities: ['Escuintla', 'Santa Lucía Cotzumalguapa', 'Tiquisate', 'La Democracia'] },
+      { name: 'Alta Verapaz', cities: ['Cobán', 'San Pedro Carchá', 'San Cristóbal Verapaz'] },
+      { name: 'Huehuetenango', cities: ['Huehuetenango', 'Chiantla', 'Malacatancito', 'Cuilco'] },
+    ]
+  },
   { value: 'guinea', label: 'Guinea', letter: 'G', regions: [{ name: 'Conakry', cities: ['Conakry', 'Nzérékoré', 'Kankan', 'Kindia', 'Labé'] }] },
   { value: 'guinea-bissau', label: 'Guinea-Bissau', letter: 'G', regions: [{ name: 'Central', cities: ['Bissau', 'Bafatá', 'Gabú', 'Bissorã', 'Bolama'] }] },
   { value: 'guyana', label: 'Guyana', letter: 'G', regions: [{ name: 'Central', cities: ['Georgetown', 'Linden', 'New Amsterdam', 'Anna Regina', 'Bartica'] }] },
 
   // H
   { value: 'haiti', label: 'Haiti', letter: 'H', regions: [{ name: 'Ouest', cities: ['Port-au-Prince', 'Carrefour', 'Delmas', 'Cap-Haïtien', 'Pétion-Ville'] }] },
-  { value: 'honduras', label: 'Honduras', letter: 'H', regions: [{ name: 'Francisco Morazán', cities: ['Tegucigalpa', 'San Pedro Sula', 'Choloma', 'La Ceiba', 'El Progreso'] }] },
+  {
+    value: 'honduras',
+    label: 'Honduras',
+    letter: 'H',
+    regions: [
+      { name: 'Francisco Morazán', cities: ['Tegucigalpa', 'Valle de Ángeles', 'Santa Lucía', 'San Antonio de Oriente'] },
+      { name: 'Cortés', cities: ['San Pedro Sula', 'Choloma', 'La Lima', 'Villanueva', 'Omoa'] },
+      { name: 'Atlántida', cities: ['La Ceiba', 'Tela', 'El Porvenir', 'Arizona'] },
+      { name: 'Yoro', cities: ['El Progreso', 'Yoro', 'Olanchito', 'Morazán'] },
+      { name: 'Choluteca', cities: ['Choluteca', 'Marcovia', 'El Triunfo', 'Pespire'] },
+    ]
+  },
   {
     value: 'hungary',
     label: 'Hungary',
@@ -462,7 +602,18 @@ export const COUNTRIES: Country[] = [
       { name: 'Tuscany', cities: ['Florence', 'Pisa', 'Prato', 'Livorno', 'Arezzo', 'Pistoia', 'Lucca', 'Siena', 'Grosseto', 'Massa'] },
     ]
   },
-  { value: 'ivory-coast', label: 'Ivory Coast', letter: 'I', regions: [{ name: 'Abidjan', cities: ['Abidjan', 'Bouaké', 'Daloa', 'San-Pédro', 'Yamoussoukro'] }] },
+  {
+    value: 'ivory-coast',
+    label: 'Ivory Coast',
+    letter: 'I',
+    regions: [
+      { name: 'Abidjan Autonomous District', cities: ['Abidjan', 'Abobo', 'Yopougon', 'Cocody', 'Adjamé', 'Treichville'] },
+      { name: 'Vallée du Bandama', cities: ['Bouaké', 'Katiola', 'Dabakala', 'Sakassou'] },
+      { name: 'Haut-Sassandra', cities: ['Daloa', 'Issia', 'Vavoua', 'Zuénoula'] },
+      { name: 'Bas-Sassandra', cities: ['San-Pédro', 'Sassandra', 'Tabou', 'Soubré'] },
+      { name: 'Yamoussoukro Autonomous District', cities: ['Yamoussoukro', 'Attikouékro'] },
+    ]
+  },
 
   // J
   { value: 'jamaica', label: 'Jamaica', letter: 'J', regions: [{ name: 'Kingston', cities: ['Kingston', 'Spanish Town', 'Portmore', 'Montego Bay', 'Mandeville'] }] },
@@ -483,7 +634,19 @@ export const COUNTRIES: Country[] = [
       { name: 'Kyoto', cities: ['Kyoto', 'Uji', 'Kameoka', 'Maizuru', 'Fukuchiyama', 'Kyotanabe', 'Nagaokakyo', 'Joyo', 'Ayabe', 'Miyazu'] },
     ]
   },
-  { value: 'jordan', label: 'Jordan', letter: 'J', regions: [{ name: 'Amman', cities: ['Amman', 'Zarqa', 'Irbid', 'Russeifa', 'Aqaba'] }] },
+  {
+    value: 'jordan',
+    label: 'Jordan',
+    letter: 'J',
+    regions: [
+      { name: 'Amman', cities: ['Amman', 'Sahab', 'Al-Jizah', 'Wadi as-Sir', 'Al-Quwaysimah'] },
+      { name: 'Zarqa', cities: ['Zarqa', 'Russeifa', 'Al-Hashimiyya', 'Bayt Ras'] },
+      { name: 'Irbid', cities: ['Irbid', 'Ramtha', 'Mafraq', 'Ajloun', 'Jerash'] },
+      { name: 'Aqaba', cities: ['Aqaba', 'Wadi Rum', 'Quweira', 'Disah'] },
+      { name: 'Al Karak', cities: ['Al Karak', 'Mazar', 'Qasr', 'Al-Qatraneh'] },
+      { name: 'Ma\'an', cities: ['Ma\'an', 'Petra', 'Wadi Musa', 'Ash Shawbak'] },
+    ]
+  },
 
   // K
   { value: 'kazakhstan', label: 'Kazakhstan', letter: 'K', regions: [{ name: 'Almaty', cities: ['Almaty', 'Nur-Sultan', 'Shymkent', 'Karaganda', 'Aktobe'] }] },
@@ -500,13 +663,35 @@ export const COUNTRIES: Country[] = [
     ]
   },
   { value: 'kiribati', label: 'Kiribati', letter: 'K', regions: [{ name: 'Central', cities: ['Tarawa', 'Betio', 'Bikenibeu', 'Teaoraereke'] }] },
-  { value: 'kuwait', label: 'Kuwait', letter: 'K', regions: [{ name: 'Capital', cities: ['Kuwait City', 'Hawalli', 'Salmiya', 'Sabah Al Salem', 'Farwaniya'] }] },
+  {
+    value: 'kuwait',
+    label: 'Kuwait',
+    letter: 'K',
+    regions: [
+      { name: 'Capital Governorate', cities: ['Kuwait City', 'Kaifan', 'Dasma', 'Sharq', 'Daiya'] },
+      { name: 'Hawalli', cities: ['Hawalli', 'Salmiya', 'Bayan', 'Mishref', 'Salwa', 'Rumaithiya'] },
+      { name: 'Farwaniya', cities: ['Farwaniya', 'Jleeb Al-Shuyoukh', 'Khaitan', 'Ardiya'] },
+      { name: 'Ahmadi', cities: ['Ahmadi', 'Fahaheel', 'Mangaf', 'Mahboula', 'Abu Halifa'] },
+      { name: 'Mubarak Al-Kabeer', cities: ['Sabah Al Salem', 'Adan', 'Al-Qurain', 'Funaitees'] },
+    ]
+  },
   { value: 'kyrgyzstan', label: 'Kyrgyzstan', letter: 'K', regions: [{ name: 'Bishkek', cities: ['Bishkek', 'Osh', 'Jalal-Abad', 'Karakol', 'Tokmok'] }] },
 
   // L
   { value: 'laos', label: 'Laos', letter: 'L', regions: [{ name: 'Vientiane', cities: ['Vientiane', 'Pakse', 'Savannakhet', 'Luang Prabang', 'Thakhek'] }] },
   { value: 'latvia', label: 'Latvia', letter: 'L', regions: [{ name: 'Riga', cities: ['Riga', 'Daugavpils', 'Liepāja', 'Jelgava', 'Jūrmala'] }] },
-  { value: 'lebanon', label: 'Lebanon', letter: 'L', regions: [{ name: 'Beirut', cities: ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Nabatieh'] }] },
+  {
+    value: 'lebanon',
+    label: 'Lebanon',
+    letter: 'L',
+    regions: [
+      { name: 'Beirut', cities: ['Beirut', 'Achrafieh', 'Hamra', 'Verdun', 'Ain el-Mreisseh'] },
+      { name: 'Mount Lebanon', cities: ['Jounieh', 'Byblos', 'Baabda', 'Aley', 'Metn'] },
+      { name: 'North Governorate', cities: ['Tripoli', 'Zgharta', 'Batroun', 'Bsharri', 'Koura'] },
+      { name: 'South Governorate', cities: ['Sidon', 'Tyre', 'Jezzine', 'Nabatieh'] },
+      { name: 'Beqaa', cities: ['Zahlé', 'Baalbek', 'Rashaya', 'Western Beqaa'] },
+    ]
+  },
   { value: 'lesotho', label: 'Lesotho', letter: 'L', regions: [{ name: 'Central', cities: ['Maseru', 'Teyateyaneng', 'Mafeteng', 'Hlotse', 'Mohale\'s Hoek'] }] },
   { value: 'liberia', label: 'Liberia', letter: 'L', regions: [{ name: 'Montserrado', cities: ['Monrovia', 'Gbarnga', 'Kakata', 'Bensonville', 'Harper'] }] },
   { value: 'libya', label: 'Libya', letter: 'L', regions: [{ name: 'Tripoli', cities: ['Tripoli', 'Benghazi', 'Misrata', 'Bayda', 'Zawiya'] }] },
@@ -574,12 +759,36 @@ export const COUNTRIES: Country[] = [
     ]
   },
   { value: 'mozambique', label: 'Mozambique', letter: 'M', regions: [{ name: 'Maputo', cities: ['Maputo', 'Matola', 'Nampula', 'Beira', 'Chimoio'] }] },
-  { value: 'myanmar', label: 'Myanmar', letter: 'M', regions: [{ name: 'Yangon', cities: ['Yangon', 'Mandalay', 'Naypyidaw', 'Mawlamyine', 'Bago'] }] },
+  {
+    value: 'myanmar',
+    label: 'Myanmar',
+    letter: 'M',
+    regions: [
+      { name: 'Yangon', cities: ['Yangon', 'South Dagon', 'North Dagon', 'Thaketa', 'Hlaingthaya', 'Mingaladon'] },
+      { name: 'Mandalay', cities: ['Mandalay', 'PyinOoLwin', 'Kyaukse', 'Amarapura', 'Meiktila'] },
+      { name: 'Naypyidaw', cities: ['Naypyidaw', 'Lewe', 'Pyinmana', 'Tatkon'] },
+      { name: 'Ayeyarwady', cities: ['Pathein', 'Hinthada', 'Myaungmya', 'Maubin'] },
+      { name: 'Mon', cities: ['Mawlamyine', 'Thaton', 'Ye', 'Mudon'] },
+      { name: 'Bago', cities: ['Bago', 'Pyay', 'Taungoo', 'Nyaunglebin'] },
+    ]
+  },
 
   // N
   { value: 'namibia', label: 'Namibia', letter: 'N', regions: [{ name: 'Khomas', cities: ['Windhoek', 'Rundu', 'Walvis Bay', 'Swakopmund', 'Oshakati'] }] },
   { value: 'nauru', label: 'Nauru', letter: 'N', regions: [{ name: 'Central', cities: ['Yaren', 'Denigomodu', 'Aiwo', 'Buada', 'Meneng'] }] },
-  { value: 'nepal', label: 'Nepal', letter: 'N', regions: [{ name: 'Bagmati', cities: ['Kathmandu', 'Pokhara', 'Lalitpur', 'Bharatpur', 'Biratnagar'] }] },
+  {
+    value: 'nepal',
+    label: 'Nepal',
+    letter: 'N',
+    regions: [
+      { name: 'Bagmati', cities: ['Kathmandu', 'Lalitpur', 'Bhaktapur', 'Kirtipur', 'Madhyapur Thimi'] },
+      { name: 'Gandaki', cities: ['Pokhara', 'Beni', 'Gorkha', 'Besisahar'] },
+      { name: 'Province 1', cities: ['Biratnagar', 'Dharan', 'Itahari', 'Damak'] },
+      { name: 'Madhesh', cities: ['Janakpur', 'Birgunj', 'Bardibas', 'Gaur'] },
+      { name: 'Lumbini', cities: ['Butwal', 'Bhairahawa', 'Tansen', 'Tulsipur'] },
+      { name: 'Karnali', cities: ['Birendranagar', 'Jumla', 'Dailekh'] },
+    ]
+  },
   {
     value: 'netherlands',
     label: 'Netherlands',
@@ -637,7 +846,19 @@ export const COUNTRIES: Country[] = [
   },
 
   // O
-  { value: 'oman', label: 'Oman', letter: 'O', regions: [{ name: 'Muscat', cities: ['Muscat', 'Seeb', 'Salalah', 'Sohar', 'Nizwa'] }] },
+  {
+    value: 'oman',
+    label: 'Oman',
+    letter: 'O',
+    regions: [
+      { name: 'Muscat', cities: ['Muscat', 'Seeb', 'Bawshar', 'Al Amarat', 'Muttrah'] },
+      { name: 'Dhofar', cities: ['Salalah', 'Taqah', 'Mirbat', 'Thumrait'] },
+      { name: 'Al Batinah North', cities: ['Sohar', 'Shinas', 'Liwa', 'Saham'] },
+      { name: 'Al Batinah South', cities: ['Rustaq', 'Al Awabi', 'Nakhal', 'Wadi Bani Kharus'] },
+      { name: 'Ad Dakhiliyah', cities: ['Nizwa', 'Bahla', 'Adam', 'Izki'] },
+      { name: 'Ash Sharqiyah North', cities: ['Ibra', 'Al Mudaybi', 'Al Qabil', 'Wadi Bani Khalid'] },
+    ]
+  },
 
   // P
   {
@@ -769,8 +990,30 @@ export const COUNTRIES: Country[] = [
       { name: 'Northern Borders Region', cities: ['Arar', 'Rafha', 'Turaif', 'Al Uwayqilah'] },
     ]
   },
-  { value: 'senegal', label: 'Senegal', letter: 'S', regions: [{ name: 'Dakar', cities: ['Dakar', 'Touba', 'Thiès', 'Kaolack', 'Saint-Louis'] }] },
-  { value: 'serbia', label: 'Serbia', letter: 'S', regions: [{ name: 'Belgrade', cities: ['Belgrade', 'Novi Sad', 'Niš', 'Kragujevac', 'Subotica'] }] },
+  {
+    value: 'senegal',
+    label: 'Senegal',
+    letter: 'S',
+    regions: [
+      { name: 'Dakar', cities: ['Dakar', 'Pikine', 'Guédiawaye', 'Rufisque', 'Mbao'] },
+      { name: 'Diourbel', cities: ['Touba', 'Diourbel', 'Mbacké', 'Bambey'] },
+      { name: 'Thiès', cities: ['Thiès', 'Mbour', 'Tiva', 'Joal-Fadiouth'] },
+      { name: 'Kaolack', cities: ['Kaolack', 'Nioro du Rip', 'Kaffrine', 'Koungheul'] },
+      { name: 'Saint-Louis', cities: ['Saint-Louis', 'Dagana', 'Podor', 'Richard Toll'] },
+    ]
+  },
+  {
+    value: 'serbia',
+    label: 'Serbia',
+    letter: 'S',
+    regions: [
+      { name: 'Belgrade', cities: ['Belgrade', 'Zemun', 'Novi Beograd', 'Palilula', 'Vračar'] },
+      { name: 'Vojvodina', cities: ['Novi Sad', 'Subotica', 'Zrenjanin', 'Pančevo', 'Sombor'] },
+      { name: 'Nišava', cities: ['Niš', 'Pirot', 'Aleksinački', 'Gadne'] },
+      { name: 'Šumadija', cities: ['Kragujevac', 'Ćuprija', 'Jagodina', 'Paraćin'] },
+      { name: 'Southern Serbia', cities: ['Leskovac', 'Vranje', 'Prokuplje', 'Bujanovac'] },
+    ]
+  },
   { value: 'seychelles', label: 'Seychelles', letter: 'S', regions: [{ name: 'Central', cities: ['Victoria', 'Anse Boileau', 'Beau Vallon', 'Cascade', 'Takamaka'] }] },
   { value: 'sierra-leone', label: 'Sierra Leone', letter: 'S', regions: [{ name: 'Western Area', cities: ['Freetown', 'Bo', 'Kenema', 'Koidu', 'Makeni'] }] },
   {
@@ -830,7 +1073,19 @@ export const COUNTRIES: Country[] = [
       { name: 'Canary Islands', cities: ['Las Palmas', 'Santa Cruz de Tenerife', 'La Laguna', 'Telde', 'Arona', 'San Bartolomé de Tirajana'] },
     ]
   },
-  { value: 'sri-lanka', label: 'Sri Lanka', letter: 'S', regions: [{ name: 'Western', cities: ['Colombo', 'Dehiwala', 'Moratuwa', 'Negombo', 'Kandy'] }] },
+  {
+    value: 'sri-lanka',
+    label: 'Sri Lanka',
+    letter: 'S',
+    regions: [
+      { name: 'Western Province', cities: ['Colombo', 'Dehiwala-Mount Lavinia', 'Moratuwa', 'Negombo', 'Gampaha', 'Kalutara'] },
+      { name: 'Central Province', cities: ['Kandy', 'Matale', 'Nuwara Eliya', 'Gampola', 'Dambulla'] },
+      { name: 'Southern Province', cities: ['Galle', 'Matara', 'Hambantota', 'Tangalle', 'Hikkaduwa'] },
+      { name: 'Northern Province', cities: ['Jaffna', 'Kilinochchi', 'Mannar', 'Vavuniya'] },
+      { name: 'Eastern Province', cities: ['Trincomalee', 'Batticaloa', 'Ampara', 'Kalmunai'] },
+      { name: 'North Western Province', cities: ['Kurunegala', 'Puttalam', 'Chilaw', 'Kuliyapitiya'] },
+    ]
+  },
   { value: 'sudan', label: 'Sudan', letter: 'S', regions: [{ name: 'Khartoum', cities: ['Khartoum', 'Omdurman', 'Port Sudan', 'Kassala', 'Nyala'] }] },
   { value: 'suriname', label: 'Suriname', letter: 'S', regions: [{ name: 'Paramaribo', cities: ['Paramaribo', 'Lelydorp', 'Nieuw Nickerie', 'Moengo', 'Nieuw Amsterdam'] }] },
   {
@@ -861,7 +1116,20 @@ export const COUNTRIES: Country[] = [
   // T
   { value: 'taiwan', label: 'Taiwan', letter: 'T', regions: [{ name: 'Taipei', cities: ['Taipei', 'Kaohsiung', 'Taichung', 'Tainan', 'Hsinchu'] }] },
   { value: 'tajikistan', label: 'Tajikistan', letter: 'T', regions: [{ name: 'Dushanbe', cities: ['Dushanbe', 'Khujand', 'Kulob', 'Qurghonteppa', 'Istaravshan'] }] },
-  { value: 'tanzania', label: 'Tanzania', letter: 'T', regions: [{ name: 'Dar es Salaam', cities: ['Dar es Salaam', 'Mwanza', 'Arusha', 'Dodoma', 'Mbeya'] }] },
+  {
+    value: 'tanzania',
+    label: 'Tanzania',
+    letter: 'T',
+    regions: [
+      { name: 'Dar es Salaam', cities: ['Dar es Salaam', 'Kinondoni', 'Ilala', 'Temeke', 'Ubungo'] },
+      { name: 'Mwanza', cities: ['Mwanza', 'Nyamagana', 'Ilemela', 'Kwimba'] },
+      { name: 'Arusha', cities: ['Arusha', 'Moshi', 'Karatu', 'Monduli', 'Namanga'] },
+      { name: 'Dodoma', cities: ['Dodoma', 'Kondoa', 'Mpwapwa', 'Bahi'] },
+      { name: 'Mbeya', cities: ['Mbeya', 'Tukuyu', 'Kyela', 'Chunya'] },
+      { name: 'Morogoro', cities: ['Morogoro', 'Mvomero', 'Kilosa', 'Ulanga'] },
+      { name: 'Kilimanjaro', cities: ['Moshi', 'Same', 'Hai', 'Rombo'] },
+    ]
+  },
   {
     value: 'thailand',
     label: 'Thailand',
@@ -905,8 +1173,31 @@ export const COUNTRIES: Country[] = [
   { value: 'tuvalu', label: 'Tuvalu', letter: 'T', regions: [{ name: 'Central', cities: ['Funafuti', 'Vaiaku', 'Alapi', 'Asau', 'Lolua'] }] },
 
   // U
-  { value: 'uganda', label: 'Uganda', letter: 'U', regions: [{ name: 'Central', cities: ['Kampala', 'Gulu', 'Lira', 'Mbarara', 'Jinja'] }] },
-  { value: 'ukraine', label: 'Ukraine', letter: 'U', regions: [{ name: 'Kyiv', cities: ['Kyiv', 'Kharkiv', 'Odesa', 'Dnipro', 'Lviv', 'Zaporizhzhia'] }] },
+  {
+    value: 'uganda',
+    label: 'Uganda',
+    letter: 'U',
+    regions: [
+      { name: 'Central Region', cities: ['Kampala', 'Entebbe', 'Mukono', 'Wakiso', 'Mpigi', 'Masaka'] },
+      { name: 'Eastern Region', cities: ['Jinja', 'Mbale', 'Tororo', 'Iganga', 'Soroti', 'Busia'] },
+      { name: 'Northern Region', cities: ['Gulu', 'Lira', 'Arua', 'Kitgum', 'Moroto'] },
+      { name: 'Western Region', cities: ['Mbarara', 'Fort Portal', 'Kasese', 'Kabale', 'Hoima', 'Bushenyi'] },
+    ]
+  },
+  {
+    value: 'ukraine',
+    label: 'Ukraine',
+    letter: 'U',
+    regions: [
+      { name: 'Kyiv', cities: ['Kyiv', 'Brovary', 'Bila Tserkva', 'Boryspil', 'Fastiv', 'Irpin'] },
+      { name: 'Kharkiv', cities: ['Kharkiv', 'Lozova', 'Chuhuiv', 'Izyum', 'Balakliia'] },
+      { name: 'Odesa', cities: ['Odesa', 'Bilhorod-Dnistrovskyi', 'Chornomorsk', 'Podilsk', 'Yuzhne'] },
+      { name: 'Dnipropetrovsk', cities: ['Dnipro', 'Kryvyi Rih', 'Kamianske', 'Nikopol', 'Pavlohrad'] },
+      { name: 'Lviv', cities: ['Lviv', 'Drohobych', 'Chervonohrad', 'Stryi', 'Sambir'] },
+      { name: 'Zaporizhzhia', cities: ['Zaporizhzhia', 'Melitopol', 'Berdiansk', 'Enerhodar'] },
+      { name: 'Donetsk', cities: ['Mariupol', 'Kramatorsk', 'Sloviansk', 'Bakhmut', 'Pokrovsk'] },
+    ]
+  },
   {
     value: 'uae',
     label: 'United Arab Emirates',
@@ -963,7 +1254,19 @@ export const COUNTRIES: Country[] = [
   // V
   { value: 'vanuatu', label: 'Vanuatu', letter: 'V', regions: [{ name: 'Central', cities: ['Port Vila', 'Luganville', 'Norsup', 'Isangel', 'Sola'] }] },
   { value: 'vatican-city', label: 'Vatican City', letter: 'V', regions: [{ name: 'Central', cities: ['Vatican City'] }] },
-  { value: 'venezuela', label: 'Venezuela', letter: 'V', regions: [{ name: 'Capital', cities: ['Caracas', 'Maracaibo', 'Valencia', 'Barquisimeto', 'Maracay'] }] },
+  {
+    value: 'venezuela',
+    label: 'Venezuela',
+    letter: 'V',
+    regions: [
+      { name: 'Capital District', cities: ['Caracas', 'La Guaira', 'Los Teques', 'Guarenas', 'Guatire'] },
+      { name: 'Zulia', cities: ['Maracaibo', 'Cabimas', 'Ciudad Ojeda', 'Machiques', 'Santa Rita'] },
+      { name: 'Carabobo', cities: ['Valencia', 'Puerto Cabello', 'Guacara', 'San Diego', 'Naguanagua'] },
+      { name: 'Lara', cities: ['Barquisimeto', 'Cabudare', 'Quibor', 'El Tocuyo', 'Carora'] },
+      { name: 'Aragua', cities: ['Maracay', 'Turmero', 'Cagua', 'La Victoria', 'El Limón'] },
+      { name: 'Anzoátegui', cities: ['Barcelona', 'Puerto La Cruz', 'Lechería', 'El Tigre'] },
+    ]
+  },
   {
     value: 'vietnam',
     label: 'Vietnam',
@@ -979,11 +1282,34 @@ export const COUNTRIES: Country[] = [
   },
 
   // Y
-  { value: 'yemen', label: 'Yemen', letter: 'Y', regions: [{ name: 'Sana\'a', cities: ['Sana\'a', 'Aden', 'Taiz', 'Al Hudaydah', 'Ibb'] }] },
+  {
+    value: 'yemen',
+    label: 'Yemen',
+    letter: 'Y',
+    regions: [
+      { name: 'Sana\'a', cities: ['Sana\'a', 'Bani Hushaysh', 'Sanhan', 'Bilad Al Rus'] },
+      { name: 'Aden', cities: ['Aden', 'Khormaksar', 'Crater', 'Al Mansura', 'Sheikh Othman'] },
+      { name: 'Taiz', cities: ['Taiz', 'Al Turbah', 'Mawza', 'Al Wazi\'iyah'] },
+      { name: 'Al Hudaydah', cities: ['Al Hudaydah', 'Bajil', 'Zabid', 'Bayt al-Faqih'] },
+      { name: 'Ibb', cities: ['Ibb', 'Jiblah', 'Yarim', 'Al Makhadir'] },
+      { name: 'Hadramaut', cities: ['Mukalla', 'Ash Shihr', 'Sayun', 'Tarim'] },
+    ]
+  },
 
   // Z
   { value: 'zambia', label: 'Zambia', letter: 'Z', regions: [{ name: 'Lusaka', cities: ['Lusaka', 'Kitwe', 'Ndola', 'Kabwe', 'Chingola'] }] },
-  { value: 'zimbabwe', label: 'Zimbabwe', letter: 'Z', regions: [{ name: 'Harare', cities: ['Harare', 'Bulawayo', 'Chitungwiza', 'Mutare', 'Gweru'] }] },
+  {
+    value: 'zimbabwe',
+    label: 'Zimbabwe',
+    letter: 'Z',
+    regions: [
+      { name: 'Harare', cities: ['Harare', 'Chitungwiza', 'Epworth', 'Norton'] },
+      { name: 'Bulawayo', cities: ['Bulawayo', 'Pumula', 'Nkulumane', 'Entumbane'] },
+      { name: 'Manicaland', cities: ['Mutare', 'Rusape', 'Chipinge', 'Nyanga'] },
+      { name: 'Midlands', cities: ['Gweru', 'Kwekwe', 'Redcliff', 'Gokwe'] },
+      { name: 'Mashonaland East', cities: ['Marondera', 'Ruwa', 'Macheke', 'Goromonzi'] },
+    ]
+  },
 ]
 
 // Helper functions
