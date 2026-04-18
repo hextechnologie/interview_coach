@@ -591,18 +591,18 @@ export const COUNTRIES: Country[] = [
   {
     value: 'uk',
     label: 'United Kingdom',
-    letter: 'U',, 'Greenwich', 'Lambeth', 'Southwark', 'Lewisham', 'Wandsworth', 'Hammersmith'] },
+    letter: 'U',
+    regions: [
+      { name: 'England - London', cities: ['London', 'Westminster', 'Camden', 'Islington', 'Hackney', 'Tower Hamlets', 'Greenwich', 'Lambeth', 'Southwark', 'Lewisham', 'Wandsworth', 'Hammersmith'] },
       { name: 'England - South East', cities: ['Brighton', 'Oxford', 'Cambridge', 'Reading', 'Southampton', 'Portsmouth', 'Milton Keynes', 'Luton', 'Canterbury', 'Crawley', 'Slough', 'Maidstone'] },
       { name: 'England - South West', cities: ['Bristol', 'Plymouth', 'Bournemouth', 'Swindon', 'Exeter', 'Bath', 'Gloucester', 'Torbay', 'Cheltenham'] },
-      { name: 'England - North West', cities: ['Manchester', 'Liverpool', 'Leeds', 'Sheffield', 'Newcastle', 'Bolton', 'Salford', 'Stockport', 'Preston', 'Blackpool', 'Warrington', 'Oldham'] },
+      { name: 'England - North West', cities: ['Manchester', 'Liverpool', 'Bolton', 'Salford', 'Stockport', 'Preston', 'Blackpool', 'Warrington', 'Oldham', 'Chester', 'Blackburn', 'Wigan'] },
       { name: 'England - Midlands', cities: ['Birmingham', 'Nottingham', 'Leicester', 'Coventry', 'Wolverhampton', 'Derby', 'Stoke-on-Trent', 'Northampton', 'Worcester'] },
       { name: 'England - Yorkshire', cities: ['Leeds', 'Sheffield', 'Bradford', 'York', 'Hull', 'Huddersfield', 'Wakefield', 'Doncaster', 'Rotherham', 'Barnsley'] },
       { name: 'England - North East', cities: ['Newcastle', 'Sunderland', 'Middlesbrough', 'Gateshead', 'Durham', 'Hartlepool', 'Darlington'] },
       { name: 'Scotland', cities: ['Edinburgh', 'Glasgow', 'Aberdeen', 'Dundee', 'Inverness', 'Stirling', 'Perth', 'Paisley', 'East Kilbride', 'Livingston'] },
       { name: 'Wales', cities: ['Cardiff', 'Swansea', 'Newport', 'Wrexham', 'Barry', 'Merthyr Tydfil', 'Neath', 'Cwmbran', 'Pontypridd', 'Llanelli'] },
-      { name: 'Northern Ireland', cities: ['Belfast', 'Derry', 'Lisburn', 'Newry', 'Armagh', 'Bangor', 'Craigavon', 'Ballymena', 'Newtownabbeys'] },
-      { name: 'Wales', cities: ['Cardiff', 'Swansea', 'Newport', 'Wrexham', 'Barry'] },
-      { name: 'Northern Ireland', cities: ['Belfast', 'Derry', 'Lisburn', 'Newry', 'Armagh'] },
+      { name: 'Northern Ireland', cities: ['Belfast', 'Derry', 'Lisburn', 'Newry', 'Armagh', 'Bangor', 'Craigavon', 'Ballymena', 'Newtownabbey'] },
     ]
   },
   {
