@@ -397,8 +397,8 @@ function AchievementModal({ coachId, achievement, onClose, onSave }: Achievement
                 className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="">Month</option>
-                {MONTHS.map((month, index) => (
-                  <option key={month} value={index + 1}>{month}</option>
+                {MONTHS.map((month) => (
+                  <option key={month.value} value={month.value}>{month.label}</option>
                 ))}
               </select>
               <select
