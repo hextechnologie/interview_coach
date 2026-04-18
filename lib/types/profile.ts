@@ -171,32 +171,210 @@ export const COURSE_PLATFORMS = [
 // Popular skill suggestions by category
 export const SKILL_SUGGESTIONS: Record<SkillCategory, string[]> = {
   Technical: [
+    // Programming Languages
     'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Go', 'Rust',
-    'React', 'Vue', 'Angular', 'Next.js', 'Node.js', 'Django', 'Flask', 'Spring Boot',
-    'SQL', 'PostgreSQL', 'MongoDB', 'Redis', 'MySQL',
-    'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes',
-    'Machine Learning', 'Data Science', 'AI', 'Deep Learning',
-    'HTML', 'CSS', 'Tailwind CSS', 'Bootstrap',
+    'Swift', 'Kotlin', 'Scala', 'R', 'Perl', 'Bash', 'Shell Scripting', 'PowerShell',
+    'Dart', 'Elixir', 'Clojure', 'Haskell', 'Lua', 'Assembly', 'COBOL', 'Fortran',
+    // Web Development
+    'React', 'Vue', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte', 'Node.js', 'Express.js',
+    'Django', 'Flask', 'FastAPI', 'Spring Boot', 'Laravel', 'Ruby on Rails', 'ASP.NET',
+    'HTML', 'CSS', 'Tailwind CSS', 'Bootstrap', 'SASS', 'LESS', 'jQuery', 'Redux',
+    'GraphQL', 'REST API', 'WebSockets', 'Webpack', 'Vite', 'Babel',
+    // Databases
+    'SQL', 'PostgreSQL', 'MongoDB', 'Redis', 'MySQL', 'Oracle Database', 'Microsoft SQL Server',
+    'Cassandra', 'DynamoDB', 'Elasticsearch', 'MariaDB', 'SQLite', 'CouchDB', 'Neo4j',
+    // Cloud & DevOps
+    'AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Terraform', 'Ansible',
+    'Jenkins', 'GitLab CI', 'GitHub Actions', 'CircleCI', 'Travis CI', 'Nginx', 'Apache',
+    'Linux', 'Unix', 'Windows Server', 'CloudFormation', 'Serverless', 'Microservices',
+    // AI & Data Science
+    'Machine Learning', 'Data Science', 'AI', 'Deep Learning', 'Neural Networks',
+    'TensorFlow', 'PyTorch', 'Keras', 'Scikit-learn', 'Pandas', 'NumPy', 'NLP',
+    'Computer Vision', 'Big Data', 'Hadoop', 'Spark', 'Kafka', 'ETL', 'Data Mining',
+    'Statistical Analysis', 'Predictive Modeling', 'Time Series Analysis',
+    // Mobile Development
+    'iOS Development', 'Android Development', 'React Native', 'Flutter', 'Xamarin',
+    'SwiftUI', 'Jetpack Compose', 'Mobile UI/UX', 'App Store Optimization',
+    // Hardware & Embedded
     'VHDL', 'Verilog', 'SystemVerilog', 'FPGA', 'ASIC Design', 'RTL Design',
-    'Embedded Systems', 'Microcontrollers', 'ARM', 'RISC-V',
+    'Embedded Systems', 'Microcontrollers', 'ARM', 'RISC-V', 'Arduino', 'Raspberry Pi',
     'Circuit Design', 'PCB Design', 'Analog Design', 'Digital Signal Processing',
+    'IoT', 'Sensor Integration', 'Real-Time Systems', 'Firmware Development',
+    // Security & Networking
+    'Cybersecurity', 'Penetration Testing', 'Ethical Hacking', 'Network Security',
+    'Cryptography', 'SSL/TLS', 'Firewall Configuration', 'SIEM', 'ISO 27001',
+    'TCP/IP', 'DNS', 'VPN', 'Load Balancing', 'Network Architecture',
+    // Quality & Testing
+    'Test Automation', 'Selenium', 'Jest', 'Cypress', 'JUnit', 'PyTest',
+    'Unit Testing', 'Integration Testing', 'QA', 'Performance Testing', 'Load Testing',
+    // Gaming & Graphics
+    'Unity', 'Unreal Engine', 'Game Development', '3D Modeling', 'Blender',
+    'OpenGL', 'DirectX', 'Shader Programming', 'Animation',
+    // Blockchain & Web3
+    'Blockchain', 'Smart Contracts', 'Solidity', 'Ethereum', 'Web3',
+    'Cryptocurrency', 'DeFi', 'NFT', 'Hyperledger',
+    // Healthcare Tech
+    'HL7', 'FHIR', 'DICOM', 'Medical Imaging', 'EMR Systems', 'Healthcare IT',
+    'Telemedicine', 'Medical Device Software', 'HIPAA Compliance',
+    // Finance Tech
+    'Financial Modeling', 'Quantitative Analysis', 'Algorithmic Trading',
+    'Risk Management Systems', 'Bloomberg Terminal', 'Trading Systems',
+    // Manufacturing & Industrial
+    'CAD', 'CAM', 'SolidWorks', 'AutoCAD', 'CATIA', 'Inventor', 'Fusion 360',
+    'PLC Programming', 'SCADA', 'Industrial Automation', 'Robotics',
+    'Manufacturing Process', 'Quality Control', 'Six Sigma', 'Lean Manufacturing',
+    // Scientific Computing
+    'Computational Physics', 'Bioinformatics', 'Molecular Modeling',
+    'Finite Element Analysis', 'CFD', 'Scientific Visualization',
+    // GIS & Mapping
+    'GIS', 'ArcGIS', 'QGIS', 'Geospatial Analysis', 'Remote Sensing',
+    'Cartography', 'GPS Technology', 'Spatial Databases',
   ],
   'Soft Skills': [
-    'Leadership', 'Communication', 'Problem Solving', 'Teamwork', 'Time Management',
-    'Critical Thinking', 'Adaptability', 'Creativity', 'Negotiation', 'Conflict Resolution',
-    'Project Management', 'Strategic Planning', 'Decision Making', 'Mentoring',
+    // Leadership & Management
+    'Leadership', 'Team Leadership', 'People Management', 'Executive Leadership',
+    'Change Management', 'Organizational Leadership', 'Servant Leadership',
+    'Coaching', 'Mentoring', 'Employee Development', 'Performance Management',
+    'Stakeholder Management', 'Cross-functional Team Leadership',
+    // Communication
+    'Communication', 'Written Communication', 'Verbal Communication', 'Presentation Skills',
+    'Public Speaking', 'Active Listening', 'Interpersonal Skills', 'Business Communication',
+    'Report Writing', 'Technical Writing', 'Storytelling', 'Persuasion',
+    // Project & Product Management
+    'Project Management', 'Agile', 'Scrum', 'Kanban', 'Waterfall', 'PRINCE2',
+    'Product Management', 'Product Strategy', 'Roadmap Planning', 'Backlog Management',
+    'Sprint Planning', 'Release Management', 'Risk Management', 'Resource Allocation',
+    // Strategic & Business
+    'Strategic Planning', 'Strategic Thinking', 'Business Strategy', 'Business Development',
+    'Business Analysis', 'Market Research', 'Competitive Analysis', 'SWOT Analysis',
+    'Business Intelligence', 'KPI Development', 'Metrics & Analytics', 'ROI Analysis',
+    'Budgeting', 'Financial Planning', 'P&L Management', 'Cost Management',
+    // Problem Solving & Analysis
+    'Problem Solving', 'Critical Thinking', 'Analytical Thinking', 'Root Cause Analysis',
+    'Decision Making', 'Data-Driven Decision Making', 'Creative Problem Solving',
+    'Systems Thinking', 'Design Thinking', 'Process Improvement', 'Troubleshooting',
+    // Personal Effectiveness
+    'Time Management', 'Organization', 'Attention to Detail', 'Multitasking',
+    'Prioritization', 'Self-Motivation', 'Self-Management', 'Work-Life Balance',
+    'Stress Management', 'Resilience', 'Adaptability', 'Flexibility',
+    // Collaboration & Teamwork
+    'Teamwork', 'Collaboration', 'Team Building', 'Cross-functional Collaboration',
+    'Remote Collaboration', 'Consensus Building', 'Facilitation', 'Workshop Facilitation',
+    // Conflict & Negotiation
+    'Conflict Resolution', 'Negotiation', 'Mediation', 'Dispute Resolution',
+    'Diplomacy', 'Influence', 'Relationship Building', 'Stakeholder Engagement',
+    // Innovation & Creativity
+    'Creativity', 'Innovation', 'Creative Thinking', 'Brainstorming',
+    'Ideation', 'Product Innovation', 'Service Design', 'User Research',
+    // Customer & Sales
+    'Customer Service', 'Customer Experience', 'Customer Success', 'Client Relations',
+    'Account Management', 'Sales', 'Sales Strategy', 'Consultative Selling',
+    'Relationship Management', 'Business Networking', 'Cold Calling', 'Lead Generation',
+    // Healthcare Soft Skills
+    'Patient Care', 'Bedside Manner', 'Clinical Documentation', 'Medical Ethics',
+    'Patient Education', 'Empathy', 'Compassion', 'Crisis Management',
+    // Legal & Compliance
+    'Legal Research', 'Contract Negotiation', 'Regulatory Compliance', 'Policy Development',
+    'Risk Assessment', 'Audit', 'Compliance Management', 'Corporate Governance',
+    // Education & Training
+    'Teaching', 'Curriculum Development', 'Instructional Design', 'Training Delivery',
+    'E-Learning', 'Student Assessment', 'Classroom Management', 'Educational Technology',
+    // Creative Industries
+    'Creative Direction', 'Art Direction', 'Copywriting', 'Content Strategy',
+    'Brand Strategy', 'Brand Management', 'Visual Communication', 'Editorial',
+    // Operations & Logistics
+    'Operations Management', 'Supply Chain Management', 'Inventory Management',
+    'Logistics', 'Process Optimization', 'Vendor Management', 'Procurement',
+    'Quality Assurance', 'Continuous Improvement', 'Kaizen', 'Operational Excellence',
+    // HR & Recruitment
+    'Recruitment', 'Talent Acquisition', 'Interviewing', 'Onboarding',
+    'Employee Relations', 'HR Policies', 'Compensation & Benefits', 'Diversity & Inclusion',
+    // Safety & Emergency
+    'Safety Management', 'Emergency Response', 'First Aid', 'CPR',
+    'OSHA Compliance', 'Environmental Health & Safety', 'Incident Investigation',
   ],
   Languages: [
-    'English', 'French', 'Arabic', 'Spanish', 'German', 'Chinese', 'Japanese',
-    'Portuguese', 'Russian', 'Italian', 'Korean', 'Dutch', 'Turkish',
+    // Major World Languages
+    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Dutch',
+    'Russian', 'Polish', 'Ukrainian', 'Czech', 'Romanian', 'Hungarian', 'Swedish',
+    'Norwegian', 'Danish', 'Finnish', 'Greek', 'Turkish',
+    // Asian Languages
+    'Chinese (Mandarin)', 'Chinese (Cantonese)', 'Japanese', 'Korean', 'Vietnamese',
+    'Thai', 'Indonesian', 'Malay', 'Tagalog', 'Hindi', 'Urdu', 'Bengali', 'Tamil',
+    'Telugu', 'Punjabi', 'Gujarati', 'Marathi', 'Kannada', 'Malayalam',
+    // Middle Eastern & African Languages
+    'Arabic', 'Hebrew', 'Persian (Farsi)', 'Kurdish', 'Pashto',
+    'Swahili', 'Amharic', 'Yoruba', 'Igbo', 'Zulu', 'Afrikaans',
+    // Other Languages
+    'Latin', 'Classical Greek', 'Sanskrit',
+    'Sign Language (ASL)', 'Sign Language (BSL)', 'Sign Language (Other)',
   ],
   Tools: [
-    'Git', 'GitHub', 'GitLab', 'Jira', 'Trello', 'Asana', 'Slack',
-    'Figma', 'Adobe XD', 'Sketch', 'Photoshop', 'Illustrator',
-    'VS Code', 'IntelliJ', 'Eclipse', 'Vim',
-    'Salesforce', 'HubSpot', 'SAP', 'Oracle', 'Tableau', 'Power BI',
+    // Development & Version Control
+    'Git', 'GitHub', 'GitLab', 'Bitbucket', 'SVN', 'Mercurial',
+    'VS Code', 'IntelliJ IDEA', 'PyCharm', 'WebStorm', 'Eclipse', 'Vim', 'Emacs',
+    'Xcode', 'Android Studio', 'Visual Studio', 'Sublime Text', 'Atom',
+    // Project Management & Collaboration
+    'Jira', 'Trello', 'Asana', 'Monday.com', 'ClickUp', 'Basecamp', 'Notion',
+    'Confluence', 'Microsoft Project', 'Smartsheet', 'Airtable', 'Wrike',
+    'Slack', 'Microsoft Teams', 'Discord', 'Zoom', 'Google Meet',
+    // Design & Creative
+    'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Framer', 'Principle',
+    'Photoshop', 'Illustrator', 'InDesign', 'After Effects', 'Premiere Pro',
+    'Lightroom', 'CorelDRAW', 'Affinity Designer', 'Canva', 'Procreate',
+    'Blender', 'Maya', 'Cinema 4D', 'ZBrush', '3ds Max',
+    // Business & CRM
+    'Salesforce', 'HubSpot', 'Zoho CRM', 'Microsoft Dynamics', 'Pipedrive',
+    'SAP', 'Oracle ERP', 'NetSuite', 'Workday', 'Odoo', 'QuickBooks',
+    'Zendesk', 'Intercom', 'Freshdesk', 'ServiceNow',
+    // Analytics & BI
+    'Tableau', 'Power BI', 'Looker', 'Google Analytics', 'Mixpanel', 'Amplitude',
+    'Qlik', 'Sisense', 'Metabase', 'Grafana', 'Kibana', 'Splunk',
+    // Marketing & SEO
+    'Google Ads', 'Facebook Ads', 'LinkedIn Ads', 'HubSpot Marketing',
+    'Mailchimp', 'SendGrid', 'Marketo', 'Pardot', 'Hootsuite', 'Buffer',
+    'SEMrush', 'Ahrefs', 'Moz', 'Google Search Console', 'Hotjar',
+    'WordPress', 'Drupal', 'Squarespace', 'Wix', 'Webflow',
+    // Office & Productivity
+    'Microsoft Office', 'Excel', 'Word', 'PowerPoint', 'Outlook',
+    'Google Workspace', 'Google Sheets', 'Google Docs', 'Google Slides',
+    'LibreOffice', 'OpenOffice', 'OneDrive', 'Dropbox', 'Box',
+    // Hardware & Engineering
     'Xilinx Vivado', 'Intel Quartus', 'ModelSim', 'Cadence', 'Synopsys',
-    'Altium Designer', 'Eagle', 'KiCad', 'MATLAB', 'Simulink', 'LabVIEW',
+    'Altium Designer', 'Eagle', 'KiCad', 'OrCAD', 'LTspice', 'Multisim',
+    'MATLAB', 'Simulink', 'LabVIEW', 'Mathematica', 'Octave',
+    'SolidWorks', 'AutoCAD', 'CATIA', 'Inventor', 'Fusion 360', 'Revit',
+    'SketchUp', 'Rhino', 'Grasshopper',
+    // Scientific & Research
+    'SPSS', 'SAS', 'Stata', 'R Studio', 'Jupyter Notebook', 'Origin',
+    'GraphPad Prism', 'EndNote', 'Zotero', 'Mendeley', 'LaTeX', 'Overleaf',
+    // Medical & Healthcare
+    'Epic', 'Cerner', 'Meditech', 'Allscripts', 'eClinicalWorks',
+    '3D Slicer', 'OsiriX', 'ImageJ', 'Horos', 'PACS',
+    // GIS & Mapping
+    'ArcGIS', 'QGIS', 'Google Earth Pro', 'MapInfo', 'GRASS GIS',
+    'PostGIS', 'Mapbox', 'Leaflet', 'OpenStreetMap',
+    // Testing & QA
+    'Selenium', 'Cypress', 'Playwright', 'Jest', 'Mocha', 'Chai',
+    'TestRail', 'Postman', 'SoapUI', 'JMeter', 'LoadRunner',
+    // Security Tools
+    'Wireshark', 'Nmap', 'Metasploit', 'Burp Suite', 'Kali Linux',
+    'Nessus', 'Splunk', 'CrowdStrike', 'Palo Alto Networks',
+    // HR & Recruitment
+    'Workday', 'BambooHR', 'Greenhouse', 'Lever', 'LinkedIn Recruiter',
+    'ATS Systems', 'Taleo', 'iCIMS', 'SuccessFactors',
+    // E-Commerce
+    'Shopify', 'WooCommerce', 'Magento', 'BigCommerce', 'PrestaShop',
+    'Amazon Seller Central', 'eBay', 'Etsy',
+    // Accounting & Finance
+    'QuickBooks', 'Xero', 'Sage', 'FreshBooks', 'Wave',
+    'Bloomberg Terminal', 'Reuters Eikon', 'FactSet', 'Morningstar',
+    // Video & Audio
+    'Final Cut Pro', 'DaVinci Resolve', 'Avid Media Composer',
+    'Pro Tools', 'Logic Pro', 'Ableton Live', 'FL Studio', 'Audacity',
+    // Construction & Architecture
+    'Revit', 'AutoCAD Civil 3D', 'Tekla Structures', 'Primavera',
+    'Procore', 'BIM 360', 'Navisworks', 'BIM', 'ArchiCAD',
   ],
 }
 
