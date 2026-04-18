@@ -88,7 +88,7 @@ export default function CandidateSignupPage() {
     setError('')
     setSuccess('')
 
-    if (!firstName.trim() || !email.includes('@') || !currentStatus) {
+    if (!firstName.trim() || !email.includes('@') || !currentStatus || !country.trim() || !city.trim()) {
       setError('Please complete all required fields.')
       return
     }
@@ -341,8 +341,8 @@ export default function CandidateSignupPage() {
 
               {/* Country + City */}
               <div className="grid gap-5 md:grid-cols-2">
-                <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
-                <Input label="City" value={city} onChange={setCity} placeholder="e.g. San Francisco" />
+                <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
+                <Input label="City *" value={city} onChange={setCity} placeholder="e.g. San Francisco" required />
               </div>
 
               {/* LinkedIn */}

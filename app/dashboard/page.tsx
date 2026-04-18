@@ -625,7 +625,7 @@ export default function DashboardPage() {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="relative z-10 text-center px-4">
+                  <div className="relative z-10 text-center px-4 flex flex-col items-center">
                     <p className="text-gray-300 font-semibold mb-1">Complete a few interviews to unlock your score trend chart.</p>
                     <p className="text-gray-500 text-sm mb-4">Start your first interview to see your progress! 🚀</p>
                     <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> Start Interview</Button></Link>

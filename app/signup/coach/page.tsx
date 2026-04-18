@@ -60,7 +60,7 @@ export default function CoachSignupPage() {
     setError('')
     setSuccess('')
 
-    if (!firstName.trim() || !email.includes('@') || password.length < 6 || !title.trim()) {
+    if (!firstName.trim() || !email.includes('@') || password.length < 6 || !title.trim() || !country.trim() || !city.trim()) {
       setError('Please complete the required fields.')
       return
     }
@@ -289,8 +289,8 @@ export default function CoachSignupPage() {
 
               {/* Location */}
               <div className="grid gap-5 md:grid-cols-2">
-                <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
-                <Input label="City" value={city} onChange={setCity} placeholder="e.g. San Francisco" />
+                <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
+                <Input label="City *" value={city} onChange={setCity} placeholder="e.g. San Francisco" required />
               </div>
 
               {/* Specializations */}
