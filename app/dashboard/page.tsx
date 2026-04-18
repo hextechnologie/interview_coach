@@ -545,7 +545,7 @@ export default function DashboardPage() {
         </div>
 
         {/* STATS CARDS */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8 animate-fadeIn">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8 animate-fadeIn auto-rows-fr">
           {loading ? Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="rounded-2xl p-5 animate-pulse border border-white/10" style={{ background: '#111827' }}>
               <div className="h-3 w-24 bg-white/10 rounded mb-4" /><div className="h-7 w-16 bg-white/10 rounded" />
@@ -1008,7 +1008,7 @@ function StatCard({
   const isEmpty = value === '0' || value === '0/10' || value === '0 days'
   
   return (
-    <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300" style={{ background: '#111827' }}>
+    <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 flex flex-col h-full" style={{ background: '#111827' }}>
       <div className="flex items-start justify-between mb-2">
         <div>
           <p className="text-gray-400 text-xs mb-1">{label}</p>
@@ -1017,7 +1017,7 @@ function StatCard({
         <div className={`w-10 h-10 ${accent} rounded-lg flex items-center justify-center shrink-0`}>{icon}</div>
       </div>
       {isEmpty && emptyMessage && (
-        <div className="mt-3 pt-3 border-t border-white/10">
+        <div className="mt-auto pt-3 border-t border-white/10">
           <p className="text-xs text-gray-500 mb-2">{emptyMessage}</p>
           {emptyAction && (
             <Link href={emptyAction.href}>
