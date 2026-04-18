@@ -62,8 +62,17 @@ export default function CandidateSignupPage() {
 
   const strength = useMemo(() => {
     if (password.length < 6) return 'Weak'
-    if (password.length < 10) return 'Medium'
-    return 'Strong'
+    
+    const hasUpperCase = /[A-Z]/.test(password)
+    const hasLowerCase = /[a-z]/.test(password)
+    const hasNumber = /[0-9]/.test(password)
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    
+    if (password.length >= 10 && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
+      return 'Strong'
+    }
+    
+    return 'Medium'
   }, [password])
 
   const detailConfig = currentStatus ? statusDetailConfig[currentStatus] : null
@@ -84,8 +93,8 @@ export default function CandidateSignupPage() {
       setError('Please complete all required fields.')
       return
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+    if (strength !== 'Strong') {
+      setError('Password must be strong (at least 10 characters with a mix of letters, numbers, and symbols).')
       return
     }
     if (password !== confirmPassword) {
@@ -267,6 +276,9 @@ export default function CandidateSignupPage() {
                   <label className="mb-2 block text-sm font-medium text-foreground">Password *</label>
                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
                   <p className={`mt-1.5 text-xs ${strength === 'Strong' ? 'text-green-400' : strength === 'Medium' ? 'text-yellow-400' : 'text-red-400'}`}>Strength: {strength}</p>
+                  {strength !== 'Strong' && (
+                    <p className="mt-1 text-xs text-gray-400">Must be 10+ characters with uppercase, lowercase, number & symbol</p>
+                  )}
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium text-foreground">Confirm Password *</label>
