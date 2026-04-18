@@ -3,17 +3,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, CheckCircle2, CreditCard, Loader2 } from 'lucide-react'
+import { ArrowLeft, Calendar, CheckCircle2, CreditCard, Loader2, AlertCircle } from 'lucide-react'
 import { Badge, Button, Card } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
+import { calculateSessionCreditsCost, getUserCredits } from '@/lib/credits'
 
 type CoachData = {
   id: string
   name: string
   title: string | null
   bio: string | null
-  price: number
+  creditsPerHour: number
   yearsExperience: number
   avatar_url: string | null
   specializations: string[]
@@ -43,6 +44,7 @@ export default function BookingPage() {
   const [coach, setCoach]     = useState<CoachData | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [userCredits, setUserCredits] = useState<number | null>(null)
 
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
@@ -58,7 +60,7 @@ export default function BookingPage() {
     const fetchCoach = async () => {
       const { data: cp } = await supabase
         .from('coach_profiles')
-        .select('user_id, title, bio, price_per_hour, years_experience')
+        .select('user_id, title, bio, credits_per_hour, years_experience')
         .eq('user_id', coachId)
         .maybeSingle()
 
@@ -84,7 +86,7 @@ export default function BookingPage() {
         name,
         title: cp.title,
         bio: cp.bio,
-        price: cp.price_per_hour ?? 100,
+        creditsPerHour: cp.credits_per_hour ?? 100,
         yearsExperience: cp.years_experience ?? 0,
         avatar_url: profile?.avatar_url ?? null,
         specializations: (specs ?? []).map((s: any) => s.specialization),
@@ -94,13 +96,29 @@ export default function BookingPage() {
     fetchCoach()
   }, [coachId])
 
-  const sessionPrice = useMemo(() => {
+  // Fetch user credits balance
+  useEffect(() => {
+    const fetchCredits = async () => {
+      if (!user) return
+      const credits = await getUserCredits(user.id)
+      setUserCredits(credits?.balance ?? 0)
+    }
+    fetchCredits()
+  }, [user])
+
+  const sessionCreditsCost = useMemo(() => {
     if (!coach) return 0
-    return Math.round((coach.price / 60) * duration)
+    return calculateSessionCreditsCost(coach.creditsPerHour, duration)
   }, [coach, duration])
+
+  const hasInsufficientCredits = useMemo(() => {
+    if (userCredits === null) return false
+    return userCredits < sessionCreditsCost
+  }, [userCredits, sessionCreditsCost])
 
   const handleCheckout = async () => {
     if (!selectedDate || !selectedTime || !coach || !user) return
+    if (hasInsufficientCredits) return
     setError('')
     setBooking(true)
     try {
@@ -119,7 +137,7 @@ export default function BookingPage() {
           scheduledAt: `${selectedDate} ${selectedTime}`,
           durationMinutes: duration,
           notes,
-          amount: sessionPrice,
+          creditsCost: sessionCreditsCost,
         }),
       })
 
@@ -232,16 +250,41 @@ export default function BookingPage() {
 
             {/* Step 4: Pay */}
             <Card>
-              <h2 className="mb-4 text-xl font-bold">Step 4 — Payment</h2>
-              <p className="text-sm text-gray-400 mb-4">Payments are processed securely with Stripe. The coach receives 80% after the session.</p>
+              <h2 className="mb-4 text-xl font-bold">Step 4 — Confirm Booking</h2>
+              <p className="text-sm text-gray-400 mb-4">
+                {sessionCreditsCost} credits will be held in escrow. Released to coach after session or refunded if cancelled 48h+ in advance.
+              </p>
+              
+              {hasInsufficientCredits && (
+                <div className="mb-4 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-4 py-3">
+                  <div className="flex items-center gap-2 text-yellow-300 text-sm font-semibold mb-2">
+                    <AlertCircle className="h-4 w-4" /> Insufficient Credits
+                  </div>
+                  <p className="text-xs text-gray-400 mb-3">
+                    You need {sessionCreditsCost} credits but only have {userCredits ?? 0} credits.
+                  </p>
+                  <Link href="/credits">
+                    <Button variant="secondary" className="w-full text-sm">
+                      Top Up Credits
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
               {error && (
                 <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
                   {error}
                 </div>
               )}
-              <Button variant="primary" className="gap-2" onClick={handleCheckout} loading={booking} disabled={!selectedDate || !selectedTime || !user}>
+              <Button 
+                variant="primary" 
+                className="gap-2" 
+                onClick={handleCheckout} 
+                loading={booking} 
+                disabled={!selectedDate || !selectedTime || !user || hasInsufficientCredits}
+              >
                 <CreditCard className="h-4 w-4" />
-                Continue to Checkout — ${sessionPrice}
+                Confirm Booking — {sessionCreditsCost} credits
               </Button>
             </Card>
           </div>
@@ -255,12 +298,20 @@ export default function BookingPage() {
                 <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{selectedDate || '—'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Time</span><span>{selectedTime || '—'}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Duration</span><span>{duration} min</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Rate</span><span>${coach.price}/hr</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Rate</span><span>{coach.creditsPerHour} credits/hr</span></div>
               </div>
               <div className="mt-4 rounded-xl border border-border bg-background/40 p-4 text-center">
-                <p className="text-xs text-gray-500 mb-1">Total</p>
-                <p className="text-3xl font-bold text-primary">${sessionPrice}</p>
+                <p className="text-xs text-gray-500 mb-1">Total Cost</p>
+                <p className="text-3xl font-bold text-primary">⭐ {sessionCreditsCost}</p>
+                <p className="text-xs text-gray-400 mt-1">credits</p>
               </div>
+
+              {userCredits !== null && (
+                <div className="mt-3 rounded-lg border border-border bg-background/20 p-3 text-center">
+                  <p className="text-xs text-gray-500 mb-1">Your Balance</p>
+                  <p className="text-lg font-semibold text-white">{userCredits} credits</p>
+                </div>
+              )}
 
               {coach.specializations.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-1.5">

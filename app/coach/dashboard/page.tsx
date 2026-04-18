@@ -134,9 +134,10 @@ export default function CoachDashboardPage() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <NotificationBell />
-            <Link href="/coach/availability"><Button variant="outline"><CalendarDays className="h-4 w-4" />Availability</Button></Link>
+            <Link href="/bookings"><Button variant="outline"><CalendarDays className="h-4 w-4" />My Bookings</Button></Link>
+            <Link href="/earnings"><Button variant="outline"><DollarSign className="h-4 w-4" />Earnings</Button></Link>
             <Link href="/coach/profile"><Button variant="outline"><PencilLine className="h-4 w-4" />Edit profile</Button></Link>
-            <Button variant="primary"><Wallet className="h-4 w-4" />Withdraw earnings</Button>
+            <Link href="/earnings/withdraw"><Button variant="primary"><Wallet className="h-4 w-4" />Withdraw</Button></Link>
           </div>
         </div>
 

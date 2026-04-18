@@ -386,6 +386,7 @@ export default function DashboardPage() {
             <div className="hidden md:flex items-center gap-3">
               <CreditBalanceButton />
               <NotificationBell />
+              {!isCoach && <Link href="/bookings"><Button variant="outline" className="text-sm gap-2"><Calendar className="w-4 h-4" />My Bookings</Button></Link>}
               {!isCoach && <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">Find a Coach</Button></Link>}
               {isCoach && <Link href="/coach/dashboard"><Button variant="outline" className="text-sm gap-2">Coach Dashboard</Button></Link>}
               <Link href="/pricing">

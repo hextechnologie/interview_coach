@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
+import { hasSufficientCredits, calculateCreditsDistribution } from '@/lib/credits'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export async function POST(request: NextRequest) {
   try {
-    const { coachId, coachName, scheduledAt, durationMinutes, notes, amount } = await request.json()
+    const { coachId, coachName, scheduledAt, durationMinutes, notes, creditsCost } = await request.json()
 
     // Get authenticated user
     const authHeader = request.headers.get('authorization')
@@ -21,17 +21,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check if user has sufficient credits
+    const hasCredits = await hasSufficientCredits(user.id, creditsCost)
+    if (!hasCredits) {
+      return NextResponse.json({ error: 'Insufficient credits' }, { status: 400 })
+    }
+
     const candidateName = String(user.user_metadata?.full_name || '').trim() || 'Candidate'
     const coachDisplayName = String(coachName || '').trim() || 'Coach'
+
+    // Calculate cancellation deadline (48 hours before session)
+    const scheduledDate = new Date(scheduledAt)
+    const cancellationDeadline = new Date(scheduledDate.getTime() - 48 * 60 * 60 * 1000)
+    const cancellationDeadlineStr = cancellationDeadline.toISOString()
 
     // Create booking in database
     const baseBookingPayload = {
       candidate_id: user.id,
       coach_id: coachId,
       duration_minutes: durationMinutes,
-      status: 'pending',
+      status: 'confirmed',
       notes: notes || null,
       scheduled_at: scheduledAt,
+      credits_cost: creditsCost,
+      cancellation_deadline: cancellationDeadlineStr,
       google_calendar_url: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Session with ${coachDisplayName}`)}&details=${encodeURIComponent(notes || 'Coaching session')}`,
     }
 
@@ -63,10 +76,63 @@ export async function POST(request: NextRequest) {
     const bookingId = booking.id
     const calendarUrl = booking.google_calendar_url
 
-    const grossAmount = Number(amount || 0)
-    const platformFee = Number((grossAmount * 0.2).toFixed(2))
-    const netAmount = Number((grossAmount - platformFee).toFixed(2))
+    // Calculate credits distribution (platform fee 20%, coach gets 80%)
+    const { platformFee, coachEarnings } = calculateCreditsDistribution(creditsCost)
 
+    // Get current balance and deduct credits atomically
+    const { data: userCreditsData, error: fetchError } = await supabase
+      .from('user_credits')
+      .select('balance')
+      .eq('user_id', user.id)
+      .single()
+
+    if (fetchError || !userCreditsData) {
+      console.error('Failed to fetch user credits:', fetchError)
+      await supabase.from('bookings').delete().eq('id', bookingId)
+      return NextResponse.json({ error: 'Failed to fetch credits balance' }, { status: 500 })
+    }
+
+    const newBalance = userCreditsData.balance - creditsCost
+
+    if (newBalance < 0) {
+      await supabase.from('bookings').delete().eq('id', bookingId)
+      return NextResponse.json({ error: 'Insufficient credits' }, { status: 400 })
+    }
+
+    // Update balance
+    const { error: deductError } = await supabase
+      .from('user_credits')
+      .update({ balance: newBalance })
+      .eq('user_id', user.id)
+
+    if (deductError) {
+      console.error('Credits deduction error:', deductError)
+      // Rollback booking
+      await supabase.from('bookings').delete().eq('id', bookingId)
+      return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 })
+    }
+
+    // Create credit transaction record
+    await supabase.from('credit_transactions').insert({
+      user_id: user.id,
+      credits: -creditsCost,
+      transaction_type: 'spent',
+      description: `Booked ${durationMinutes}min session with ${coachDisplayName}`,
+      booking_id: bookingId,
+    })
+
+    // Place credits in escrow
+    await supabase.from('credits_escrow').insert({
+      booking_id: bookingId,
+      coach_id: coachId,
+      candidate_id: user.id,
+      total_credits: creditsCost,
+      platform_fee: platformFee,
+      coach_earnings: coachEarnings,
+      status: 'held',
+    })
+
+    // Send notification to coach
     await supabase.from('notifications').insert({
       user_id: coachId,
       title: 'New booking request',
@@ -75,63 +141,24 @@ export async function POST(request: NextRequest) {
       read: false,
     })
 
+    // Update earnings record
     await supabase.from('earnings').insert({
       coach_id: coachId,
       booking_id: bookingId,
-      gross_amount: grossAmount,
+      gross_amount: creditsCost,
       platform_fee: platformFee,
-      net_amount: netAmount,
+      net_amount: coachEarnings,
       status: 'pending',
     })
 
-    if (process.env.STRIPE_SECRET_KEY) {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
-      const session = await stripe.checkout.sessions.create({
-        mode: 'payment',
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: `Coaching session with ${coachName}`,
-                description: `${durationMinutes} minute coaching session`,
-              },
-              unit_amount: Math.max(1000, Math.round(Number(amount || 0) * 100)),
-            },
-            quantity: 1,
-          },
-        ],
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/session/${bookingId}?coach=${coachId}&duration=${durationMinutes}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/book/${coachId}`,
-        metadata: {
-          bookingId,
-          coachId,
-          scheduledAt,
-        },
-      })
-
-      // Update booking with Stripe payment ID
-      await supabase
-        .from('bookings')
-        .update({ stripe_payment_id: session.id })
-        .eq('id', bookingId)
-
-      return NextResponse.json({ url: session.url, bookingId, calendarUrl })
-    }
-
-    // Mock checkout completed - update status to confirmed
-    await supabase
-      .from('bookings')
-      .update({ status: 'confirmed' })
-      .eq('id', bookingId)
-
+    // Send confirmation email
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY)
       await resend.emails.send({
         from: 'Interview Coach <onboarding@resend.dev>',
         to: [user.email || 'candidate@example.com'],
         subject: `Booking confirmed with ${coachName}`,
-        html: `<p>Your ${durationMinutes}-minute session with ${coachName} is booked for ${scheduledAt}.</p><p>Notes: ${notes || 'None'}</p>`,
+        html: `<p>Your ${durationMinutes}-minute session with ${coachName} is booked for ${scheduledAt}.</p><p>Cost: ${creditsCost} credits</p><p>Notes: ${notes || 'None'}</p><p>You can cancel for a full refund up to 48 hours before your session.</p>`,
       })
     }
 

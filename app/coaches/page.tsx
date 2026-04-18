@@ -20,7 +20,7 @@ type RealCoach = {
     title: string | null
     bio: string | null
     years_experience: number | null
-    price_per_hour: number | null
+    credits_per_hour: number | null
     is_verified: boolean | null
   } | null
   coach_specializations: { specialization: string }[]
@@ -39,7 +39,7 @@ export default function CoachesPage() {
       // Step 1: get all coach_profiles (public table, no RLS issues)
       const { data: cpData, error: cpError } = await supabase
         .from('coach_profiles')
-        .select('user_id, title, bio, years_experience, price_per_hour, is_verified')
+        .select('user_id, title, bio, years_experience, credits_per_hour, is_verified')
 
       if (cpError || !cpData || cpData.length === 0) { setLoading(false); return }
 
@@ -74,7 +74,7 @@ export default function CoachesPage() {
             title: cp.title,
             bio: cp.bio,
             years_experience: cp.years_experience,
-            price_per_hour: cp.price_per_hour,
+            credits_per_hour: cp.credits_per_hour,
             is_verified: cp.is_verified,
           },
           coach_specializations: specs.map((s) => ({ specialization: s.specialization })),
@@ -93,16 +93,16 @@ export default function CoachesPage() {
         const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
         const title = coach.coach_profiles?.title || ''
         const specs = coach.coach_specializations.map((s) => s.specialization)
-        const price = coach.coach_profiles?.price_per_hour ?? 0
+        const credits = coach.coach_profiles?.credits_per_hour ?? 0
 
         const matchesSearch = [name, title, ...specs].join(' ').toLowerCase().includes(search.toLowerCase())
-        const matchesPrice = price <= maxPrice
+        const matchesPrice = credits <= maxPrice
         const matchesSpecs = selectedSpecs.length === 0 || selectedSpecs.every((s) => specs.includes(s))
 
         return matchesSearch && matchesPrice && matchesSpecs
       })
       .sort((a, b) => {
-        if (sortBy === 'price') return (a.coach_profiles?.price_per_hour ?? 0) - (b.coach_profiles?.price_per_hour ?? 0)
+        if (sortBy === 'price') return (a.coach_profiles?.credits_per_hour ?? 0) - (b.coach_profiles?.credits_per_hour ?? 0)
         if (sortBy === 'experience') return (b.coach_profiles?.years_experience ?? 0) - (a.coach_profiles?.years_experience ?? 0)
         return 0
       })
@@ -143,7 +143,7 @@ export default function CoachesPage() {
 
             <div className="space-y-5 text-sm">
               <div>
-                <label className="mb-2 block text-gray-300">Price up to ${maxPrice}</label>
+                <label className="mb-2 block text-gray-300">Credits up to {maxPrice}</label>
                 <input type="range" min="50" max="500" value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="w-full accent-primary" />
               </div>
 
@@ -182,7 +182,7 @@ export default function CoachesPage() {
                 {filteredCoaches.map((coach) => {
                   const name = coach.full_name || [coach.first_name, coach.last_name].filter(Boolean).join(' ') || 'Coach'
                   const initials = name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-                  const price = coach.coach_profiles?.price_per_hour
+                  const creditsPerHour = coach.coach_profiles?.credits_per_hour
                   const specs = coach.coach_specializations.map((s) => s.specialization)
 
                   return (
@@ -216,8 +216,8 @@ export default function CoachesPage() {
 
                       <div className="mt-auto pt-4 flex items-center justify-between">
                         <div>
-                          <p className="text-xs text-gray-500">Price per session</p>
-                          <p className="text-2xl font-bold text-primary">{price ? `$${price}` : 'Contact'}</p>
+                          <p className="text-xs text-gray-500">Credits per hour</p>
+                          <p className="text-2xl font-bold text-primary">{creditsPerHour ? `⭐${creditsPerHour}` : 'Contact'}</p>
                         </div>
                         {coach.coach_profiles?.years_experience && (
                           <p className="text-xs text-gray-400">{coach.coach_profiles.years_experience} yrs exp</p>
