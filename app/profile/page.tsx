@@ -134,14 +134,6 @@ export default function ProfilePage() {
     if (!user) return
 
     // Validation
-    if (!country.trim()) {
-      setError('Country is required')
-      return
-    }
-    if (!city.trim()) {
-      setError('City is required')
-      return
-    }
     if (!headline.trim()) {
       setError('Professional headline is required')
       return
@@ -284,8 +276,8 @@ export default function ProfilePage() {
               <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe"  />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
-              <Input label="City *"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco" required />
+              <Input label="Country" value={country} onChange={setCountry} placeholder="e.g. United States" />
+              <Input label="City"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco"  />
             </div>
             <Input
               label="LinkedIn URL"
