@@ -55,12 +55,16 @@ export async function POST(request: NextRequest) {
     // Convert credits to USD (1 credit = $1)
     const amountUSD = amount
 
+    // Calculate new values
+    const newBalance = credits.balance - amount
+    const newTotalWithdrawn = (credits.total_withdrawn || 0) + amount
+
     // Deduct credits from balance
     const { data: updatedCredits, error: deductError } = await supabase
       .from('user_credits')
       .update({ 
-        balance: credits.balance - amount,
-        total_withdrawn: supabase.raw(`total_withdrawn + ${amount}`)
+        balance: newBalance,
+        total_withdrawn: newTotalWithdrawn
       })
       .eq('user_id', user.id)
       .select()
