@@ -226,7 +226,7 @@ BEGIN
   SELECT COUNT(*) INTO total_sessions
   FROM public.bookings
   WHERE coach_id = coach_uuid
-    AND scheduled_at >= now() - (days || ' days')::interval
+    AND scheduled_at >= now() - (days * interval '1 day')
     AND status IN ('completed', 'cancelled');
   
   IF total_sessions = 0 THEN
@@ -238,7 +238,7 @@ BEGIN
   JOIN public.bookings b ON c.booking_id = b.id
   WHERE b.coach_id = coach_uuid
     AND c.cancelled_by = 'coach'
-    AND c.cancelled_at >= now() - (days || ' days')::interval;
+    AND c.cancelled_at >= now() - (days * interval '1 day');
   
   RETURN ROUND((cancelled_sessions::numeric / total_sessions::numeric) * 100, 2);
 END;
