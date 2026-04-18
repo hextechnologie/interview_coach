@@ -104,20 +104,30 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       // Use our new multi-API integration
       let fetchedJobs = await fetchAllJobs(query)
       
+      console.log(`📊 Fetched ${fetchedJobs.length} total jobs`)
+      
       // Sort by location proximity if user has a country set (France jobs first)
       if (userCountry) {
-        console.log('Filter by country:', userCountry)
+        console.log(`🌍 Filtering by country: "${userCountry}", city: "${userCity}"`)
+        
+        // Log first 5 jobs BEFORE sorting
+        console.log('BEFORE SORTING (first 5):')
+        fetchedJobs.slice(0, 5).forEach((job, i) => {
+          const score = calculateLocationScore(job.location)
+          console.log(`  ${i+1}. "${job.title}" at "${job.location}" - Score: ${score}`)
+        })
         
         fetchedJobs.sort((a: Job, b: Job) => {
           const scoreA = calculateLocationScore(a.location)
           const scoreB = calculateLocationScore(b.location)
-          
-          // Debug: log first few jobs
-          if (fetchedJobs.indexOf(a) < 5) {
-            console.log(`Job: "${a.title}" at "${a.location}" - Score: ${scoreA}`)
-          }
-          
           return scoreB - scoreA // Higher score first
+        })
+        
+        // Log first 5 jobs AFTER sorting
+        console.log('AFTER SORTING (first 5):')
+        fetchedJobs.slice(0, 5).forEach((job, i) => {
+          const score = calculateLocationScore(job.location)
+          console.log(`  ${i+1}. "${job.title}" at "${job.location}" - Score: ${score}`)
         })
       }
       
