@@ -80,6 +80,11 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       return 1000
     }
     
+    // Exact country match as a complete word
+    if (locationWords.includes(country)) {
+      return 500
+    }
+    
     // Country match - check if all country words are in location
     const countryMatches = countryWords.every(word => 
       word.length > 2 && locationWords.includes(word)
@@ -89,9 +94,19 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       return 500
     }
     
-    // Partial country match (e.g., "France" matches "French")
-    if (location.includes(country.substring(0, 4))) {
-      return 400
+    // Check for country codes: FR, FRA for France
+    const countryCodes: { [key: string]: string[] } = {
+      'france': ['fr', 'fra', 'french'],
+      'germany': ['de', 'deu', 'german'],
+      'spain': ['es', 'esp', 'spanish'],
+      'italy': ['it', 'ita', 'italian']
+    }
+    
+    if (countryCodes[country]) {
+      const codes = countryCodes[country]
+      if (codes.some(code => locationWords.includes(code))) {
+        return 500
+      }
     }
     
     // No match - lower priority but still show
