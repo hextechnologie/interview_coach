@@ -11,25 +11,32 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 interface ExperienceCardsSectionProps {
-  coachId: string
+  coachId?: string
+  userId?: string
 }
 
-export default function ExperienceCardsSection({ coachId }: ExperienceCardsSectionProps) {
+export default function ExperienceCardsSection({ coachId, userId }: ExperienceCardsSectionProps) {
   const [experiences, setExperiences] = useState<CoachExperience[]>([])
   const [showModal, setShowModal] = useState(false)
   const [editingExperience, setEditingExperience] = useState<CoachExperience | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // Determine which table and ID field to use
+  const tableName = coachId ? 'coach_experience' : 'user_experience'
+  const idField = coachId ? 'coach_id' : 'user_id'
+  const idValue = coachId || userId
+
   useEffect(() => {
-    loadExperiences()
-  }, [coachId])
+    if (idValue) loadExperiences()
+  }, [coachId, userId])
 
   const loadExperiences = async () => {
+    if (!idValue) return
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
-      .from('coach_experience')
+      .from(tableName)
       .select('*')
-      .eq('coach_id', coachId)
+      .eq(idField, idValue)
       .order('order_index', { ascending: true })
 
     if (!error && data) {
@@ -52,7 +59,7 @@ export default function ExperienceCardsSection({ coachId }: ExperienceCardsSecti
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
-      .from('coach_experience')
+      .from(tableName)
       .delete()
       .eq('id', id)
 
@@ -99,9 +106,11 @@ export default function ExperienceCardsSection({ coachId }: ExperienceCardsSecti
       </div>
 
       <AnimatePresence>
-        {showModal && (
+        {showModal && idValue && (
           <ExperienceModal
-            coachId={coachId}
+            tableName={tableName}
+            idField={idField}
+            idValue={idValue}
             experience={editingExperience}
             onClose={() => setShowModal(false)}
             onSave={handleSave}
@@ -192,12 +201,16 @@ function ExperienceCard({
 }
 
 function ExperienceModal({
-  coachId,
+  tableName,
+  idField,
+  idValue,
   experience,
   onClose,
   onSave,
 }: {
-  coachId: string
+  tableName: string
+  idField: string
+  idValue: string
   experience: CoachExperience | null
   onClose: () => void
   onSave: () => void
@@ -242,7 +255,7 @@ function ExperienceModal({
       if (experience) {
         // Update existing
         const { error } = await supabase
-          .from('coach_experience')
+          .from(tableName)
           .update(formData)
           .eq('id', experience.id)
 
@@ -250,8 +263,8 @@ function ExperienceModal({
       } else {
         // Create new
         const { error } = await supabase
-          .from('coach_experience')
-          .insert([{ ...formData, coach_id: coachId }])
+          .from(tableName)
+          .insert([{ ...formData, [idField]: idValue }])
 
         if (error) throw error
       }

@@ -7,10 +7,10 @@ import { ArrowLeft, Camera, CheckCircle, Loader2, Sparkles, X } from 'lucide-rea
 import { Button, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
-import ExperienceSection from '@/components/profile/ExperienceSection'
-import EducationSection from '@/components/profile/EducationSection'
-import SkillsSection from '@/components/profile/SkillsSection'
-import AchievementsSection from '@/components/profile/AchievementsSection'
+import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
+import EducationCardsSection from '@/components/coach/EducationCardsSection'
+import SkillsSelector from '@/components/coach/SkillsSelector'
+import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 
 const statusOptions = [
   { value: 'student',        label: '🎓 Student' },
@@ -318,24 +318,28 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Experience Section - Structured Component */}
-          <div className="rounded-2xl border border-white/10 p-5" style={{ background: '#111827' }}>
-            <ExperienceSection userId={user!.id} />
+          {/* Experience Section */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Work Experience</h2>
+            <ExperienceCardsSection userId={user!.id} />
           </div>
 
-          {/* Education Section - Structured Component */}
-          <div className="rounded-2xl border border-white/10 p-5" style={{ background: '#111827' }}>
-            <EducationSection userId={user!.id} userCountry={country} />
+          {/* Education Section */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Education & Certifications</h2>
+            <EducationCardsSection userId={user!.id} userCountry={country} />
           </div>
 
-          {/* Skills Section - Tag Selector Component */}
-          <div className="rounded-2xl border border-white/10 p-5" style={{ background: '#111827' }}>
-            <SkillsSection userId={user!.id} />
+          {/* Skills Section */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Skills & Expertise</h2>
+            <SkillsSelector userId={user!.id} />
           </div>
 
-          {/* Achievements Section - Structured Component */}
-          <div className="rounded-2xl border border-white/10 p-5" style={{ background: '#111827' }}>
-            <AchievementsSection userId={user!.id} />
+          {/* Achievements Section */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Achievements & Highlights</h2>
+            <AchievementsCardsSection userId={user!.id} />
           </div>
 
           {/* Messages */}

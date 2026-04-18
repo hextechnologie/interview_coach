@@ -20,24 +20,31 @@ const ACHIEVEMENT_TYPES: Array<{ value: AchievementType; label: string; icon: an
 ]
 
 interface AchievementsCardsSectionProps {
-  coachId: string
+  coachId?: string
+  userId?: string
 }
 
-export default function AchievementsCardsSection({ coachId }: AchievementsCardsSectionProps) {
+export default function AchievementsCardsSection({ coachId, userId }: AchievementsCardsSectionProps) {
   const [achievements, setAchievements] = useState<CoachAchievement[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAchievement, setEditingAchievement] = useState<CoachAchievement | null>(null)
 
+  // Determine which table and ID field to use
+  const tableName = coachId ? 'coach_achievements' : 'user_achievements'
+  const idField = coachId ? 'coach_id' : 'user_id'
+  const idValue = coachId || userId
+
   useEffect(() => {
-    loadAchievements()
-  }, [coachId])
+    if (idValue) loadAchievements()
+  }, [coachId, userId])
 
   const loadAchievements = async () => {
+    if (!idValue) return
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
-      .from('coach_achievements')
+      .from(tableName)
       .select('*')
-      .eq('coach_id', coachId)
+      .eq(idField, idValue)
       .order('achievement_year', { ascending: false, nullsFirst: false })
       .order('achievement_month', { ascending: false, nullsFirst: false })
 
@@ -71,7 +78,7 @@ export default function AchievementsCardsSection({ coachId }: AchievementsCardsS
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
-      .from('coach_achievements')
+      .from(tableName)
       .delete()
       .eq('id', id)
 
@@ -121,9 +128,11 @@ export default function AchievementsCardsSection({ coachId }: AchievementsCardsS
       )}
 
       <AnimatePresence>
-        {isModalOpen && (
+        {isModalOpen && idValue && (
           <AchievementModal
-            coachId={coachId}
+            tableName={tableName}
+            idField={idField}
+            idValue={idValue}
             achievement={editingAchievement}
             onClose={closeModal}
             onSave={handleSave}
@@ -222,13 +231,15 @@ function AchievementCard({
 }
 
 interface AchievementModalProps {
-  coachId: string
+  tableName: string
+  idField: string
+  idValue: string
   achievement: CoachAchievement | null
   onClose: () => void
   onSave: () => void
 }
 
-function AchievementModal({ coachId, achievement, onClose, onSave }: AchievementModalProps) {
+function AchievementModal({ tableName, idField, idValue, achievement, onClose, onSave }: AchievementModalProps) {
   const [formData, setFormData] = useState({
     achievement_type: achievement?.achievement_type || 'Professional Achievement' as AchievementType,
     title: achievement?.title || '',
@@ -264,7 +275,7 @@ function AchievementModal({ coachId, achievement, onClose, onSave }: Achievement
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     const payload = {
-      coach_id: coachId,
+      [idField]: idValue,
       achievement_type: formData.achievement_type,
       title: formData.title.trim(),
       description: formData.description.trim() || null,
@@ -276,7 +287,7 @@ function AchievementModal({ coachId, achievement, onClose, onSave }: Achievement
     if (achievement?.id) {
       // Update existing
       const { error } = await supabase
-        .from('coach_achievements')
+        .from(tableName)
         .update(payload)
         .eq('id', achievement.id)
 
@@ -286,7 +297,7 @@ function AchievementModal({ coachId, achievement, onClose, onSave }: Achievement
     } else {
       // Insert new
       const { error } = await supabase
-        .from('coach_achievements')
+        .from(tableName)
         .insert([payload])
 
       if (!error) {

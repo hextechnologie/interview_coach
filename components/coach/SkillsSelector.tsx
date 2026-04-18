@@ -19,10 +19,11 @@ const CATEGORY_COLORS: Record<SkillCategory, {dot: string, bg: string}> = {
 }
 
 interface SkillsSelectorProps {
-  coachId: string
+  coachId?: string
+  userId?: string
 }
 
-export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
+export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps) {
   const [skills, setSkills] = useState<CoachSkill[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Array<{skill: string, category: SkillCategory}>>([])
@@ -30,9 +31,14 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  // Determine which table and ID field to use
+  const tableName = coachId ? 'coach_skills' : 'user_skills'
+  const idField = coachId ? 'coach_id' : 'user_id'
+  const idValue = coachId || userId
+
   useEffect(() => {
-    loadSkills()
-  }, [coachId])
+    if (idValue) loadSkills()
+  }, [coachId, userId])
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
@@ -74,11 +80,12 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
   }, [])
 
   const loadSkills = async () => {
+    if (!idValue) return
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
-      .from('coach_skills')
+      .from(tableName)
       .select('*')
-      .eq('coach_id', coachId)
+      .eq(idField, idValue)
       .order('order_index', { ascending: true })
 
     if (!error && data) {
@@ -96,11 +103,13 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
       return // Already added
     }
 
+    if (!idValue) return
+
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
-      .from('coach_skills')
+      .from(tableName)
       .insert([{
-        coach_id: coachId,
+        [idField]: idValue,
         skill_name: skillName,
         skill_category: category,
         order_index: skills.length,
@@ -118,12 +127,13 @@ export default function SkillsSelector({ coachId }: SkillsSelectorProps) {
   }
 
   const removeSkill = async (id: string) => {
+    if (!idValue) return
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
-      .from('coach_skills')
+      .from(tableName)
       .delete()
       .eq('id', id)
-      .eq('coach_id', coachId)
+      .eq(idField, idValue)
 
     if (!error) {
       await loadSkills()

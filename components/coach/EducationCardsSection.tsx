@@ -21,25 +21,32 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 interface EducationCardsSectionProps {
-  coachId: string
+  coachId?: string
+  userId?: string
   userCountry?: string
 }
 
-export default function EducationCardsSection({ coachId, userCountry }: EducationCardsSectionProps) {
+export default function EducationCardsSection({ coachId, userId, userCountry }: EducationCardsSectionProps) {
   const [educations, setEducations] = useState<CoachEducation[]>([])
   const [showModal, setShowModal] = useState(false)
   const [editingEducation, setEditingEducation] = useState<CoachEducation | null>(null)
 
+  // Determine which table and ID field to use
+  const tableName = coachId ? 'coach_education' : 'user_education'
+  const idField = coachId ? 'coach_id' : 'user_id'
+  const idValue = coachId || userId
+
   useEffect(() => {
-    loadEducations()
-  }, [coachId])
+    if (idValue) loadEducations()
+  }, [coachId, userId])
 
   const loadEducations = async () => {
+    if (!idValue) return
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
-      .from('coach_education')
+      .from(tableName)
       .select('*')
-      .eq('coach_id', coachId)
+      .eq(idField, idValue)
       .order('order_index', { ascending: true })
 
     if (!error && data) {
@@ -62,7 +69,7 @@ export default function EducationCardsSection({ coachId, userCountry }: Educatio
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
-      .from('coach_education')
+      .from(tableName)
       .delete()
       .eq('id', id)
 
@@ -109,9 +116,11 @@ export default function EducationCardsSection({ coachId, userCountry }: Educatio
       </div>
 
       <AnimatePresence>
-        {showModal && (
+        {showModal && idValue && (
           <EducationModal
-            coachId={coachId}
+            tableName={tableName}
+            idField={idField}
+            idValue={idValue}
             education={editingEducation}
             userCountry={userCountry}
             onClose={() => setShowModal(false)}
@@ -233,13 +242,17 @@ function EducationCard({
 }
 
 function EducationModal({
-  coachId,
+  tableName,
+  idField,
+  idValue,
   education,
   userCountry,
   onClose,
   onSave,
 }: {
-  coachId: string
+  tableName: string
+  idField: string
+  idValue: string
   education: CoachEducation | null
   userCountry?: string
   onClose: () => void
@@ -340,15 +353,15 @@ function EducationModal({
     try {
       if (education) {
         const { error } = await supabase
-          .from('coach_education')
+          .from(tableName)
           .update(formData)
           .eq('id', education.id)
 
         if (error) throw error
       } else {
         const { error } = await supabase
-          .from('coach_education')
-          .insert([{ ...formData, coach_id: coachId }])
+          .from(tableName)
+          .insert([{ ...formData, [idField]: idValue }])
 
         if (error) throw error
       }
