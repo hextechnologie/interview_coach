@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
     }
     // CANDIDATE CANCELLATION
     else if (isCandidate) {
-      const isFree = isFreeCancellation(booking.scheduled_at, booking.cancellation_deadline)
+      const isFree = isFreeCancellation(new Date(booking.scheduled_at))
 
       if (isFree) {
         // Free cancellation: full refund
