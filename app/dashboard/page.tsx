@@ -7,6 +7,7 @@ import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
 import CreditBalanceButton from '@/components/CreditBalanceButton'
 import { supabase, InterviewSession, InterviewAnswer, getFirstName } from '@/lib/supabase'
+import { getCreditBalance } from '@/lib/credits'
 import JobOffers from '@/components/JobOffers'
 import {
   Sparkles,
@@ -111,6 +112,7 @@ export default function DashboardPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [tipIndex, setTipIndex] = useState(0)
   const [realCoaches, setRealCoaches] = useState<{ id: string; full_name: string | null; coach_profiles: { title: string | null; price_per_hour: number | null } | null; coach_specializations: { specialization: string }[] }[]>([])
+  const [balance, setBalance] = useState<number>(0)
   const profileRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -128,6 +130,7 @@ export default function DashboardPage() {
       fetchDashboardData()
       fetchBookings()
       fetchRealCoaches()
+      fetchCreditBalance()
     }
   }, [user, profile])
 
@@ -197,6 +200,17 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error fetching coaches:', error)
       setRealCoaches([])
+    }
+  }
+
+  const fetchCreditBalance = async () => {
+    if (!user) return
+    try {
+      const bal = await getCreditBalance(user.id)
+      setBalance(bal)
+    } catch (err) {
+      console.error('Failed to load credit balance:', err)
+      setBalance(0)
     }
   }
 
