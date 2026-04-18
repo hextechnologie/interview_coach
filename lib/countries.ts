@@ -325,7 +325,7 @@ export function getCitiesForCountry(countryValue: string): string[] {
 export function getCountryOptions() {
   return COUNTRIES.map(c => ({
     value: c.value,
-    label: `${c.flag} ${c.label}`
+    label: c.label  // Just show country name without flag emoji
   }))
 }
 
