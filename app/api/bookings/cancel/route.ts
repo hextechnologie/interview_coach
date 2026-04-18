@@ -82,11 +82,17 @@ export async function POST(request: NextRequest) {
       strikeIssued = true
 
       // Refund credits to candidate
+      const { data: candidateCredits } = await supabase
+        .from('user_credits')
+        .select('balance')
+        .eq('user_id', booking.candidate_id)
+        .single()
+
+      const newCandidateBalance = (candidateCredits?.balance || 0) + refundAmount
+
       await supabase
         .from('user_credits')
-        .update({ 
-          balance: supabase.raw(`balance + ${refundAmount}`)
-        })
+        .update({ balance: newCandidateBalance })
         .eq('user_id', booking.candidate_id)
 
       // Record refund transaction
@@ -115,11 +121,17 @@ export async function POST(request: NextRequest) {
         refundStatus = 'full'
 
         // Refund credits to candidate
+        const { data: userCredits } = await supabase
+          .from('user_credits')
+          .select('balance')
+          .eq('user_id', user.id)
+          .single()
+
+        const newBalance = (userCredits?.balance || 0) + refundAmount
+
         await supabase
           .from('user_credits')
-          .update({ 
-            balance: supabase.raw(`balance + ${refundAmount}`)
-          })
+          .update({ balance: newBalance })
           .eq('user_id', user.id)
 
         // Record refund transaction
@@ -143,11 +155,20 @@ export async function POST(request: NextRequest) {
         refundStatus = 'none'
 
         // Release credits to coach
+        const { data: coachCredits } = await supabase
+          .from('user_credits')
+          .select('balance, total_earned')
+          .eq('user_id', booking.coach_id)
+          .single()
+
+        const newCoachBalance = (coachCredits?.balance || 0) + escrow.coach_earnings
+        const newTotalEarned = (coachCredits?.total_earned || 0) + escrow.coach_earnings
+
         await supabase
           .from('user_credits')
           .update({ 
-            balance: supabase.raw(`balance + ${escrow.coach_earnings}`),
-            total_earned: supabase.raw(`total_earned + ${escrow.coach_earnings}`)
+            balance: newCoachBalance,
+            total_earned: newTotalEarned
           })
           .eq('user_id', booking.coach_id)
 
