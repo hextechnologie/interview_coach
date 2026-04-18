@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Get current balance
     const { data: credits, error: creditsError } = await supabase
       .from('user_credits')
-      .select('balance')
+      .select('balance, total_withdrawn')
       .eq('user_id', user.id)
       .single()
 
