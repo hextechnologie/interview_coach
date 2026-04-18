@@ -62,9 +62,9 @@ export default function CreditBalanceButton() {
       </div>
       
       {/* Tooltip */}
-      <div className="absolute hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50 shadow-lg">
+      <div className="absolute hidden group-hover:block top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50 shadow-lg">
         {isLow ? 'Low balance! Top up now' : 'Click to top up credits'}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-[-4px] border-4 border-transparent border-t-gray-900" />
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[-4px] border-4 border-transparent border-b-gray-900" />
       </div>
     </button>
   )
