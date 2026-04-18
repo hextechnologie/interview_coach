@@ -155,30 +155,48 @@ export default function DashboardPage() {
   }, [])
 
   const fetchRealCoaches = async () => {
+    if (!user) return
     try {
+      // Fetch coaches excluding current user
       const { data: cpData } = await supabase
         .from('coach_profiles')
         .select('user_id, title, price_per_hour')
+        .neq('user_id', user.id) // Exclude current user
         .limit(6)
+      
       if (!cpData || cpData.length === 0) return
+      
       const userIds = cpData.map((c) => c.user_id)
+      
+      // Only get profiles with user_type = 'coach'  
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name, email, avatar_url, user_type')
         .in('id', userIds)
+        .eq('user_type', 'coach') // Only coaches
+        
       const { data: specsData } = await supabase
         .from('coach_specializations')
         .select('coach_id, specialization')
         .in('coach_id', userIds)
-      const merged = cpData.map((cp) => ({
-        id: cp.user_id,
-        full_name: profileData?.find((p) => p.id === cp.user_id)?.full_name ?? null,
-        email: profileData?.find((p) => p.id === cp.user_id)?.email ?? null,
-        coach_profiles: { title: cp.title, price_per_hour: cp.price_per_hour },
-        coach_specializations: (specsData ?? []).filter((s) => s.coach_id === cp.user_id).map((s) => ({ specialization: s.specialization })),
-      }))
+        
+      // Filter and merge only valid coach profiles
+      const validCoachIds = profileData?.map(p => p.id) || []
+      const merged = cpData
+        .filter(cp => validCoachIds.includes(cp.user_id))
+        .map((cp) => ({
+          id: cp.user_id,
+          full_name: profileData?.find((p) => p.id === cp.user_id)?.full_name ?? null,
+          email: profileData?.find((p) => p.id === cp.user_id)?.email ?? null,
+          avatar_url: profileData?.find((p) => p.id === cp.user_id)?.avatar_url ?? null,
+          coach_profiles: { title: cp.title, price_per_hour: cp.price_per_hour },
+          coach_specializations: (specsData ?? []).filter((s) => s.coach_id === cp.user_id).map((s) => ({ specialization: s.specialization })),
+        }))
       setRealCoaches(merged as any)
-    } catch { /* ignore */ }
+    } catch (error) {
+      console.error('Error fetching coaches:', error)
+      setRealCoaches([])
+    }
   }
 
   const fetchBookings = async () => {
@@ -188,9 +206,14 @@ export default function DashboardPage() {
         .from('bookings')
         .select('id, scheduled_at, duration_minutes, status, notes, coach:profiles!bookings_coach_id_fkey(full_name, email)')
         .eq('candidate_id', user.id)
+        .neq('coach_id', user.id) // Exclude self-bookings
+        .eq('status', 'confirmed') // Only show confirmed bookings
         .order('scheduled_at', { ascending: true })
       setBookings((data || []) as unknown as BookingWithCoach[])
-    } catch { setBookings([]) }
+    } catch (error) {
+      console.error('Error fetching bookings:', error)
+      setBookings([])
+    }
   }
 
 
@@ -488,7 +511,11 @@ export default function DashboardPage() {
             {!isCoach && (
               <p className="text-gray-400">
                 You have used <span className="text-white font-semibold">{profile.interviews_used_this_month}</span> of{' '}
-                <span className="text-white font-semibold">{profile.interviews_limit === 999999 ? '∞' : profile.interviews_limit}</span> interviews this month.
+                <span className="text-white font-semibold">
+                  {profile.interviews_limit === 999999 || profile.interviews_limit >= 999 
+                    ? 'Unlimited' 
+                    : profile.interviews_limit}
+                </span> interviews this month{profile.interviews_limit === 999999 || profile.interviews_limit >= 999 ? ' ✨' : ''}.
               </p>
             )}
             {isCoach && (
@@ -698,20 +725,45 @@ export default function DashboardPage() {
               </div>
               <div className="grid gap-4 md:grid-cols-3">
                 {recommendedCoaches.length === 0 ? (
-                  <div className="col-span-3 py-8 text-center text-gray-400 text-sm">No coaches registered yet. <Link href="/coaches" className="text-purple-400 hover:underline">Browse all coaches →</Link></div>
+                  <div className="col-span-3 py-8 text-center text-gray-400 text-sm">
+                    <p className="mb-2">More coaches coming soon! 🌟</p>
+                    <Link href="/coaches" className="text-purple-400 hover:underline">Browse available coaches →</Link>
+                  </div>
                 ) : recommendedCoaches.map((coach) => {
                   const name = coach.full_name || 'Coach'
+                  const firstName = name.split(' ')[0]
                   const specs = coach.coach_specializations?.map((s: any) => s.specialization) || []
+                  const pricePerHour = coach.coach_profiles?.price_per_hour || 0
+                  const creditsPerHour = pricePerHour > 0 ? Math.round(pricePerHour * 1.5) : 0 // Convert dollars to credits
+                  const avatarUrl = (coach as any).avatar_url
+                  
                   return (
-                    <div key={coach.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors flex flex-col gap-3" style={{ background: '#0a0f1e' }}>
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-lg font-bold">{name.charAt(0).toUpperCase()}</div>
+                    <div key={coach.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-all hover:shadow-lg hover:shadow-purple-500/10 flex flex-col gap-3" style={{ background: '#0a0f1e' }}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={name} className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/30" />
+                      ) : (
+                        <img 
+                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}`} 
+                          alt={name} 
+                          className="w-12 h-12 rounded-full border-2 border-purple-500/30"
+                        />
+                      )}
                       <div className="flex-1">
-                        <p className="font-semibold">{name}</p>
+                        <p className="font-semibold truncate">{name}</p>
                         <p className="text-xs text-gray-400 mb-2 line-clamp-1">{coach.coach_profiles?.title || 'Interview Coach'}</p>
-                        <div className="flex items-center gap-2 text-xs">
-                          {specs.slice(0, 2).map((s: string) => <span key={s} className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">{s}</span>)}
-                          {coach.coach_profiles?.price_per_hour && <span className="text-purple-400 ml-auto">${coach.coach_profiles.price_per_hour}/hr</span>}
+                        <div className="flex flex-wrap items-center gap-1 text-xs mb-2">
+                          {specs.length > 0 ? (
+                            specs.slice(0, 2).map((s: string) => <span key={s} className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">{s}</span>)
+                          ) : (
+                            <span className="text-gray-500 text-[10px]">General Coaching</span>
+                          )}
                         </div>
+                        {creditsPerHour > 0 && (
+                          <div className="flex items-center gap-1 text-purple-400 text-sm font-semibold">
+                            <Wallet className="w-3 h-3" />
+                            <span>{creditsPerHour} credits/hr</span>
+                          </div>
+                        )}
                       </div>
                       <Link href={`/coaches/${coach.id}`}><Button variant="outline" fullWidth className="text-xs">View Profile</Button></Link>
                     </div>
