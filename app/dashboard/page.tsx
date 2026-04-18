@@ -1013,7 +1013,7 @@ function StatCard({
   const isEmpty = value === '0' || value === '0/10' || value === '0 days'
   
   return (
-    <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 flex flex-col" style={{ background: '#111827', minHeight: isEmpty && emptyMessage ? '220px' : '160px' }}>
+    <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 flex flex-col" style={{ background: '#111827', height: '220px' }}>
       <div className="flex items-start justify-between mb-2">
         <div>
           <p className="text-gray-400 text-xs mb-1">{label}</p>
