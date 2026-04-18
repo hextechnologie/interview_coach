@@ -1014,7 +1014,7 @@ function StatCard({
   
   return (
     <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300 flex flex-col" style={{ background: '#111827', height: '220px' }}>
-      <div className="flex items-start justify-between mb-2" style={{ minHeight: '60px' }}>
+      <div className="flex items-start justify-between mb-2 h-16">
         <div>
           <p className="text-gray-400 text-xs mb-1">{label}</p>
           <p className="text-2xl font-bold">{value}</p>
