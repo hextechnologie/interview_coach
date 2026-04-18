@@ -545,9 +545,9 @@ export default function DashboardPage() {
         </div>
 
         {/* STATS CARDS */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8 animate-fadeIn">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8 animate-fadeIn items-start">
           {loading ? Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-2xl p-5 animate-pulse border border-white/10" style={{ background: '#111827' }}>
+            <div key={i} className="rounded-2xl p-5 animate-pulse border border-white/10" style={{ background: '#111827', height: '220px' }}>
               <div className="h-3 w-24 bg-white/10 rounded mb-4" /><div className="h-7 w-16 bg-white/10 rounded" />
             </div>
           )) : (
