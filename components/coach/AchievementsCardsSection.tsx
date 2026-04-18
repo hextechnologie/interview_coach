@@ -205,9 +205,9 @@ function AchievementCard({
             <p className="text-sm text-gray-300 mb-2">{achievement.description}</p>
           )}
 
-          {achievement.achievement_url && (
+          {achievement.url && (
             <a
-              href={achievement.achievement_url}
+              href={achievement.url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-blue-400 hover:text-blue-300 transition inline-flex items-center gap-1"
