@@ -24,6 +24,9 @@ import {
   ChevronDown,
   Menu,
   X,
+  Settings,
+  Wallet,
+  Bell,
 } from 'lucide-react'
 import Link from 'next/link'
 import { format, subDays } from 'date-fns'
@@ -389,16 +392,6 @@ export default function DashboardPage() {
               {!isCoach && <Link href="/bookings"><Button variant="outline" className="text-sm gap-2"><Calendar className="w-4 h-4" />My Bookings</Button></Link>}
               {!isCoach && <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">Find a Coach</Button></Link>}
               {isCoach && <Link href="/coach/dashboard"><Button variant="outline" className="text-sm gap-2">Coach Dashboard</Button></Link>}
-              <Link href="/pricing">
-                <Button variant="outline" className="text-sm gap-2">
-                  <CreditCard className="w-4 h-4" />
-                  {profile.subscription_tier.charAt(0).toUpperCase() + profile.subscription_tier.slice(1)} Plan
-                </Button>
-              </Link>
-              <Button variant="outline" onClick={signOut} className="gap-2">
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
 
               {/* Profile dropdown */}
               <div className="relative" ref={profileRef}>
@@ -413,7 +406,7 @@ export default function DashboardPage() {
                   <ChevronDown className="w-3 h-3 text-gray-400" />
                 </button>
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-52 rounded-2xl border border-white/10 shadow-2xl overflow-hidden z-50" style={{ background: '#111827' }}>
+                  <div className="absolute right-0 mt-2 w-60 rounded-2xl border border-white/10 shadow-2xl overflow-hidden z-50" style={{ background: '#111827' }}>
                     <div className="px-4 py-3 border-b border-white/10">
                       <p className="text-sm font-semibold truncate">{displayName}</p>
                       <p className="text-xs text-gray-400 truncate">{user.email}</p>
@@ -424,11 +417,22 @@ export default function DashboardPage() {
                           <User className="w-4 h-4" /> My Profile
                         </button>
                       </Link>
-                      <Link href="/pricing" onClick={() => setProfileOpen(false)}>
+                      <Link href="/settings" onClick={() => setProfileOpen(false)}>
                         <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
-                          <CreditCard className="w-4 h-4" /> Billing
+                          <Settings className="w-4 h-4" /> Settings
                         </button>
                       </Link>
+                      <Link href="/credits" onClick={() => setProfileOpen(false)}>
+                        <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
+                          <Wallet className="w-4 h-4" /> My Credits
+                        </button>
+                      </Link>
+                      <Link href="/pricing" onClick={() => setProfileOpen(false)}>
+                        <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
+                          <CreditCard className="w-4 h-4" /> Pro Plan
+                        </button>
+                      </Link>
+                      <div className="my-1 border-t border-white/10"></div>
                       <button
                         onClick={() => { setProfileOpen(false); signOut() }}
                         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
@@ -457,9 +461,13 @@ export default function DashboardPage() {
           {menuOpen && (
             <div className="md:hidden mt-4 pb-2 border-t border-white/10 pt-4 space-y-2">
               {!isCoach && <Link href="/coaches" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Find a Coach</Button></Link>}
+              {!isCoach && <Link href="/bookings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Calendar className="w-4 h-4 mr-2" /> My Bookings</Button></Link>}
               {isCoach && <Link href="/coach/dashboard" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Coach Dashboard</Button></Link>}
-              <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> Billing</Button></Link>
               <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><User className="w-4 h-4 mr-2" /> My Profile</Button></Link>
+              <Link href="/settings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Settings className="w-4 h-4 mr-2" /> Settings</Button></Link>
+              <Link href="/credits" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Wallet className="w-4 h-4 mr-2" /> My Credits</Button></Link>
+              <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> Pro Plan</Button></Link>
+              <div className="border-t border-white/10 my-2"></div>
               <Button variant="outline" fullWidth onClick={signOut} className="justify-start text-red-400"><LogOut className="w-4 h-4 mr-2" /> Logout</Button>
             </div>
           )}
