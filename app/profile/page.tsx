@@ -37,58 +37,27 @@ export default function ProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
   const router = useRouter()
 
-  // A - B
-  const [aboutMe, setAboutMe] = useState('')
-  const [address, setAddress] = useState('')
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState('')
-  const [birthDate, setBirthDate] = useState('')
-  
-  // C
-  const [certificationsInput, setCertificationsInput] = useState('')
-  const [certificationsList, setCertificationsList] = useState<string[]>([])
-  const [city, setCity] = useState('')
-  const [country, setCountry] = useState('')
+  const [firstName, setFirstName]     = useState('')
+  const [lastName,  setLastName]      = useState('')
   const [currentStatus, setCurrentStatus] = useState('')
-  const [customJobRole, setCustomJobRole] = useState('')
-  
-  // E
-  const [educationInput, setEducationInput] = useState('')
-  const [educationList, setEducationList] = useState<string[]>([])
-  const [experienceInput, setExperienceInput] = useState('')
-  const [experienceLevel, setExperienceLevel] = useState('')
-  const [experienceList, setExperienceList] = useState<string[]>([])
-  
-  // F - H
-  const [firstName, setFirstName] = useState('')
-  const [githubUrl, setGithubUrl] = useState('')
-  const [hasNoExperience, setHasNoExperience] = useState(false)
-  const [headline, setHeadline] = useState('')
-  
-  // I - L
-  const [instagramUrl, setInstagramUrl] = useState('')
-  const [languages, setLanguages] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [linkedinUrl, setLinkedinUrl] = useState('')
-  
-  // N - P
-  const [nationality, setNationality] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [portfolioUrl, setPortfolioUrl] = useState('')
-  const [postalCode, setPostalCode] = useState('')
-  const [projectsDetails, setProjectsDetails] = useState('')
-  
-  // R - S
-  const [resumeUrl, setResumeUrl] = useState('')
-  const [salaryExpectation, setSalaryExpectation] = useState('')
-  const [skillsText, setSkillsText] = useState('')
-  const [statusDetail, setStatusDetail] = useState('')
-  
-  // T - Z
+  const [statusDetail,  setStatusDetail]  = useState('')
   const [targetJobRole, setTargetJobRole] = useState('')
-  const [twitterUrl, setTwitterUrl] = useState('')
-  const [websiteUrl, setWebsiteUrl] = useState('')
-  const [yearsExperience, setYearsExperience] = useState('')
+  const [customJobRole, setCustomJobRole] = useState('')
+  const [experienceLevel, setExperienceLevel] = useState('')
+  const [country, setCountry] = useState('')
+  const [city,    setCity]    = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
+  const [headline, setHeadline] = useState('')
+  const [aboutMe, setAboutMe] = useState('')
+  const [experienceList, setExperienceList] = useState<string[]>([])
+  const [experienceInput, setExperienceInput] = useState('')
+  const [hasNoExperience, setHasNoExperience] = useState(false)
+  const [educationList, setEducationList] = useState<string[]>([])
+  const [educationInput, setEducationInput] = useState('')
+  const [projectsDetails, setProjectsDetails] = useState('')
+  const [skillsText, setSkillsText] = useState('')
+  const [avatarPreview, setAvatarPreview] = useState('')
+  const [avatarFile,    setAvatarFile]    = useState<File | null>(null)
 
   const [saving,   setSaving]   = useState(false)
   const [saved,    setSaved]    = useState(false)
@@ -102,59 +71,10 @@ export default function ProfilePage() {
   // Pre-fill form from existing profile
   useEffect(() => {
     if (!profile) return
-    // A - B
-    setAboutMe((profile as any).about_me ?? '')
-    setAddress((profile as any).address ?? '')
-    setAvatarPreview(profile.avatar_url ?? '')
-    setBirthDate((profile as any).birth_date ?? '')
-    
-    // C
-    const certs = (profile as any).certifications
-    if (certs) {
-      setCertificationsList(certs.split('\n').filter((c: string) => c.trim()))
-    }
-    setCity(profile.city ?? '')
-    setCountry(profile.country ?? '')
-    setCurrentStatus(profile.current_status ?? '')
-    
-    // E
-    const edu = (profile as any).education_details
-    if (edu) {
-      setEducationList(edu.split('\n').filter((e: string) => e.trim()))
-    }
-    const exp = (profile as any).experience_details
-    if (exp) {
-      const expList = exp.split('\n').filter((e: string) => e.trim())
-      setExperienceList(expList)
-      setHasNoExperience(expList.length === 0)
-    }
-    setExperienceLevel(profile.experience_level ?? '')
-    
-    // F - H
     setFirstName(profile.first_name || (profile.full_name?.split(' ')[0] ?? ''))
-    setGithubUrl((profile as any).github_url ?? '')
-    setHeadline((profile as any).professional_headline ?? '')
-    
-    // I - L
-    setInstagramUrl((profile as any).instagram_url ?? '')
-    setLanguages((profile as any).languages ?? '')
-    setLastName(profile.last_name || (profile.full_name?.split(' ').slice(1).join(' ') ?? ''))
-    setLinkedinUrl(profile.linkedin_url ?? '')
-    
-    // N - P
-    setNationality((profile as any).nationality ?? '')
-    setPhoneNumber((profile as any).phone_number ?? '')
-    setPortfolioUrl((profile as any).portfolio_url ?? '')
-    setPostalCode((profile as any).postal_code ?? '')
-    setProjectsDetails((profile as any).projects_details ?? '')
-    
-    // R - S
-    setResumeUrl((profile as any).resume_url ?? '')
-    setSalaryExpectation((profile as any).salary_expectation ?? '')
-    setSkillsText(Array.isArray((profile as any).skills) ? (profile as any).skills.join(', ') : '')
-    setStatusDetail(profile.status_detail ?? '')
-    
-    // T - Z
+    setLastName(profile.last_name  || (profile.full_name?.split(' ').slice(1).join(' ') ?? ''))
+    setCurrentStatus(profile.current_status  ?? '')
+    setStatusDetail(profile.status_detail    ?? '')
     const savedRole = profile.target_job_role ?? ''
     const isKnownRole = jobRoleOptions.some(o => o.value === savedRole)
     if (isKnownRole || savedRole === '') {
@@ -163,9 +83,25 @@ export default function ProfilePage() {
       setTargetJobRole('Other')
       setCustomJobRole(savedRole)
     }
-    setTwitterUrl((profile as any).twitter_url ?? '')
-    setWebsiteUrl((profile as any).website_url ?? '')
-    setYearsExperience((profile as any).years_experience ?? '')
+    setExperienceLevel(profile.experience_level ?? '')
+    setCountry(profile.country ?? '')
+    setCity(profile.city       ?? '')
+    setLinkedinUrl(profile.linkedin_url ?? '')
+    setHeadline((profile as any).professional_headline ?? '')
+    setAboutMe((profile as any).about_me ?? '')
+    const exp = (profile as any).experience_details
+    if (exp) {
+      const expList = exp.split('\n').filter((e: string) => e.trim())
+      setExperienceList(expList)
+      setHasNoExperience(expList.length === 0)
+    }
+    const edu = (profile as any).education_details
+    if (edu) {
+      setEducationList(edu.split('\n').filter((e: string) => e.trim()))
+    }
+    setProjectsDetails((profile as any).projects_details ?? '')
+    setSkillsText(Array.isArray((profile as any).skills) ? (profile as any).skills.join(', ') : '')
+    setAvatarPreview(profile.avatar_url ?? '')
   }, [profile])
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -174,15 +110,6 @@ export default function ProfilePage() {
     setAvatarFile(file)
     setAvatarPreview(URL.createObjectURL(file))
   }
-
-  const addCertification = () => {
-    if (certificationsInput.trim() && !certificationsList.includes(certificationsInput.trim())) {
-      setCertificationsList([...certificationsList, certificationsInput.trim()])
-      setCertificationsInput('')
-    }
-  }
-
-  const removeCertification = (cert: string) => setCertificationsList(certificationsList.filter(c => c !== cert))
 
   const addExperience = () => {
     if (experienceInput.trim() && !experienceList.includes(experienceInput.trim())) {
@@ -259,55 +186,25 @@ export default function ProfilePage() {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          // A - B
-          about_me: aboutMe.trim(),
-          address: address.trim() || null,
-          avatar_url: avatarUrl,
-          birth_date: birthDate || null,
-          
-          // C
-          certifications: certificationsList.length > 0 ? certificationsList.join('\n') : null,
-          city: city || null,
-          country: country || null,
-          current_status: currentStatus || null,
-          
-          // E
-          education_details: educationList.join('\n'),
-          experience_details: hasNoExperience ? 'No experience' : experienceList.join('\n'),
-          experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
-          
-          // F - H
-          first_name: firstName.trim() || null,
-          full_name: fullName || null,
-          github_url: githubUrl.trim() || null,
-          
-          // I - L
-          instagram_url: instagramUrl.trim() || null,
-          languages: languages.trim() || null,
-          last_name: lastName.trim() || null,
-          linkedin_url: linkedinUrl ||null,
-          
-          // N - P
-          nationality: nationality.trim() || null,
-          phone_number: phoneNumber.trim() || null,
-          portfolio_url: portfolioUrl.trim() || null,
-          postal_code: postalCode.trim() || null,
-          professional_headline: headline.trim(),
-          projects_details: projectsDetails.trim() || null,
-          
-          // R - S
-          resume_url: resumeUrl.trim() || null,
-          salary_expectation: salaryExpectation.trim() || null,
-          skills: skillsText.split(',').map(s => s.trim()).filter(Boolean),
-          status_detail: statusDetail || null,
-          
-          // T - Z
-          target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
+          first_name:      firstName.trim() || null,
+          last_name:       lastName.trim()  || null,
+          full_name:       fullName         || null,
+          current_status:  currentStatus    || null,
+          status_detail:   statusDetail     || null,
           target_job_role: targetJobRole === 'Other' ? (customJobRole.trim() || null) : (targetJobRole || null),
-          twitter_url: twitterUrl.trim() || null,
-          updated_at: new Date().toISOString(),
-          website_url: websiteUrl.trim() || null,
-          years_experience: yearsExperience ? parseInt(yearsExperience) : null,
+          target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
+          experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
+          country:         country    || null,
+          city:            city       || null,
+          linkedin_url:    linkedinUrl || null,
+          professional_headline: headline.trim(),
+          about_me:        aboutMe.trim(),
+          experience_details: hasNoExperience ? 'No experience' : experienceList.join('\n'),
+          education_details: educationList.join('\n'),
+          projects_details: projectsDetails.trim() || null,
+          skills:          skillsText.split(',').map(s => s.trim()).filter(Boolean),
+          avatar_url:      avatarUrl,
+          updated_at:      new Date().toISOString(),
         })
         .eq('id', user.id)
 
@@ -379,68 +276,28 @@ export default function ProfilePage() {
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
-          {/* A - B: About, Address, Birth Date */}
+          {/* Name */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">A - B</h2>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">About <span className="text-red-400">*</span></label>
-              <textarea
-                value={aboutMe}
-                onChange={(e) => setAboutMe(e.target.value)}
-                rows={4}
-                placeholder="Write a short summary about yourself, your goals, and what makes you stand out..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-                required
-              />
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Personal Info</h2>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" />
+              <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe"  />
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
+              <Input label="City *"    value={city}    onChange={setCity}    placeholder="e.g. San Francisco" required />
             </div>
             <Input
-              label="Address / Street Address"
-              value={address}
-              onChange={setAddress}
-              placeholder="e.g. 123 Main Street, Apartment 4B"
-            />
-            <Input
-              label="Birth Date"
-              type="date"
-              value={birthDate}
-              onChange={setBirthDate}
-              placeholder="YYYY-MM-DD"
+              label="LinkedIn URL"
+              value={linkedinUrl}
+              onChange={setLinkedinUrl}
+              placeholder="https://linkedin.com/in/yourprofile"
             />
           </div>
 
-          {/* C: Certifications, City, Country, Current Status */}
+          {/* Career */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">C</h2>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Certifications</label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {certificationsList.map(cert => (
-                  <span key={cert} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-green-600/20 text-green-200 border border-green-500/30">
-                    {cert}
-                    <button type="button" onClick={() => removeCertification(cert)} className="hover:text-white transition-colors">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={certificationsInput}
-                  onChange={(e) => setCertificationsInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCertification())}
-                  placeholder="e.g. AWS Certified Solutions Architect"
-                  className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  style={{ background: '#0a0f1e' }}
-                />
-                <Button type="button" onClick={addCertification} variant="outline">Add</Button>
-              </div>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="City *" value={city} onChange={setCity} placeholder="e.g. San Francisco" required />
-              <Input label="Country *" value={country} onChange={setCountry} placeholder="e.g. United States" required />
-            </div>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Career Info</h2>
             <Select
               label="Current Status"
               value={currentStatus}
@@ -450,7 +307,7 @@ export default function ProfilePage() {
             />
             {currentStatus && (
               <Input
-                label="Current Status Details"
+                label="Status Details"
                 value={statusDetail}
                 onChange={setStatusDetail}
                 placeholder={
@@ -463,35 +320,57 @@ export default function ProfilePage() {
                 }
               />
             )}
+            <Select
+              label="Target Job Role"
+              value={targetJobRole}
+              onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole('') }}
+              options={jobRoleOptions}
+              placeholder="What role are you aiming for?"
+            />
+            {targetJobRole === 'Other' && (
+              <Input
+                label="What's your exact role?"
+                value={customJobRole}
+                onChange={setCustomJobRole}
+                placeholder="e.g. Growth Hacker, AI Researcher, Prompt Engineer…"
+              />
+            )}
+            {targetJobRole && (
+              <Select
+                label="Experience Level"
+                value={experienceLevel}
+                onChange={setExperienceLevel}
+                options={[
+                  { value: 'junior', label: 'Junior (0–2 yrs)' },
+                  { value: 'mid',    label: 'Mid-level (3–5 yrs)' },
+                  { value: 'senior', label: 'Senior (6+ yrs)' },
+                ]}
+                placeholder="Select level"
+              />
+            )}
           </div>
 
-          {/* E - F: Education, Experience, First/Last Name */}
+          {/* LinkedIn-style profile */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">E - F</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Profile <span className="text-red-400">*</span></h2>
+            <Input
+              label="Professional Headline"
+              value={headline}
+              onChange={setHeadline}
+              placeholder="e.g. Software Engineer focused on backend systems and distributed apps"
+              required
+            />
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Education <span className="text-red-400">*</span></label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {educationList.map(edu => (
-                  <span key={edu} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-blue-600/20 text-blue-200 border border-blue-500/30">
-                    {edu}
-                    <button type="button" onClick={() => removeEducation(edu)} className="hover:text-white transition-colors">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={educationInput}
-                  onChange={(e) => setEducationInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addEducation())}
-                  placeholder="e.g. BSc Computer Science - MIT (2016-2020)"
-                  className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  style={{ background: '#0a0f1e' }}
-                />
-                <Button type="button" onClick={addEducation} variant="outline">Add</Button>
-              </div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">About <span className="text-red-400">*</span></label>
+              <textarea
+                value={aboutMe}
+                onChange={(e) => setAboutMe(e.target.value)}
+                rows={4}
+                placeholder="Write a short summary about yourself, your goals, and what makes you stand out..."
+                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                style={{ background: '#0a0f1e' }}
+                required
+              />
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-200">
@@ -533,99 +412,36 @@ export default function ProfilePage() {
                     />
                     <Button type="button" onClick={addExperience} variant="outline">Add</Button>
                   </div>
+                  <p className="text-xs text-gray-500 mt-1">Add each work experience, internship, or role separately.</p>
                 </>
               )}
             </div>
-            {targetJobRole && (
-              <Select
-                label="Experience Level"
-                value={experienceLevel}
-                onChange={setExperienceLevel}
-                options={[
-                  { value: 'junior', label: 'Junior (0–2 yrs)' },
-                  { value: 'mid',    label: 'Mid-level (3–5 yrs)' },
-                  { value: 'senior', label: 'Senior (6+ yrs)' },
-                ]}
-                placeholder="Select level"
-              />
-            )}
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" />
-              <Input label="Last Name" value={lastName} onChange={setLastName} placeholder="Doe" />
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-200">Education / Formation <span className="text-red-400">*</span></label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {educationList.map(edu => (
+                  <span key={edu} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-blue-600/20 text-blue-200 border border-blue-500/30">
+                    {edu}
+                    <button type="button" onClick={() => removeEducation(edu)} className="hover:text-white transition-colors">
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={educationInput}
+                  onChange={(e) => setEducationInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addEducation())}
+                  placeholder="e.g. BSc Computer Science - MIT (2016-2020)"
+                  className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  style={{ background: '#0a0f1e' }}
+                />
+                <Button type="button" onClick={addEducation} variant="outline">Add</Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Add each degree, certification, bootcamp, or training separately.</p>
             </div>
-          </div>
-
-          {/* G - I: GitHub, Instagram */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">G - I</h2>
-            <Input
-              label="GitHub URL"
-              value={githubUrl}
-              onChange={setGithubUrl}
-              placeholder="https://github.com/yourusername"
-            />
-            <Input
-              label="Instagram URL"
-              value={instagramUrl}
-              onChange={setInstagramUrl}
-              placeholder="https://instagram.com/yourusername"
-            />
-          </div>
-
-          {/* L: Languages, LinkedIn */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">L</h2>
-            <Input
-              label="Languages Spoken"
-              value={languages}
-              onChange={setLanguages}
-              placeholder="e.g. English (Native), Spanish (Fluent), French (Intermediate)"
-            />
-            <Input
-              label="LinkedIn URL"
-              value={linkedinUrl}
-              onChange={setLinkedinUrl}
-              placeholder="https://linkedin.com/in/yourprofile"
-            />
-          </div>
-
-          {/* N - P: Nationality, Phone, Portfolio, Postal Code, Professional Headline, Projects */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">N - P</h2>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Input
-                label="Nationality"
-                value={nationality}
-                onChange={setNationality}
-                placeholder="e.g. American"
-              />
-              <Input
-                label="Phone Number"
-                type="tel"
-                value={phoneNumber}
-                onChange={setPhoneNumber}
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            <Input
-              label="Portfolio Website URL"
-              value={portfolioUrl}
-              onChange={setPortfolioUrl}
-              placeholder="https://yourportfolio.com"
-            />
-            <Input
-              label="Postal / ZIP Code"
-              value={postalCode}
-              onChange={setPostalCode}
-              placeholder="e.g. 94102"
-            />
-            <Input
-              label="Professional Headline"
-              value={headline}
-              onChange={setHeadline}
-              placeholder="e.g. Software Engineer focused on backend systems and distributed apps"
-              required
-            />
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-200">Projects</label>
               <textarea
@@ -637,68 +453,12 @@ export default function ProfilePage() {
                 style={{ background: '#0a0f1e' }}
               />
             </div>
-          </div>
-
-          {/* R - S: Resume, Salary, Skills, Status */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">R - S</h2>
-            <Input
-              label="Resume / CV URL"
-              value={resumeUrl}
-              onChange={setResumeUrl}
-              placeholder="https://drive.google.com/your-resume.pdf"
-            />
-            <Input
-              label="Salary Expectation"
-              value={salaryExpectation}
-              onChange={setSalaryExpectation}
-              placeholder="e.g. $120,000 - $150,000 per year"
-            />
             <Input
               label="Skills"
               value={skillsText}
               onChange={setSkillsText}
               placeholder="e.g. React, TypeScript, SQL, Leadership, Public Speaking"
               required
-            />
-          </div>
-
-          {/* T - W: Target Role, Twitter, Website, Years of Experience */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">T - W</h2>
-            <Select
-              label="Target Job Role"
-              value={targetJobRole}
-              onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole('') }}
-              options={jobRoleOptions}
-              placeholder="What role are you aiming for?"
-            />
-            {targetJobRole === 'Other' && (
-              <Input
-                label="Custom Job Role"
-                value={customJobRole}
-                onChange={setCustomJobRole}
-                placeholder="e.g. Growth Hacker, AI Researcher, Prompt Engineer…"
-              />
-            )}
-            <Input
-              label="Twitter / X URL"
-              value={twitterUrl}
-              onChange={setTwitterUrl}
-              placeholder="https://twitter.com/yourusername"
-            />
-            <Input
-              label="Website / Blog URL"
-              value={websiteUrl}
-              onChange={setWebsiteUrl}
-              placeholder="https://yourblog.com"
-            />
-            <Input
-              label="Years of Experience"
-              type="number"
-              value={yearsExperience}
-              onChange={setYearsExperience}
-              placeholder="e.g. 5"
             />
           </div>
 
