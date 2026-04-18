@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Briefcase, Sparkles } from 'lucide-react'
 import JobOffers from '@/components/JobOffers'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export default function JobsPage() {
   const [userProfile, setUserProfile] = useState<{ country: string | null; city: string | null; targetRole: string | null }>({
@@ -15,7 +15,6 @@ export default function JobsPage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       
       if (session?.user) {
