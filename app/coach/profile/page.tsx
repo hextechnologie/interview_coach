@@ -9,6 +9,13 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
 import CoachNavbar from '@/components/CoachNavbar'
 import { marketplaceSpecializations } from '@/lib/coach-marketplace'
+import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
+import EducationCardsSection from '@/components/coach/EducationCardsSection'
+import SkillsSelector from '@/components/coach/SkillsSelector'
+import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
+import EducationCardsSection from '@/components/coach/EducationCardsSection'
+import SkillsSelector from '@/components/coach/SkillsSelector'
+import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 
 export default function CoachProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -22,13 +29,6 @@ export default function CoachProfilePage() {
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [headline, setHeadline] = useState('')
   const [aboutMe, setAboutMe] = useState('')
-  const [experienceList, setExperienceList] = useState<string[]>([])
-  const [experienceInput, setExperienceInput] = useState('')
-  const [hasNoExperience, setHasNoExperience] = useState(false)
-  const [educationList, setEducationList] = useState<string[]>([])
-  const [educationInput, setEducationInput] = useState('')
-  const [projectsDetails, setProjectsDetails] = useState('')
-  const [skillsText, setSkillsText] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
   const [avatarFile,    setAvatarFile]    = useState<File | null>(null)
 
@@ -60,18 +60,6 @@ export default function CoachProfilePage() {
     setLinkedinUrl(profile.linkedin_url ?? '')
     setHeadline((profile as any).professional_headline ?? '')
     setAboutMe((profile as any).about_me ?? '')
-    const exp = (profile as any).experience_details
-    if (exp) {
-      const expList = exp.split('\n').filter((e: string) => e.trim())
-      setExperienceList(expList)
-      setHasNoExperience(expList.length === 0 || exp === 'No experience')
-    }
-    const edu = (profile as any).education_details
-    if (edu) {
-      setEducationList(edu.split('\n').filter((e: string) => e.trim()))
-    }
-    setProjectsDetails((profile as any).projects_details ?? '')
-    setSkillsText(Array.isArray((profile as any).skills) ? (profile as any).skills.join(', ') : '')
     setAvatarPreview(profile.avatar_url ?? '')
 
     // Fetch coach_profiles + specializations
@@ -113,24 +101,6 @@ export default function CoachProfilePage() {
 
   const removeCompany = (c: string) => setCompanies(prev => prev.filter(x => x !== c))
 
-  const addExperience = () => {
-    if (experienceInput.trim() && !experienceList.includes(experienceInput.trim())) {
-      setExperienceList([...experienceList, experienceInput.trim()])
-      setExperienceInput('')
-    }
-  }
-
-  const removeExperience = (exp: string) => setExperienceList(experienceList.filter(e => e !== exp))
-
-  const addEducation = () => {
-    if (educationInput.trim() && !educationList.includes(educationInput.trim())) {
-      setEducationList([...educationList, educationInput.trim()])
-      setEducationInput('')
-    }
-  }
-
-  const removeEducation = (edu: string) => setEducationList(educationList.filter(e => e !== edu))
-
   const toggleSpec = (spec: string) =>
     setSelectedSpecs(prev => prev.includes(spec) ? prev.filter(s => s !== spec) : [...prev, spec])
 
@@ -145,18 +115,6 @@ export default function CoachProfilePage() {
     }
     if (!aboutMe.trim()) {
       setError('About section is required')
-      return
-    }
-    if (!hasNoExperience && experienceList.length === 0) {
-      setError('Please add at least one experience entry or check "I have no experience"')
-      return
-    }
-    if (educationList.length === 0) {
-      setError('Please add at least one education entry')
-      return
-    }
-    if (!skillsText.trim()) {
-      setError('Skills are required')
       return
     }
 
@@ -188,10 +146,6 @@ export default function CoachProfilePage() {
         linkedin_url: linkedinUrl       || null,
         professional_headline: headline.trim(),
         about_me:     aboutMe.trim(),
-        experience_details: hasNoExperience ? 'No experience' : experienceList.join('\n'),
-        education_details: educationList.join('\n'),
-        projects_details: projectsDetails.trim() || null,
-        skills:       skillsText.split(',').map(s => s.trim()).filter(Boolean),
         avatar_url:   avatarUrl,
         updated_at:   new Date().toISOString(),
       }).eq('id', user.id)
@@ -373,88 +327,27 @@ export default function CoachProfilePage() {
                 required
               />
             </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">
-                Experience {!hasNoExperience && <span className="text-red-400">*</span>}
-              </label>
-              <label className="flex items-center gap-2 mb-3 text-sm text-gray-400 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={hasNoExperience}
-                  onChange={(e) => {
-                    setHasNoExperience(e.target.checked)
-                    if (e.target.checked) setExperienceList([])
-                  }}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-purple-600 focus:ring-2 focus:ring-purple-500"
-                />
-                I have no professional experience yet
-              </label>
-              {!hasNoExperience && (
-                <>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {experienceList.map(exp => (
-                      <span key={exp} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-purple-600/20 text-purple-200 border border-purple-500/30">
-                        {exp}
-                        <button type="button" onClick={() => removeExperience(exp)} className="hover:text-white transition-colors">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={experienceInput}
-                      onChange={(e) => setExperienceInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addExperience())}
-                      placeholder="e.g. Senior Engineer at Google (2015-2023)"
-                      className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      style={{ background: '#0a0f1e' }}
-                    />
-                    <Button type="button" onClick={addExperience} variant="outline">Add</Button>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Add each work experience, role, or leadership position separately.</p>
-                </>
-              )}
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Education / Formation <span className="text-red-400">*</span></label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {educationList.map(edu => (
-                  <span key={edu} className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-blue-600/20 text-blue-200 border border-blue-500/30">
-                    {edu}
-                    <button type="button" onClick={() => removeEducation(edu)} className="hover:text-white transition-colors">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={educationInput}
-                  onChange={(e) => setEducationInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addEducation())}
-                  placeholder="e.g. MSc Computer Science - Stanford (2010-2012)"
-                  className="flex-1 rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  style={{ background: '#0a0f1e' }}
-                />
-                <Button type="button" onClick={addEducation} variant="outline">Add</Button>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">Add each degree, certification, training, or notable program separately.</p>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Projects / Achievements</label>
-              <textarea
-                value={projectsDetails}
-                onChange={e => setProjectsDetails(e.target.value)}
-                rows={3}
-                placeholder="Mention major achievements, products shipped, interview programs led, or standout projects..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-              />
-            </div>
-            <Input label="Skills" value={skillsText} onChange={setSkillsText} placeholder="e.g. System Design, Behavioral Interviews, React, Leadership" required />
+          </div>
+
+          {/* Structured Profile Sections */}
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Experience</h2>
+            <ExperienceCardsSection coachId={user.id} />
+          </div>
+
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Education & Certifications</h2>
+            <EducationCardsSection coachId={user.id} userCountry={country || undefined} />
+          </div>
+
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Skills & Expertise</h2>
+            <SkillsSelector coachId={user.id} />
+          </div>
+
+          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Achievements & Highlights</h2>
+            <AchievementsCardsSection coachId={user.id} />
           </div>
 
           {/* Messages */}
