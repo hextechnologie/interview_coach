@@ -54,6 +54,7 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   const [search, setSearch] = useState(targetRole || 'software engineer')
   const [input, setInput] = useState(targetRole || 'software engineer')
   const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [debugInfo, setDebugInfo] = useState<string>('')
 
   // Helper function to calculate location match score (higher = better match)
   const calculateLocationScore = (jobLocation: string): number => {
@@ -100,6 +101,7 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   const fetchJobs = async (query: string) => {
     setLoading(true)
     setError('')
+    setDebugInfo('') // Clear previous debug info
     try {
       // Use our new multi-API integration
       let fetchedJobs = await fetchAllJobs(query)
@@ -110,7 +112,13 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       if (userCountry) {
         console.log(`🌍 Filtering by country: "${userCountry}", city: "${userCity}"`)
         
-        // Log first 5 jobs BEFORE filtering
+        // Sample first 10 jobs to show in debug
+        const sampleJobs = fetchedJobs.slice(0, 10).map(job => ({
+          title: job.title.substring(0, 40),
+          location: job.location,
+          score: calculateLocationScore(job.location)
+        }))
+        
         console.log('BEFORE FILTERING (first 5):')
         fetchedJobs.slice(0, 5).forEach((job, i) => {
           const score = calculateLocationScore(job.location)
@@ -123,11 +131,16 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
         
         console.log(`✅ ${matchingJobs.length} jobs match "${userCountry}", ❌ ${nonMatchingCount} filtered out`)
         
+        // Set debug info for UI display
+        setDebugInfo(`Country: "${userCountry}" | City: "${userCity}" | Total fetched: ${fetchedJobs.length} | Matching: ${matchingJobs.length} | Filtered out: ${nonMatchingCount}
+Sample locations: ${sampleJobs.map((j, i) => `\n${i+1}. "${j.location}" (score: ${j.score})`).join('')}`)
+        
         // If we have matching jobs, use only those. Otherwise show all (fallback)
         if (matchingJobs.length > 0) {
           fetchedJobs = matchingJobs
         } else {
           console.log(`⚠️ No jobs found for "${userCountry}", showing all jobs as fallback`)
+          setDebugInfo(debugInfo + `\n⚠️ NO MATCHES FOUND - Showing all jobs as fallback`)
         }
         
         // Sort by score (city matches first, then country)
@@ -211,6 +224,14 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   // Full-page view
   return (
     <div>
+      {/* Debug Info Banner (only show if filtering is active) */}
+      {debugInfo && (
+        <div className="mb-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 text-xs font-mono text-yellow-200">
+          <div className="font-bold text-yellow-300 mb-2">🐛 DEBUG INFO (Location Filtering)</div>
+          <pre className="whitespace-pre-wrap">{debugInfo}</pre>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
