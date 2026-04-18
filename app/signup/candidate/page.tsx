@@ -49,6 +49,7 @@ export default function CandidateSignupPage() {
   const [currentStatus, setCurrentStatus] = useState('')
   const [statusDetail, setStatusDetail] = useState('')
   const [targetJobRole, setTargetJobRole] = useState('')
+  const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [country, setCountry] = useState('')
   const [city, setCity] = useState('')
@@ -127,6 +128,8 @@ export default function CandidateSignupPage() {
           }
         }
 
+        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
+
         await supabase.from('profiles').update({
           user_type: 'both',
           full_name: fullName,
@@ -135,8 +138,8 @@ export default function CandidateSignupPage() {
           ...(avatarUrl && { avatar_url: avatarUrl }),
           current_status: currentStatus,
           status_detail: statusDetail || null,
-          target_job_role: targetJobRole || null,
-          target_job_field: targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
+          target_job_role: finalJobRole || null,
+          target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
           country: country || null,
           city: city || null,
@@ -190,6 +193,8 @@ export default function CandidateSignupPage() {
           }
         }
 
+        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
+
         await supabase.from('profiles').upsert({
           id: userId,
           email,
@@ -200,8 +205,8 @@ export default function CandidateSignupPage() {
           avatar_url: avatarUrl,
           current_status: currentStatus,
           status_detail: statusDetail || null,
-          target_job_role: targetJobRole || null,
-          target_job_field: targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
+          target_job_role: finalJobRole || null,
+          target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
           country: country || null,
           city: city || null,
@@ -212,7 +217,7 @@ export default function CandidateSignupPage() {
         fetch('/api/welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, firstName: firstName.trim(), userType: 'candidate', targetJobRole }),
+          body: JSON.stringify({ email, firstName: firstName.trim(), userType: 'candidate', targetJobRole: finalJobRole }),
         }).catch(() => {/* non-critical */})
       }
 
@@ -293,10 +298,21 @@ export default function CandidateSignupPage() {
               <Select
                 label="Target Job Role"
                 value={targetJobRole}
-                onChange={setTargetJobRole}
+                onChange={(v) => { setTargetJobRole(v); setCustomJobRole('') }}
                 options={jobRoleOptions}
                 placeholder="What role are you aiming for? (optional)"
               />
+
+              {/* Custom job role input - show when "Other" is selected */}
+              {targetJobRole === 'Other' && (
+                <Input
+                  label="Specify Your Job Role *"
+                  value={customJobRole}
+                  onChange={setCustomJobRole}
+                  placeholder="e.g. Machine Learning Engineer"
+                  required
+                />
+              )}
 
               {targetJobRole && (
                 <Select
