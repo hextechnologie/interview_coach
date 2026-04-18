@@ -11,6 +11,7 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS current_status TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS status_detail TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS target_job_role TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS country TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS region TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS professional_headline TEXT;
@@ -38,6 +39,7 @@ BEGIN
     target_job_field,
     experience_level,
     country,
+    region,
     city,
     linkedin_url
   )
@@ -54,6 +56,7 @@ BEGIN
     new.raw_user_meta_data->>'target_job_role',
     new.raw_user_meta_data->>'target_job_field',
     new.raw_user_meta_data->>'experience_level',
+    new.raw_user_meta_data->>'region',
     new.raw_user_meta_data->>'country',
     new.raw_user_meta_data->>'city',
     new.raw_user_meta_data->>'linkedin_url'

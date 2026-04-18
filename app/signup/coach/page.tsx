@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Camera, Plus, Sparkles, X } from 'lucide-react'
 import { Button, Card, Input, Badge, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
-import { getCountryOptions, getCityOptions } from '@/lib/countries'
+import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
 
 const specializationOptions = ['Tech', 'Finance', 'Marketing', 'Sales', 'Healthcare', 'Operations', 'Design', 'Product']
 
@@ -18,6 +18,7 @@ export default function CoachSignupPage() {
   const [title, setTitle] = useState('')
   const [experience, setExperience] = useState('8')
   const [country, setCountry] = useState('')
+  const [region, setRegion] = useState('')
   const [city, setCity] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>(['Tech'])
   const [companyInput, setCompanyInput] = useState('')
@@ -33,14 +34,28 @@ export default function CoachSignupPage() {
 
   const platformFee = useMemo(() => (price * 0.2).toFixed(0), [price])
 
-  // Get country and city options
+  // Get cascading location options
   const countryOptions = useMemo(() => getCountryOptions(), [])
-  const cityOptions = useMemo(() => getCityOptions(country), [country])
+  const regionOptions = useMemo(() => {
+    if (!country) return []
+    return getRegionsForCountry(country)
+  }, [country])
+  const cityOptions = useMemo(() => {
+    if (!country || !region) return []
+    return getCitiesForRegion(country, region)
+  }, [country, region])
 
-  // Reset city when country changes
+  // Reset region and city when country changes
   const handleCountryChange = (newCountry: string) => {
     setCountry(newCountry)
-    setCity('') // Reset city when country changes
+    setRegion('')
+    setCity('')
+  }
+
+  // Reset city when region changes
+  const handleRegionChange = (newRegion: string) => {
+    setRegion(newRegion)
+    setCity('')
   }
 
   const strength = useMemo(() => {
@@ -71,7 +86,7 @@ export default function CoachSignupPage() {
     setError('')
     setSuccess('')
 
-    if (!firstName.trim() || !email.includes('@') || password.length < 6 || !title.trim() || !country.trim() || !city.trim()) {
+    if (!firstName.trim() || !email.includes('@') || password.length < 6 || !title.trim() || !country.trim() || !region.trim() || !city.trim()) {
       setError('Please complete the required fields.')
       return
     }
@@ -126,6 +141,7 @@ export default function CoachSignupPage() {
           last_name: lastName.trim() || null,
           ...(avatarUrl && { avatar_url: avatarUrl }),
           country: country || null,
+          region: region || null,
           city: city || null,
           linkedin_url: linkedinUrl || null,
           experience_level: Number(experience) >= 8 ? 'senior' : Number(experience) >= 4 ? 'mid' : 'junior',
@@ -299,23 +315,32 @@ export default function CoachSignupPage() {
               </div>
 
               {/* Location */}
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-3">
                 <Select 
                   label="Country *" 
                   value={country} 
                   onChange={handleCountryChange} 
                   options={countryOptions} 
-                  placeholder="Select your country" 
+                  placeholder="Select country" 
                   required 
+                />
+                <Select 
+                  label="Region/State *" 
+                  value={region} 
+                  onChange={handleRegionChange} 
+                  options={regionOptions} 
+                  placeholder={country ? "Select region" : "Select country first"} 
+                  required 
+                  disabled={!country}
                 />
                 <Select 
                   label="City *" 
                   value={city} 
                   onChange={setCity} 
                   options={cityOptions} 
-                  placeholder={country ? "Select your city" : "Select country first"} 
+                  placeholder={region ? "Select city" : "Select region first"} 
                   required 
-                  disabled={!country}
+                  disabled={!region}
                 />
               </div>
 

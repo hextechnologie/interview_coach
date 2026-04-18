@@ -11,7 +11,7 @@ import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
-import { getCountryOptions, getCityOptions, getCitiesForCountry } from '@/lib/countries'
+import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
 
 const statusOptions = [
   { value: 'student',        label: '🎓 Student' },
@@ -50,6 +50,7 @@ export default function ProfilePage() {
   const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [country, setCountry] = useState('')
+  const [region, setRegion] = useState('')
   const [city,    setCity]    = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [headline, setHeadline] = useState('')
@@ -61,27 +62,45 @@ export default function ProfilePage() {
   const [saved,    setSaved]    = useState(false)
   const [error,    setError]    = useState('')
 
-  // Get country and city options
+  // Get cascading location options
   const countryOptions = useMemo(() => getCountryOptions(), [])
+  const regionOptions = useMemo(() => {
+    if (!country) return []
+    const regions = getRegionsForCountry(country)
+    // If current region is set but not in the list (legacy data), add it
+    if (region && !regions.some(opt => opt.value === region)) {
+      return [{ value: region, label: region }, ...regions]
+    }
+    return regions
+  }, [country, region])
   const cityOptions = useMemo(() => {
-    const cities = getCityOptions(country)
+    if (!country || !region) return []
+    const cities = getCitiesForRegion(country, region)
     // If current city is set but not in the list (legacy data), add it
     if (city && !cities.some(opt => opt.value === city)) {
       return [{ value: city, label: city }, ...cities]
     }
     return cities
-  }, [country, city])
+  }, [country, region, city])
 
-  // Reset city when country changes
+  // Reset region and city when country changes
   const handleCountryChange = (newCountry: string) => {
     const oldCountry = country
     setCountry(newCountry)
-    // Only reset city if it's not valid for the new country
+    // Only reset if country actually changed
     if (oldCountry !== newCountry) {
-      const validCities = getCitiesForCountry(newCountry)
-      if (city && !validCities.includes(city)) {
-        setCity('')
-      }
+      setRegion('')
+      setCity('')
+    }
+  }
+
+  // Reset city when region changes
+  const handleRegionChange = (newRegion: string) => {
+    const oldRegion = region
+    setRegion(newRegion)
+    // Only reset city if region actually changed
+    if (oldRegion !== newRegion) {
+      setCity('')
     }
   }
 
@@ -107,6 +126,7 @@ export default function ProfilePage() {
     }
     setExperienceLevel(profile.experience_level ?? '')
     setCountry(profile.country ?? '')
+    setRegion((profile as any).region ?? '')
     setCity(profile.city       ?? '')
     setLinkedinUrl(profile.linkedin_url ?? '')
     setHeadline((profile as any).professional_headline ?? '')
@@ -137,6 +157,10 @@ export default function ProfilePage() {
     }
     if (!country.trim()) {
       setError('Country is required')
+      return
+    }
+    if (!region.trim()) {
+      setError('Region/State is required')
       return
     }
     if (!city.trim()) {
@@ -184,6 +208,7 @@ export default function ProfilePage() {
           target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
           country:         country    || null,
+          region:          region     || null,
           city:            city       || null,
           linkedin_url:    linkedinUrl || null,
           professional_headline: headline.trim(),
@@ -268,23 +293,32 @@ export default function ProfilePage() {
               <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" required />
               <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe" required />
             </div>
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-5 sm:grid-cols-3">
               <Select 
                 label="Country" 
                 value={country} 
                 onChange={handleCountryChange} 
                 options={countryOptions} 
-                placeholder="Select your country" 
+                placeholder="Select country" 
                 required 
+              />
+              <Select 
+                label="Region/State" 
+                value={region} 
+                onChange={handleRegionChange} 
+                options={regionOptions} 
+                placeholder={country ? "Select region" : "Select country first"} 
+                required 
+                disabled={!country}
               />
               <Select 
                 label="City" 
                 value={city} 
                 onChange={setCity} 
                 options={cityOptions} 
-                placeholder={country ? "Select your city" : "Select country first"} 
+                placeholder={region ? "Select city" : "Select region first"} 
                 required 
-                disabled={!country}
+                disabled={!region}
               />
             </div>
             <Input

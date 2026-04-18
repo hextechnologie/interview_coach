@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ArrowLeft, Camera, Sparkles } from 'lucide-react'
 import { Button, Card, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
-import { getCountryOptions, getCityOptions } from '@/lib/countries'
+import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
 
 const jobRoleOptions = [
   { value: 'Software Engineer', label: 'Software Engineer' },
@@ -53,6 +53,7 @@ export default function CandidateSignupPage() {
   const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [country, setCountry] = useState('')
+  const [region, setRegion] = useState('')
   const [city, setCity] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
   const [avatarPreview, setAvatarPreview] = useState('')
@@ -77,14 +78,28 @@ export default function CandidateSignupPage() {
 
   const detailConfig = currentStatus ? statusDetailConfig[currentStatus] : null
 
-  // Get country and city options
+  // Get cascading location options
   const countryOptions = useMemo(() => getCountryOptions(), [])
-  const cityOptions = useMemo(() => getCityOptions(country), [country])
+  const regionOptions = useMemo(() => {
+    if (!country) return []
+    return getRegionsForCountry(country)
+  }, [country])
+  const cityOptions = useMemo(() => {
+    if (!country || !region) return []
+    return getCitiesForRegion(country, region)
+  }, [country, region])
 
-  // Reset city when country changes
+  // Reset region and city when country changes
   const handleCountryChange = (newCountry: string) => {
     setCountry(newCountry)
-    setCity('') // Reset city when country changes
+    setRegion('')
+    setCity('')
+  }
+
+  // Reset city when region changes
+  const handleRegionChange = (newRegion: string) => {
+    setRegion(newRegion)
+    setCity('')
   }
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +114,7 @@ export default function CandidateSignupPage() {
     setError('')
     setSuccess('')
 
-    if (!firstName.trim() || !email.includes('@') || !currentStatus || !country.trim() || !city.trim()) {
+    if (!firstName.trim() || !email.includes('@') || !currentStatus || !country.trim() || !region.trim() || !city.trim()) {
       setError('Please complete all required fields.')
       return
     }
@@ -162,6 +177,7 @@ export default function CandidateSignupPage() {
           target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
           experience_level: experienceLevel || null,
           country: country || null,
+          region: region || null,
           city: city || null,
           linkedin_url: linkedinUrl || null,
         }).eq('id', userId)
@@ -189,6 +205,7 @@ export default function CandidateSignupPage() {
             target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
             experience_level: experienceLevel || null,
             country: country || null,
+            region: region || null,
             city: city || null,
             linkedin_url: linkedinUrl || null,
           },
@@ -351,24 +368,33 @@ export default function CandidateSignupPage() {
                 />
               )}
 
-              {/* Country + City */}
-              <div className="grid gap-5 md:grid-cols-2">
+              {/* Country + Region + City */}
+              <div className="grid gap-5 md:grid-cols-3">
                 <Select 
                   label="Country *" 
                   value={country} 
                   onChange={handleCountryChange} 
                   options={countryOptions} 
-                  placeholder="Select your country" 
+                  placeholder="Select country" 
                   required 
+                />
+                <Select 
+                  label="Region/State *" 
+                  value={region} 
+                  onChange={handleRegionChange} 
+                  options={regionOptions} 
+                  placeholder={country ? "Select region" : "Select country first"} 
+                  required 
+                  disabled={!country}
                 />
                 <Select 
                   label="City *" 
                   value={city} 
                   onChange={setCity} 
                   options={cityOptions} 
-                  placeholder={country ? "Select your city" : "Select country first"} 
+                  placeholder={region ? "Select city" : "Select region first"} 
                   required 
-                  disabled={!country}
+                  disabled={!region}
                 />
               </div>
 
