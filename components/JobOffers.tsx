@@ -22,6 +22,8 @@ export interface RemotiveJob {
 interface Props {
   targetRole?: string
   limit?: number
+  userCountry?: string
+  userCity?: string
   /** if true, renders as a full-page layout with pagination */
   fullPage?: boolean
 }
@@ -43,7 +45,7 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(days / 30)}mo ago`
 }
 
-export default function JobOffers({ targetRole = '', limit = 6, fullPage = false }: Props) {
+export default function JobOffers({ targetRole = '', limit = 6, fullPage = false, userCountry = '', userCity = '' }: Props) {
   const [jobs, setJobs] = useState<RemotiveJob[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -51,16 +53,52 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   const [input, setInput] = useState(targetRole || 'software engineer')
   const [typeFilter, setTypeFilter] = useState<string>('all')
 
-  const fetchJobs = async (query: string) => {
+  // Helper function to calculate city match score (higher = better match)
+  const calculateCityScore = (jobLocation: string): number => {
+    if (!userCountry) return 0
+    
+    const location = jobLocation.toLowerCase()
+    const country = userCountry.toLowerCase()
+    const city = userCity.toLowerCase()
+    
+    // Country must match
+    if (!location.includes(country)) return -1
+    
+    // Exact city match
+    if (city && location.includes(city)) return 100
+    
+    // Same country, different city
+    return 50
+  }
+
+  const fetchJobs = async (query: string) {
     setLoading(true)
     setError('')
     try {
       const res = await fetch(
-        `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(query)}&limit=${fullPage ? 20 : limit}`
+        `https://remotive.com/api/remote-jobs?search=${encodeURIComponent(query)}&limit=50`
       )
       if (!res.ok) throw new Error('Failed to fetch jobs')
       const data = await res.json()
-      setJobs(data.jobs || [])
+      
+      let fetchedJobs = data.jobs || []
+      
+      // Filter by country if user has a country set
+      if (userCountry) {
+        fetchedJobs = fetchedJobs.filter((job: RemotiveJob) => {
+          const score = calculateCityScore(job.candidate_required_location)
+          return score >= 0 // Include only jobs from the same country
+        })
+        
+        // Sort by city proximity (same city first, then same country)
+        fetchedJobs.sort((a: RemotiveJob, b: RemotiveJob) => {
+          const scoreA = calculateCityScore(a.candidate_required_location)
+          const scoreB = calculateCityScore(b.candidate_required_location)
+          return scoreB - scoreA // Higher score first
+        })
+      }
+      
+      setJobs(fetchedJobs)
     } catch {
       setError('Could not load job listings. Please try again later.')
     } finally {
