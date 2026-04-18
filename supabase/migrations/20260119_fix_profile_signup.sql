@@ -56,8 +56,8 @@ BEGIN
     new.raw_user_meta_data->>'target_job_role',
     new.raw_user_meta_data->>'target_job_field',
     new.raw_user_meta_data->>'experience_level',
-    new.raw_user_meta_data->>'region',
     new.raw_user_meta_data->>'country',
+    new.raw_user_meta_data->>'region',
     new.raw_user_meta_data->>'city',
     new.raw_user_meta_data->>'linkedin_url'
   );
