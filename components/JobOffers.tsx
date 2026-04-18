@@ -55,22 +55,22 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
   const [input, setInput] = useState(targetRole || 'software engineer')
   const [typeFilter, setTypeFilter] = useState<string>('all')
 
-  // Helper function to calculate city match score (higher = better match)
-  const calculateCityScore = (jobLocation: string): number => {
+  // Helper function to calculate location match score (higher = better match)
+  const calculateLocationScore = (jobLocation: string): number => {
     if (!userCountry) return 0
     
     const location = jobLocation.toLowerCase()
     const country = userCountry.toLowerCase()
     const city = userCity.toLowerCase()
     
-    // Country must match
-    if (!location.includes(country)) return -1
+    // Exact city match - highest priority
+    if (city && location.includes(city)) return 1000
     
-    // Exact city match
-    if (city && location.includes(city)) return 100
+    // Country match - high priority  
+    if (location.includes(country)) return 500
     
-    // Same country, different city
-    return 50
+    // No match - lower priority but still show
+    return 0
   }
 
   const fetchJobs = async (query: string) => {
@@ -80,17 +80,11 @@ export default function JobOffers({ targetRole = '', limit = 6, fullPage = false
       // Use our new multi-API integration
       let fetchedJobs = await fetchAllJobs(query)
       
-      // Filter by country if user has a country set
+      // Sort by location proximity if user has a country set (France jobs first)
       if (userCountry) {
-        fetchedJobs = fetchedJobs.filter((job: Job) => {
-          const score = calculateCityScore(job.location)
-          return score >= 0 // Include only jobs from the same country
-        })
-        
-        // Sort by city proximity (same city first, then same country)
         fetchedJobs.sort((a: Job, b: Job) => {
-          const scoreA = calculateCityScore(a.location)
-          const scoreB = calculateCityScore(b.location)
+          const scoreA = calculateLocationScore(a.location)
+          const scoreB = calculateLocationScore(b.location)
           return scoreB - scoreA // Higher score first
         })
       }

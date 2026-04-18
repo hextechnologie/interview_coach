@@ -1,11 +1,43 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Briefcase, Sparkles } from 'lucide-react'
 import JobOffers from '@/components/JobOffers'
+import { createClient } from '@/lib/supabase'
 
 export default function JobsPage() {
+  const [userProfile, setUserProfile] = useState<{ country: string | null; city: string | null; targetRole: string | null }>({
+    country: null,
+    city: null,
+    targetRole: null
+  })
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('country, city, target_job_role')
+          .eq('id', session.user.id)
+          .single()
+        
+        if (profile) {
+          setUserProfile({
+            country: profile.country,
+            city: profile.city,
+            targetRole: profile.target_job_role
+          })
+        }
+      }
+    }
+    
+    fetchProfile()
+  }, [])
+
   return (
     <div className="min-h-screen text-white" style={{ background: '#0a0f1e' }}>
       {/* Header */}
@@ -34,11 +66,23 @@ export default function JobsPage() {
           <p className="text-gray-400 max-w-xl">
             Browse thousands of jobs from LinkedIn, Indeed, Glassdoor, Remotive & more — updated daily.
           </p>
+          {userProfile.country && (
+            <p className="text-sm text-purple-400 mt-2">
+              🌍 Prioritizing jobs in <strong>{userProfile.country}</strong>
+              {userProfile.city && <> near <strong>{userProfile.city}</strong></>}
+            </p>
+          )}
         </div>
 
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: '#111827' }}>
           <Suspense fallback={<div className="text-gray-400 text-sm text-center py-10">Loading jobs...</div>}>
-            <JobOffers fullPage limit={20} />
+            <JobOffers 
+              fullPage 
+              limit={20} 
+              userCountry={userProfile.country || ''}
+              userCity={userProfile.city || ''}
+              targetRole={userProfile.targetRole || ''}
+            />
           </Suspense>
         </div>
       </div>
