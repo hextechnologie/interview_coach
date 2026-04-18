@@ -43,7 +43,7 @@ export function CancellationModal({ booking, userRole, onClose, onSuccess }: Can
   const [error, setError] = useState('')
 
   const isFree = userRole === 'candidate' 
-    ? isFreeCancellation(booking.scheduled_at, booking.cancellation_deadline)
+    ? isFreeCancellation(new Date(booking.scheduled_at))
     : false
 
   const creditsCost = booking.credits_cost || 0
