@@ -306,7 +306,7 @@ export default function CandidateSignupPage() {
               {/* Custom job role input - show when "Other" is selected */}
               {targetJobRole === 'Other' && (
                 <Input
-                  label="Specify Your Job Role *"
+                  label="Specify Your Target Role *"
                   value={customJobRole}
                   onChange={setCustomJobRole}
                   placeholder="e.g. Machine Learning Engineer"
