@@ -618,6 +618,55 @@
       "inr": "₹ INR"
     }
   },
+  "faqPage": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about Interview Coach and how it works",
+    "stillHaveQuestions": "Still have questions?",
+    "stillHaveQuestionsDesc": "Can't find the answer you're looking for? Feel free to reach out to our support team.",
+    "contactUs": "Contact Us",
+    "questions": [
+      {
+        "question": "How does the AI interview work?",
+        "answer": "The platform simulates a realistic interview based on your role, level, and interview type. The AI asks questions, reviews your answers, scores your performance, and gives personalized feedback to help you improve quickly."
+      },
+      {
+        "question": "How many free interviews do I get?",
+        "answer": "Free users receive 3 mock interviews each month. You can upgrade at any time if you want more practice sessions and deeper analytics."
+      },
+      {
+        "question": "Can I cancel my subscription anytime?",
+        "answer": "Yes. You can cancel at any time from your billing settings, and your access will remain active until the end of your current billing cycle."
+      },
+      {
+        "question": "What job roles are supported?",
+        "answer": "You can practice for software engineering, product, design, marketing, sales, finance, operations, customer support, and many other professional roles."
+      },
+      {
+        "question": "Is my data private?",
+        "answer": "Yes. Your interview data is stored securely and used only to run your sessions and generate feedback. We do not sell your personal information."
+      },
+      {
+        "question": "How is my score calculated?",
+        "answer": "Your score is based on answer relevance, clarity, structure, confidence, and depth. The AI also checks how well you support your answers with examples and measurable impact."
+      },
+      {
+        "question": "Can I practice in Arabic or other languages?",
+        "answer": "Yes. The app supports Arabic and multiple other languages including English, French, and Spanish, so you can practice in the language you are most comfortable with."
+      },
+      {
+        "question": "How is this different from ChatGPT?",
+        "answer": "Interview Coach is built specifically for interview preparation. It gives structured mock interviews, tracks progress, stores sessions, and provides targeted scoring and coaching rather than general conversation only."
+      },
+      {
+        "question": "Do I need to install anything?",
+        "answer": "No installation is required. You can use the app directly in your browser on desktop or mobile."
+      },
+      {
+        "question": "How do I upgrade my plan?",
+        "answer": "Visit the pricing page, choose the plan that fits your needs, and complete checkout. Your account limits will update automatically after payment."
+      }
+    ]
+  },
   "pricing": {
     "header": {
       "backToDashboard": "Back to Dashboard",

@@ -781,5 +781,54 @@
       "q4": "¿Puedo cambiar entre mensual y anual?",
       "a4": "Absolutamente. Puedes cambiar tu cadencia de facturación cuando tenga sentido para ti."
     }
+  },
+  "faqPage": {
+    "title": "Preguntas Frecuentes",
+    "subtitle": "Todo lo que necesitas saber sobre Interview Coach y cómo funciona",
+    "stillHaveQuestions": "¿Aún tienes preguntas?",
+    "stillHaveQuestionsDesc": "¿No encuentras la respuesta que buscas? No dudes en contactar a nuestro equipo de soporte.",
+    "contactUs": "Contáctanos",
+    "questions": [
+      {
+        "question": "¿Cómo funciona la entrevista con IA?",
+        "answer": "La plataforma simula una entrevista realista basada en tu rol, nivel y tipo de entrevista. La IA hace preguntas, revisa tus respuestas, califica tu desempeño y te brinda retroalimentación personalizada para ayudarte a mejorar rápidamente."
+      },
+      {
+        "question": "¿Cuántas entrevistas gratuitas recibo?",
+        "answer": "Los usuarios gratuitos reciben 3 entrevistas simuladas cada mes. Puedes actualizar en cualquier momento si deseas más sesiones de práctica y análisis más profundos."
+      },
+      {
+        "question": "¿Puedo cancelar mi suscripción en cualquier momento?",
+        "answer": "Sí. Puedes cancelar en cualquier momento desde tu configuración de facturación, y tu acceso permanecerá activo hasta el final de tu ciclo de facturación actual."
+      },
+      {
+        "question": "¿Qué roles de trabajo están soportados?",
+        "answer": "Puedes practicar para ingeniería de software, producto, diseño, marketing, ventas, finanzas, operaciones, atención al cliente y muchos otros roles profesionales."
+      },
+      {
+        "question": "¿Mis datos son privados?",
+        "answer": "Sí. Los datos de tus entrevistas se almacenan de forma segura y se utilizan solo para ejecutar tus sesiones y generar retroalimentación. No vendemos tu información personal."
+      },
+      {
+        "question": "¿Cómo se calcula mi puntuación?",
+        "answer": "Tu puntuación se basa en la relevancia de la respuesta, claridad, estructura, confianza y profundidad. La IA también verifica qué tan bien respaldas tus respuestas con ejemplos e impacto medible."
+      },
+      {
+        "question": "¿Puedo practicar en árabe u otros idiomas?",
+        "answer": "Sí. La aplicación admite árabe y varios otros idiomas, incluidos inglés, francés y español, para que puedas practicar en el idioma con el que te sientas más cómodo."
+      },
+      {
+        "question": "¿En qué se diferencia de ChatGPT?",
+        "answer": "Interview Coach está diseñado específicamente para la preparación de entrevistas. Ofrece entrevistas simuladas estructuradas, rastrea el progreso, almacena sesiones y brinda calificación y coaching específicos en lugar de solo conversación general."
+      },
+      {
+        "question": "¿Necesito instalar algo?",
+        "answer": "No se requiere instalación. Puedes usar la aplicación directamente en tu navegador en computadora o móvil."
+      },
+      {
+        "question": "¿Cómo actualizo mi plan?",
+        "answer": "Visita la página de precios, elige el plan que se ajuste a tus necesidades y completa el pago. Los límites de tu cuenta se actualizarán automáticamente después del pago."
+      }
+    ]
   }
 }

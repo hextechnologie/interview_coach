@@ -781,5 +781,54 @@
       "q4": "Puis-je passer du mensuel à l'annuel ?",
       "a4": "Absolument. Vous pouvez changer votre fréquence de facturation quand cela vous convient."
     }
+  },
+  "faqPage": {
+    "title": "Foire Aux Questions",
+    "subtitle": "Tout ce que vous devez savoir sur Interview Coach et comment ça fonctionne",
+    "stillHaveQuestions": "Vous avez encore des questions ?",
+    "stillHaveQuestionsDesc": "Vous ne trouvez pas la réponse que vous cherchez ? N'hésitez pas à contacter notre équipe d'assistance.",
+    "contactUs": "Nous Contacter",
+    "questions": [
+      {
+        "question": "Comment fonctionne l'entretien IA ?",
+        "answer": "La plateforme simule un entretien réaliste basé sur votre rôle, niveau et type d'entretien. L'IA pose des questions, examine vos réponses, évalue vos performances et vous donne des retours personnalisés pour vous aider à progresser rapidement."
+      },
+      {
+        "question": "Combien d'entretiens gratuits ai-je ?",
+        "answer": "Les utilisateurs gratuits reçoivent 3 entretiens simulés chaque mois. Vous pouvez passer à un plan supérieur à tout moment si vous souhaitez plus de sessions de pratique et des analyses plus approfondies."
+      },
+      {
+        "question": "Puis-je annuler mon abonnement à tout moment ?",
+        "answer": "Oui. Vous pouvez annuler à tout moment depuis vos paramètres de facturation, et votre accès restera actif jusqu'à la fin de votre cycle de facturation actuel."
+      },
+      {
+        "question": "Quels rôles professionnels sont pris en charge ?",
+        "answer": "Vous pouvez vous entraîner pour l'ingénierie logicielle, la gestion de produits, le design, le marketing, les ventes, la finance, les opérations, le support client et de nombreux autres rôles professionnels."
+      },
+      {
+        "question": "Mes données sont-elles privées ?",
+        "answer": "Oui. Vos données d'entretien sont stockées en toute sécurité et utilisées uniquement pour exécuter vos sessions et générer des retours. Nous ne vendons pas vos informations personnelles."
+      },
+      {
+        "question": "Comment mon score est-il calculé ?",
+        "answer": "Votre score est basé sur la pertinence de la réponse, la clarté, la structure, la confiance et la profondeur. L'IA vérifie également dans quelle mesure vous étayez vos réponses avec des exemples et un impact mesurable."
+      },
+      {
+        "question": "Puis-je pratiquer en arabe ou dans d'autres langues ?",
+        "answer": "Oui. L'application prend en charge l'arabe et plusieurs autres langues, notamment l'anglais, le français et l'espagnol, afin que vous puissiez vous entraîner dans la langue avec laquelle vous êtes le plus à l'aise."
+      },
+      {
+        "question": "En quoi est-ce différent de ChatGPT ?",
+        "answer": "Interview Coach est conçu spécifiquement pour la préparation aux entretiens. Il propose des entretiens simulés structurés, suit les progrès, stocke les sessions et fournit une notation et un coaching ciblés plutôt que de simplement avoir une conversation générale."
+      },
+      {
+        "question": "Dois-je installer quelque chose ?",
+        "answer": "Aucune installation n'est requise. Vous pouvez utiliser l'application directement dans votre navigateur sur ordinateur ou mobile."
+      },
+      {
+        "question": "Comment puis-je améliorer mon plan ?",
+        "answer": "Visitez la page des tarifs, choisissez le plan qui correspond à vos besoins et finalisez le paiement. Les limites de votre compte seront automatiquement mises à jour après le paiement."
+      }
+    ]
   }
 }

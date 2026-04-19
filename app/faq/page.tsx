@@ -5,66 +5,18 @@ import Link from 'next/link'
 import { Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { FAQPageSchema } from '@/components/StructuredData'
-
-const faqs = [
-  {
-    question: 'How does the AI interview work?',
-    answer:
-      'The platform simulates a realistic interview based on your role, level, and interview type. The AI asks questions, reviews your answers, scores your performance, and gives personalized feedback to help you improve quickly.',
-  },
-  {
-    question: 'How many free interviews do I get?',
-    answer:
-      'Free users receive 3 mock interviews each month. You can upgrade at any time if you want more practice sessions and deeper analytics.',
-  },
-  {
-    question: 'Can I cancel my subscription anytime?',
-    answer:
-      'Yes. You can cancel at any time from your billing settings, and your access will remain active until the end of your current billing cycle.',
-  },
-  {
-    question: 'What job roles are supported?',
-    answer:
-      'You can practice for software engineering, product, design, marketing, sales, finance, operations, customer support, and many other professional roles.',
-  },
-  {
-    question: 'Is my data private?',
-    answer:
-      'Yes. Your interview data is stored securely and used only to run your sessions and generate feedback. We do not sell your personal information.',
-  },
-  {
-    question: 'How is my score calculated?',
-    answer:
-      'Your score is based on answer relevance, clarity, structure, confidence, and depth. The AI also checks how well you support your answers with examples and measurable impact.',
-  },
-  {
-    question: 'Can I practice in Arabic or other languages?',
-    answer:
-      'Yes. The app supports Arabic and multiple other languages including English, French, and Spanish, so you can practice in the language you are most comfortable with.',
-  },
-  {
-    question: 'How is this different from ChatGPT?',
-    answer:
-      'Interview Coach is built specifically for interview preparation. It gives structured mock interviews, tracks progress, stores sessions, and provides targeted scoring and coaching rather than general conversation only.',
-  },
-  {
-    question: 'Do I need to install anything?',
-    answer:
-      'No installation is required. You can use the app directly in your browser on desktop or mobile.',
-  },
-  {
-    question: 'How do I upgrade my plan?',
-    answer:
-      'Visit the pricing page, choose the plan that fits your needs, and complete checkout. Your account limits will update automatically after payment.',
-  },
-]
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function FAQPage() {
+  const { t } = useLanguage()
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index)
   }
+
+  // Get FAQ questions from translations
+  const faqs = (t('faqPage.questions') as any[]) || []
 
   return (
     <>
@@ -94,9 +46,9 @@ export default function FAQPage() {
         <div className="container mx-auto px-6 py-20">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-5xl font-bold mb-4">Frequently Asked Questions</h1>
+            <h1 className="text-5xl font-bold mb-4">{t('faqPage.title')}</h1>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Everything you need to know about Interview Coach and how it works
+              {t('faqPage.subtitle')}
             </p>
           </div>
 
@@ -129,13 +81,13 @@ export default function FAQPage() {
 
           {/* CTA Section */}
           <div className="mt-16 text-center glass p-8 rounded-2xl max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-3">Still have questions?</h2>
+            <h2 className="text-2xl font-bold mb-3">{t('faqPage.stillHaveQuestions')}</h2>
             <p className="text-gray-400 mb-6">
-              Can't find the answer you're looking for? Feel free to reach out to our support team.
+              {t('faqPage.stillHaveQuestionsDesc')}
             </p>
             <Link href="/contact">
               <Button variant="primary" className="px-8 py-3">
-                Contact Us
+                {t('faqPage.contactUs')}
               </Button>
             </Link>
           </div>
