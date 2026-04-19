@@ -820,7 +820,7 @@ export default function HomePage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="testimonials-light grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {/* T1 */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}

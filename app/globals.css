@@ -233,16 +233,19 @@
   border: 1px solid #e2e8f0;
 }
 
-[data-theme="light"] .testimonial-quote {
+[data-theme="light"] .testimonial-quote,
+[data-theme="light"] .testimonials-light .text-base.text-gray-200 {
   color: #0f172a !important;
 }
 
-[data-theme="light"] .testimonial-name {
+[data-theme="light"] .testimonial-name,
+[data-theme="light"] .testimonials-light .font-bold.text-white {
   color: #0f172a !important;
 }
 
-[data-theme="light"] .testimonial-job {
-  color: #64748b !important;
+[data-theme="light"] .testimonial-job,
+[data-theme="light"] .testimonials-light .text-sm.text-gray-400 {
+  color: #475569 !important;
 }
 
 /* CTA section button */
