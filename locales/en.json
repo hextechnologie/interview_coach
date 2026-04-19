@@ -617,5 +617,171 @@
       "aud": "A$ AUD",
       "inr": "₹ INR"
     }
+  },
+  "pricing": {
+    "header": {
+      "backToDashboard": "Back to Dashboard",
+      "chooseYourPath": "CHOOSE YOUR PATH",
+      "title": "Two Ways to Prepare",
+      "subtitle": "Use AI, work with a real coach, or combine both."
+    },
+    "paths": {
+      "ai": {
+        "emoji": "🤖",
+        "title": "AI Practice Plans",
+        "description": "Unlimited mock interviews, instant feedback, and score tracking. Pick the subscription that fits your pace.",
+        "feature1": "3 free interviews per month — forever",
+        "feature2": "Upgrade for unlimited practice",
+        "feature3": "Works 24/7, any device",
+        "seePlans": "See plans below ↓"
+      },
+      "coach": {
+        "emoji": "👨‍💼",
+        "title": "Coach Sessions",
+        "description": "Book a 1-on-1 session with a real expert from Google, Amazon, McKinsey and more. Pay per session — no subscription needed.",
+        "feature1": "30 min session — from",
+        "feature2": "60 min session — from",
+        "feature3": "90 min session — from",
+        "price30": "$15",
+        "price60": "$30",
+        "price90": "$50",
+        "findCoachButton": "Find a Coach →"
+      },
+      "discount": "💡 Pro plan members get",
+      "discountAmount": "10% off",
+      "discountText": "all coach sessions."
+    },
+    "aiPlans": {
+      "sectionEmoji": "🤖",
+      "sectionTitle": "AI Practice Plans",
+      "sectionSubtitle": "Choose the subscription that fits your interview schedule."
+    },
+    "toggle": {
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "saveBadge": "Save with annual billing"
+    },
+    "currentPlan": {
+      "youAreOn": "You're currently on the",
+      "plan": "plan",
+      "manageSubscription": "Manage Subscription"
+    },
+    "plans": {
+      "mostPopular": "Most Popular",
+      "interviews": "interviews",
+      "perMonth": "/mo",
+      "billedAnnually": "billed annually at the discounted rate",
+      "free": {
+        "name": "Free",
+        "features": [
+          "3 interviews per month",
+          "Basic AI feedback",
+          "Limited job roles",
+          "Score tracking"
+        ]
+      },
+      "basic": {
+        "name": "Basic",
+        "features": [
+          "20 interviews per month",
+          "Detailed AI feedback",
+          "All job roles",
+          "Progress tracking",
+          "Session history",
+          "Email support"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "features": [
+          "Unlimited interviews",
+          "Advanced AI feedback",
+          "All job roles",
+          "Detailed analytics",
+          "Export reports (PDF)",
+          "Priority support",
+          "Custom interview scenarios"
+        ]
+      },
+      "team": {
+        "name": "Team",
+        "features": [
+          "Everything in Pro",
+          "5 team members",
+          "Team analytics dashboard",
+          "Bulk interview scheduling",
+          "API access",
+          "Dedicated account manager",
+          "Custom branding"
+        ]
+      }
+    },
+    "buttons": {
+      "currentPlan": "Current Plan",
+      "getStarted": "Get Started",
+      "subscribe": "Subscribe"
+    },
+    "guarantee": "30-day money back guarantee",
+    "comparison": {
+      "title": "Compare Features",
+      "feature": "Feature",
+      "popular": "Popular",
+      "rows": {
+        "interviews": "Monthly Interviews",
+        "feedback": "AI Feedback Quality",
+        "roles": "Job Roles",
+        "analytics": "Analytics",
+        "history": "Session History",
+        "export": "Export Reports",
+        "support": "Support",
+        "custom": "Custom Scenarios"
+      },
+      "values": {
+        "free": {
+          "interviews": "3/month",
+          "feedback": "Basic",
+          "roles": "Limited",
+          "history": "7 days",
+          "support": "Community"
+        },
+        "basic": {
+          "interviews": "20/month",
+          "feedback": "Detailed",
+          "roles": "All",
+          "analytics": "Basic",
+          "history": "30 days",
+          "support": "Email"
+        },
+        "pro": {
+          "interviews": "Unlimited",
+          "feedback": "Advanced",
+          "roles": "All",
+          "analytics": "Detailed",
+          "history": "Unlimited",
+          "export": "PDF",
+          "support": "Priority"
+        },
+        "team": {
+          "interviews": "Unlimited",
+          "feedback": "Advanced",
+          "roles": "All + Custom",
+          "analytics": "Team Dashboard",
+          "history": "Unlimited",
+          "export": "PDF + CSV",
+          "support": "Dedicated"
+        }
+      }
+    },
+    "faq": {
+      "title": "Pricing FAQ",
+      "q1": "Can I cancel anytime?",
+      "a1": "Yes. You can cancel or change plans whenever you want from your billing portal.",
+      "q2": "Do you offer refunds?",
+      "a2": "Yes. Every paid plan includes a 30-day money back guarantee.",
+      "q3": "What happens when I upgrade?",
+      "a3": "Your interview limits and premium features update automatically after checkout.",
+      "q4": "Can I switch between monthly and annual?",
+      "a4": "Absolutely. You can change your billing cadence whenever it makes sense for you."
+    }
   }
 }

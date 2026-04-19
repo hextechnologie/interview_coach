@@ -615,5 +615,171 @@
       "aud": "A$ AUD",
       "inr": "₹ INR"
     }
+  },
+  "pricing": {
+    "header": {
+      "backToDashboard": "Volver al panel",
+      "chooseYourPath": "ELIGE TU CAMINO",
+      "title": "Dos formas de prepararte",
+      "subtitle": "Usa IA, trabaja con un coach real, o combina ambos."
+    },
+    "paths": {
+      "ai": {
+        "emoji": "🤖",
+        "title": "Planes de práctica IA",
+        "description": "Entrevistas simuladas ilimitadas, retroalimentación instantánea y seguimiento de puntuaciones. Elige la suscripción que se ajuste a tu ritmo.",
+        "feature1": "3 entrevistas gratis por mes — para siempre",
+        "feature2": "Mejora para práctica ilimitada",
+        "feature3": "Funciona 24/7, en cualquier dispositivo",
+        "seePlans": "Ver planes abajo ↓"
+      },
+      "coach": {
+        "emoji": "👨‍💼",
+        "title": "Sesiones con coach",
+        "description": "Reserva una sesión 1-a-1 con un experto real de Google, Amazon, McKinsey y más. Paga por sesión — sin necesidad de suscripción.",
+        "feature1": "Sesión de 30 min — desde",
+        "feature2": "Sesión de 60 min — desde",
+        "feature3": "Sesión de 90 min — desde",
+        "price30": "$15",
+        "price60": "$30",
+        "price90": "$50",
+        "findCoachButton": "Encontrar un coach →"
+      },
+      "discount": "💡 Los miembros del plan Pro obtienen",
+      "discountAmount": "10% de descuento",
+      "discountText": "en todas las sesiones de coaching."
+    },
+    "aiPlans": {
+      "sectionEmoji": "🤖",
+      "sectionTitle": "Planes de práctica IA",
+      "sectionSubtitle": "Elige la suscripción que se ajuste a tu calendario de entrevistas."
+    },
+    "toggle": {
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "saveBadge": "Ahorra con facturación anual"
+    },
+    "currentPlan": {
+      "youAreOn": "Estás actualmente en el plan",
+      "plan": "plan",
+      "manageSubscription": "Gestionar suscripción"
+    },
+    "plans": {
+      "mostPopular": "Más popular",
+      "interviews": "entrevistas",
+      "perMonth": "/mes",
+      "billedAnnually": "facturado anualmente a tarifa con descuento",
+      "free": {
+        "name": "Gratis",
+        "features": [
+          "3 entrevistas por mes",
+          "Retroalimentación IA básica",
+          "Roles de trabajo limitados",
+          "Seguimiento de puntuación"
+        ]
+      },
+      "basic": {
+        "name": "Básico",
+        "features": [
+          "20 entrevistas por mes",
+          "Retroalimentación IA detallada",
+          "Todos los roles de trabajo",
+          "Seguimiento de progreso",
+          "Historial de sesiones",
+          "Soporte por correo"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "features": [
+          "Entrevistas ilimitadas",
+          "Retroalimentación IA avanzada",
+          "Todos los roles de trabajo",
+          "Análisis detallados",
+          "Exportar reportes (PDF)",
+          "Soporte prioritario",
+          "Escenarios de entrevista personalizados"
+        ]
+      },
+      "team": {
+        "name": "Equipo",
+        "features": [
+          "Todo en Pro",
+          "5 miembros del equipo",
+          "Panel de análisis de equipo",
+          "Programación masiva de entrevistas",
+          "Acceso API",
+          "Gestor de cuenta dedicado",
+          "Marca personalizada"
+        ]
+      }
+    },
+    "buttons": {
+      "currentPlan": "Plan actual",
+      "getStarted": "Comenzar",
+      "subscribe": "Suscribirse"
+    },
+    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "comparison": {
+      "title": "Comparar características",
+      "feature": "Característica",
+      "popular": "Popular",
+      "rows": {
+        "interviews": "Entrevistas mensuales",
+        "feedback": "Calidad de retroalimentación IA",
+        "roles": "Roles de trabajo",
+        "analytics": "Análisis",
+        "history": "Historial de sesiones",
+        "export": "Exportar reportes",
+        "support": "Soporte",
+        "custom": "Escenarios personalizados"
+      },
+      "values": {
+        "free": {
+          "interviews": "3/mes",
+          "feedback": "Básico",
+          "roles": "Limitado",
+          "history": "7 días",
+          "support": "Comunidad"
+        },
+        "basic": {
+          "interviews": "20/mes",
+          "feedback": "Detallado",
+          "roles": "Todos",
+          "analytics": "Básico",
+          "history": "30 días",
+          "support": "Correo"
+        },
+        "pro": {
+          "interviews": "Ilimitado",
+          "feedback": "Avanzado",
+          "roles": "Todos",
+          "analytics": "Detallado",
+          "history": "Ilimitado",
+          "export": "PDF",
+          "support": "Prioritario"
+        },
+        "team": {
+          "interviews": "Ilimitado",
+          "feedback": "Avanzado",
+          "roles": "Todos + Personalizado",
+          "analytics": "Panel de equipo",
+          "history": "Ilimitado",
+          "export": "PDF + CSV",
+          "support": "Dedicado"
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes sobre precios",
+      "q1": "¿Puedo cancelar en cualquier momento?",
+      "a1": "Sí. Puedes cancelar o cambiar de plan cuando quieras desde tu portal de facturación.",
+      "q2": "¿Ofrecen reembolsos?",
+      "a2": "Sí. Cada plan de pago incluye una garantía de devolución de dinero de 30 días.",
+      "q3": "¿Qué sucede cuando mejoro mi plan?",
+      "a3": "Tus límites de entrevistas y funciones premium se actualizan automáticamente después del pago.",
+      "q4": "¿Puedo cambiar entre mensual y anual?",
+      "a4": "Absolutamente. Puedes cambiar tu cadencia de facturación cuando tenga sentido para ti."
+    }
   }
 }

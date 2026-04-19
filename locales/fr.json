@@ -615,5 +615,171 @@
       "aud": "A$ AUD",
       "inr": "₹ INR"
     }
+  },
+  "pricing": {
+    "header": {
+      "backToDashboard": "Retour au tableau de bord",
+      "chooseYourPath": "CHOISISSEZ VOTRE CHEMIN",
+      "title": "Deux façons de se préparer",
+      "subtitle": "Utilisez l'IA, travaillez avec un vrai coach, ou combinez les deux."
+    },
+    "paths": {
+      "ai": {
+        "emoji": "🤖",
+        "title": "Plans de pratique IA",
+        "description": "Entretiens simulés illimités, feedback instantané et suivi des scores. Choisissez l'abonnement qui correspond à votre rythme.",
+        "feature1": "3 entretiens gratuits par mois — pour toujours",
+        "feature2": "Passez à la pratique illimitée",
+        "feature3": "Fonctionne 24/7, sur n'importe quel appareil",
+        "seePlans": "Voir les plans ci-dessous ↓"
+      },
+      "coach": {
+        "emoji": "👨‍💼",
+        "title": "Sessions avec un coach",
+        "description": "Réservez une session 1-à-1 avec un vrai expert de Google, Amazon, McKinsey et plus encore. Payez par session — aucun abonnement nécessaire.",
+        "feature1": "Session de 30 min — à partir de",
+        "feature2": "Session de 60 min — à partir de",
+        "feature3": "Session de 90 min — à partir de",
+        "price30": "15$",
+        "price60": "30$",
+        "price90": "50$",
+        "findCoachButton": "Trouver un coach →"
+      },
+      "discount": "💡 Les membres du plan Pro bénéficient de",
+      "discountAmount": "10 % de réduction",
+      "discountText": "sur toutes les sessions de coaching."
+    },
+    "aiPlans": {
+      "sectionEmoji": "🤖",
+      "sectionTitle": "Plans de pratique IA",
+      "sectionSubtitle": "Choisissez l'abonnement qui correspond à votre calendrier d'entretiens."
+    },
+    "toggle": {
+      "monthly": "Mensuel",
+      "annual": "Annuel",
+      "saveBadge": "Économisez avec la facturation annuelle"
+    },
+    "currentPlan": {
+      "youAreOn": "Vous êtes actuellement sur le plan",
+      "plan": "plan",
+      "manageSubscription": "Gérer l'abonnement"
+    },
+    "plans": {
+      "mostPopular": "Le plus populaire",
+      "interviews": "entretiens",
+      "perMonth": "/mois",
+      "billedAnnually": "facturé annuellement au tarif réduit",
+      "free": {
+        "name": "Gratuit",
+        "features": [
+          "3 entretiens par mois",
+          "Feedback IA basique",
+          "Rôles d'emploi limités",
+          "Suivi des scores"
+        ]
+      },
+      "basic": {
+        "name": "Basic",
+        "features": [
+          "20 entretiens par mois",
+          "Feedback IA détaillé",
+          "Tous les rôles d'emploi",
+          "Suivi des progrès",
+          "Historique des sessions",
+          "Support par e-mail"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "features": [
+          "Entretiens illimités",
+          "Feedback IA avancé",
+          "Tous les rôles d'emploi",
+          "Analyses détaillées",
+          "Exportation de rapports (PDF)",
+          "Support prioritaire",
+          "Scénarios d'entretien personnalisés"
+        ]
+      },
+      "team": {
+        "name": "Équipe",
+        "features": [
+          "Tout dans Pro",
+          "5 membres d'équipe",
+          "Tableau de bord analytique d'équipe",
+          "Planification d'entretiens en masse",
+          "Accès API",
+          "Gestionnaire de compte dédié",
+          "Image de marque personnalisée"
+        ]
+      }
+    },
+    "buttons": {
+      "currentPlan": "Plan actuel",
+      "getStarted": "Commencer",
+      "subscribe": "S'abonner"
+    },
+    "guarantee": "Garantie satisfait ou remboursé 30 jours",
+    "comparison": {
+      "title": "Comparer les fonctionnalités",
+      "feature": "Fonctionnalité",
+      "popular": "Populaire",
+      "rows": {
+        "interviews": "Entretiens mensuels",
+        "feedback": "Qualité du feedback IA",
+        "roles": "Rôles d'emploi",
+        "analytics": "Analyses",
+        "history": "Historique des sessions",
+        "export": "Exportation de rapports",
+        "support": "Support",
+        "custom": "Scénarios personnalisés"
+      },
+      "values": {
+        "free": {
+          "interviews": "3/mois",
+          "feedback": "Basique",
+          "roles": "Limité",
+          "history": "7 jours",
+          "support": "Communauté"
+        },
+        "basic": {
+          "interviews": "20/mois",
+          "feedback": "Détaillé",
+          "roles": "Tous",
+          "analytics": "Basique",
+          "history": "30 jours",
+          "support": "E-mail"
+        },
+        "pro": {
+          "interviews": "Illimité",
+          "feedback": "Avancé",
+          "roles": "Tous",
+          "analytics": "Détaillé",
+          "history": "Illimité",
+          "export": "PDF",
+          "support": "Prioritaire"
+        },
+        "team": {
+          "interviews": "Illimité",
+          "feedback": "Avancé",
+          "roles": "Tous + Personnalisé",
+          "analytics": "Tableau d'équipe",
+          "history": "Illimité",
+          "export": "PDF + CSV",
+          "support": "Dédié"
+        }
+      }
+    },
+    "faq": {
+      "title": "FAQ Tarifs",
+      "q1": "Puis-je annuler à tout moment ?",
+      "a1": "Oui. Vous pouvez annuler ou changer de plan quand vous le souhaitez depuis votre portail de facturation.",
+      "q2": "Proposez-vous des remboursements ?",
+      "a2": "Oui. Chaque plan payant comprend une garantie satisfait ou remboursé de 30 jours.",
+      "q3": "Que se passe-t-il lorsque je passe à un plan supérieur ?",
+      "a3": "Vos limites d'entretien et vos fonctionnalités premium sont automatiquement mises à jour après le paiement.",
+      "q4": "Puis-je passer du mensuel à l'annuel ?",
+      "a4": "Absolument. Vous pouvez changer votre fréquence de facturation quand cela vous convient."
+    }
   }
 }
