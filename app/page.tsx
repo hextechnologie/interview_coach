@@ -1216,6 +1216,7 @@ export default function HomePage() {
 
 // Stats Section Component with count-up animations
 function StatsSection() {
+  const { t } = useLanguage()
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
