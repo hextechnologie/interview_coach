@@ -9,12 +9,9 @@ import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachExperience, ExperienceFormData, EmploymentType } from '@/lib/types/profile'
 import { MONTHS, YEARS, EMPLOYMENT_TYPES, JOB_TITLES, COMPANIES } from '@/lib/types/profile'
 
-const LOCATION_SUGGESTIONS = Array.from(new Set([
-  'Remote',
-  'Hybrid',
-  'On-site',
-  ...COUNTRIES.flatMap((country) => country.cities.map((city) => `${city}, ${country.label}`)),
-]))
+const LOCATION_SUGGESTIONS = Array.from(new Set(
+  COUNTRIES.flatMap((country) => country.cities.map((city) => `${city}, ${country.label}`))
+))
 
 
 interface ExperienceCardsSectionProps {
@@ -255,6 +252,7 @@ function ExperienceModal({
   const [jobTitleSuggestions, setJobTitleSuggestions] = useState<string[]>([])
   const [companySuggestions, setCompanySuggestions] = useState<string[]>([])
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([])
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ExperienceFormData, string>> = {}
@@ -345,8 +343,10 @@ function ExperienceModal({
         location.toLowerCase().includes(query)
       ).slice(0, 6)
       setLocationSuggestions(suggestions)
+      setShowLocationSuggestions(true)
     } else {
-      setLocationSuggestions(LOCATION_SUGGESTIONS.slice(0, 6))
+      setLocationSuggestions([])
+      setShowLocationSuggestions(false)
     }
   }
 
@@ -480,19 +480,33 @@ function ExperienceModal({
               type="text"
               value={formData.location || ''}
               onChange={(e) => handleLocationChange(e.target.value)}
-              onFocus={() => setLocationSuggestions(formData.location ? LOCATION_SUGGESTIONS.filter((location) => location.toLowerCase().includes((formData.location || '').toLowerCase())).slice(0, 6) : LOCATION_SUGGESTIONS.slice(0, 6))}
+              onFocus={() => {
+                const query = (formData.location || '').trim().toLowerCase()
+                if (query.length > 0) {
+                  const suggestions = LOCATION_SUGGESTIONS.filter((location) =>
+                    location.toLowerCase().includes(query)
+                  ).slice(0, 6)
+                  setLocationSuggestions(suggestions)
+                  setShowLocationSuggestions(suggestions.length > 0)
+                }
+              }}
+              onBlur={() => {
+                window.setTimeout(() => setShowLocationSuggestions(false), 150)
+              }}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
               placeholder={t('profile.experienceSection.modal.locationPlaceholder')}
             />
-            {locationSuggestions.length > 0 && (
+            {showLocationSuggestions && locationSuggestions.length > 0 && (
               <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-52 overflow-y-auto">
                 {locationSuggestions.map((location) => (
                   <button
                     key={location}
                     type="button"
-                    onClick={() => {
+                    onMouseDown={(e) => {
+                      e.preventDefault()
                       setFormData({ ...formData, location })
                       setLocationSuggestions([])
+                      setShowLocationSuggestions(false)
                     }}
                     className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition"
                   >
