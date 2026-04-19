@@ -280,8 +280,8 @@
 
 /* Animated gradient backgrounds - theme specific colors */
 .section-gradient-bg {
-  /* Dark mode: even darker navy-purple */
-  background-image: linear-gradient(135deg, rgba(30, 5, 60, 0.72), rgba(2, 6, 23, 0.985), rgba(15, 23, 65, 0.72)) !important;
+  /* Dark mode: slightly lighter navy-purple */
+  background-image: linear-gradient(135deg, rgba(38, 8, 78, 0.64), rgba(4, 8, 28, 0.97), rgba(20, 30, 78, 0.64)) !important;
 }
 
 [data-theme="light"] .section-gradient-bg {
