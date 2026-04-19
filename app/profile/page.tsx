@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Sparkles, CheckCircle, Loader2, Globe, Clock, DollarSign, Calendar, Key, Bell, Trash2, Briefcase, Building, GraduationCap, Wrench, Trophy } from 'lucide-react'
-import { Button, Input, Select } from '@/components/ui'
+import { Button, Input, Select, Toggle } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
 import ProfileCompletionBar from '@/components/ProfileCompletionBar'
@@ -165,6 +165,12 @@ export default function ProfilePage() {
     if (!authLoading && !user) router.push('/login')
   }, [user, authLoading, router])
 
+  // Auto-detect timezone from browser on mount
+  useEffect(() => {
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    setTimezone(browserTimezone)
+  }, [])
+
   // Pre-fill form from profile
   useEffect(() => {
     if (!profile) return
@@ -174,7 +180,7 @@ export default function ProfilePage() {
     setCountry(profile.country || '')
     setRegion((profile as any).region || '')
     setCity(profile.city || '')
-    setTimezone((profile as any).timezone || '')
+    setTimezone((profile as any).timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)
     setLinkedinUrl(profile.linkedin_url || '')
     setBio((profile as any).bio || '')
     setAvatarUrl(profile.avatar_url || '')
@@ -344,7 +350,67 @@ export default function ProfilePage() {
       // Clear draft from localStorage
       localStorage.removeItem(`profile-draft-${user.id}`)
       
-      setTimeout(() => setSaved(false), 3000)
+      // Reload profile data from Supabase to get latest values and recalculate completion
+      const { data: updatedProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      
+      // Pre-fill form with updated data (this will trigger profile completion recalculation)
+      if (updatedProfile) {
+        setFirstName(updatedProfile.first_name || '')
+        setLastName(updatedProfile.last_name || '')
+        setCountry(updatedProfile.country || '')
+        setRegion(updatedProfile.region || '')
+        setCity(updatedProfile.city || '')
+        setTimezone(updatedProfile.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)
+        setLinkedinUrl(updatedProfile.linkedin_url || '')
+        setBio(updatedProfile.bio || '')
+        setAvatarUrl(updatedProfile.avatar_url || '')
+        
+        setCurrentStatus(updatedProfile.current_status || '')
+        setStatusDetail(updatedProfile.status_detail || '')
+        
+        const savedRole = updatedProfile.target_job_role || ''
+        const isKnownRole = jobRoleOptions.some(o => o.value === savedRole)
+        if (isKnownRole || savedRole === '') {
+          setTargetJobRole(savedRole)
+        } else {
+          setTargetJobRole('Other')
+          setCustomJobRole(savedRole)
+        }
+        
+        setExperienceLevel(updatedProfile.experience_level || '')
+        setYearsOfExperience(updatedProfile.years_of_experience || '')
+        
+        // Work type preferences
+        const workTypes = updatedProfile.work_type_preferences || []
+        setWorkTypeRemote(workTypes.includes('Remote'))
+        setWorkTypeHybrid(workTypes.includes('Hybrid'))
+        setWorkTypeOnsite(workTypes.includes('On-site'))
+        
+        setSalaryMin(updatedProfile.salary_min ? String(updatedProfile.salary_min) : '')
+        setSalaryMax(updatedProfile.salary_max ? String(updatedProfile.salary_max) : '')
+        setSalaryCurrency(updatedProfile.salary_currency || 'USD')
+        setAvailableFrom(updatedProfile.available_from || '')
+        setPreferredJobLocation(updatedProfile.preferred_job_location || '')
+        
+        // Social URLs
+        setPortfolioUrl(updatedProfile.portfolio_url || '')
+        setGithubUrl(updatedProfile.github_url || '')
+        setBehanceUrl(updatedProfile.behance_url || '')
+        setDribbbleUrl(updatedProfile.dribbble_url || '')
+        setTwitterUrl(updatedProfile.twitter_url || '')
+        
+        // Notifications
+        setNotifyCoachMessage(updatedProfile.notification_coach_message !== false)
+        setNotifySessionReminder(updatedProfile.notification_session_reminder !== false)
+        setNotifyJobOffers(updatedProfile.notification_job_offers !== false)
+        setNotifyWeeklyReport(updatedProfile.notification_weekly_report === true)
+      }
+      
+      setTimeout(() => setSaved(false), 5000)
     } catch (err: any) {
       setError(err.message || 'Failed to save profile. Please try again.')
     } finally {
@@ -445,14 +511,16 @@ export default function ProfilePage() {
                     value={firstName} 
                     onChange={handleFirstNameChange} 
                     placeholder="Jane" 
-                    required 
+                    required
+                    style={{ textTransform: 'capitalize' }}
                   />
                   <Input 
                     label="Last Name" 
                     value={lastName} 
                     onChange={handleLastNameChange} 
                     placeholder="Doe" 
-                    required 
+                    required
+                    style={{ textTransform: 'capitalize' }}
                   />
                 </div>
 
@@ -462,7 +530,7 @@ export default function ProfilePage() {
                     value={country}
                     onChange={handleCountryChange} 
                     options={countryOptions} 
-                    placeholder="Select country" 
+                    placeholder={country ? undefined : "Select country"}
                     required 
                   />
                   <Select 
@@ -470,7 +538,7 @@ export default function ProfilePage() {
                     value={region} 
                     onChange={handleRegionChange} 
                     options={regionOptions} 
-                    placeholder={country ? "Select region" : "Select country first"} 
+                    placeholder={country ? (region ? undefined : "Select region") : "Select country first"}
                     required 
                     disabled={!country}
                   />
@@ -479,7 +547,7 @@ export default function ProfilePage() {
                     value={city} 
                     onChange={(v) => { setCity(v); setHasUnsaved(true) }} 
                     options={cityOptions} 
-                    placeholder={region ? "Select city" : "Select region first"} 
+                    placeholder={region ? (city ? undefined : "Select city") : "Select region first"}
                     required 
                     disabled={!region}
                   />
@@ -492,9 +560,9 @@ export default function ProfilePage() {
                       label="Timezone"
                       value={timezone}
                       onChange={(v) => { setTimezone(v); setHasUnsaved(true) }}
-                      placeholder="America/New_York"
+                      placeholder={Intl.DateTimeFormat().resolvedOptions().timeZone}
                     />
-                    <p className="text-xs text-gray-400 mt-1">Auto-detected from country. Important for scheduling coach sessions.</p>
+                    <p className="text-xs text-gray-400 mt-1">Auto-detected from your browser. Important for scheduling coach sessions.</p>
                   </div>
                 </div>
 
@@ -678,13 +746,32 @@ export default function ProfilePage() {
                     <label className="mb-2 block text-sm font-medium text-gray-200">
                       Available From
                     </label>
-                    <input
-                      type="date"
-                      value={availableFrom}
-                      onChange={(e) => { setAvailableFrom(e.target.value); setHasUnsaved(true) }}
-                      className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      style={{ background: '#0a0f1e' }}
-                    />
+                    <div className="space-y-2">
+                      <Select
+                        value={availableFrom === 'immediately' || !availableFrom ? 'immediately' : 'specific'}
+                        onChange={(val) => {
+                          if (val === 'immediately') {
+                            setAvailableFrom('immediately')
+                            setHasUnsaved(true)
+                          } else {
+                            setAvailableFrom('')
+                          }
+                        }}
+                        options={[
+                          { value: 'immediately', label: '✅ Immediately' },
+                          { value: 'specific', label: '📅 Specific Date' },
+                        ]}
+                      />
+                      {availableFrom !== 'immediately' && availableFrom !== '' && (
+                        <input
+                          type="date"
+                          value={availableFrom}
+                          onChange={(e) => { setAvailableFrom(e.target.value); setHasUnsaved(true) }}
+                          className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          style={{ background: '#0a0f1e' }}
+                        />
+                      )}
+                    </div>
                   </div>
                   
                   <Input
@@ -843,42 +930,34 @@ export default function ProfilePage() {
                     Notification Preferences
                   </label>
                   <div className="space-y-3">
-                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
                       <span className="text-sm text-gray-200">New coach message</span>
-                      <input
-                        type="checkbox"
+                      <Toggle
                         checked={notifyCoachMessage}
-                        onChange={(e) => { setNotifyCoachMessage(e.target.checked); setHasUnsaved(true) }}
-                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                        onChange={(checked) => { setNotifyCoachMessage(checked); setHasUnsaved(true) }}
                       />
-                    </label>
-                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
                       <span className="text-sm text-gray-200">Session reminder (1 hour before)</span>
-                      <input
-                        type="checkbox"
+                      <Toggle
                         checked={notifySessionReminder}
-                        onChange={(e) => { setNotifySessionReminder(e.target.checked); setHasUnsaved(true) }}
-                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                        onChange={(checked) => { setNotifySessionReminder(checked); setHasUnsaved(true) }}
                       />
-                    </label>
-                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
                       <span className="text-sm text-gray-200">New job offers matching profile</span>
-                      <input
-                        type="checkbox"
+                      <Toggle
                         checked={notifyJobOffers}
-                        onChange={(e) => { setNotifyJobOffers(e.target.checked); setHasUnsaved(true) }}
-                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                        onChange={(checked) => { setNotifyJobOffers(checked); setHasUnsaved(true) }}
                       />
-                    </label>
-                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
                       <span className="text-sm text-gray-200">Weekly progress report</span>
-                      <input
-                        type="checkbox"
+                      <Toggle
                         checked={notifyWeeklyReport}
-                        onChange={(e) => { setNotifyWeeklyReport(e.target.checked); setHasUnsaved(true) }}
-                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                        onChange={(checked) => { setNotifyWeeklyReport(checked); setHasUnsaved(true) }}
                       />
-                    </label>
+                    </div>
                   </div>
                 </div>
 
@@ -896,8 +975,9 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setShowDeleteModal(true)}
-                    className="w-full px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition-colors"
+                    className="w-full px-4 py-2.5 rounded-lg bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
                   >
+                    <Trash2 className="w-4 h-4" />
                     Delete Account
                   </button>
                 </div>

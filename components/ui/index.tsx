@@ -73,6 +73,7 @@ type InputProps = {
   required?: boolean
   error?: string
   disabled?: boolean
+  style?: React.CSSProperties
 }
 
 export function Input({
@@ -84,6 +85,7 @@ export function Input({
   required = false,
   error,
   disabled = false,
+  style,
 }: InputProps) {
   return (
     <div className="w-full">
@@ -100,6 +102,7 @@ export function Input({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
+        style={style}
         className={`w-full px-4 py-3 bg-background border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 ${error ? 'border-red-500' : 'border-border'}`}
       />
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
@@ -178,5 +181,31 @@ export function Badge({ children, variant = 'default', className = '' }: { child
     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${variants[variant]} ${className}`}>
       {children}
     </span>
+  )
+}
+
+type ToggleProps = {
+  checked: boolean
+  onChange: (checked: boolean) => void
+  label?: string
+}
+
+export function Toggle({ checked, onChange, label }: ToggleProps) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+        checked ? 'bg-purple-600' : 'bg-gray-600'
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          checked ? 'translate-x-6' : 'translate-x-1'
+        }`}
+      />
+    </button>
   )
 }

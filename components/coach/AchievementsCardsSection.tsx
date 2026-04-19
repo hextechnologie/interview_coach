@@ -90,10 +90,7 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-white">Achievements & Highlights</h3>
-          <p className="text-sm text-gray-400">Showcase your accomplishments</p>
-        </div>
+        <p className="text-sm text-gray-400">Showcase your accomplishments</p>
         <button
           onClick={openAddModal}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"

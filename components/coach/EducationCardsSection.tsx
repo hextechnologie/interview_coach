@@ -86,10 +86,7 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-white">Education & Certifications</h3>
-          <p className="text-sm text-gray-400">{educations.length} {educations.length === 1 ? 'entry' : 'entries'} added</p>
-        </div>
+        <p className="text-sm text-gray-400">{educations.length} {educations.length === 1 ? 'entry' : 'entries'} added</p>
         <button
           onClick={handleAddClick}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition"

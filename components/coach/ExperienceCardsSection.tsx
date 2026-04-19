@@ -76,10 +76,7 @@ export default function ExperienceCardsSection({ coachId, userId }: ExperienceCa
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-white">Work Experience</h3>
-          <p className="text-sm text-gray-400">{experiences.length} experience{experiences.length !== 1 ? 's' : ''} added</p>
-        </div>
+        <p className="text-sm text-gray-400">{experiences.length} experience{experiences.length !== 1 ? 's' : ''} added</p>
         <button
           onClick={handleAddClick}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition"
