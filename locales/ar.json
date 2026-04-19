@@ -1386,5 +1386,55 @@
     "errors": {
       "bioRequired": "السيرة الذاتية مطلوبة"
     }
+  },
+  "coachAvailability": {
+    "pageTitle": "توافر المدرب",
+    "pageDescription": "حدد التوفر المتكرر، احجب التواريخ، وأضف وقت فاصل بين الجلسات.",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "saveSuccess": "✓ تم حفظ التوفر بنجاح!",
+    "weeklyCalendarTitle": "شبكة التقويم الأسبوعي",
+    "saveAvailability": "حفظ التوفر",
+    "available": "متاح",
+    "notAvailable": "—",
+    "days": {
+      "monday": "الإثنين",
+      "tuesday": "الثلاثاء",
+      "wednesday": "الأربعاء",
+      "thursday": "الخميس",
+      "friday": "الجمعة",
+      "saturday": "السبت"
+    },
+    "recurringTitle": "إعدادات التكرار",
+    "everyDay": "كل",
+    "setRecurring": "تعيين التوفر المتكرر",
+    "blockDatesTitle": "حجب تواريخ محددة",
+    "blockedLabel": "محجوب:",
+    "bufferTitle": "وقت الفاصل بين الجلسات",
+    "currentBuffer": "الفاصل الحالي:",
+    "minutesBetween": "دقيقة بين الجلسات",
+    "modal": {
+      "title": "تعيين التوفر المتكرر",
+      "close": "إغلاق",
+      "addRule": "إضافة قاعدة",
+      "dayLabel": "اليوم",
+      "fromLabel": "من",
+      "toLabel": "إلى",
+      "addRuleButton": "+ إضافة قاعدة",
+      "cancel": "إلغاء",
+      "apply": "تطبيق على التقويم"
+    }
+  },
+  "coachMessages": {
+    "pageTitle": "الرسائل",
+    "noConversations": "لا توجد محادثات بعد.",
+    "noConversationsDesc": "تظهر المحادثات عندما ترسل أنت أو المرشح رسالة.",
+    "candidate": "المرشح",
+    "noMessages": "لا توجد رسائل بعد. قل مرحباً! 👋",
+    "typeMessage": "اكتب رسالة...",
+    "send": "إرسال",
+    "attachFile": "إرفاق ملف (سيرة ذاتية، خطاب تغطية)",
+    "selectConversation": "حدد محادثة لبدء المراسلة",
+    "loadingConversations": "جاري تحميل المحادثات...",
+    "sendingMessage": "جاري الإرسال..."
   }
 }

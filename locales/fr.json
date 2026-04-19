@@ -1386,5 +1386,55 @@ Locations": "Tous les Lieux",
     "errors": {
       "bioRequired": "La biographie est requise"
     }
+  },
+  "coachAvailability": {
+    "pageTitle": "Disponibilité du coach",
+    "pageDescription": "Définir la disponibilité récurrente, bloquer des dates et ajouter du temps tampon entre les sessions.",
+    "backToDashboard": "Retour au tableau de bord",
+    "saveSuccess": "✓ Disponibilité enregistrée avec succès !",
+    "weeklyCalendarTitle": "Grille de calendrier hebdomadaire",
+    "saveAvailability": "Enregistrer la disponibilité",
+    "available": "Disponible",
+    "notAvailable": "—",
+    "days": {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi"
+    },
+    "recurringTitle": "Paramètres récurrents",
+    "everyDay": "Chaque",
+    "setRecurring": "Définir la disponibilité récurrente",
+    "blockDatesTitle": "Bloquer des dates spécifiques",
+    "blockedLabel": "Bloqué :",
+    "bufferTitle": "Temps tampon entre sessions",
+    "currentBuffer": "Tampon actuel :",
+    "minutesBetween": "minutes entre les sessions",
+    "modal": {
+      "title": "Définir la disponibilité récurrente",
+      "close": "Fermer",
+      "addRule": "Ajouter une règle",
+      "dayLabel": "Jour",
+      "fromLabel": "De",
+      "toLabel": "À",
+      "addRuleButton": "+ Ajouter une règle",
+      "cancel": "Annuler",
+      "apply": "Appliquer au calendrier"
+    }
+  },
+  "coachMessages": {
+    "pageTitle": "Messages",
+    "noConversations": "Aucune conversation pour le moment.",
+    "noConversationsDesc": "Les conversations apparaissent lorsque vous ou un candidat envoyez un message.",
+    "candidate": "Candidat",
+    "noMessages": "Aucun message pour le moment. Dites bonjour ! 👋",
+    "typeMessage": "Tapez un message...",
+    "send": "Envoyer",
+    "attachFile": "Joindre un fichier (CV, lettre de motivation)",
+    "selectConversation": "Sélectionnez une conversation pour commencer à échanger",
+    "loadingConversations": "Chargement des conversations...",
+    "sendingMessage": "Envoi en cours..."
   }
 }

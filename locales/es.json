@@ -1384,5 +1384,55 @@
     "errors": {
       "bioRequired": "La biografía es obligatoria"
     }
+  },
+  "coachAvailability": {
+    "pageTitle": "Disponibilidad del coach",
+    "pageDescription": "Establece disponibilidad recurrente, bloquea fechas y añade tiempo de margen entre sesiones.",
+    "backToDashboard": "Volver al panel de control",
+    "saveSuccess": "✓ ¡Disponibilidad guardada con éxito!",
+    "weeklyCalendarTitle": "Calendario semanal",
+    "saveAvailability": "Guardar disponibilidad",
+    "available": "Disponible",
+    "notAvailable": "—",
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado"
+    },
+    "recurringTitle": "Configuración recurrente",
+    "everyDay": "Cada",
+    "setRecurring": "Establecer disponibilidad recurrente",
+    "blockDatesTitle": "Bloquear fechas específicas",
+    "blockedLabel": "Bloqueado:",
+    "bufferTitle": "Tiempo de margen entre sesiones",
+    "currentBuffer": "Margen actual:",
+    "minutesBetween": "minutos entre sesiones",
+    "modal": {
+      "title": "Establecer disponibilidad recurrente",
+      "close": "Cerrar",
+      "addRule": "Agregar regla",
+      "dayLabel": "Día",
+      "fromLabel": "Desde",
+      "toLabel": "Hasta",
+      "addRuleButton": "+ Agregar regla",
+      "cancel": "Cancelar",
+      "apply": "Aplicar al calendario"
+    }
+  },
+  "coachMessages": {
+    "pageTitle": "Mensajes",
+    "noConversations": "No hay conversaciones todavía.",
+    "noConversationsDesc": "Las conversaciones aparecen cuando tú o un candidato envía un mensaje.",
+    "candidate": "Candidato",
+    "noMessages": "No hay mensajes todavía. ¡Di hola! 👋",
+    "typeMessage": "Escribe un mensaje...",
+    "send": "Enviar",
+    "attachFile": "Adjuntar archivo (CV, carta de presentación)",
+    "selectConversation": "Selecciona una conversación para comenzar a enviar mensajes",
+    "loadingConversations": "Cargando conversaciones...",
+    "sendingMessage": "Enviando..."
   }
 }

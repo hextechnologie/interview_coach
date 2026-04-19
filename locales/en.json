@@ -1386,5 +1386,55 @@
     "errors": {
       "bioRequired": "Bio is required"
     }
+  },
+  "coachAvailability": {
+    "pageTitle": "Coach availability",
+    "pageDescription": "Set recurring availability, block dates, and add buffer time between sessions.",
+    "backToDashboard": "Back to dashboard",
+    "saveSuccess": "✓ Availability saved successfully!",
+    "weeklyCalendarTitle": "Weekly calendar grid",
+    "saveAvailability": "Save availability",
+    "available": "Available",
+    "notAvailable": "—",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "recurringTitle": "Recurring settings",
+    "everyDay": "Every",
+    "setRecurring": "Set recurring availability",
+    "blockDatesTitle": "Block specific dates",
+    "blockedLabel": "Blocked:",
+    "bufferTitle": "Session buffer time",
+    "currentBuffer": "Current buffer:",
+    "minutesBetween": "minutes between sessions",
+    "modal": {
+      "title": "Set recurring availability",
+      "close": "Close",
+      "addRule": "Add rule",
+      "dayLabel": "Day",
+      "fromLabel": "From",
+      "toLabel": "To",
+      "addRuleButton": "+ Add rule",
+      "cancel": "Cancel",
+      "apply": "Apply to calendar"
+    }
+  },
+  "coachMessages": {
+    "pageTitle": "Messages",
+    "noConversations": "No conversations yet.",
+    "noConversationsDesc": "Conversations appear when you or a candidate sends a message.",
+    "candidate": "Candidate",
+    "noMessages": "No messages yet. Say hello! 👋",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "attachFile": "Attach file (CV, cover letter)",
+    "selectConversation": "Select a conversation to start messaging",
+    "loadingConversations": "Loading conversations...",
+    "sendingMessage": "Sending..."
   }
 }

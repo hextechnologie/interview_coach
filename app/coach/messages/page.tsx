@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import { supabase, getFirstName } from '@/lib/supabase'
 import CoachNavbar from '@/components/CoachNavbar'
 import { Button, LoadingSpinner } from '@/components/ui'
@@ -29,6 +30,7 @@ type Conversation = {
 
 function MessagesContent() {
   const { user, profile } = useAuth()
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const initialCandidate = searchParams.get('candidate')
 
@@ -145,13 +147,13 @@ function MessagesContent() {
       {/* Sidebar */}
       <div className="w-72 border-r border-white/10 flex flex-col shrink-0" style={{ background: '#111827' }}>
         <div className="p-4 border-b border-white/10">
-          <h2 className="font-bold text-lg">Messages</h2>
+          <h2 className="font-bold text-lg">{t('coachMessages.pageTitle')}</h2>
         </div>
         {loadingConvos ? (
           <div className="flex-1 flex items-center justify-center"><LoadingSpinner size="sm" /></div>
         ) : conversations.length === 0 ? (
           <div className="flex-1 flex items-center justify-center p-4 text-center text-gray-500 text-sm">
-            No conversations yet.<br />Conversations appear when you or a candidate sends a message.
+            {t('coachMessages.noConversations')}<br />{t('coachMessages.noConversationsDesc')}
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto">
@@ -189,14 +191,14 @@ function MessagesContent() {
             </div>
             <div>
               <p className="font-semibold text-sm">{selectedConvo?.full_name || selectedConvo?.email}</p>
-              <p className="text-xs text-gray-400">Candidate</p>
+              <p className="text-xs text-gray-400">{t('coachMessages.candidate')}</p>
             </div>
           </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-5 space-y-3" style={{ background: '#0a0f1e' }}>
             {messages.length === 0 && (
-              <div className="text-center text-gray-500 text-sm py-12">No messages yet. Say hello! 👋</div>
+              <div className="text-center text-gray-500 text-sm py-12">{t('coachMessages.noMessages')}</div>
             )}
             {messages.map((m) => {
               const isMe = m.sender_id === user?.id
@@ -227,7 +229,7 @@ function MessagesContent() {
               <button
                 onClick={() => fileRef.current?.click()}
                 className="p-2 rounded-lg border border-white/10 text-gray-400 hover:border-purple-500/40 hover:text-purple-400 transition-colors shrink-0"
-                title="Attach file (CV, cover letter)"
+                title={t('coachMessages.attachFile')}
               >
                 <Paperclip className="w-4 h-4" />
               </button>
@@ -236,7 +238,7 @@ function MessagesContent() {
                 value={newMsg}
                 onChange={(e) => setNewMsg(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
-                placeholder="Type a message..."
+                placeholder={t('coachMessages.typeMessage')}
                 className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none focus:border-purple-500/40 transition-colors"
               />
               <Button variant="primary" onClick={sendMessage} loading={sending} className="px-3 py-2.5 shrink-0">
@@ -247,7 +249,7 @@ function MessagesContent() {
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center text-gray-500 text-sm" style={{ background: '#0a0f1e' }}>
-          Select a conversation to start messaging
+          {t('coachMessages.selectConversation')}
         </div>
       )}
     </div>
