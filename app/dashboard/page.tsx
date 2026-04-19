@@ -42,17 +42,17 @@ import {
   CartesianGrid,
 } from 'recharts'
 
-const DAILY_TIPS = [
-  { tip: 'Use the STAR method (Situation, Task, Action, Result) to keep your answers structured and memorable.', category: 'Structure 📋' },
-  { tip: 'Add specific numbers and outcomes to prove the impact of your work.', category: 'Confidence 💪' },
-  { tip: 'Take 2-3 seconds to pause before answering — it shows composure, not hesitation.', category: 'Confidence 💪' },
-  { tip: 'Keep each answer focused on one strong example instead of listing many weak ones.', category: 'Structure 📋' },
-  { tip: "Research the company's latest product launches or news before your interview.", category: 'Preparation 📚' },
-  { tip: 'Prepare 3 genuine questions to ask the interviewer to demonstrate your interest.', category: 'Communication 💬' },
-  { tip: 'Avoid filler words like "um", "uh", and "like" by practicing answers out loud daily.', category: 'Communication 💬' },
-  { tip: 'Mirror the calm energy of the interviewer — composure always wins.', category: 'Confidence 💪' },
-  { tip: 'Tailor each answer to the specific job description and company values.', category: 'Preparation 📚' },
-  { tip: 'End each answer with a brief summary sentence to reinforce your key point.', category: 'Structure 📋' },
+const getDailyTips = (t: (key: string) => string) => [
+  { tip: t('dashboard.dailyTip.tips.tip1'), category: t('dashboard.dailyTip.categories.structure') },
+  { tip: t('dashboard.dailyTip.tips.tip2'), category: t('dashboard.dailyTip.categories.confidence') },
+  { tip: t('dashboard.dailyTip.tips.tip3'), category: t('dashboard.dailyTip.categories.confidence') },
+  { tip: t('dashboard.dailyTip.tips.tip4'), category: t('dashboard.dailyTip.categories.structure') },
+  { tip: t('dashboard.dailyTip.tips.tip5'), category: t('dashboard.dailyTip.categories.preparation') },
+  { tip: t('dashboard.dailyTip.tips.tip6'), category: t('dashboard.dailyTip.categories.communication') },
+  { tip: t('dashboard.dailyTip.tips.tip7'), category: t('dashboard.dailyTip.categories.communication') },
+  { tip: t('dashboard.dailyTip.tips.tip8'), category: t('dashboard.dailyTip.categories.confidence') },
+  { tip: t('dashboard.dailyTip.tips.tip9'), category: t('dashboard.dailyTip.categories.preparation') },
+  { tip: t('dashboard.dailyTip.tips.tip10'), category: t('dashboard.dailyTip.categories.structure') },
 ]
 
 type BookingWithCoach = {
@@ -137,6 +137,7 @@ export default function DashboardPage() {
 
   // Daily tip from localStorage
   useEffect(() => {
+    const dailyTips = getDailyTips(t)
     const today = format(new Date(), 'yyyy-MM-dd')
     try {
       const stored = localStorage.getItem('dailyTip')
@@ -144,11 +145,11 @@ export default function DashboardPage() {
         const parsed = JSON.parse(stored)
         if (parsed.date === today) { setTipIndex(parsed.index); return }
       }
-      const idx = new Date().getDate() % DAILY_TIPS.length
+      const idx = new Date().getDate() % dailyTips.length
       setTipIndex(idx)
       localStorage.setItem('dailyTip', JSON.stringify({ date: today, index: idx }))
-    } catch { setTipIndex(new Date().getDate() % DAILY_TIPS.length) }
-  }, [])
+    } catch { setTipIndex(new Date().getDate() % dailyTips.length) }
+  }, [t])
 
   // Close profile dropdown on outside click
   useEffect(() => {
@@ -347,7 +348,8 @@ export default function DashboardPage() {
   }
 
   const advanceTip = () => {
-    const next = (tipIndex + 1) % DAILY_TIPS.length
+    const dailyTips = getDailyTips(t)
+    const next = (tipIndex + 1) % dailyTips.length
     setTipIndex(next)
     try { localStorage.setItem('dailyTip', JSON.stringify({ date: format(new Date(), 'yyyy-MM-dd'), index: next })) } catch {}
   }
@@ -372,12 +374,12 @@ export default function DashboardPage() {
   const completedCount = sessions.filter((s) => s.status === 'completed').length
 
   const achievements = [
-    { id: 'first', label: 'First Interview', icon: '🎯', earned: completedCount >= 1 },
-    { id: 'score7', label: 'Score 7+', icon: '⭐', earned: sessions.some((s) => Number(s.overall_score) >= 7) },
-    { id: 'streak3', label: '3-Day Streak', icon: '🔥', earned: stats.streakDays >= 3 },
-    { id: 'five', label: '5 Sessions', icon: '🏅', earned: completedCount >= 5 },
-    { id: 'ten', label: '10 Sessions', icon: '🏆', earned: completedCount >= 10 },
-    { id: 'perfect', label: 'Perfect 10', icon: '💎', earned: sessions.some((s) => Number(s.overall_score) >= 10) },
+    { id: 'first', label: t('dashboard.achievements.firstInterview'), icon: '🎯', earned: completedCount >= 1 },
+    { id: 'score7', label: t('dashboard.achievements.score7'), icon: '⭐', earned: sessions.some((s) => Number(s.overall_score) >= 7) },
+    { id: 'streak3', label: t('dashboard.achievements.streak3'), icon: '🔥', earned: stats.streakDays >= 3 },
+    { id: 'five', label: t('dashboard.achievements.five'), icon: '🏅', earned: completedCount >= 5 },
+    { id: 'ten', label: t('dashboard.achievements.ten'), icon: '🏆', earned: completedCount >= 10 },
+    { id: 'perfect', label: t('dashboard.achievements.perfect'), icon: '💎', earned: sessions.some((s) => Number(s.overall_score) >= 10) },
   ]
 
   const recommendedCoaches = realCoaches.slice(0, 3)
@@ -389,12 +391,12 @@ export default function DashboardPage() {
   const statusLabel = (() => {
     if (!profile?.current_status) return null
     const labels: Record<string, string> = {
-      student: '🎓 Student',
-      employed: '👨\u200d💼 Employed',
-      unemployed: '🔍 Job Seeking',
-      'career-change': '🔄 Career Change',
-      'fresh-graduate': '💼 Fresh Graduate',
-      other: '🌍 Other',
+      student: t('dashboard.statusLabels.student'),
+      employed: t('dashboard.statusLabels.employed'),
+      unemployed: t('dashboard.statusLabels.unemployed'),
+      'career-change': t('dashboard.statusLabels.careerChange'),
+      'fresh-graduate': t('dashboard.statusLabels.freshGraduate'),
+      other: t('dashboard.statusLabels.other'),
     }
     const base = labels[profile.current_status] || profile.current_status
     return profile.status_detail ? `${base} — ${profile.status_detail}` : base
@@ -411,7 +413,8 @@ export default function DashboardPage() {
   if (!user || !profile) return null
 
   const canStartInterview = profile.interviews_used_this_month < profile.interviews_limit
-  const currentTip = DAILY_TIPS[tipIndex]
+  const dailyTips = getDailyTips(t)
+  const currentTip = dailyTips[tipIndex]
 
   return (
     <div className="min-h-screen text-white" style={{ background: '#0a0f1e' }}>
@@ -548,36 +551,36 @@ export default function DashboardPage() {
           )) : (
             <>
               <StatCard 
-                label="Total Interviews Done" 
+                label={t('dashboard.totalInterviews')} 
                 value={String(stats.totalInterviews)} 
                 icon={<Calendar className="w-5 h-5 text-purple-400" />} 
                 accent="bg-purple-500/20"
-                emptyMessage="Start your first interview to begin tracking your progress!"
-                emptyAction={{ text: "Start Interview", href: "/interview/setup" }}
+                emptyMessage={t('dashboard.emptyTotal')}
+                emptyAction={{ text: t('dashboard.startInterview'), href: "/interview/setup" }}
               />
               <StatCard 
-                label="Average Score" 
+                label={t('dashboard.avgScore')} 
                 value={`${stats.avgScore}/10`} 
                 icon={<TrendingUp className="w-5 h-5 text-blue-400" />} 
                 accent="bg-blue-500/20"
-                emptyMessage="Complete interviews to see your average performance score"
-                emptyAction={{ text: "Practice Now", href: "/interview/setup" }}
+                emptyMessage={t('dashboard.emptyAvgScore')}
+                emptyAction={{ text: t('dashboard.practiceNow'), href: "/interview/setup" }}
               />
               <StatCard 
-                label="This Month" 
+                label={t('dashboard.thisMonth')} 
                 value={String(stats.interviewsThisMonth)} 
                 icon={<Award className="w-5 h-5 text-green-400" />} 
                 accent="bg-green-500/20"
-                emptyMessage="Practice this month to track your monthly progress"
-                emptyAction={{ text: "Start Practicing", href: "/interview/setup" }}
+                emptyMessage={t('dashboard.emptyMonth')}
+                emptyAction={{ text: t('dashboard.startPracticing'), href: "/interview/setup" }}
               />
               <StatCard 
-                label="Streak 🔥" 
-                value={`${stats.streakDays} days`} 
+                label={t('dashboard.streak')} 
+                value={`${stats.streakDays} ${t('dashboard.days')}`} 
                 icon={<Flame className="w-5 h-5 text-orange-400" />} 
                 accent="bg-orange-500/20"
-                emptyMessage="Start a streak by practicing daily to build consistency!"
-                emptyAction={{ text: "Begin Streak", href: "/interview/setup" }}
+                emptyMessage={t('dashboard.emptyStreak')}
+                emptyAction={{ text: t('dashboard.beginStreak'), href: "/interview/setup" }}
               />
             </>
           )}
@@ -589,7 +592,7 @@ export default function DashboardPage() {
             {/* PROGRESS CHART */}
             <DarkCard>
               <div className="flex items-center justify-between mb-4">
-                <div><h2 className="text-xl font-bold">Progress Overview</h2><p className="text-gray-400 text-sm">Your interview scores over time</p></div>
+                <div><h2 className="text-xl font-bold">{t('dashboard.progressOverview')}</h2><p className="text-gray-400 text-sm">{t('dashboard.progressSubtitle')}</p></div>
               </div>
               {chartData.length > 0 ? (
                 <div className="h-64">
@@ -621,9 +624,9 @@ export default function DashboardPage() {
                     </ResponsiveContainer>
                   </div>
                   <div className="relative z-10 text-center px-4 flex flex-col items-center">
-                    <p className="text-gray-300 font-semibold mb-1">Complete a few interviews to unlock your score trend chart.</p>
-                    <p className="text-gray-500 text-sm mb-4">Start your first interview to see your progress! 🚀</p>
-                    <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> Start Interview</Button></Link>
+                    <p className="text-gray-300 font-semibold mb-1">{t('dashboard.progressEmpty')}</p>
+                    <p className="text-gray-500 text-sm mb-4">{t('dashboard.progressEmptyDesc')}</p>
+                    <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> {t('dashboard.startInterview')}</Button></Link>
                   </div>
                 </div>
               )}
@@ -632,12 +635,12 @@ export default function DashboardPage() {
             {/* COACH HUB */}
             <DarkCard>
               <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div><h2 className="text-xl font-bold">Coach Hub</h2><p className="text-gray-400 text-sm">Manage your coaching sessions</p></div>
+                <div><h2 className="text-xl font-bold">{t('dashboard.coachHub.title')}</h2><p className="text-gray-400 text-sm">{t('dashboard.coachHub.subtitle')}</p></div>
                 <div className="flex gap-2">
                   {(['upcoming', 'my-coaches'] as const).map((tab) => (
                     <button key={tab} onClick={() => setActiveCoachTab(tab)}
                       className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${activeCoachTab === tab ? 'bg-purple-600 text-white' : 'border border-white/10 text-gray-300 hover:border-purple-500/40'}`}>
-                      {tab === 'upcoming' ? 'Upcoming Sessions' : 'My Coaches'}
+                      {tab === 'upcoming' ? t('dashboard.coachHub.upcomingSessions') : t('dashboard.coachHub.myCoaches')}
                     </button>
                   ))}
                 </div>
@@ -645,15 +648,15 @@ export default function DashboardPage() {
               {activeCoachTab === 'upcoming' ? (
                 upcomingBookings.length === 0 ? (
                   <div className="py-10 text-center">
-                    <p className="text-gray-300 font-semibold mb-2">No upcoming sessions.</p>
-                    <p className="text-gray-500 text-sm mb-4">Find a coach to book your first session!</p>
-                    <Link href="/coaches"><Button variant="primary">Find a Coach</Button></Link>
+                    <p className="text-gray-300 font-semibold mb-2">{t('dashboard.coachHub.noUpcoming')}</p>
+                    <p className="text-gray-500 text-sm mb-4">{t('dashboard.coachHub.findCoach')}</p>
+                    <Link href="/coaches"><Button variant="primary">{t('dashboard.coachHub.findCoachButton')}</Button></Link>
                   </div>
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2">
                     {upcomingBookings.map((booking) => {
                       const coachName = booking.coach?.full_name || 'Coach'
-                      const statusLabel = booking.status === 'confirmed' ? '🟢 Upcoming' : booking.status === 'completed' ? '✅ Completed' : '⏳ Pending'
+                      const statusLabel = booking.status === 'confirmed' ? t('dashboard.coachHub.confirmed') : booking.status === 'completed' ? t('dashboard.coachHub.completed') : t('dashboard.coachHub.pending')
                       const sessionTime = booking.scheduled_at ? new Date(booking.scheduled_at) : null
                       const isJoinable = sessionTime && Math.abs(sessionTime.getTime() - Date.now()) < 10 * 60 * 1000
                       return (
@@ -667,8 +670,8 @@ export default function DashboardPage() {
                           </div>
                           {booking.notes && <p className="text-sm text-gray-400 mb-2 line-clamp-1">{booking.notes}</p>}
                           <div className="flex items-center justify-between text-sm text-gray-400">
-                            <span>{sessionTime ? format(sessionTime, 'MMM d, HH:mm') : 'TBD'} • {booking.duration_minutes} min</span>
-                            {isJoinable && <Button variant="primary" className="text-xs px-2 py-1">Join Session</Button>}
+                            <span>{sessionTime ? format(sessionTime, 'MMM d, HH:mm') : 'TBD'} • {booking.duration_minutes} {t('dashboard.coachHub.min')}</span>
+                            {isJoinable && <Button variant="primary" className="text-xs px-2 py-1">{t('dashboard.coachHub.joinSession')}</Button>}
                           </div>
                         </div>
                       )
@@ -677,7 +680,7 @@ export default function DashboardPage() {
                 )
               ) : (
                 myCoaches.length === 0 ? (
-                  <div className="py-10 text-center"><p className="text-gray-500 text-sm">No coaches yet. Book a session to get started!</p></div>
+                  <div className="py-10 text-center"><p className="text-gray-500 text-sm">{t('dashboard.coachHub.noCoaches')}</p></div>
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2">
                     {myCoaches.map((booking) => {
@@ -686,7 +689,7 @@ export default function DashboardPage() {
                         <div key={booking.id} className="rounded-xl border border-white/10 p-4 hover:border-purple-500/30 transition-colors" style={{ background: '#0a0f1e' }}>
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-sm font-bold shrink-0">{coachName.charAt(0).toUpperCase()}</div>
-                            <div><p className="font-semibold">{coachName}</p><p className="text-xs text-gray-400">{booking.status === 'completed' ? '✅ Completed' : '🟢 Active'}</p></div>
+                            <div><p className="font-semibold">{coachName}</p><p className="text-xs text-gray-400">{booking.status === 'completed' ? t('dashboard.coachHub.completed') : t('dashboard.coachHub.active')}</p></div>
                           </div>
                         </div>
                       )
@@ -699,15 +702,15 @@ export default function DashboardPage() {
             {/* RECENT SESSIONS */}
             <DarkCard>
               <div className="flex items-center justify-between mb-4">
-                <div><h2 className="text-xl font-bold">Recent Sessions</h2><p className="text-gray-400 text-sm">Track your latest practice sessions</p></div>
+                <div><h2 className="text-xl font-bold">{t('dashboard.recentSessions.title')}</h2><p className="text-gray-400 text-sm">{t('dashboard.recentSessions.subtitle')}</p></div>
               </div>
               {sessions.length === 0 ? (
                 <div className="text-center py-12">
                   <Target className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No interviews yet!</h3>
-                  <p className="text-gray-400 mb-6">Begin practicing now and unlock AI-powered feedback.</p>
+                  <h3 className="text-xl font-semibold mb-2">{t('dashboard.recentSessions.noInterviews')}</h3>
+                  <p className="text-gray-400 mb-6">{t('dashboard.recentSessions.noInterviewsDesc')}</p>
                   <div className="flex justify-center">
-                    <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> Start Your First Interview</Button></Link>
+                    <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> {t('dashboard.recentSessions.startFirst')}</Button></Link>
                   </div>
                 </div>
               ) : (
@@ -715,8 +718,8 @@ export default function DashboardPage() {
                   <table className="w-full min-w-[580px] text-sm">
                     <thead>
                       <tr className="border-b border-white/10 text-left text-gray-400">
-                        <th className="py-3 pr-4">Date</th><th className="py-3 pr-4">Role</th><th className="py-3 pr-4">Level</th>
-                        <th className="py-3 pr-4">Score</th><th className="py-3 pr-4">Type</th><th className="py-3 text-right">Action</th>
+                        <th className="py-3 pr-4">{t('dashboard.recentSessions.date')}</th><th className="py-3 pr-4">{t('dashboard.recentSessions.role')}</th><th className="py-3 pr-4">{t('dashboard.recentSessions.level')}</th>
+                        <th className="py-3 pr-4">{t('dashboard.recentSessions.score')}</th><th className="py-3 pr-4">{t('dashboard.recentSessions.type')}</th><th className="py-3 text-right">{t('dashboard.recentSessions.action')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -730,10 +733,10 @@ export default function DashboardPage() {
                           <td className="py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <Button variant="danger" className="px-3 py-1.5 text-xs gap-1" onClick={() => handleDeleteInterview(session.id)} loading={deletingId === session.id}>
-                                <Trash2 className="w-3 h-3" /> Delete
+                                <Trash2 className="w-3 h-3" /> {t('dashboard.recentSessions.delete')}
                               </Button>
                               <Link href={session.status === 'completed' ? `/interview/summary/${session.id}` : `/interview/${session.id}`}>
-                                <Button variant="outline" className="px-3 py-1.5 text-xs gap-1">{session.status === 'completed' ? 'View' : 'Continue'} <ArrowRight className="w-3 h-3" /></Button>
+                                <Button variant="outline" className="px-3 py-1.5 text-xs gap-1">{session.status === 'completed' ? t('dashboard.recentSessions.view') : t('dashboard.recentSessions.continue')} <ArrowRight className="w-3 h-3" /></Button>
                               </Link>
                             </div>
                           </td>
@@ -749,10 +752,10 @@ export default function DashboardPage() {
             <DarkCard>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-xl font-bold">Remote Job Opportunities</h2>
-                  <p className="text-gray-400 text-sm">Live remote listings matched to your target role</p>
+                  <h2 className="text-xl font-bold">{t('dashboard.jobOffers.title')}</h2>
+                  <p className="text-gray-400 text-sm">{t('dashboard.jobOffers.subtitle')}</p>
                 </div>
-                <Link href="/jobs" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">Browse All →</Link>
+                <Link href="/jobs" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">{t('dashboard.jobOffers.browseAll')}</Link>
               </div>
               <JobOffers 
                 targetRole={profile?.target_job_role || profile?.target_job_field || ''} 
@@ -765,14 +768,14 @@ export default function DashboardPage() {
             {/* RECOMMENDED COACHES */}
             <DarkCard>
               <div className="flex items-center justify-between mb-4">
-                <div><h2 className="text-xl font-bold">Recommended Coaches for You</h2><p className="text-gray-400 text-sm">Based on your interview history and role</p></div>
-                <Link href="/coaches" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">See All →</Link>
+                <div><h2 className="text-xl font-bold">{t('dashboard.recommendedCoaches.title')}</h2><p className="text-gray-400 text-sm">{t('dashboard.recommendedCoaches.subtitle')}</p></div>
+                <Link href="/coaches" className="text-purple-400 text-sm hover:text-purple-300 transition-colors whitespace-nowrap">{t('dashboard.recommendedCoaches.seeAll')}</Link>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
                 {recommendedCoaches.length === 0 ? (
                   <div className="col-span-3 py-8 text-center text-gray-400 text-sm">
-                    <p className="mb-2">More coaches coming soon! 🌟</p>
-                    <Link href="/coaches" className="text-purple-400 hover:underline">Browse available coaches →</Link>
+                    <p className="mb-2">{t('dashboard.recommendedCoaches.comingSoon')}</p>
+                    <Link href="/coaches" className="text-purple-400 hover:underline">{t('dashboard.recommendedCoaches.browseAvailable')}</Link>
                   </div>
                 ) : recommendedCoaches.map((coach) => {
                   const name = coach.full_name || 'Coach'
@@ -800,17 +803,17 @@ export default function DashboardPage() {
                           {specs.length > 0 ? (
                             specs.slice(0, 2).map((s: string) => <span key={s} className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">{s}</span>)
                           ) : (
-                            <span className="text-gray-500 text-[10px]">General Coaching</span>
+                            <span className="text-gray-500 text-[10px]">{t('dashboard.recommendedCoaches.generalCoaching')}</span>
                           )}
                         </div>
                         {creditsPerHour > 0 && (
                           <div className="flex items-center gap-1 text-purple-400 text-sm font-semibold">
                             <Wallet className="w-3 h-3" />
-                            <span>{creditsPerHour} credits/hr</span>
+                            <span>{creditsPerHour} {t('dashboard.recommendedCoaches.creditsPerHour')}</span>
                           </div>
                         )}
                       </div>
-                      <Link href={`/coaches/${coach.id}`}><Button variant="outline" fullWidth className="text-xs">View Profile</Button></Link>
+                      <Link href={`/coaches/${coach.id}`}><Button variant="outline" fullWidth className="text-xs">{t('dashboard.recommendedCoaches.viewProfile')}</Button></Link>
                     </div>
                   )
                 })}
@@ -820,9 +823,9 @@ export default function DashboardPage() {
             {/* ACHIEVEMENTS */}
             <DarkCard>
               <div className="mb-4">
-                <h2 className="text-xl font-bold">Your Achievements</h2>
+                <h2 className="text-xl font-bold">{t('dashboard.achievements.title')}</h2>
                 <p className="text-gray-400 text-sm">
-                  {completedCount > 0 ? `${completedCount}/${achievements.length} badges unlocked` : 'Complete interviews to unlock badges! 🏅'}
+                  {completedCount > 0 ? `${completedCount}/${achievements.length} ${t('dashboard.achievements.badgesUnlocked')}` : t('dashboard.achievements.completeInterviews')}
                 </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -850,7 +853,7 @@ export default function DashboardPage() {
                           {ach.label}
                         </p>
                         {ach.earned && (
-                          <p className="text-[10px] text-purple-400 mt-1">✓ Unlocked</p>
+                          <p className="text-[10px] text-purple-400 mt-1">{t('dashboard.achievements.unlocked')}</p>
                         )}
                       </div>
                     </div>
@@ -865,17 +868,17 @@ export default function DashboardPage() {
             {/* CREDITS CARD */}
             <DarkCard className={balance === 0 ? 'border-red-500/50 bg-red-500/5' : balance < 20 ? 'border-yellow-500/30' : ''}>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xl font-bold">💳 Credits</h2>
-                {balance === 0 && <span className="text-xs text-red-400 font-semibold animate-pulse">Out of Credits!</span>}
+                <h2 className="text-xl font-bold">{t('dashboard.credits')}</h2>
+                {balance === 0 && <span className="text-xs text-red-400 font-semibold animate-pulse">{t('dashboard.outOfCredits')}</span>}
               </div>
               
               {/* Balance Display */}
               <div className="rounded-xl border border-white/10 p-4 mb-4 text-center" style={{ background: '#0a0f1e' }}>
-                <p className="text-xs text-gray-400 mb-1">Current Balance</p>
+                <p className="text-xs text-gray-400 mb-1">{t('dashboard.currentBalance')}</p>
                 <p className={`text-4xl font-bold ${balance === 0 ? 'text-red-400' : balance < 20 ? 'text-yellow-400' : 'text-purple-400'}`}>
                   {balance}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">credits</p>
+                <p className="text-xs text-gray-500 mt-1">{t('dashboard.creditsText')}</p>
               </div>
 
               {/* Top Up Button */}
@@ -886,13 +889,13 @@ export default function DashboardPage() {
                   className="gap-2 mb-4"
                 >
                   <Wallet className="w-4 h-4" /> 
-                  {balance === 0 ? 'Buy Credits Now' : 'Top Up Credits'}
+                  {balance === 0 ? t('dashboard.buyCreditsNow') : t('dashboard.topUpCredits')}
                 </Button>
               </Link>
 
               {/* Quick Recharge Options */}
               <div className="space-y-2">
-                <p className="text-xs text-gray-400 mb-2">Quick Recharge:</p>
+                <p className="text-xs text-gray-400 mb-2">{t('dashboard.quickRecharge')}</p>
                 <div className="grid grid-cols-3 gap-2">
                   <Link href="/pricing?amount=50" className="block">
                     <button className="w-full rounded-lg border border-white/10 bg-white/5 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all px-3 py-2 text-sm font-semibold">
@@ -916,7 +919,7 @@ export default function DashboardPage() {
               {balance > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/10">
                   <p className="text-xs text-gray-500">
-                    Used for interviews, coach bookings, and premium features
+                    {t('dashboard.creditsUsage')}
                   </p>
                 </div>
               )}
@@ -924,39 +927,39 @@ export default function DashboardPage() {
 
             {/* QUICK START */}
             <DarkCard>
-              <h2 className="text-xl font-bold mb-1">Quick Start</h2>
-              <p className="text-gray-400 text-sm mb-4">Jump into a fresh interview tailored to your role.</p>
+              <h2 className="text-xl font-bold mb-1">{t('dashboard.quickStart.title')}</h2>
+              <p className="text-gray-400 text-sm mb-4">{t('dashboard.quickStart.subtitle')}</p>
               {lastSession?.job_role && (
-                <p className="text-xs text-gray-500 mb-3">Last practiced: <span className="text-purple-400 font-semibold">{lastSession.job_role}</span></p>
+                <p className="text-xs text-gray-500 mb-3">{t('dashboard.quickStart.lastPracticed')} <span className="text-purple-400 font-semibold">{lastSession.job_role}</span></p>
               )}
               {canStartInterview ? (
-                <Link href="/interview/setup"><Button variant="primary" fullWidth className="gap-2"><Plus className="w-4 h-4" /> New Interview Setup</Button></Link>
+                <Link href="/interview/setup"><Button variant="primary" fullWidth className="gap-2"><Plus className="w-4 h-4" /> {t('dashboard.quickStart.newInterview')}</Button></Link>
               ) : (
-                <Link href="/pricing"><Button variant="primary" fullWidth>Upgrade to Continue</Button></Link>
+                <Link href="/pricing"><Button variant="primary" fullWidth>{t('dashboard.quickStart.upgrade')}</Button></Link>
               )}
               {incompleteSession && (
                 <Link href={`/interview/${incompleteSession.id}`}>
-                  <Button variant="outline" fullWidth className="mt-2 gap-2 text-sm"><ArrowRight className="w-3 h-3" /> Continue where you left off</Button>
+                  <Button variant="outline" fullWidth className="mt-2 gap-2 text-sm"><ArrowRight className="w-3 h-3" /> {t('dashboard.quickStart.continueLeft')}</Button>
                 </Link>
               )}
             </DarkCard>
 
             {/* COACH METRICS */}
             <DarkCard>
-              <h2 className="text-xl font-bold mb-1">Coach Metrics</h2>
-              <p className="text-xs text-gray-500 mb-4">Based on your last session</p>
+              <h2 className="text-xl font-bold mb-1">{t('dashboard.coachMetrics.title')}</h2>
+              <p className="text-xs text-gray-500 mb-4">{t('dashboard.coachMetrics.subtitle')}</p>
               <div className="space-y-4">
                 <div>
-                  <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-300">Confidence</span><span className="text-green-400 font-semibold">{coachMetrics.confidence}%</span></div>
+                  <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-300">{t('dashboard.coachMetrics.confidence')}</span><span className="text-green-400 font-semibold">{coachMetrics.confidence}%</span></div>
                   <div className="h-2 rounded-full bg-white/10 overflow-hidden"><div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-500" style={{ width: `${coachMetrics.confidence}%` }} /></div>
                 </div>
                 <div>
-                  <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-300">Clarity</span><span className="text-blue-400 font-semibold">{coachMetrics.clarity}%</span></div>
+                  <div className="flex items-center justify-between text-sm mb-1"><span className="text-gray-300">{t('dashboard.coachMetrics.clarity')}</span><span className="text-blue-400 font-semibold">{coachMetrics.clarity}%</span></div>
                   <div className="h-2 rounded-full bg-white/10 overflow-hidden"><div className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-500" style={{ width: `${coachMetrics.clarity}%` }} /></div>
                 </div>
                 {coachMetrics.lastSessionScores.length > 1 && (
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Last {coachMetrics.lastSessionScores.length} answer scores</p>
+                    <p className="text-xs text-gray-500 mb-1">{t('dashboard.coachMetrics.lastScores')} {coachMetrics.lastSessionScores.length} {t('dashboard.coachMetrics.answerScores')}</p>
                     <div className="h-12">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={coachMetrics.lastSessionScores.map((s, i) => ({ i, s }))}>
@@ -967,10 +970,10 @@ export default function DashboardPage() {
                   </div>
                 )}
                 <div className="rounded-xl border border-white/10 p-3 space-y-1" style={{ background: '#0a0f1e' }}>
-                  <p className="text-sm text-gray-300">Filler words/answer: <span className="text-yellow-300 font-semibold">{coachMetrics.fillerWords}</span></p>
+                  <p className="text-sm text-gray-300">{t('dashboard.coachMetrics.fillerWords')} <span className="text-yellow-300 font-semibold">{coachMetrics.fillerWords}</span></p>
                   <p className="text-sm text-gray-300 flex items-center gap-1">
-                    Trend: {trendLabel(coachMetrics.improvement)}{' '}
-                    <span className={`font-semibold ml-1 ${coachMetrics.improvement >= 0 ? 'text-green-400' : 'text-red-400'}`}>{coachMetrics.improvement >= 0 ? '+' : ''}{coachMetrics.improvement} pts</span>
+                    {t('dashboard.coachMetrics.trend')} {trendLabel(coachMetrics.improvement)}{' '}
+                    <span className={`font-semibold ml-1 ${coachMetrics.improvement >= 0 ? 'text-green-400' : 'text-red-400'}`}>{coachMetrics.improvement >= 0 ? '+' : ''}{coachMetrics.improvement} {t('dashboard.coachMetrics.pts')}</span>
                   </p>
                 </div>
               </div>
@@ -978,11 +981,11 @@ export default function DashboardPage() {
 
             {/* DAILY TIP */}
             <DarkCard>
-              <h2 className="text-xl font-bold mb-4">Daily Tip</h2>
+              <h2 className="text-xl font-bold mb-4">{t('dashboard.dailyTip.title')}</h2>
               <div className="rounded-xl border border-white/10 p-4" style={{ background: '#0a0f1e' }}>
                 <span className="inline-block text-xs font-semibold text-purple-400 border border-purple-500/30 rounded-full px-2 py-0.5 mb-2">{currentTip.category}</span>
                 <p className="text-sm text-gray-300 leading-relaxed">{currentTip.tip}</p>
-                <button onClick={advanceTip} className="mt-3 text-xs text-purple-400 hover:text-purple-300 transition-colors">Next Tip →</button>
+                <button onClick={advanceTip} className="mt-3 text-xs text-purple-400 hover:text-purple-300 transition-colors">{t('dashboard.dailyTip.nextTip')}</button>
               </div>
             </DarkCard>
           </div>
