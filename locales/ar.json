@@ -1129,5 +1129,40 @@
     "addToCalendar": "إضافة إلى التقويم",
     "cancelBooking": "إلغاء الحجز",
     "loginRequired": "يرجى تسجيل الدخول لعرض حجوزاتك"
+  },
+  "session": {
+    "liveSessionWith": "جلسة مباشرة مع",
+    "sessionId": "معرف الجلسة:",
+    "sessionRoomLive": "غرفة الجلسة مباشرة",
+    "dailyRoomReady": "غرفة Daily.co جاهزة",
+    "dailyRoomDesc": "أضف رابط غرفة Daily الخاص بك في البيئة لتضمين مكالمة حقيقية مباشرة هنا.",
+    "screenShare": "مشاركة الشاشة",
+    "endSession": "إنهاء الجلسة",
+    "sharedNotes": "ملاحظات مشتركة",
+    "chat": "المحادثة",
+    "you": "أنت",
+    "coach": "المدرب",
+    "sendMessage": "إرسال رسالة",
+    "sessionDetails": "تفاصيل الجلسة",
+    "coachLabel": "المدرب:",
+    "durationLabel": "المدة:",
+    "minutes": "دقائق",
+    "sessionDetailsDesc": "استخدم هذه الغرفة للفيديو والمحادثة والملاحظات التعاونية أثناء جلسة التدريب.",
+    "welcomeMessage": "مرحباً! لقد راجعت ملاحظات جلستك وأنا مستعد عندما تكون جاهزاً.",
+    "userMessage": "رائع، أود التركيز على الإجابات السلوكية والثقة.",
+    "defaultNotes": "التركيز على أمثلة STAR، والنتائج القابلة للقياس، والبيانات الختامية الأوضح."
+  },
+  "sessionReview": {
+    "title": "قيّم جلسة التدريب الخاصة بك",
+    "subtitle": "تساعد مراجعتك في تحسين جودة المدرب وتحديث تقييمهم العام.",
+    "starRating": "تقييم النجوم",
+    "writtenReview": "المراجعة المكتوبة",
+    "reviewPlaceholder": "ما الذي برز في الجلسة؟",
+    "recommendQuestion": "هل توصي بهذا المدرب؟",
+    "yes": "نعم",
+    "no": "لا",
+    "submitReview": "إرسال المراجعة",
+    "thankYou": "شكراً لك. تم إرسال مراجعتك.",
+    "returnToDashboard": "العودة إلى لوحة التحكم"
   }
 }

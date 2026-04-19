@@ -1127,5 +1127,40 @@
     "addToCalendar": "Ajouter au Calendrier",
     "cancelBooking": "Annuler la Réservation",
     "loginRequired": "Veuillez vous connecter pour voir vos réservations"
+  },
+  "session": {
+    "liveSessionWith": "Session en direct avec",
+    "sessionId": "ID de session:",
+    "sessionRoomLive": "Salle de session en direct",
+    "dailyRoomReady": "Salle Daily.co prête",
+    "dailyRoomDesc": "Ajoutez votre URL de salle Daily dans l'environnement pour intégrer un vrai appel en direct ici.",
+    "screenShare": "Partage d'écran",
+    "endSession": "Terminer la session",
+    "sharedNotes": "Notes partagées",
+    "chat": "Chat",
+    "you": "Vous",
+    "coach": "Coach",
+    "sendMessage": "Envoyer un message",
+    "sessionDetails": "Détails de la session",
+    "coachLabel": "Coach:",
+    "durationLabel": "Durée:",
+    "minutes": "minutes",
+    "sessionDetailsDesc": "Utilisez cette salle pour la vidéo, le chat et les notes collaboratives pendant la session de coaching.",
+    "welcomeMessage": "Bienvenue! J'ai examiné les notes de votre session et je suis prêt quand vous l'êtes.",
+    "userMessage": "Super, je voudrais me concentrer sur les réponses comportementales et la confiance.",
+    "defaultNotes": "Concentrez-vous sur les exemples STAR, les résultats mesurables et des déclarations de clôture plus claires."
+  },
+  "sessionReview": {
+    "title": "Évaluez votre session de coaching",
+    "subtitle": "Votre avis aide à améliorer la qualité du coach et met à jour sa note publique.",
+    "starRating": "Note par étoiles",
+    "writtenReview": "Avis écrit",
+    "reviewPlaceholder": "Qu'est-ce qui s'est démarqué dans la session?",
+    "recommendQuestion": "Recommanderiez-vous ce coach?",
+    "yes": "Oui",
+    "no": "Non",
+    "submitReview": "Soumettre l'avis",
+    "thankYou": "Merci. Votre avis a été soumis.",
+    "returnToDashboard": "Retour au tableau de bord"
   }
 }

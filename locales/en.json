@@ -1129,5 +1129,40 @@
     "addToCalendar": "Add to Calendar",
     "cancelBooking": "Cancel Booking",
     "loginRequired": "Please log in to view your bookings"
+  },
+  "session": {
+    "liveSessionWith": "Live session with",
+    "sessionId": "Session ID:",
+    "sessionRoomLive": "Session room live",
+    "dailyRoomReady": "Daily.co room ready",
+    "dailyRoomDesc": "Add your Daily room URL in the environment to embed a real live call here.",
+    "screenShare": "Screen share",
+    "endSession": "End Session",
+    "sharedNotes": "Shared notes",
+    "chat": "Chat",
+    "you": "You",
+    "coach": "Coach",
+    "sendMessage": "Send a message",
+    "sessionDetails": "Session details",
+    "coachLabel": "Coach:",
+    "durationLabel": "Duration:",
+    "minutes": "minutes",
+    "sessionDetailsDesc": "Use this room for video, chat, and collaborative notes during the coaching session.",
+    "welcomeMessage": "Welcome! I reviewed your session notes and I am ready when you are.",
+    "userMessage": "Great, I would like to focus on behavioral answers and confidence.",
+    "defaultNotes": "Focus on STAR examples, measurable outcomes, and clearer closing statements."
+  },
+  "sessionReview": {
+    "title": "Rate your coaching session",
+    "subtitle": "Your review helps improve coach quality and updates their public rating.",
+    "starRating": "Star rating",
+    "writtenReview": "Written review",
+    "reviewPlaceholder": "What stood out in the session?",
+    "recommendQuestion": "Would you recommend this coach?",
+    "yes": "Yes",
+    "no": "No",
+    "submitReview": "Submit review",
+    "thankYou": "Thank you. Your review has been submitted.",
+    "returnToDashboard": "Return to dashboard"
   }
 }
