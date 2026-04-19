@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 10 10 15;
+    --card: 249 250 251;
+    --card-foreground: 10 10 15;
+    --border: 229 231 235;
+    --primary: 139 92 246;
+    --primary-dark: 109 40 217;
+    --primary-light: 167 139 250;
+    --secondary: 59 130 246;
+  }
+
+  .dark {
+    --background: 10 10 15;
+    --foreground: 255 255 255;
+    --card: 26 26 36;
+    --card-foreground: 255 255 255;
+    --border: 42 42 58;
+  }
+
   html {
     scrollbar-gutter: stable;
     overflow-y: scroll;
@@ -10,13 +30,15 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply antialiased;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
     overflow-x: hidden;
     width: 100%;
   }
 
   * {
-    @apply border-border;
+    border-color: rgb(var(--border));
   }
 }
 
@@ -26,7 +48,19 @@
   }
 
   .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+    @apply backdrop-blur-lg border;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .dark .glass {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  :root:not(.dark) .glass {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -37,15 +71,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-background;
+  background: rgb(var(--background));
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary/50 rounded-full;
+  background: rgba(var(--primary), 0.5);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary;
+  background: rgb(var(--primary));
 }
 
 /* Animation keyframes */

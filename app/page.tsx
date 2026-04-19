@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
 import { VideoModal } from '@/components/VideoModal'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { CookieConsent } from '@/components/CookieConsent'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 
@@ -180,6 +181,7 @@ export default function HomePage() {
               <Link href="/coaches"  className="text-sm text-gray-300 hover:text-primary transition-colors">Coaches</Link>
               <Link href="/faq"      className="text-sm text-gray-300 hover:text-primary transition-colors">FAQ</Link>
               <Link href="/contact"  className="text-sm text-gray-300 hover:text-primary transition-colors">Contact</Link>
+              <ThemeToggle />
               <LanguageSwitcher />
               {user ? (
                 <Link href="/dashboard">
@@ -238,6 +240,10 @@ export default function HomePage() {
               <Link href="/coaches"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Coaches</Link>
               <Link href="/faq"      className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>FAQ</Link>
               <Link href="/contact"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+              <div className="flex items-center gap-2 pt-2 pb-2">
+                <ThemeToggle />
+                <span className="text-sm text-gray-400">Theme</span>
+              </div>
               <div className="pt-2 flex flex-col gap-2">
                 <Link href="/signup/candidate" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="primary" fullWidth>🤖 Practice with AI</Button>

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { AuthProvider } from '@/components/AuthProvider'
 import { LanguageProvider } from '@/components/LanguageProvider'
+import { ThemeProvider } from '@/components/ThemeProvider'
 import { CookieConsent } from '@/components/CookieConsent'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
 import { OrganizationSchema, WebsiteSchema, SoftwareApplicationSchema } from '@/components/StructuredData'
@@ -24,23 +25,25 @@ export default function RootLayout({
         <OrganizationSchema />
         <WebsiteSchema />
         <SoftwareApplicationSchema />
-        <LanguageProvider>
-          <AuthProvider>
-            {children}
-            <ScrollToTopButton />
-            <CookieConsent />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                style: {
-                  background: '#111827',
-                  color: '#fff',
-                  border: '1px solid rgba(139,92,246,0.35)',
-                },
-              }}
-            />
-          </AuthProvider>
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              {children}
+              <ScrollToTopButton />
+              <CookieConsent />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  style: {
+                    background: '#111827',
+                    color: '#fff',
+                    border: '1px solid rgba(139,92,246,0.35)',
+                  },
+                }}
+              />
+            </AuthProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
