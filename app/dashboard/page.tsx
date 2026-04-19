@@ -1010,7 +1010,8 @@ function StatCard({
   emptyMessage?: string
   emptyAction?: { text: string; href: string }
 }) {
-  const isEmpty = value === '0' || value === '0/10' || value === '0 days'
+  // Check if value is empty - works for all languages
+  const isEmpty = value === '0' || value === '0/10' || (typeof value === 'string' && value.startsWith('0 '))
   
   return (
     <div className="rounded-2xl p-5 border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300" style={{ background: '#111827', height: '220px', display: 'flex', flexDirection: 'column' }}>
