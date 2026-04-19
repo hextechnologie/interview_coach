@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, GraduationCap, Award, BookOpen, Edit2, Trash2, Plus, ExternalLink } from 'lucide-react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachEducation, EducationFormData, EducationType } from '@/lib/types/profile'
 import {
@@ -18,8 +18,6 @@ import {
 } from '@/lib/types/profile'
 import { searchUniversities } from '@/lib/data/universities'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 interface EducationCardsSectionProps {
   coachId?: string
@@ -44,7 +42,6 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
 
   const loadEducations = async () => {
     if (!idValue) return
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
       .from(tableName)
       .select('*')
@@ -69,7 +66,6 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
   const handleDelete = async (id: string) => {
     if (!confirm(t('profile.educationSection.deleteConfirm'))) return
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
       .from(tableName)
       .delete()
@@ -349,7 +345,6 @@ function EducationModal({
     if (!validate()) return
 
     setLoading(true)
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     try {
       if (education) {

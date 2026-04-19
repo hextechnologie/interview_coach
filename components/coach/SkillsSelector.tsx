@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { X, Search } from 'lucide-react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachSkill, SkillCategory } from '@/lib/types/profile'
 import { SKILL_SUGGESTIONS } from '@/lib/types/profile'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const MAX_SKILLS = 15
 
@@ -83,7 +81,6 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
 
   const loadSkills = async () => {
     if (!idValue) return
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
       .from(tableName)
       .select('*')
@@ -107,7 +104,6 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
 
     if (!idValue) return
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
       .from(tableName)
       .insert([{
@@ -130,7 +126,6 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
 
   const removeSkill = async (id: string) => {
     if (!idValue) return
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
       .from(tableName)
       .delete()

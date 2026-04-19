@@ -3,13 +3,11 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, MapPin, Building2, Edit2, Trash2, Plus } from 'lucide-react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachExperience, ExperienceFormData, EmploymentType } from '@/lib/types/profile'
 import { MONTHS, YEARS, EMPLOYMENT_TYPES, JOB_TITLES, COMPANIES } from '@/lib/types/profile'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 interface ExperienceCardsSectionProps {
   coachId?: string
@@ -34,7 +32,6 @@ export default function ExperienceCardsSection({ coachId, userId }: ExperienceCa
 
   const loadExperiences = async () => {
     if (!idValue) return
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
       .from(tableName)
       .select('*')
@@ -59,7 +56,6 @@ export default function ExperienceCardsSection({ coachId, userId }: ExperienceCa
   const handleDelete = async (id: string) => {
     if (!confirm(t('profile.experienceSection.deleteConfirm'))) return
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
       .from(tableName)
       .delete()
@@ -264,7 +260,6 @@ function ExperienceModal({
     if (!validate()) return
 
     setLoading(true)
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     try {
       if (experience) {

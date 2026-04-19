@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, ChangeEvent } from 'react'
+import { useEffect, useState, ChangeEvent } from 'react'
 import { Camera, Loader2, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { getInitials } from '@/lib/profile-utils'
@@ -30,6 +30,10 @@ export default function ProfilePhotoUploader({
   const { t } = useLanguage()
 
   const initials = getInitials(firstName, lastName, email)
+
+  useEffect(() => {
+    setPreview(currentPhotoUrl || '')
+  }, [currentPhotoUrl])
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ?.[0]
@@ -83,7 +87,7 @@ export default function ProfilePhotoUploader({
       // Update profile in database
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
         .eq('id', userId)
 
       if (updateError) throw updateError
@@ -103,7 +107,7 @@ export default function ProfilePhotoUploader({
       setUploading(true)
       const { error } = await supabase
         .from('profiles')
-        .update({ avatar_url: null })
+        .update({ avatar_url: null, updated_at: new Date().toISOString() })
         .eq('id', userId)
 
       if (error) throw error

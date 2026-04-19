@@ -3,13 +3,11 @@
 import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, X, Trophy, Code, Mic, FileText, Award, Star } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachAchievement, AchievementType } from '@/lib/types/profile'
 import { MONTHS, YEARS } from '@/lib/types/profile'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const ACHIEVEMENT_TYPES: Array<{ value: AchievementType; label: string; icon: any; emoji: string }> = [
   { value: 'Professional Achievement', label: 'Professional', icon: Trophy, emoji: '🏆' },
@@ -42,7 +40,6 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
 
   const loadAchievements = async () => {
     if (!idValue) return
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { data, error } = await supabase
       .from(tableName)
       .select('*')
@@ -78,7 +75,6 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
   const handleDelete = async (id: string) => {
     if (!confirm(t('profile.achievementsSection.deleteConfirm'))) return
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
       .from(tableName)
       .delete()
@@ -288,8 +284,6 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
     if (!validateForm()) return
 
     setIsSaving(true)
-
-    const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     const payload = {
       [idField]: idValue,
