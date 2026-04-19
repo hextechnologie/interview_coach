@@ -8,6 +8,7 @@ import { Badge, Button, Card } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
 import { calculateSessionCreditsCost, getUserCredits } from '@/lib/credits'
+import { useLanguage } from '@/components/LanguageProvider'
 
 type CoachData = {
   id: string
@@ -38,6 +39,7 @@ function getNextDays(n: number) {
 const TIME_SLOTS = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
 export default function BookingPage() {
+  const { t } = useLanguage()
   const { coachId } = useParams<{ coachId: string }>()
   const { user } = useAuth()
 
@@ -171,8 +173,8 @@ export default function BookingPage() {
   if (notFound || !coach) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-white">
-        <p className="text-xl font-semibold">Coach not found</p>
-        <Link href="/coaches" className="text-primary hover:underline text-sm">Browse all coaches</Link>
+        <p className="text-xl font-semibold">{t('bookingPage.notFound')}</p>
+        <Link href="/coaches" className="text-primary hover:underline text-sm">{t('bookingPage.browseAll')}</Link>
       </div>
     )
   }
@@ -183,7 +185,7 @@ export default function BookingPage() {
     <div className="min-h-screen bg-background text-white px-6 py-8">
       <div className="mx-auto max-w-5xl">
         <Link href="/coaches" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" /> Back to coaches
+          <ArrowLeft className="h-4 w-4" /> {t('bookingPage.backToCoaches')}
         </Link>
 
         <div className="mb-6 flex items-center gap-4">
@@ -196,7 +198,7 @@ export default function BookingPage() {
             </div>
           )}
           <div>
-            <h1 className="text-3xl font-bold">Book a session with {coach.name}</h1>
+            <h1 className="text-3xl font-bold">{t('bookingPage.bookSessionWith', { name: coach.name })}</h1>
             {coach.title && <p className="text-sm text-gray-400 mt-0.5">{coach.title}</p>}
           </div>
         </div>
@@ -205,7 +207,7 @@ export default function BookingPage() {
           <div className="space-y-5">
             {/* Step 1: Date */}
             <Card>
-              <h2 className="mb-4 text-xl font-bold">Step 1 — Choose a date</h2>
+              <h2 className="mb-4 text-xl font-bold">{t('bookingPage.step1')}</h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {days.map((d) => (
                   <button key={d.date} type="button" onClick={() => { setSelectedDate(d.date); setSelectedTime('') }}
@@ -219,8 +221,8 @@ export default function BookingPage() {
 
             {/* Step 2: Time + duration */}
             <Card>
-              <h2 className="mb-4 text-xl font-bold">Step 2 — Choose time &amp; duration</h2>
-              <p className="text-xs text-gray-500 mb-3">Time slots (your local time)</p>
+              <h2 className="mb-4 text-xl font-bold">{t('bookingPage.step2')}</h2>
+              <p className="text-xs text-gray-500 mb-3">{t('bookingPage.timeSlots')}</p>
               <div className="flex flex-wrap gap-2 mb-5">
                 {TIME_SLOTS.map((time) => (
                   <button key={time} type="button" onClick={() => setSelectedTime(time)} disabled={!selectedDate}
@@ -229,12 +231,12 @@ export default function BookingPage() {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mb-3">Duration</p>
+              <p className="text-xs text-gray-500 mb-3">{t('bookingPage.duration')}</p>
               <div className="flex gap-2">
                 {[30, 60, 90].map((val) => (
                   <button key={val} type="button" onClick={() => setDuration(val)}
                     className={`rounded-full px-4 py-1.5 text-sm transition-colors ${duration === val ? 'bg-primary text-white' : 'border border-border text-gray-300 hover:border-primary/40'}`}>
-                    {val} min
+                    {t('bookingPage.minutes', { min: val })}
                   </button>
                 ))}
               </div>
@@ -242,30 +244,30 @@ export default function BookingPage() {
 
             {/* Step 3: Notes */}
             <Card>
-              <h2 className="mb-4 text-xl font-bold">Step 3 — Session notes</h2>
+              <h2 className="mb-4 text-xl font-bold">{t('bookingPage.step3')}</h2>
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
-                placeholder="Tell your coach what you want to focus on (e.g. system design, behavioural questions, salary negotiation…)"
+                placeholder={t('bookingPage.notesPlaceholder')}
                 className="w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none" />
             </Card>
 
             {/* Step 4: Pay */}
             <Card>
-              <h2 className="mb-4 text-xl font-bold">Step 4 — Confirm Booking</h2>
+              <h2 className="mb-4 text-xl font-bold">{t('bookingPage.step4')}</h2>
               <p className="text-sm text-gray-400 mb-4">
-                {sessionCreditsCost} credits will be held in escrow. Released to coach after session or refunded if cancelled 48h+ in advance.
+                {t('bookingPage.creditsHeldEscrow', { credits: sessionCreditsCost })}
               </p>
               
               {hasInsufficientCredits && (
                 <div className="mb-4 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-4 py-3">
                   <div className="flex items-center gap-2 text-yellow-300 text-sm font-semibold mb-2">
-                    <AlertCircle className="h-4 w-4" /> Insufficient Credits
+                    <AlertCircle className="h-4 w-4" /> {t('bookingPage.insufficientCredits')}
                   </div>
                   <p className="text-xs text-gray-400 mb-3">
-                    You need {sessionCreditsCost} credits but only have {userCredits ?? 0} credits.
+                    {t('bookingPage.needCredits', { needed: sessionCreditsCost, have: userCredits ?? 0 })}
                   </p>
                   <Link href="/credits">
                     <Button variant="secondary" className="w-full text-sm">
-                      Top Up Credits
+                      {t('bookingPage.topUpCredits')}
                     </Button>
                   </Link>
                 </div>
@@ -284,7 +286,7 @@ export default function BookingPage() {
                 disabled={!selectedDate || !selectedTime || !user || hasInsufficientCredits}
               >
                 <CreditCard className="h-4 w-4" />
-                Confirm Booking — {sessionCreditsCost} credits
+                {t('bookingPage.confirmBooking', { credits: sessionCreditsCost })}
               </Button>
             </Card>
           </div>
@@ -292,24 +294,24 @@ export default function BookingPage() {
           {/* Summary sidebar */}
           <div className="space-y-4">
             <Card className="sticky top-6">
-              <h2 className="mb-4 text-lg font-bold">Booking summary</h2>
+              <h2 className="mb-4 text-lg font-bold">{t('bookingPage.bookingSummary')}</h2>
               <div className="space-y-2 text-sm text-gray-300">
-                <div className="flex justify-between"><span className="text-gray-500">Coach</span><span>{coach.name}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{selectedDate || '—'}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Time</span><span>{selectedTime || '—'}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Duration</span><span>{duration} min</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Rate</span><span>{coach.creditsPerHour} credits/hr</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">{t('bookingPage.coach')}</span><span>{coach.name}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">{t('bookingPage.date')}</span><span>{selectedDate || '—'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">{t('bookingPage.time')}</span><span>{selectedTime || '—'}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">{t('bookingPage.durationLabel')}</span><span>{t('bookingPage.minutes', { min: duration })}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">{t('bookingPage.rate')}</span><span>{coach.creditsPerHour} {t('bookingPage.credits')}/hr</span></div>
               </div>
               <div className="mt-4 rounded-xl border border-border bg-background/40 p-4 text-center">
-                <p className="text-xs text-gray-500 mb-1">Total Cost</p>
+                <p className="text-xs text-gray-500 mb-1">{t('bookingPage.totalCost')}</p>
                 <p className="text-3xl font-bold text-primary">⭐ {sessionCreditsCost}</p>
-                <p className="text-xs text-gray-400 mt-1">credits</p>
+                <p className="text-xs text-gray-400 mt-1">{t('bookingPage.credits')}</p>
               </div>
 
               {userCredits !== null && (
                 <div className="mt-3 rounded-lg border border-border bg-background/20 p-3 text-center">
-                  <p className="text-xs text-gray-500 mb-1">Your Balance</p>
-                  <p className="text-lg font-semibold text-white">{userCredits} credits</p>
+                  <p className="text-xs text-gray-500 mb-1">{t('bookingPage.yourBalance')}</p>
+                  <p className="text-lg font-semibold text-white">{userCredits} {t('bookingPage.credits')}</p>
                 </div>
               )}
 
@@ -322,9 +324,9 @@ export default function BookingPage() {
               {confirmation && (
                 <div className="mt-4 rounded-xl border border-green-500/30 bg-green-500/10 p-4">
                   <div className="flex items-center gap-2 text-green-300 text-sm font-semibold mb-1">
-                    <CheckCircle2 className="h-4 w-4" /> Booking confirmed!
+                    <CheckCircle2 className="h-4 w-4" /> {t('bookingPage.bookingConfirmed')}
                   </div>
-                  <p className="text-xs text-gray-400">Your coach will be in touch to confirm the slot.</p>
+                  <p className="text-xs text-gray-400">{t('bookingPage.coachWillContact')}</p>
                 </div>
               )}
             </Card>

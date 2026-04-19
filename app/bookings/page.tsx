@@ -7,6 +7,7 @@ import { Badge, Button, Card } from '@/components/ui'
 import { CancellationModal } from '@/components/CancellationModal'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 
 type Booking = {
   id: string
@@ -26,6 +27,7 @@ type Booking = {
 }
 
 export default function BookingsPage() {
+  const { t } = useLanguage()
   const { user } = useAuth()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
@@ -100,7 +102,7 @@ export default function BookingsPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
-        <p>Please log in to view your bookings</p>
+        <p>{t('bookingsPage.loginRequired')}</p>
       </div>
     )
   }
@@ -109,10 +111,10 @@ export default function BookingsPage() {
     <div className="min-h-screen bg-background text-white px-6 py-8">
       <div className="mx-auto max-w-5xl">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" /> Back to dashboard
+          <ArrowLeft className="h-4 w-4" /> {t('bookingsPage.backToDashboard')}
         </Link>
 
-        <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('bookingsPage.title')}</h1>
 
         {/* Filter tabs */}
         <div className="flex gap-2 mb-6">
@@ -124,7 +126,7 @@ export default function BookingsPage() {
                 : 'bg-background/40 border border-border text-gray-300 hover:border-primary/40'
             }`}
           >
-            Upcoming
+            {t('bookingsPage.upcoming')}
           </button>
           <button
             onClick={() => setFilter('past')}
@@ -134,7 +136,7 @@ export default function BookingsPage() {
                 : 'bg-background/40 border border-border text-gray-300 hover:border-primary/40'
             }`}
           >
-            Past
+            {t('bookingsPage.past')}
           </button>
           <button
             onClick={() => setFilter('cancelled')}
@@ -144,18 +146,18 @@ export default function BookingsPage() {
                 : 'bg-background/40 border border-border text-gray-300 hover:border-primary/40'
             }`}
           >
-            Cancelled
+            {t('bookingsPage.cancelled')}
           </button>
         </div>
 
         {/* Bookings list */}
         {loading ? (
           <Card>
-            <p className="text-gray-400 text-center">Loading...</p>
+            <p className="text-gray-400 text-center">{t('bookingsPage.loading')}</p>
           </Card>
         ) : filteredBookings.length === 0 ? (
           <Card>
-            <p className="text-gray-400 text-center">No {filter} bookings found</p>
+            <p className="text-gray-400 text-center">{t('bookingsPage.noBookings', { filter })}</p>
           </Card>
         ) : (
           <div className="space-y-4">
@@ -168,9 +170,9 @@ export default function BookingsPage() {
                 <Card key={booking.id} className="border-primary/10">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-semibold">{otherPartyName || 'Unknown'}</h3>
+                      <h3 className="text-lg font-semibold">{otherPartyName || t('bookingsPage.unknown')}</h3>
                       <p className="text-xs text-gray-500">
-                        {userRole === 'coach' ? 'Candidate' : 'Coach'}
+                        {userRole === 'coach' ? t('bookingsPage.candidate') : t('bookingsPage.coach')}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -179,7 +181,9 @@ export default function BookingsPage() {
                         booking.status === 'completed' ? 'success' :
                         'danger'
                       }>
-                        {booking.status}
+                        {booking.status === 'confirmed' ? t('bookingsPage.confirmed') :
+                         booking.status === 'completed' ? t('bookingsPage.completed') :
+                         t('bookingsPage.cancelledStatus')}
                       </Badge>
                     </div>
                   </div>
@@ -199,19 +203,19 @@ export default function BookingsPage() {
                       {new Date(booking.scheduled_at).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit'
-                      })} • {booking.duration_minutes} minutes
+                      })} • {booking.duration_minutes} {t('bookingsPage.minutes')}
                     </div>
                     {booking.credits_cost && (
                       <div className="flex items-center gap-2 text-sm text-gray-300">
                         <span className="text-primary">⭐</span>
-                        {booking.credits_cost} credits
+                        {booking.credits_cost} {t('bookingsPage.credits')}
                       </div>
                     )}
                   </div>
 
                   {booking.notes && (
                     <div className="mb-4 p-3 rounded-lg bg-background/40 border border-border">
-                      <p className="text-xs text-gray-500 mb-1">Notes:</p>
+                      <p className="text-xs text-gray-500 mb-1">{t('bookingsPage.notesLabel')}</p>
                       <p className="text-sm text-gray-300">{booking.notes}</p>
                     </div>
                   )}
@@ -219,7 +223,7 @@ export default function BookingsPage() {
                   {booking.status === 'cancelled' && booking.cancelled_at && (
                     <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/40">
                       <p className="text-xs text-red-300">
-                        Cancelled on {new Date(booking.cancelled_at).toLocaleDateString()} by {booking.cancelled_by}
+                        {t('bookingsPage.cancelledOn', { date: new Date(booking.cancelled_at).toLocaleDateString(), by: booking.cancelled_by })}
                       </p>
                     </div>
                   )}
@@ -228,7 +232,7 @@ export default function BookingsPage() {
                     {booking.google_calendar_url && booking.status === 'confirmed' && (
                       <a href={booking.google_calendar_url} target="_blank" rel="noopener noreferrer" className="flex-1">
                         <Button variant="secondary" fullWidth className="text-sm">
-                          Add to Calendar
+                          {t('bookingsPage.addToCalendar')}
                         </Button>
                       </a>
                     )}
@@ -240,7 +244,7 @@ export default function BookingsPage() {
                         className="text-sm border-red-500/40 hover:bg-red-500/10 text-red-300"
                       >
                         <X className="h-4 w-4 mr-1" />
-                        Cancel Booking
+                        {t('bookingsPage.cancelBooking')}
                       </Button>
                     )}
                   </div>
