@@ -672,19 +672,19 @@ export default function ProfilePage() {
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Select
-                    label="Experience Level"
+                    label={t('profile.careerInfo.experienceLevel')}
                     value={experienceLevel}
                     onChange={(v) => { setExperienceLevel(v); setHasUnsaved(true) }}
                     options={[
-                      { value: 'junior', label: 'Junior (0–2 yrs)' },
-                      { value: 'mid', label: 'Mid-level (3–5 yrs)' },
-                      { value: 'senior', label: 'Senior (6+ yrs)' },
+                      { value: 'junior', label: `${t('profile.experienceLevels.junior')} (0–2 yrs)` },
+                      { value: 'mid', label: `${t('profile.experienceLevels.mid')} (3–5 yrs)` },
+                      { value: 'senior', label: `${t('profile.experienceLevels.senior')} (6+ yrs)` },
                     ]}
-                    placeholder="Select level"
+                    placeholder={t('profile.careerInfo.selectLevel') || 'Select level'}
                   />
                   
                   <Select
-                    label="Years of Experience"
+                    label={t('profile.careerInfo.yearsOfExperience')}
                     value={yearsOfExperience}
                     onChange={(v) => { setYearsOfExperience(v); setHasUnsaved(true) }}
                     options={yearsExperienceOptions}
@@ -694,7 +694,7 @@ export default function ProfilePage() {
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-200">
-                    Preferred Work Type
+                    {t('profile.careerInfo.workTypePreferences')}
                   </label>
                   <div className="flex flex-wrap gap-3">
                     <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeRemote ? '#7c3aed20' : '#0a0f1e' }}>
@@ -704,7 +704,7 @@ export default function ProfilePage() {
                         onChange={(e) => { setWorkTypeRemote(e.target.checked); setHasUnsaved(true) }}
                         className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
                       />
-                      <span className="text-sm">🏠 Remote</span>
+                      <span className="text-sm">{t('profile.careerInfo.remote')}</span>
                     </label>
                     <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeHybrid ? '#7c3aed20' : '#0a0f1e' }}>
                       <input
@@ -713,7 +713,7 @@ export default function ProfilePage() {
                         onChange={(e) => { setWorkTypeHybrid(e.target.checked); setHasUnsaved(true) }}
                         className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
                       />
-                      <span className="text-sm">🔄 Hybrid</span>
+                      <span className="text-sm">{t('profile.careerInfo.hybrid')}</span>
                     </label>
                     <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeOnsite ? '#7c3aed20' : '#0a0f1e' }}>
                       <input
@@ -722,32 +722,32 @@ export default function ProfilePage() {
                         onChange={(e) => { setWorkTypeOnsite(e.target.checked); setHasUnsaved(true) }}
                         className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
                       />
-                      <span className="text-sm">🏢 On-site</span>
+                      <span className="text-sm">{t('profile.careerInfo.onsite')}</span>
                     </label>
                   </div>
                 </div>
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-200">
-                    Expected Salary Range (optional)
+                    {t('profile.careerInfo.desiredSalary')}
                   </label>
                   <div className="grid gap-3 sm:grid-cols-[1fr_1fr_120px]">
                     <Input
-                      label="Minimum"
+                      label={t('profile.careerInfo.salaryMin')}
                       type="number"
                       value={salaryMin}
                       onChange={(v) => { setSalaryMin(v); setHasUnsaved(true) }}
-                      placeholder="50000"
+                      placeholder={t('profile.careerInfo.salaryMinPlaceholder')}
                     />
                     <Input
-                      label="Maximum"
+                      label={t('profile.careerInfo.salaryMax')}
                       type="number"
                       value={salaryMax}
                       onChange={(v) => { setSalaryMax(v); setHasUnsaved(true) }}
-                      placeholder="80000"
+                      placeholder={t('profile.careerInfo.salaryMaxPlaceholder')}
                     />
                     <Select
-                      label="Currency"
+                      label={t('profile.careerInfo.currency')}
                       value={salaryCurrency}
                       onChange={(v) => { setSalaryCurrency(v); setHasUnsaved(true) }}
                       options={currencyOptions}
@@ -758,7 +758,7 @@ export default function ProfilePage() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-200">
-                      Available From
+                      {t('profile.careerInfo.availableFrom')}
                     </label>
                     <div className="space-y-2">
                       <Select
@@ -777,8 +777,8 @@ export default function ProfilePage() {
                           setHasUnsaved(true)
                         }}
                         options={[
-                          { value: 'immediately', label: '✅ Immediately' },
-                          { value: 'specific', label: '📅 Specific Date' },
+                          { value: 'immediately', label: t('profile.careerInfo.immediately') },
+                          { value: 'specific', label: t('profile.careerInfo.specificDate') },
                         ]}
                       />
                       {availabilityMode === 'specific' && (
@@ -795,10 +795,10 @@ export default function ProfilePage() {
                   </div>
                   
                   <Input
-                    label="Preferred Job Location"
+                    label={t('profile.careerInfo.preferredJobLocation')}
                     value={preferredJobLocation}
                     onChange={(v) => { setPreferredJobLocation(v); setHasUnsaved(true) }}
-                    placeholder="e.g. Paris, France or Remote"
+                    placeholder={t('profile.careerInfo.preferredLocationPlaceholder')}
                   />
                 </div>
               </div>
@@ -810,45 +810,45 @@ export default function ProfilePage() {
                     <Globe className="w-5 h-5 text-indigo-400" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold">Social & Portfolio Links</h2>
-                    <p className="text-sm text-gray-400">Showcase your work and online presence</p>
+                    <h2 className="text-xl font-bold">{t('profile.socialLinks.title')}</h2>
+                    <p className="text-sm text-gray-400">{t('profile.socialLinks.subtitle')}</p>
                   </div>
                 </div>
 
                 <Input
-                  label="Portfolio / Website"
+                  label={t('profile.socialLinks.portfolioUrl')}
                   value={portfolioUrl}
                   onChange={(v) => { setPortfolioUrl(v); setHasUnsaved(true) }}
-                  placeholder="https://yourportfolio.com"
+                  placeholder={t('profile.socialLinks.portfolioPlaceholder')}
                 />
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Input
-                    label="GitHub"
+                    label={t('profile.socialLinks.githubUrl')}
                     value={githubUrl}
                     onChange={(v) => { setGithubUrl(v); setHasUnsaved(true) }}
-                    placeholder="https://github.com/yourusername"
+                    placeholder={t('profile.socialLinks.githubPlaceholder')}
                   />
                   <Input
-                    label="Twitter / X"
+                    label={t('profile.socialLinks.twitterUrl')}
                     value={twitterUrl}
                     onChange={(v) => { setTwitterUrl(v); setHasUnsaved(true) }}
-                    placeholder="https://twitter.com/yourusername"
+                    placeholder={t('profile.socialLinks.twitterPlaceholder')}
                   />
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Input
-                    label="Behance (Designers)"
+                    label={t('profile.socialLinks.behanceUrl')}
                     value={behanceUrl}
                     onChange={(v) => { setBehanceUrl(v); setHasUnsaved(true) }}
-                    placeholder="https://behance.net/yourusername"
+                    placeholder={t('profile.socialLinks.behancePlaceholder')}
                   />
                   <Input
-                    label="Dribbble (Designers)"
+                    label={t('profile.socialLinks.dribbbleUrl')}
                     value={dribbbleUrl}
                     onChange={(v) => { setDribbbleUrl(v); setHasUnsaved(true) }}
-                    placeholder="https://dribbble.com/yourusername"
+                    placeholder={t('profile.socialLinks.dribbblePlaceholder')}
                   />
                 </div>
               </div>
@@ -859,7 +859,7 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-orange-600/20 flex items-center justify-center">
                     <Building className="w-5 h-5 text-orange-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Work Experience</h2>
+                  <h2 className="text-xl font-bold">{t('profile.workExperience.title')}</h2>
                 </div>
                 <ExperienceCardsSection userId={user.id} />
               </div>
@@ -870,7 +870,7 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-yellow-600/20 flex items-center justify-center">
                     <GraduationCap className="w-5 h-5 text-yellow-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Education & Certifications</h2>
+                  <h2 className="text-xl font-bold">{t('profile.education.title')}</h2>
                 </div>
                 <EducationCardsSection userId={user.id} userCountry={country} />
               </div>
@@ -881,7 +881,7 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-pink-600/20 flex items-center justify-center">
                     <Wrench className="w-5 h-5 text-pink-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Skills & Expertise</h2>
+                  <h2 className="text-xl font-bold">{t('profile.skills.title')}</h2>
                 </div>
                 <SkillsSelector userId={user.id} />
               </div>
@@ -892,7 +892,7 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-amber-600/20 flex items-center justify-center">
                     <Trophy className="w-5 h-5 text-amber-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Achievements & Highlights</h2>
+                  <h2 className="text-xl font-bold">{t('profile.achievements.title')}</h2>
                 </div>
                 <AchievementsCardsSection userId={user.id} />
               </div>
@@ -903,26 +903,26 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-gray-600/20 flex items-center justify-center">
                     <Key className="w-5 h-5 text-gray-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Account Settings</h2>
+                  <h2 className="text-xl font-bold">{t('profile.accountSettings.title')}</h2>
                 </div>
 
                 {/* Plan Info */}
                 <div className="rounded-lg border border-white/10 p-4" style={{ background: '#0a0f1e' }}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Current Plan</span>
+                    <span className="text-sm text-gray-400">{t('profile.accountSettings.currentPlan')}</span>
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-white capitalize">
                       {profile.subscription_tier || 'Free'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Interviews this month</span>
+                    <span className="text-gray-400">{t('profile.accountSettings.interviewsThisMonth')}</span>
                     <span className="text-white font-medium">
-                      {profile.interviews_used_this_month || 0} / {profile.interviews_limit === 999999 ? 'Unlimited' : profile.interviews_limit}
+                      {profile.interviews_used_this_month || 0} / {profile.interviews_limit === 999999 ? t('profile.accountSettings.unlimited') : profile.interviews_limit}
                     </span>
                   </div>
                   <Link href="/pricing" className="mt-4 block">
                     <Button variant={profile.subscription_tier === 'pro' ? 'outline' : 'primary'} fullWidth>
-                      {profile.subscription_tier === 'pro' ? 'Manage Plan' : 'Upgrade Plan'}
+                      {profile.subscription_tier === 'pro' ? t('profile.accountSettings.managePlan') : t('profile.accountSettings.upgradePlan')}
                     </Button>
                   </Link>
                 </div>
@@ -930,7 +930,7 @@ export default function ProfilePage() {
                 {/* Change Password */}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-200">
-                    Password
+                    {t('profile.accountSettings.password')}
                   </label>
                   <Button
                     type="button"
@@ -939,7 +939,7 @@ export default function ProfilePage() {
                     fullWidth
                   >
                     <Key className="w-4 h-4 mr-2" />
-                    Change Password
+                    {t('profile.accountSettings.changePassword')}
                   </Button>
                 </div>
 
@@ -947,32 +947,32 @@ export default function ProfilePage() {
                 <div>
                   <label className="mb-3 block text-sm font-medium text-gray-200">
                     <Bell className="w-4 h-4 inline mr-2" />
-                    Notification Preferences
+                    {t('profile.accountSettings.notificationPreferences')}
                   </label>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
-                      <span className="text-sm text-gray-200">New coach message</span>
+                      <span className="text-sm text-gray-200">{t('profile.accountSettings.notifyCoachMessage')}</span>
                       <Toggle
                         checked={notifyCoachMessage}
                         onChange={(checked) => { setNotifyCoachMessage(checked); setHasUnsaved(true) }}
                       />
                     </div>
                     <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
-                      <span className="text-sm text-gray-200">Session reminder (1 hour before)</span>
+                      <span className="text-sm text-gray-200">{t('profile.accountSettings.notifySessionReminder')}</span>
                       <Toggle
                         checked={notifySessionReminder}
                         onChange={(checked) => { setNotifySessionReminder(checked); setHasUnsaved(true) }}
                       />
                     </div>
                     <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
-                      <span className="text-sm text-gray-200">New job offers matching profile</span>
+                      <span className="text-sm text-gray-200">{t('profile.accountSettings.notifyJobOffers')}</span>
                       <Toggle
                         checked={notifyJobOffers}
                         onChange={(checked) => { setNotifyJobOffers(checked); setHasUnsaved(true) }}
                       />
                     </div>
                     <div className="flex items-center justify-between p-3 rounded-lg border border-white/10" style={{ background: '#0a0f1e' }}>
-                      <span className="text-sm text-gray-200">Weekly progress report</span>
+                      <span className="text-sm text-gray-200">{t('profile.accountSettings.notifyWeeklyReport')}</span>
                       <Toggle
                         checked={notifyWeeklyReport}
                         onChange={(checked) => { setNotifyWeeklyReport(checked); setHasUnsaved(true) }}
@@ -1018,7 +1018,7 @@ export default function ProfilePage() {
               {/* Save Button */}
               <div className="sticky bottom-4 z-30">
                 <Button type="submit" variant="primary" fullWidth loading={saving} className="shadow-2xl">
-                  Save Changes
+                  {t('profile.saveChanges')}
                 </Button>
               </div>
             </form>
