@@ -12,6 +12,7 @@ import { MetricBar } from '@/components/feedback/MetricBar'
 import { AchievementBadge } from '@/components/feedback/AchievementBadge'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
+import { useLanguage } from '@/components/LanguageProvider'
 
 type FeedbackData = {
   score: number
@@ -161,8 +162,6 @@ export default function InterviewPage() {
   const [isListening, setIsListening] = useState(false)
   const [speechEnabled, setSpeechEnabled] = useState(true)
   const [sessionComplete, setSessionComplete] = useState(false)
-  const [feedbackLanguage, setFeedbackLanguage] = useState<'en' | 'fr' | 'ar'>('en')
-  const [translating, setTranslating] = useState(false)
   const [previousSessionScore, setPreviousSessionScore] = useState<number | null>(null)
   const [recentScores, setRecentScores] = useState<number[]>([])
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -170,7 +169,6 @@ export default function InterviewPage() {
   const isLoadingQuestionRef = useRef(false)
   const recognitionRef = useRef<any>(null)
 
-  const t = UI_TEXT[feedbackLanguage]
   const awaitingChoice = messages[messages.length - 1]?.role === 'feedback'
 
   const stopAudioPlayback = () => {
@@ -246,7 +244,6 @@ export default function InterviewPage() {
       if (data.session) {
         setSession(data.session)
         setQuestionCount(data.session.questions_answered)
-        setFeedbackLanguage((data.session.interview_config?.language || 'en').startsWith('fr') ? 'fr' : (data.session.interview_config?.language || 'en').startsWith('ar') ? 'ar' : 'en')
 
         if (data.messages && data.messages.length > 0) {
           setMessages(data.messages)
@@ -297,7 +294,7 @@ export default function InterviewPage() {
 
       if (!response.ok) {
         toast.error(data.error || 'Failed to get question')
-        return
+        returnt.messages.questionFailed
       }
 
       if (data.question) {
@@ -311,7 +308,7 @@ export default function InterviewPage() {
       }
     } catch (error) {
       console.error('Error getting question:', error)
-      toast.error('Failed to get next question')
+      toast.error(t.messages.questionError)
     } finally {
       setLoading(false)
       isLoadingQuestionRef.current = false
@@ -357,15 +354,15 @@ export default function InterviewPage() {
 
         setSessionComplete(Boolean(data.completed))
         if (data.completed) {
-          toast.success('Interview complete! Your summary email is on the way.')
+          toast.success(t.messages.interviewComplete)
         }
       } else {
-        toast.error('No feedback was returned for this answer.')
+        toast.error(t.messages.noFeedback)
       }
     } catch (error) {
       console.error('Error submitting answer:', error)
-      toast.error('Failed to submit answer')
-    } finally {
+      toast.error(t.messages.answerFailed)
+    } finally{
       setWaitingForFeedback(false)
       setLoading(false)
     }
@@ -392,7 +389,7 @@ export default function InterviewPage() {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
 
     if (!SpeechRecognition) {
-      toast.error('Voice input is not supported in this browser.')
+      toast.error(t.messages.voiceNotSupported)
       return
     }
 
@@ -460,7 +457,7 @@ export default function InterviewPage() {
     setCurrentAnswer('')
     setSessionComplete(false)
     setTimeout(() => setActionLoading(null), 300)
-    toast.success('You can try the same question again now.')
+    toast.success(t.messages.retrySuccess)
   }
 
   const handleNextQuestion = async () => {
@@ -479,56 +476,25 @@ export default function InterviewPage() {
   const copyFeedback = async (feedback: FeedbackData) => {
     try {
       await navigator.clipboard.writeText([
-        `Score: ${feedback.score}/10`,
-        `Strengths: ${feedback.strengths.join('; ')}`,
-        `Areas to improve: ${feedback.weaknesses.join('; ')}`,
-        `Quick fix: ${feedback.quick_fix || ''}`,
-        `Improved answer: ${feedback.improved_answer}`,
+        `${t.score.label}: ${feedback.score}/10`,
+        `${t.feedback.strengths}: ${feedback.strengths.join('; ')}`,
+        `${t.feedback.areas}: ${feedback.weaknesses.join('; ')}`,
+        `${t.feedback.quickFix}: ${feedback.quick_fix || ''}`,
+        `${t.feedback.improvedAnswer}: ${feedback.improved_answer}`,
       ].join('\n'))
-      toast.success(t.copied)
+      toast.success(t.messages.copied)
     } catch {
-      toast.error('Copy failed')
+      toast.error(t.messages.copyFailed)
     }
   }
 
   const shareOnLinkedIn = (feedback: FeedbackData) => {
-    const shareText = encodeURIComponent(`I just scored ${feedback.score}/10 on an AI mock interview for ${session?.job_role || 'my role'}! Practicing with Interview Coach 🎯`)
+    const shareText = encodeURIComponent(
+      t.linkedInShare
+        .replace('{score}', String(feedback.score))
+        .replace('{role}', session?.job_role || 'my role')
+    )
     window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${shareText}`, '_blank', 'noopener,noreferrer')
-  }
-
-  const translateAllFeedback = async (targetLanguage: 'en' | 'fr' | 'ar') => {
-    try {
-      setTranslating(true)
-      const translatedMessages = await Promise.all(
-        messages.map(async (message) => {
-          if (message.role !== 'feedback' || !message.feedback) return message
-
-          const response = await fetch('/api/interview/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              feedback: message.feedback,
-              targetLanguage,
-            }),
-          })
-
-          const data = await response.json()
-          return {
-            ...message,
-            feedback: data.feedback || message.feedback,
-          }
-        })
-      )
-
-      setMessages(translatedMessages)
-      setFeedbackLanguage(targetLanguage)
-      toast.success(`Feedback switched to ${targetLanguage.toUpperCase()}`)
-    } catch (error) {
-      console.error('Translate feedback error:', error)
-      toast.error('Translation failed')
-    } finally {
-      setTranslating(false)
-    }
   }
 
   const buildAchievements = (score: number) => {
@@ -566,10 +532,10 @@ export default function InterviewPage() {
                   <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
                 </div>
               )}
-              <div className="flex items-center gap-1 rounded-xl border border-border bg-card/70 p-1">
-                <Languages className="w-4 h-4 text-primary ml-1" />
-                {(['en', 'fr', 'ar'] as const).map((lang) => (
-                  <button
+              <div className=achievements.firstInterview, unlocked: recentScores.length + 1 >= 1, highlight: recentScores.length === 0 },
+      { icon: '🥈', label: t.achievements.passingScore, unlocked: score > 5, highlight: score > 5 && !recentScores.some((item) => item > 5) },
+      { icon: '🥇', label: t.achievements.excellenceBadge, unlocked: score > 8, highlight: score > 8 && !recentScores.some((item) => item > 8) },
+      { icon: '🔥', label: t.achievements
                     key={lang}
                     type="button"
                     disabled={translating}
@@ -598,11 +564,11 @@ export default function InterviewPage() {
                     <div className="flex justify-end gap-2 mb-3">
                       <Button variant="outline" className="px-3 py-2 text-xs" onClick={toggleSpeech}>
                         <VolumeX className="w-3 h-3" />
-                        {speechEnabled ? 'Mute' : 'Unmute'}
+                        {speechEnabled ? t.controls.mute : t.controls.unmute}
                       </Button>
                       <Button variant="outline" className="px-3 py-2 text-xs" onClick={replayLastQuestion} disabled={!speechEnabled}>
                         <RotateCcw className="w-3 h-3" />
-                        Replay Question
+                        {t.controls.replayQuestion}
                       </Button>
                     </div>
                     <div className="prose prose-invert max-w-none">
@@ -633,15 +599,11 @@ export default function InterviewPage() {
                         <AnimatedScoreRing
                           score={message.feedback.score}
                           previousDelta={previousSessionScore !== null ? Number((message.feedback.score - previousSessionScore).toFixed(1)) : null}
-                          scoreLabel={t.scoreLabel}
-                          needsWorkLabel={t.needsWork}
-                          gettingThereLabel={t.gettingThere}
-                          excellentLabel={t.excellent}
-                          deltaText={(delta) => feedbackLanguage === 'fr'
-                            ? `Vous avez progressé de ${delta >= 0 ? '+' : ''}${delta} points par rapport à la dernière session ! 📈`
-                            : feedbackLanguage === 'ar'
-                              ? `لقد تحسّنت بمقدار ${delta >= 0 ? '+' : ''}${delta} نقطة مقارنة بالجلسة السابقة! 📈`
-                              : `You improved ${delta >= 0 ? '+' : ''}${delta} points from last session! 📈`}
+                          scoreLabel={t.score.label}
+                          needsWorkLabel={t.score.needsWork}
+                          gettingThereLabel={t.score.gettingThere}
+                          excellentLabel={t.score.excellent}
+                          deltaText={(delta) => t.score.improvedBy.replace('{delta}', String(delta >= 0 ? '+' : '') + delta)}
                         />
 
                         <div className="space-y-4">
@@ -650,31 +612,31 @@ export default function InterviewPage() {
                             <MetricBar label={t.clarity} value={message.feedback.metrics?.clarity || 0} colorClass="from-blue-400 to-cyan-500" />
                             <MetricBar label={t.starMethod} value={message.feedback.metrics?.star_method_score || 0} max={10} suffix="/10" colorClass="from-violet-400 to-purple-500" />
                           </div>
+metrics.confidence} value={message.feedback.metrics?.confidence || 0} />
+                            <MetricBar label={t.metrics.clarity} value={message.feedback.metrics?.clarity || 0} colorClass="from-blue-400 to-cyan-500" />
+                            <MetricBar label={t.metrics.starMethod} value={message.feedback.metrics?.star_method_score || 0} max={10} suffix="/10" colorClass="from-violet-400 to-purple-500" />
+                          </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="rounded-xl border border-border p-3 bg-background/40">
-                              <p className="text-sm text-gray-400 mb-1">{t.fillerWords}</p>
+                              <p className="text-sm text-gray-400 mb-1">{t.metrics.fillerWords}</p>
                               <p className="text-2xl font-bold text-yellow-300">{message.feedback.metrics?.filler_words || 0}</p>
                             </div>
                             <div className="rounded-xl border border-border p-3 bg-background/40">
-                              <p className="text-sm text-gray-400 mb-1">{t.keywordsUsed}</p>
+                              <p className="text-sm text-gray-400 mb-1">{t.metrics.keywordsUsed}</p>
                               <p className="text-2xl font-bold text-primary">{message.feedback.metrics?.keywords_used || 0}</p>
                             </div>
                             <div className="rounded-xl border border-border p-3 bg-background/40 flex flex-col gap-2">
-                              <p className="text-sm text-gray-400">{t.tone}</p>
+                              <p className="text-sm text-gray-400">{t.metrics.tone}</p>
                               <Badge variant={(message.feedback.metrics?.tone || '').includes('🎯') ? 'success' : (message.feedback.metrics?.tone || '').includes('😰') ? 'warning' : 'default'}>
-                                {message.feedback.metrics?.tone || 'Professional 🎯'}
+                                {message.feedback.metrics?.tone || t.tones.professional}
                               </Badge>
                               <Badge variant={message.feedback.metrics?.answer_length === 'Perfect' ? 'success' : 'warning'}>
-                                {message.feedback.metrics?.answer_length || 'Perfect'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
+                                {message.feedback.metrics?.answer_length === 'Too Short' ? t.lengths.tooShort : message.feedback.metrics?.answer_length === 'Too Long' ? t.lengths.tooLong : t.lengths.perfect
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-green-400 mb-2">{t.strengths}</h4>
+                        <h4 className="font-semibold text-green-400 mb-2">{t.feedback.strengths}</h4>
                         <ul className="space-y-1 text-sm text-gray-300">
                           {message.feedback.strengths.map((strength, i) => (
                             <li key={i}>• {strength}</li>
@@ -683,7 +645,7 @@ export default function InterviewPage() {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-yellow-400 mb-2">{t.areas}</h4>
+                        <h4 className="font-semibold text-yellow-400 mb-2">{t.feedback.areas}</h4>
                         <ul className="space-y-1 text-sm text-gray-300">
                           {message.feedback.weaknesses.map((weakness, i) => (
                             <li key={i}>• {weakness}</li>
@@ -692,32 +654,32 @@ export default function InterviewPage() {
                       </div>
 
                       <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-violet-500/15 to-blue-500/15 p-4">
-                        <h4 className="mb-1 flex items-center gap-2 font-semibold text-primary">💡 {t.quickFix}</h4>
+                        <h4 className="mb-1 flex items-center gap-2 font-semibold text-primary">💡 {t.feedback.quickFix}</h4>
                         <p className="text-sm text-gray-200">{message.feedback.quick_fix || 'Start your answer with the situation, explain your action, then the result.'}</p>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         <Button variant="outline" className="hover:shadow-[0_0_18px_rgba(139,92,246,0.45)]" onClick={() => toggleFeedbackPanel(index, 'ideal')}>
-                          {t.showIdeal}
+                          {t.feedback.showIdeal}
                         </Button>
                         <Button variant="outline" className="hover:shadow-[0_0_18px_rgba(139,92,246,0.45)]" onClick={() => toggleFeedbackPanel(index, 'improved')}>
-                          {t.improve}
+                          {t.feedback.improve}
                         </Button>
                         <Button variant="outline" className="hover:shadow-[0_0_18px_rgba(139,92,246,0.45)]" onClick={handleTryAgain} loading={actionLoading === 'retry'}>
                           <RotateCcw className="w-4 h-4" />
-                          {t.tryAgain}
+                          {t.feedback.tryAgain}
                         </Button>
                         <Button variant="outline" className="hover:shadow-[0_0_18px_rgba(139,92,246,0.45)]" onClick={handleNextQuestion} loading={actionLoading === 'next'}>
                           <SkipForward className="w-4 h-4" />
-                          {sessionComplete ? t.viewSummary : t.next}
+                          {sessionComplete ? t.feedback.viewSummary : t.feedback.next}
                         </Button>
                         <Button variant="outline" className="hover:shadow-[0_0_18px_rgba(139,92,246,0.45)]" onClick={() => copyFeedback(message.feedback!)}>
                           <Copy className="w-4 h-4" />
-                          {t.copy}
+                          {t.feedback.copy}
                         </Button>
                         <Button variant="outline" className="hover:shadow-[0_0_18px_rgba(139,92,246,0.45)]" onClick={() => shareOnLinkedIn(message.feedback!)}>
                           <Share2 className="w-4 h-4" />
-                          {t.share}
+                          {t.feedback.share}
                         </Button>
                       </div>
 
@@ -725,17 +687,17 @@ export default function InterviewPage() {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4">
-                              <h4 className="font-semibold text-red-300 mb-2">{t.yourAnswer}</h4>
+                              <h4 className="font-semibold text-red-300 mb-2">{t.feedback.yourAnswer}</h4>
                               <p className="text-sm text-gray-300 whitespace-pre-wrap">{messages[index - 1]?.role === 'user' ? messages[index - 1].content : 'Your latest answer appears here.'}</p>
                             </div>
                             <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4">
-                              <h4 className="font-semibold text-green-300 mb-2">{t.idealAnswer}</h4>
+                              <h4 className="font-semibold text-green-300 mb-2">{t.feedback.idealAnswer}</h4>
                               <p className="text-sm text-gray-200 whitespace-pre-wrap">{message.feedback.ideal_answer || 'No ideal answer available yet.'}</p>
                             </div>
                           </div>
 
                           <div>
-                            <h5 className="font-semibold text-primary mb-2">{t.whatsDifferent}</h5>
+                            <h5 className="font-semibold text-primary mb-2">{t.feedback.whatsDifferent}</h5>
                             <ul className="space-y-1 text-sm text-gray-300">
                               {(message.feedback.difference_points || []).map((point, pointIndex) => (
                                 <li key={pointIndex}>• {point}</li>
@@ -747,7 +709,7 @@ export default function InterviewPage() {
 
                       {revealedFeedback[index]?.improved && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl border border-primary/30 bg-primary/5 p-4">
-                          <h4 className="font-semibold text-primary mb-2">{t.improvedAnswer}</h4>
+                          <h4 className="font-semibold text-primary mb-2">{t.feedback.improvedAnswer}</h4>
                           <p className="text-sm text-gray-300 whitespace-pre-wrap">{message.feedback.improved_answer}</p>
                         </motion.div>
                       )}
@@ -763,13 +725,13 @@ export default function InterviewPage() {
                         </div>
                         <p className="text-sm text-gray-200">
                           {message.feedback.score < 7
-                            ? t.motivationLow(Math.max(0, 7 - message.feedback.score))
-                            : t.motivationHigh}
+                            ? t.score.motivationLow.replace('{points}', String(Math.max(0, 7 - message.feedback.score)))
+                            : t.score.motivationHigh}
                         </p>
                       </div>
 
                       <div>
-                        <h4 className="mb-3 font-semibold text-primary">{t.achievements}</h4>
+                        <h4 className="mb-3 font-semibold text-primary">{t.achievements.title}</h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                           {buildAchievements(message.feedback.score).map((badge) => (
                             <AchievementBadge key={badge.label} {...badge} />
@@ -791,7 +753,7 @@ export default function InterviewPage() {
               <Card className="flex-1 bg-card/50">
                 <div className="flex items-center gap-3">
                   <LoadingSpinner size="sm" />
-                  <span className="text-gray-400">Thinking...</span>
+                  <span className="text-gray-400">{t.loading.thinking}</span>
                 </div>
               </Card>
             </div>
@@ -806,7 +768,7 @@ export default function InterviewPage() {
               value={currentAnswer}
               onChange={(e) => setCurrentAnswer(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your answer here or use the microphone..."
+              placeholder={t.input.placeholder}
               disabled={loading || waitingForFeedback || awaitingChoice}
               rows={3}
               className="flex-1 bg-background border border-border rounded-lg px-4 py-3 text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none disabled:opacity-50"
@@ -831,7 +793,7 @@ export default function InterviewPage() {
             </div>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Tip: Use the microphone or type your answer, then choose Try Again or Next Question after feedback appears.
+            {t.input.tip}
           </p>
         </Card>
       </div>

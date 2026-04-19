@@ -904,5 +904,92 @@
       }
     },
     "dashboard": "Dashboard"
+  },
+  "interview": {
+    "header": {
+      "logoText": "Interview Coach",
+      "questionCount": "Question {current} of ~{total}",
+      "languageLabel": "Feedback Language"
+    },
+    "controls": {
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "replayQuestion": "Replay Question",
+      "startRecording": "Start Recording",
+      "stopRecording": "Stop Recording"
+    },
+    "feedback": {
+      "strengths": "Strengths",
+      "areas": "Areas to Improve",
+      "quickFix": "Quick Fix",
+      "showIdeal": "Show Ideal Answer",
+      "improve": "Improve My Answer",
+      "improvedAnswer": "Improved Answer",
+      "tryAgain": "Try Again",
+      "next": "Next Question",
+      "copy": "Copy Feedback",
+      "share": "Share on LinkedIn",
+      "yourAnswer": "Your Answer",
+      "idealAnswer": "Ideal Answer",
+      "whatsDifferent": "What's Different?",
+      "viewSummary": "View Summary"
+    },
+    "metrics": {
+      "confidence": "Confidence",
+      "clarity": "Clarity",
+      "fillerWords": "Filler Words",
+      "keywordsUsed": "Keywords Used",
+      "starMethod": "STAR Method Score",
+      "tone": "Tone",
+      "answerLength": "Answer Length"
+    },
+    "score": {
+      "label": "Score",
+      "needsWork": "Needs Work",
+      "gettingThere": "Getting There",
+      "excellent": "Excellent!",
+      "improvedBy": "You improved {delta} points from last session! 📈",
+      "motivationLow": "You are {points} points away from a passing score! 💪",
+      "motivationHigh": "Great job! Can you beat your score next time? 🏆"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "firstInterview": "First Interview",
+      "passingScore": "Passing Score",
+      "excellenceBadge": "Excellence",
+      "onFire": "On Fire"
+    },
+    "input": {
+      "placeholder": "Type your answer here or use the microphone...",
+      "tip": "Tip: Use the microphone or type your answer, then choose Try Again or Next Question after feedback appears."
+    },
+    "loading": {
+      "thinking": "Thinking...",
+      "loading": "Loading..."
+    },
+    "messages": {
+      "copied": "Copied! ✅",
+      "copyFailed": "Copy failed",
+      "translationFailed": "Translation failed",
+      "translationSuccess": "Feedback switched to {language}",
+      "questionFailed": "Failed to get question",
+      "questionError": "Failed to get next question",
+      "answerFailed": "Failed to submit answer",
+      "noFeedback": "No feedback was returned for this answer.",
+      "interviewComplete": "Interview complete! Your summary email is on the way.",
+      "voiceNotSupported": "Voice input is not supported in this browser.",
+      "retrySuccess": "You can try the same question again now."
+    },
+    "tones": {
+      "professional": "Professional 🎯",
+      "casual": "Casual 😊",
+      "nervous": "Nervous 😰"
+    },
+    "lengths": {
+      "tooShort": "Too Short",
+      "perfect": "Perfect",
+      "tooLong": "Too Long"
+    },
+    "linkedInShare": "I just scored {score}/10 on an AI mock interview for {role}! Practicing with Interview Coach 🎯"
   }
 }

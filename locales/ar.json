@@ -904,5 +904,92 @@
       }
     },
     "dashboard": "لوحة التحكم"
+  },
+  "interview": {
+    "header": {
+      "logoText": "Interview Coach",
+      "questionCount": "السؤال {current} من ~{total}",
+      "languageLabel": "لغة الملاحظات"
+    },
+    "controls": {
+      "mute": "كتم الصوت",
+      "unmute": "تشغيل الصوت",
+      "replayQuestion": "إعادة تشغيل السؤال",
+      "startRecording": "بدء التسجيل",
+      "stopRecording": "إيقاف التسجيل"
+    },
+    "feedback": {
+      "strengths": "نقاط القوة",
+      "areas": "نقاط التحسين",
+      "quickFix": "إصلاح سريع",
+      "showIdeal": "عرض الإجابة المثالية",
+      "improve": "حسّن إجابتي",
+      "improvedAnswer": "الإجابة المحسّنة",
+      "tryAgain": "حاول مرة أخرى",
+      "next": "السؤال التالي",
+      "copy": "نسخ الملاحظات",
+      "share": "مشاركة على لينكدإن",
+      "yourAnswer": "إجابتك",
+      "idealAnswer": "الإجابة المثالية",
+      "whatsDifferent": "ما الفرق؟",
+      "viewSummary": "عرض الملخص"
+    },
+    "metrics": {
+      "confidence": "الثقة",
+      "clarity": "الوضوح",
+      "fillerWords": "الكلمات الحشوية",
+      "keywordsUsed": "الكلمات المفتاحية المستخدمة",
+      "starMethod": "درجة STAR",
+      "tone": "النبرة",
+      "answerLength": "طول الإجابة"
+    },
+    "score": {
+      "label": "النتيجة",
+      "needsWork": "بحاجة لتحسين",
+      "gettingThere": "تقدّم جيد",
+      "excellent": "ممتاز!",
+      "improvedBy": "لقد تحسّنت بمقدار {delta} نقطة مقارنة بالجلسة السابقة! 📈",
+      "motivationLow": "أنت بحاجة إلى {points} نقاط للوصول إلى درجة النجاح! 💪",
+      "motivationHigh": "أحسنت! هل يمكنك تحقيق نتيجة أفضل في المرة القادمة؟ 🏆"
+    },
+    "achievements": {
+      "title": "الإنجازات",
+      "firstInterview": "أول مقابلة",
+      "passingScore": "درجة نجاح",
+      "excellenceBadge": "تميّز",
+      "onFire": "أداء رائع"
+    },
+    "input": {
+      "placeholder": "اكتب إجابتك هنا أو استخدم الميكروفون...",
+      "tip": "نصيحة: استخدم الميكروفون أو اكتب إجابتك، ثم اختر حاول مرة أخرى أو السؤال التالي بعد ظهور الملاحظات."
+    },
+    "loading": {
+      "thinking": "جاري التفكير...",
+      "loading": "جاري التحميل..."
+    },
+    "messages": {
+      "copied": "تم النسخ ✅",
+      "copyFailed": "فشل النسخ",
+      "translationFailed": "فشلت الترجمة",
+      "translationSuccess": "تم تبديل الملاحظات إلى {language}",
+      "questionFailed": "فشل الحصول على السؤال",
+      "questionError": "فشل الحصول على السؤال التالي",
+      "answerFailed": "فشل إرسال الإجابة",
+      "noFeedback": "لم يتم إرجاع أي ملاحظات لهذه الإجابة.",
+      "interviewComplete": "اكتملت المقابلة! ملخصك عبر البريد الإلكتروني في الطريق.",
+      "voiceNotSupported": "الإدخال الصوتي غير مدعوم في هذا المتصفح.",
+      "retrySuccess": "يمكنك الآن محاولة نفس السؤال مرة أخرى."
+    },
+    "tones": {
+      "professional": "احترافي 🎯",
+      "casual": "عادي 😊",
+      "nervous": "متوتر 😰"
+    },
+    "lengths": {
+      "tooShort": "قصير جداً",
+      "perfect": "مثالي",
+      "tooLong": "طويل جداً"
+    },
+    "linkedInShare": "لقد حصلت للتو على {score}/10 في مقابلة تدريبية بالذكاء الاصطناعي لـ {role}! أتدرب مع Interview Coach 🎯"
   }
 }

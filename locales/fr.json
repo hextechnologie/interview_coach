@@ -902,5 +902,92 @@
       }
     },
     "dashboard": "Tableau de bord"
+  },
+  "interview": {
+    "header": {
+      "logoText": "Interview Coach",
+      "questionCount": "Question {current} sur ~{total}",
+      "languageLabel": "Langue du feedback"
+    },
+    "controls": {
+      "mute": "Couper le son",
+      "unmute": "Activer le son",
+      "replayQuestion": "Rejouer la question",
+      "startRecording": "Démarrer l'enregistrement",
+      "stopRecording": "Arrêter l'enregistrement"
+    },
+    "feedback": {
+      "strengths": "Points forts",
+      "areas": "Axes d'amélioration",
+      "quickFix": "Correction rapide",
+      "showIdeal": "Voir la réponse idéale",
+      "improve": "Améliorer ma réponse",
+      "improvedAnswer": "Réponse améliorée",
+      "tryAgain": "Réessayer",
+      "next": "Question suivante",
+      "copy": "Copier le feedback",
+      "share": "Partager sur LinkedIn",
+      "yourAnswer": "Votre réponse",
+      "idealAnswer": "Réponse idéale",
+      "whatsDifferent": "Quelle est la différence ?",
+      "viewSummary": "Voir le résumé"
+    },
+    "metrics": {
+      "confidence": "Confiance",
+      "clarity": "Clarté",
+      "fillerWords": "Mots de remplissage",
+      "keywordsUsed": "Mots-clés utilisés",
+      "starMethod": "Score méthode STAR",
+      "tone": "Ton",
+      "answerLength": "Longueur de réponse"
+    },
+    "score": {
+      "label": "Score",
+      "needsWork": "À améliorer",
+      "gettingThere": "Bon progrès",
+      "excellent": "Excellent !",
+      "improvedBy": "Vous avez progressé de {delta} points par rapport à la dernière session ! 📈",
+      "motivationLow": "Il vous manque {points} points pour atteindre un score satisfaisant ! 💪",
+      "motivationHigh": "Très bon travail ! Pouvez-vous faire encore mieux la prochaine fois ? 🏆"
+    },
+    "achievements": {
+      "title": "Succès",
+      "firstInterview": "Premier entretien",
+      "passingScore": "Score validé",
+      "excellenceBadge": "Excellence",
+      "onFire": "En pleine forme"
+    },
+    "input": {
+      "placeholder": "Tapez votre réponse ici ou utilisez le microphone...",
+      "tip": "Astuce : utilisez le microphone ou tapez votre réponse, puis choisissez Réessayer ou Question suivante après l'apparition du feedback."
+    },
+    "loading": {
+      "thinking": "Réflexion en cours...",
+      "loading": "Chargement..."
+    },
+    "messages": {
+      "copied": "Copié ! ✅",
+      "copyFailed": "Échec de la copie",
+      "translationFailed": "Échec de la traduction",
+      "translationSuccess": "Feedback basculé vers {language}",
+      "questionFailed": "Échec de l'obtention de la question",
+      "questionError": "Échec de l'obtention de la question suivante",
+      "answerFailed": "Échec de l'envoi de la réponse",
+      "noFeedback": "Aucun feedback n'a été retourné pour cette réponse.",
+      "interviewComplete": "Entretien terminé ! Votre résumé par e-mail est en route.",
+      "voiceNotSupported": "L'entrée vocale n'est pas prise en charge dans ce navigateur.",
+      "retrySuccess": "Vous pouvez réessayer la même question maintenant."
+    },
+    "tones": {
+      "professional": "Professionnel 🎯",
+      "casual": "Décontracté 😊",
+      "nervous": "Nerveux 😰"
+    },
+    "lengths": {
+      "tooShort": "Trop court",
+      "perfect": "Parfait",
+      "tooLong": "Trop long"
+    },
+    "linkedInShare": "Je viens d'obtenir {score}/10 lors d'un entretien simulé IA pour {role} ! Je m'entraîne avec Interview Coach 🎯"
   }
 }
