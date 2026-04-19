@@ -268,7 +268,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+                className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight"
               >
                 Land your dream job with{' '}
                 <span className="gradient-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 bg-clip-text text-transparent animate-gradient">
@@ -291,7 +291,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8"
+                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6"
               >
                 {user ? (
                   <>
@@ -321,6 +321,16 @@ export default function HomePage() {
                   </>
                 )}
               </motion.div>
+
+              {/* Small text below buttons */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="text-sm text-gray-400 mb-8 text-center lg:text-left"
+              >
+                ✨ No credit card needed · Start for free
+              </motion.p>
 
               {/* Watch demo */}
               <motion.div
@@ -736,7 +746,10 @@ export default function HomePage() {
                     <span className="font-bold text-white">{coach.rating}</span>
                     <span className="text-gray-500">({coach.sessions} sessions)</span>
                   </div>
-                  <span className="text-purple-400 font-bold text-base">${coach.price}/session</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-purple-400 font-bold text-base">{coach.price} credits</span>
+                    <span className="text-xs text-gray-500" title="1 credit = $1 USD">ℹ️</span>
+                  </div>
                 </div>
 
                 <Link href="/coaches" className="mt-auto">
@@ -760,7 +773,7 @@ export default function HomePage() {
             className="text-center"
           >
             <Link href="/coaches">
-              <button className="inline-flex items-center gap-3 px-10 py-4 text-lg font-semibold text-white rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 transition-all">
+              <button className="inline-flex items-center gap-3 px-10 py-4 text-lg font-semibold text-white rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-2xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-105 transition-all">
                 Browse All Coaches <ArrowRight className="w-5 h-5" />
               </button>
             </Link>
@@ -1016,30 +1029,21 @@ export default function HomePage() {
               >
                 {user ? (
                   <Link href="/interview/setup">
-                    <Button
-                      variant="outline"
-                      className="text-lg px-12 py-5 bg-white/10 backdrop-blur-sm border-2 border-white hover:bg-white hover:text-purple-600 transition-all shadow-2xl hover:scale-105 font-bold"
-                    >
+                    <button className="text-lg px-12 py-5 rounded-full bg-white text-purple-700 font-bold hover:bg-gray-100 shadow-2xl hover:scale-105 transition-all">
                       Start Practicing Now
-                    </Button>
+                    </button>
                   </Link>
                 ) : (
                   <>
                     <Link href="/signup/candidate">
-                      <Button
-                        variant="outline"
-                        className="text-lg px-12 py-5 bg-white/10 backdrop-blur-sm border-2 border-white hover:bg-white hover:text-purple-600 transition-all shadow-2xl hover:scale-105 font-bold"
-                      >
+                      <button className="text-lg px-12 py-5 rounded-full bg-white text-purple-700 font-bold hover:bg-gray-100 shadow-2xl hover:scale-105 transition-all">
                         Start Practicing Free
-                      </Button>
+                      </button>
                     </Link>
                     <Link href="/coaches">
-                      <Button
-                        variant="outline"
-                        className="text-lg px-12 py-5 bg-white/10 backdrop-blur-sm border-2 border-white hover:bg-white hover:text-blue-600 transition-all shadow-2xl hover:scale-105 font-bold"
-                      >
-                        Find a Coach
-                      </Button>
+                      <button className="text-lg px-12 py-5 rounded-full border-2 border-white text-white font-bold hover:bg-white hover:text-purple-700 shadow-2xl hover:scale-105 transition-all">
+                        Browse Coaches →
+                      </button>
                     </Link>
                   </>
                 )}
@@ -1203,7 +1207,7 @@ function StatsSection() {
           {/* Subtle glow effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5" />
           
-          <div className="relative grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8">
+          <div className="relative grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
             {STATS.map((stat, index) => {
               const Icon = stat.icon
               return (
