@@ -1256,15 +1256,9 @@ function StatCard({ stat, Icon, index, isInView }: { stat: typeof STATS[0], Icon
 
         {/* Value with count-up */}
         <div className="text-3xl md:text-4xl font-bold mb-2">
-          {stat.label === 'Jobs Landed' ? (
-            <span className={`${stat.color} drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]`}>
-              {displayValue}{stat.suffix}
-            </span>
-          ) : (
-            <span className={`bg-gradient-to-r ${stat.color.replace('text-', 'from-')} to-white bg-clip-text text-transparent`}>
-              {displayValue}{stat.suffix}
-            </span>
-          )}
+          <span className={`bg-gradient-to-r ${stat.color.replace('text-', 'from-')} to-white bg-clip-text text-transparent`}>
+            {displayValue}{stat.suffix}
+          </span>
         </div>
 
         {/* Label */}
