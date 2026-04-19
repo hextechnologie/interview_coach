@@ -92,6 +92,7 @@ export default function ProfilePage() {
   const [salaryMax, setSalaryMax] = useState('')
   const [salaryCurrency, setSalaryCurrency] = useState('USD')
   const [availableFrom, setAvailableFrom] = useState('')
+  const [availabilityMode, setAvailabilityMode] = useState<'immediately' | 'specific'>('immediately')
   const [preferredJobLocation, setPreferredJobLocation] = useState('')
 
   // Social/Portfolio URLs
@@ -210,6 +211,7 @@ export default function ProfilePage() {
     setSalaryMax((profile as any).salary_max ? String((profile as any).salary_max) : '')
     setSalaryCurrency((profile as any).salary_currency || 'USD')
     setAvailableFrom((profile as any).available_from || '')
+    setAvailabilityMode((profile as any).available_from && (profile as any).available_from !== 'immediately' ? 'specific' : 'immediately')
     setPreferredJobLocation((profile as any).preferred_job_location || '')
     
     // Social URLs
@@ -394,10 +396,7 @@ export default function ProfilePage() {
         setSalaryMax(updatedProfile.salary_max ? String(updatedProfile.salary_max) : '')
         setSalaryCurrency(updatedProfile.salary_currency || 'USD')
         setAvailableFrom(updatedProfile.available_from || '')
-        setPreferredJobLocation(updatedProfile.preferred_job_location || '')
-        
-        // Social URLs
-        setPortfolioUrl(updatedProfile.portfolio_url || '')
+    setAvailabilityMode(updatedProfile.available_from && updatedProfile.available_from !== 'immediately' ? 'specific' : 'immediately')
         setGithubUrl(updatedProfile.github_url || '')
         setBehanceUrl(updatedProfile.behance_url || '')
         setDribbbleUrl(updatedProfile.dribbble_url || '')
@@ -748,24 +747,29 @@ export default function ProfilePage() {
                     </label>
                     <div className="space-y-2">
                       <Select
-                        value={availableFrom === 'immediately' || !availableFrom ? 'immediately' : 'specific'}
+                        value={availabilityMode}
                         onChange={(val) => {
-                          if (val === 'immediately') {
+                          const mode = val as 'immediately' | 'specific'
+                          setAvailabilityMode(mode)
+                          if (mode === 'immediately') {
                             setAvailableFrom('immediately')
-                            setHasUnsaved(true)
                           } else {
-                            setAvailableFrom('')
+                            // Don't clear the date if one exists
+                            if (availableFrom === 'immediately' || !availableFrom) {
+                              setAvailableFrom('')
+                            }
                           }
+                          setHasUnsaved(true)
                         }}
                         options={[
                           { value: 'immediately', label: '✅ Immediately' },
                           { value: 'specific', label: '📅 Specific Date' },
                         ]}
                       />
-                      {availableFrom !== 'immediately' && availableFrom !== '' && (
+                      {availabilityMode === 'specific' && (
                         <input
                           type="date"
-                          value={availableFrom}
+                          value={availableFrom === 'immediately' ? '' : availableFrom}
                           onChange={(e) => { setAvailableFrom(e.target.value); setHasUnsaved(true) }}
                           className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                           style={{ background: '#0a0f1e' }}
