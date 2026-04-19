@@ -278,6 +278,17 @@
   color: #7c3aed;
 }
 
+/* Animated gradient backgrounds - theme specific colors */
+.section-gradient-bg {
+  /* Dark mode: purple-600, blue-600 */
+  background-image: linear-gradient(to right, #9333ea, #2563eb, #9333ea) !important;
+}
+
+[data-theme="light"] .section-gradient-bg {
+  /* Light mode: purple-500, blue-500 */
+  background-image: linear-gradient(to right, #a855f7, #3b82f6, #a855f7) !important;
+}
+
 /* Animation keyframes */
 @keyframes fadeIn {
   from {
