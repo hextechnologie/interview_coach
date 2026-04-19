@@ -1152,7 +1152,7 @@
   },
   "sessionReview": {
     "title": "Califica tu sesión de coaching",
-    "subtitle": "Tu reseña ayuda a mejorar la calidad del coach y actualiza su calificación pública.",
+    "subtitle": "Tu reseña ayudaa mejorar la calidad del coach y actualiza su calificación pública.",
     "starRating": "Calificación de estrellas",
     "writtenReview": "Reseña escrita",
     "reviewPlaceholder": "¿Qué destacó en la sesión?",
@@ -1162,5 +1162,121 @@
     "submitReview": "Enviar reseña",
     "thankYou": "Gracias. Tu reseña ha sido enviada.",
     "returnToDashboard": "Volver al panel de control"
+  },
+  "credits": {
+    "header": {
+      "back": "Atrás",
+      "title": "Recarga tus Créditos",
+      "currentBalance": "créditos"
+    },
+    "balance": {
+      "lowBalanceWarning": "Advertencia de saldo bajo: Te quedan {balance} créditos. ¡Recarga ahora para reservar más sesiones!",
+      "warningIcon": "⚠️"
+    },
+    "packages": {
+      "title": "Elige un Paquete",
+      "mostPopular": "🔥 MÁS POPULAR",
+      "bonus": "+ {bonus} bonificación",
+      "perCredit": "por crédito",
+      "getCredits": "Obtener {total} Créditos",
+      "processing": "Procesando..."
+    },
+    "customAmount": {
+      "title": "Cantidad Personalizada",
+      "description": "Compra cualquier cantidad de créditos. Mínimo $10.",
+      "placeholder": "Ingresa cantidad (mín $10)",
+      "willReceive": "Recibirás {amount} créditos",
+      "purchase": "Comprar"
+    },
+    "transactions": {
+      "title": "Historial de Transacciones",
+      "filters": {
+        "all": "Todas",
+        "purchase": "Compras",
+        "spent": "Gastados",
+        "refund": "Reembolsos"
+      },
+      "empty": "Aún no hay transacciones",
+      "types": {
+        "purchase": "💳",
+        "spent": "📤",
+        "refund": "↩️",
+        "earned": "💰"
+      },
+      "balance": "Saldo: {balance}"
+    },
+    "messages": {
+      "loginRequired": "Por favor inicia sesión nuevamente",
+      "processingError": "Error al procesar el pago",
+      "purchaseError": "Error al procesar la compra. Por favor, intenta nuevamente.",
+      "minimumAmount": "Por favor ingresa una cantidad de al menos $10"
+    }
+  },
+  "jobs": {
+    "header": {
+      "title": "Interview Coach",
+      "backToDashboard": "Panel de Control"
+    },
+    "hero": {
+      "badge": "Tablero de Empleos Remotos",
+      "title": "Encuentra tu Próximo",
+      "titleHighlight": "Trabajo Remoto",
+      "description": "Explora miles de empleos de LinkedIn, Indeed, Glassdoor, Remotive y más — actualizados diariamente.",
+      "locationPriority": "🌍 Priorizando empleos en",
+      "locationNear": "cerca de",
+      "briefcaseIcon": "💼"
+    },
+    "loading": {
+      "profile": "Cargando perfil...",
+      "jobs": "Cargando empleos..."
+    },
+    "filters": {
+      "search": "Buscar empleos...",
+      "location": "Ubicación",
+      "jobType": "Tipo de Empleo",
+      "level": "Nivel",
+      "datePosted": "Fecha de Publicación",
+      "allLocations": "Todas las Ubicaciones",
+      "allTypes": "Todos los Tipos",
+      "allLevels": "Todos los Niveles",
+      "allDates": "Todas las Fechas",
+      "clearFilters": "Limpiar Filtros"
+    },
+    "jobCard": {
+      "new": "NUEVO",
+      "remote": "Remoto",
+      "hybrid": "Híbrido",
+      "onsite": "Presencial",
+      "posted": "Publicado {date}",
+      "viewDetails": "Ver Detalles",
+      "apply": "Aplicar Ahora",
+      "save": "Guardar",
+      "saved": "Guardado"
+    },
+    "empty": {
+      "title": "No se encontraron empleos",
+      "description": "Intenta ajustar tus filtros o vuelve más tarde para nuevas oportunidades.",
+      "clearFilters": "Limpiar Filtros"
+    },
+    "jobTypes": {
+      "fullTime": "Tiempo completo",
+      "partTime": "Tiempo parcial",
+      "contract": "Contrato",
+      "internship": "Pasantía"
+    },
+    "levels": {
+      "entry": "Nivel de Entrada",
+      "junior": "Junior",
+      "mid": "Intermedio",
+      "senior": "Senior",
+      "lead": "Líder",
+      "principal": "Principal"
+    },
+    "dateOptions": {
+      "day": "Últimas 24 horas",
+      "week": "Última semana",
+      "month": "Último mes",
+      "all": "Todo el tiempo"
+    }
   }
 }

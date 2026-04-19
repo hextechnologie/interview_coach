@@ -1164,5 +1164,121 @@
     "submitReview": "إرسال المراجعة",
     "thankYou": "شكراً لك. تم إرسال مراجعتك.",
     "returnToDashboard": "العودة إلى لوحة التحكم"
+  },
+  "credits": {
+    "header": {
+      "back": "رجوع",
+      "title": "إعادة شحن نقاطك",
+      "currentBalance": "نقاط"
+    },
+    "balance": {
+      "lowBalanceWarning": "تحذير رصيد منخفض: لديك {balance} نقطة متبقية. أعد الشحن الآن لحجز المزيد من الجلسات!",
+      "warningIcon": "⚠️"
+    },
+    "packages": {
+      "title": "اختر حزمة",
+      "mostPopular": "🔥 الأكثر شعبية",
+      "bonus": "+ {bonus} مكافأة",
+      "perCredit": "لكل نقطة",
+      "getCredits": "احصل على {total} نقطة",
+      "processing": "جاري المعالجة..."
+    },
+    "customAmount": {
+      "title": "مبلغ مخصص",
+      "description": "اشترِ أي مبلغ من النقاط. الحد الأدنى 10$.",
+      "placeholder": "أدخل المبلغ (الحد الأدنى 10$)",
+      "willReceive": "ستحصل على {amount} نقطة",
+      "purchase": "شراء"
+    },
+    "transactions": {
+      "title": "سجل المعاملات",
+      "filters": {
+        "all": "الكل",
+        "purchase": "شراء",
+        "spent": "إنفاق",
+        "refund": "استرداد"
+      },
+      "empty": "لا توجد معاملات بعد",
+      "types": {
+        "purchase": "💳",
+        "spent": "📤",
+        "refund": "↩️",
+        "earned": "💰"
+      },
+      "balance": "الرصيد: {balance}"
+    },
+    "messages": {
+      "loginRequired": "يرجى تسجيل الدخول مرة أخرى",
+      "processingError": "فشلت معالجة الدفع",
+      "purchaseError": "فشلت معالجة الشراء. يرجى المحاولة مرة أخرى.",
+      "minimumAmount": "يرجى إدخال مبلغ لا يقل عن 10$"
+    }
+  },
+  "jobs": {
+    "header": {
+      "title": "Interview Coach",
+      "backToDashboard": "لوحة التحكم"
+    },
+    "hero": {
+      "badge": "لوحة الوظائف عن بُعد",
+      "title": "ابحث عن",
+      "titleHighlight": "وظيفتك التالية عن بُعد",
+      "description": "تصفح آلاف الوظائف من LinkedIn و Indeed و Glassdoor وRemotive والمزيد — يتم التحديث يومياً.",
+      "locationPriority": "🌍 إعطاء الأولوية للوظائف في",
+      "locationNear": "بالقرب من",
+      "briefcaseIcon": "💼"
+    },
+    "loading": {
+      "profile": "جاري تحميل الملف الشخصي...",
+      "jobs": "جاري تحميل الوظائف..."
+    },
+    "filters": {
+      "search": "البحث عن الوظائف...",
+      "location": "الموقع",
+      "jobType": "نوع الوظيفة",
+      "level": "المستوى",
+      "datePosted": "تاريخ النشر",
+      "allLocations": "جميع المواقع",
+      "allTypes": "جميع الأنواع",
+      "allLevels": "جميع المستويات",
+      "allDates": "جميع التواريخ",
+      "clearFilters": "مسح المرشحات"
+    },
+    "jobCard": {
+      "new": "جديد",
+      "remote": "عن بُعد",
+      "hybrid": "هجين",
+      "onsite": "في الموقع",
+      "posted": "نُشر {date}",
+      "viewDetails": "عرض التفاصيل",
+      "apply": "قدّم الآن",
+      "save": "حفظ",
+      "saved": "محفوظ"
+    },
+    "empty": {
+      "title": "لم يتم العثور على وظائف",
+      "description": "حاول تعديل المرشحات أو ارجع لاحقاً للحصول على فرص جديدة.",
+      "clearFilters": "مسح المرشحات"
+    },
+    "jobTypes": {
+      "fullTime": "دوام كامل",
+      "partTime": "دوام جزئي",
+      "contract": "عقد",
+      "internship": "تدريب"
+    },
+    "levels": {
+      "entry": "مستوى مبتدئ",
+      "junior": "مبتدئ",
+      "mid": "متوسط",
+      "senior": "متقدم",
+      "lead": "قيادي",
+      "principal": "رئيسي"
+    },
+    "dateOptions": {
+      "day": "آخر 24 ساعة",
+      "week": "الأسبوع الماضي",
+      "month": "الشهر الماضي",
+      "all": "كل الوقت"
+    }
   }
 }

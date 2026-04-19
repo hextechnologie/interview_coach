@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { ArrowLeft, Briefcase, Sparkles } from 'lucide-react'
 import JobOffers from '@/components/JobOffers'
 import { supabase } from '@/lib/supabase'
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function JobsPage() {
+  const { t } = useLanguage()
   const [userProfile, setUserProfile] = useState<{ country: string | null; city: string | null; targetRole: string | null; isLoading: boolean }>({
     country: null,
     city: null,
@@ -51,10 +53,10 @@ export default function JobsPage() {
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Sparkles className="w-7 h-7 text-purple-400" />
-            <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Interview Coach</span>
+            <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{t('jobs.header.title')}</span>
           </Link>
           <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Dashboard
+            <ArrowLeft className="w-4 h-4" /> {t('jobs.header.backToDashboard')}
           </Link>
         </div>
       </header>
@@ -63,28 +65,28 @@ export default function JobsPage() {
         {/* Hero */}
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-sm text-purple-300 mb-4">
-            <Briefcase className="w-4 h-4" /> Remote Jobs Board
+            <Briefcase className="w-4 h-4" /> {t('jobs.hero.badge')}
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            Find Your Next{' '}
-            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Remote Role</span>
+            {t('jobs.hero.title')}{' '}
+            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{t('jobs.hero.titleHighlight')}</span>
           </h1>
           <p className="text-gray-400 max-w-xl">
-            Browse thousands of jobs from LinkedIn, Indeed, Glassdoor, Remotive & more — updated daily.
+            {t('jobs.hero.description')}
           </p>
           {userProfile.country && (
             <p className="text-sm text-purple-400 mt-2">
-              🌍 Prioritizing jobs in <strong>{userProfile.country}</strong>
-              {userProfile.city && <> near <strong>{userProfile.city}</strong></>}
+              {t('jobs.hero.locationPriority')} <strong>{userProfile.country}</strong>
+              {userProfile.city && <> {t('jobs.hero.locationNear')} <strong>{userProfile.city}</strong></>}
             </p>
           )}
         </div>
 
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: '#111827' }}>
           {userProfile.isLoading ? (
-            <div className="text-gray-400 text-sm text-center py-10">Loading profile...</div>
+            <div className="text-gray-400 text-sm text-center py-10">{t('jobs.loading.profile')}</div>
           ) : (
-            <Suspense fallback={<div className="text-gray-400 text-sm text-center py-10">Loading jobs...</div>}>
+            <Suspense fallback={<div className="text-gray-400 text-sm text-center py-10">{t('jobs.loading.jobs')}</div>}>
               <JobOffers 
                 fullPage 
                 limit={20} 

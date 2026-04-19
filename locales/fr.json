@@ -1162,5 +1162,123 @@
     "submitReview": "Soumettre l'avis",
     "thankYou": "Merci. Votre avis a été soumis.",
     "returnToDashboard": "Retour au tableau de bord"
+  },
+  "credits": {
+    "header": {
+      "back": "Retour",
+      "title": "Rechargez vos Crédits",
+      "currentBalance": "crédits"
+    },
+    "balance": {
+      "lowBalanceWarning": "Avertissement solde faible : Il vous reste {balance} crédits. Rechargez maintenant pour réserver plus de sessions !",
+      "warningIcon": "⚠️"
+    },
+    "packages": {
+      "title": "Choisissez un Pack",
+      "mostPopular": "🔥 LE PLUS POPULAIRE",
+      "bonus": "+ {bonus} bonus",
+      "perCredit": "par crédit",
+      "getCredits": "Obtenir {total} Crédits",
+      "processing": "Traitement..."
+    },
+    "customAmount": {
+      "title": "Montant Personnalisé",
+      "description": "Achetez n'importe quel nombre de crédits. Minimum 10$.",
+      "placeholder": "Entrez le montant (min 10$)",
+      "willReceive": "Vous recevrez {amount} crédits",
+      "purchase": "Acheter"
+    },
+    "transactions": {
+      "title": "Historique des Transactions",
+      "filters": {
+        "all": "Toutes",
+        "purchase": "Achats",
+        "spent": "Dépensés",
+        "refund": "Remboursements"
+      },
+      "empty": "Aucune transaction pour le moment",
+      "types": {
+        "purchase": "💳",
+        "spent": "📤",
+        "refund": "↩️",
+        "earned": "💰"
+      },
+      "balance": "Solde : {balance}"
+    },
+    "messages": {
+      "loginRequired": "Veuillez vous reconnecter",
+      "processingError": "Échec du traitement du paiement",
+      "purchaseError": "Échec du traitement de l'achat. Veuillez réessayer.",
+      "minimumAmount": "Veuillez entrer un montant d'au moins 10$"
+    }
+  },
+  "jobs": {
+    "header": {
+      "title": "Interview Coach",
+      "backToDashboard": "Tableau de Bord"
+    },
+    "hero": {
+      "badge": "Tableau des Emplois à Distance",
+      "title": "Trouvez votre Prochain",
+      "titleHighlight": "Emploi à Distance",
+      "description": "Parcourez des milliers d'offres de LinkedIn, Indeed, Glassdoor, Remotive et plus encore — mises à jour quotidiennement.",
+      "locationPriority": "🌍 Priorité aux emplois en",
+      "locationNear": "près de",
+      "briefcaseIcon": "💼"
+    },
+    "loading": {
+      "profile": "Chargement du profil...",
+      "jobs": "Chargement des emplois..."
+    },
+    "filters": {
+      "search": "Rechercher des emplois...",
+      "location": "Lieu",
+      "jobType": "Type d'Emploi",
+      "level": "Niveau",
+      "datePosted": "Date de Publication",
+      "all
+
+Locations": "Tous les Lieux",
+      "allTypes": "Tous les Types",
+      "allLevels": "Tous les Niveaux",
+      "allDates": "Toutes les Dates",
+      "clearFilters": "Effacer les Filtres"
+    },
+    "jobCard": {
+      "new": "NOUVEAU",
+      "remote": "À distance",
+      "hybrid": "Hybride",
+      "onsite": "Sur site",
+      "posted": "Publié {date}",
+      "viewDetails": "Voir les Détails",
+      "apply": "Postuler Maintenant",
+      "save": "Sauvegarder",
+      "saved": "Sauvegardé"
+    },
+    "empty": {
+      "title": "Aucun emploi trouvé",
+      "description": "Essayez d'ajuster vos filtres ou revenez plus tard pour de nouvelles opportunités.",
+      "clearFilters": "Effacer les Filtres"
+    },
+    "jobTypes": {
+      "fullTime": "Temps plein",
+      "partTime": "Temps partiel",
+      "contract": "Contrat",
+      "internship": "Stage"
+    },
+    "levels": {
+      "entry": "Débutant",
+      "junior": "Junior",
+      "mid": "Intermédiaire",
+      "senior": "Senior",
+      "lead": "Lead",
+      "principal": "Principal"
+    },
+    "dateOptions": {
+      "day": "Dernières 24 heures",
+      "week": "Dernière semaine",
+      "month": "Dernier mois",
+      "all": "Tout le temps"
+    }
   }
 }

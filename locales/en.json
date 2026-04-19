@@ -1164,5 +1164,121 @@
     "submitReview": "Submit review",
     "thankYou": "Thank you. Your review has been submitted.",
     "returnToDashboard": "Return to dashboard"
+  },
+  "credits": {
+    "header": {
+      "back": "Back",
+      "title": "Top Up Your Credits",
+      "currentBalance": "credits"
+    },
+    "balance": {
+      "lowBalanceWarning": "Low balance warning: You have {balance} credits left. Top up now to book more sessions!",
+      "warningIcon": "⚠️"
+    },
+    "packages": {
+      "title": "Choose a Package",
+      "mostPopular": "🔥 MOST POPULAR",
+      "bonus": "+ {bonus} bonus",
+      "perCredit": "per credit",
+      "getCredits": "Get {total} Credits",
+      "processing": "Processing..."
+    },
+    "customAmount": {
+      "title": "Custom Amount",
+      "description": "Purchase any amount of credits. Minimum $10.",
+      "placeholder": "Enter amount (min $10)",
+      "willReceive": "You'll receive {amount} credits",
+      "purchase": "Purchase"
+    },
+    "transactions": {
+      "title": "Transaction History",
+      "filters": {
+        "all": "All",
+        "purchase": "Purchase",
+        "spent": "Spent",
+        "refund": "Refund"
+      },
+      "empty": "No transactions yet",
+      "types": {
+        "purchase": "💳",
+        "spent": "📤",
+        "refund": "↩️",
+        "earned": "💰"
+      },
+      "balance": "Balance: {balance}"
+    },
+    "messages": {
+      "loginRequired": "Please log in again",
+      "processingError": "Failed to process payment",
+      "purchaseError": "Failed to process purchase. Please try again.",
+      "minimumAmount": "Please enter an amount of at least $10"
+    }
+  },
+  "jobs": {
+    "header": {
+      "title": "Interview Coach",
+      "backToDashboard": "Dashboard"
+    },
+    "hero": {
+      "badge": "Remote Jobs Board",
+      "title": "Find Your Next",
+      "titleHighlight": "Remote Role",
+      "description": "Browse thousands of jobs from LinkedIn, Indeed, Glassdoor, Remotive & more — updated daily.",
+      "locationPriority": "🌍 Prioritizing jobs in",
+      "locationNear": "near",
+      "briefcaseIcon": "💼"
+    },
+    "loading": {
+      "profile": "Loading profile...",
+      "jobs": "Loading jobs..."
+    },
+    "filters": {
+      "search": "Search jobs...",
+      "location": "Location",
+      "jobType": "Job Type",
+      "level": "Level",
+      "datePosted": "Date Posted",
+      "allLocations": "All Locations",
+      "allTypes": "All Types",
+      "allLevels": "All Levels",
+      "allDates": "All Dates",
+      "clearFilters": "Clear Filters"
+    },
+    "jobCard": {
+      "new": "NEW",
+      "remote": "Remote",
+      "hybrid": "Hybrid",
+      "onsite": "On-site",
+      "posted": "Posted {date}",
+      "viewDetails": "View Details",
+      "apply": "Apply Now",
+      "save": "Save",
+      "saved": "Saved"
+    },
+    "empty": {
+      "title": "No jobs found",
+      "description": "Try adjusting your filters or check back later for new opportunities.",
+      "clearFilters": "Clear Filters"
+    },
+    "jobTypes": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time",
+      "contract": "Contract",
+      "internship": "Internship"
+    },
+    "levels": {
+      "entry": "Entry Level",
+      "junior": "Junior",
+      "mid": "Mid-Level",
+      "senior": "Senior",
+      "lead": "Lead",
+      "principal": "Principal"
+    },
+    "dateOptions": {
+      "day": "Last 24 hours",
+      "week": "Last week",
+      "month": "Last month",
+      "all": "All time"
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Check, CreditCard, DollarSign, Loader2, TrendingUp, Sparkles } from 'lucide-react'
@@ -12,6 +13,7 @@ import type { CreditPackage, CreditTransaction, UserCredits } from '@/lib/types/
 
 export default function CreditsPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
 
   const [packages, setPackages] = useState<CreditPackage[]>([])
@@ -78,7 +80,7 @@ export default function CreditsPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to process payment')
+        throw new Error(data.error || t('credits.messages.processingError'))
       }
 
       if (data.url) {
@@ -97,7 +99,7 @@ export default function CreditsPage() {
   const handleCustomPurchase = async () => {
     const amount = parseInt(customAmount)
     if (!user || !amount || amount < 10 || processingPayment) {
-      alert('Please enter an amount of at least $10')
+      alert(t('credits.messages.minimumAmount'))
       return
     }
 
@@ -162,16 +164,16 @@ export default function CreditsPage() {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back
+              <ArrowLeft className="w-4 h-4" /> {t('credits.header.back')}
             </Link>
             <div className="flex items-center gap-2">
               <span className="text-3xl">⭐</span>
-              <h1 className="text-2xl font-bold">Top Up Your Credits</h1>
+              <h1 className="text-2xl font-bold">{t('credits.header.title')}</h1>
             </div>
           </div>
           <div className={`px-4 py-2 rounded-lg border ${balanceColors.borderColor} ${balanceColors.bgColor}`}>
             <span className={`text-lg font-bold ${balanceColors.textColor}`}>
-              ⭐ {userCredits?.balance || 0} credits
+              ⭐ {userCredits?.balance || 0} {t('credits.header.currentBalance')}
             </span>
           </div>
         </div>
@@ -181,13 +183,13 @@ export default function CreditsPage() {
         {/* Balance Warning */}
         {(userCredits?.balance || 0) < 20 && (
           <div className="mb-6 p-4 rounded-lg border border-red-500/30 bg-red-500/10">
-            <p className="text-red-400 font-medium">⚠️ Low balance warning: You have {userCredits?.balance || 0} credits left. Top up now to book more sessions!</p>
+            <p className="text-red-400 font-medium">{t('credits.balance.warningIcon')} {t('credits.balance.lowBalanceWarning').replace('{balance}', String(userCredits?.balance || 0))}</p>
           </div>
         )}
 
         {/* Credit Packages */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Choose a Package</h2>
+          <h2 className="text-2xl font-bold mb-6">{t('credits.packages.title')}</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {packages.map((pkg) => (
               <Card
@@ -199,7 +201,7 @@ export default function CreditsPage() {
                 {pkg.is_popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-3 py-1 rounded-full bg-purple-600 text-xs font-bold text-white">
-                      🔥 MOST POPULAR
+                      {t('credits.packages.mostPopular')}
                     </span>
                   </div>
                 )}
@@ -209,14 +211,14 @@ export default function CreditsPage() {
                     ${pkg.price_usd}
                   </div>
                   <div className="text-gray-400 text-sm mb-4">
-                    {pkg.base_credits} credits
+                    {pkg.base_credits} {t('credits.header.currentBalance')}
                     {pkg.bonus_credits > 0 && (
-                      <span className="text-yellow-400"> + {pkg.bonus_credits} bonus</span>
+                      <span className="text-yellow-400"> {t('credits.packages.bonus').replace('{bonus}', String(pkg.bonus_credits))}</span>
                     )}
                   </div>
                   <div className="flex items-center justify-center gap-2 mb-4 text-sm text-gray-400">
                     <TrendingUp className="w-4 h-4" />
-                    <span>${(pkg.price_usd / pkg.total_credits).toFixed(2)} per credit</span>
+                    <span>${(pkg.price_usd / pkg.total_credits).toFixed(2)} {t('credits.packages.perCredit')}</span>
                   </div>
                   <Button
                     variant={pkg.is_popular ? 'primary' : 'outline'}
@@ -226,9 +228,9 @@ export default function CreditsPage() {
                     disabled={processingPayment}
                   >
                     {processingPayment && selectedPackage === pkg.id ? (
-                      'Processing...'
+                      t('credits.packages.processing')
                     ) : (
-                      `Get ${pkg.total_credits} Credits`
+                      t('credits.packages.getCredits').replace('{total}', String(pkg.total_credits))
                     )}
                   </Button>
                 </div>
@@ -239,9 +241,9 @@ export default function CreditsPage() {
 
         {/* Custom Amount */}
         <Card className="mb-12">
-          <h3 className="text-xl font-bold mb-4">Custom Amount</h3>
+          <h3 className="text-xl font-bold mb-4">{t('credits.customAmount.title')}</h3>
           <p className="text-gray-400 text-sm mb-4">
-            Purchase any amount of credits. Minimum $10.
+            {t('credits.customAmount.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
@@ -253,13 +255,13 @@ export default function CreditsPage() {
                   step="5"
                   value={customAmount}
                   onChange={(e) => setCustomAmount(e.target.value)}
-                  placeholder="Enter amount (min $10)"
+                  placeholder={t('credits.customAmount.placeholder')}
                   className="w-full bg-background border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               {customAmount && parseInt(customAmount) >= 10 && (
                 <p className="mt-2 text-sm text-gray-400">
-                  You'll receive {parseInt(customAmount)} credits
+                  {t('credits.customAmount.willReceive').replace('{amount}', customAmount)}
                 </p>
               )}
             </div>
@@ -270,7 +272,7 @@ export default function CreditsPage() {
               disabled={!customAmount || parseInt(customAmount) < 10 || processingPayment}
               className="sm:w-auto px-8"
             >
-              {processingPayment && !selectedPackage ? 'Processing...' : 'Purchase'}
+              {processingPayment && !selectedPackage ? t('credits.packages.processing') : t('credits.customAmount.purchase')}
             </Button>
           </div>
         </Card>
@@ -278,7 +280,7 @@ export default function CreditsPage() {
         {/* Transaction History */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Transaction History</h2>
+            <h2 className="text-2xl font-bold">{t('credits.transactions.title')}</h2>
             <div className="flex gap-2">
               {(['all', 'purchase', 'spent', 'refund'] as const).map((f) => (
                 <button
@@ -290,7 +292,7 @@ export default function CreditsPage() {
                       : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  {t(`credits.transactions.filters.${f}`)}
                 </button>
               ))}
             </div>
@@ -299,7 +301,7 @@ export default function CreditsPage() {
           {filteredTransactions.length === 0 ? (
             <Card className="text-center py-12">
               <Sparkles className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400">No transactions yet</p>
+              <p className="text-gray-400">{t('credits.transactions.empty')}</p>
             </Card>
           ) : (
             <div className="space-y-3">
@@ -319,7 +321,7 @@ export default function CreditsPage() {
                           : 'bg-gray-500/20 text-gray-400'
                       }`}
                     >
-                      {txn.type === 'purchase' ? '💳' : txn.type === 'spent' ? '📤' : txn.type === 'refund' ? '↩️' : txn.type === 'earned' ? '💰' : '•'}
+                      {t(`credits.transactions.types.${txn.type}`) || '•'}
                     </div>
                     <div>
                       <p className="font-medium">
@@ -347,7 +349,7 @@ export default function CreditsPage() {
                       {txn.type === 'purchase' || txn.type === 'refund' || txn.type === 'earned' ? '+' : '-'}
                       {Math.abs(txn.amount)}
                     </p>
-                    <p className="text-sm text-gray-400">Balance: {txn.balance_after}</p>
+                    <p className="text-sm text-gray-400">{t('credits.transactions.balance').replace('{balance}', String(txn.balance_after))}</p>
                   </div>
                 </Card>
               ))}
