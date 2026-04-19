@@ -292,6 +292,18 @@ export default function ProfilePage() {
       return
     }
 
+    // Validate Available From date (must not be in the past)
+    if (availabilityMode === 'specific' && availableFrom && availableFrom !== 'immediately') {
+      const selectedDate = new Date(availableFrom)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0) // Reset time to compare only dates
+      
+      if (selectedDate < today) {
+        setError('Available From date cannot be in the past. Please select today or a future date.')
+        return
+      }
+    }
+
     setError('')
     setSaved(false)
     setSaving(true)
@@ -770,6 +782,7 @@ export default function ProfilePage() {
                         <input
                           type="date"
                           value={availableFrom === 'immediately' ? '' : availableFrom}
+                          min={new Date().toISOString().split('T')[0]}
                           onChange={(e) => { setAvailableFrom(e.target.value); setHasUnsaved(true) }}
                           className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                           style={{ background: '#0a0f1e' }}
