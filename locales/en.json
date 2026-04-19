@@ -2,10 +2,16 @@
   "nav": {
     "login": "Login",
     "getStarted": "Get Started",
-    "dashboard": "Go to Dashboard",
+    "dashboard": "Dashboard",
     "pricing": "Pricing",
+    "coaches": "Coaches",
     "faq": "FAQ",
-    "contact": "Contact Us"
+    "contact": "Contact",
+    "theme": "Theme",
+    "practiceWithAI": "🤖 Practice with AI",
+    "practiceWithAIDesc": "Start mock interviews free",
+    "becomeCoach": "👨‍💼 Become a Coach",
+    "becomeCoachDesc": "Earn from your expertise"
   },
   "hero": {
     "title": "Practice real interviews with",
@@ -17,14 +23,11 @@
     "freeInterviews": "Get 3 Free Mock Interviews · No Card Needed"
   },
   "stats": {
-    "available": "24/7",
-    "availableLabel": "Always Available",
-    "languages": "10+",
-    "languagesLabel": "Languages Supported",
-    "aiPowered": "AI Powered",
-    "aiPoweredLabel": "Smart Feedback",
-    "users": "1000+",
-    "usersLabel": "Happy Users"
+    "activeUsers": "Active Users",
+    "expertCoaches": "Expert Coaches",
+    "languages": "Languages",
+    "averageRating": "Average Rating",
+    "jobsLanded": "Jobs Landed"
   },
   "features": {
     "title": "Everything You Need to Ace Your Interview",
@@ -41,13 +44,49 @@
     "unlimited": "Unlimited Practice",
     "unlimitedDesc": "No limits on practice sessions. Keep improving until you feel 100% confident."
   },
+  "howItWorks": {
+    "title": "How Interview Coach Works",
+    "aiTab": "Practice with AI",
+    "coachTab": "Book a Real Coach",
+    "aiStep1Title": "Choose Your Role",
+    "aiStep1Desc": "Select your target job, industry, and level. The AI adapts everything to you.",
+    "aiStep2Title": "Practice with AI",
+    "aiStep2Desc": "Answer realistic questions in real-time. The AI responds like a real interviewer.",
+    "aiStep3Title": "Get Instant Feedback",
+    "aiStep3Desc": "See your score, confidence level, ideal answer, and what to improve after each question.",
+    "aiStep4Title": "Improve & Repeat",
+    "aiStep4Desc": "Track scores over time and keep practising until you feel completely ready.",
+    "coachStep1Title": "Browse Coaches",
+    "coachStep1Desc": "Filter by industry, experience level, price, and rating. Read reviews from past candidates.",
+    "coachStep2Title": "Book a Session",
+    "coachStep2Desc": "Choose a date, time, and session length that works for you. Pay securely online.",
+    "coachStep3Title": "Live 1-on-1 Session",
+    "coachStep3Desc": "Join a video call with your expert coach. Practice interview scenarios in real time.",
+    "coachStep4Title": "Get Expert Feedback",
+    "coachStep4Desc": "Receive a personalised report with actionable next steps and improvement areas."
+  },
+  "coaches": {
+    "sectionLabel": "Expert Coaches",
+    "title": "Learn From the Best 👨‍💼",
+    "subtitle": "Our coaches have helped candidates land roles at top companies worldwide.",
+    "sessions": "sessions",
+    "credits": "credits",
+    "viewProfile": "View Profile",
+    "viewAll": "Browse All Coaches"
+  },
   "testimonials": {
-    "title": "What Our Users Say"
+    "sectionLabel": "Testimonials",
+    "title": "Real People. Real Results.",
+    "subtitle": "Join professionals who landed their dream roles with AI practice + expert coaching.",
+    "verifiedUser": "Verified User"
   },
   "cta": {
-    "title": "Ready to Ace Your Next Interview?",
-    "description": "Join thousands of job seekers who have improved their interview skills with Interview Coach.",
-    "button": "Start Practicing Now"
+    "title": "Ready to Land Your Dream Job?",
+    "description": "Start with free AI practice, then supercharge your prep with a real expert coach.",
+    "startPracticing": "Start Practicing Now",
+    "startFree": "Start Practicing Free",
+    "browseCoaches": "Browse Coaches →",
+    "joinProfessionals": "Join 2,500+ professionals →"
   },
   "footer": {
     "tagline": "AI-powered interview practice platform to help you land your dream job with confidence.",

@@ -4,8 +4,14 @@
     "getStarted": "Empezar",
     "dashboard": "Panel de control",
     "pricing": "Precios",
+    "coaches": "Entrenadores",
     "faq": "Preguntas frecuentes",
-    "contact": "Contáctanos"
+    "contact": "Contáctanos",
+    "theme": "Tema",
+    "practiceWithAI": "🤖 Practicar con IA",
+    "practiceWithAIDesc": "Comienza entrevistas gratis",
+    "becomeCoach": "👨‍💼 Conviértete en Coach",
+    "becomeCoachDesc": "Gana con tu experiencia"
   },
   "hero": {
     "title": "Domina tu próxima entrevista con",
@@ -17,14 +23,11 @@
     "freeInterviews": "3 entrevistas gratis · Sin tarjeta necesaria"
   },
   "stats": {
-    "available": "24/7",
-    "availableLabel": "Siempre disponible",
-    "languages": "10+",
-    "languagesLabel": "Idiomas soportados",
-    "aiPowered": "Impulsado por IA",
-    "aiPoweredLabel": "Feedback inteligente",
-    "users": "1000+",
-    "usersLabel": "Usuarios satisfechos"
+    "activeUsers": "Usuarios activos",
+    "expertCoaches": "Coaches expertos",
+    "languages": "Idiomas",
+    "averageRating": "Calificación promedio",
+    "jobsLanded": "Trabajos conseguidos"
   },
   "features": {
     "title": "Todo lo que necesitas para triunfar en tu entrevista",
@@ -41,13 +44,49 @@
     "unlimited": "Práctica ilimitada",
     "unlimitedDesc": "Sin límites en las sesiones de práctica. Sigue mejorando hasta sentirte 100% seguro."
   },
+  "howItWorks": {
+    "title": "Cómo funciona Interview Coach",
+    "aiTab": "Practicar con IA",
+    "coachTab": "Reservar un Coach Real",
+    "aiStep1Title": "Elige tu rol",
+    "aiStep1Desc": "Selecciona tu trabajo objetivo, industria y nivel. La IA se adapta a ti.",
+    "aiStep2Title": "Practica con IA",
+    "aiStep2Desc": "Responde preguntas realistas en tiempo real. La IA responde como un entrevistador real.",
+    "aiStep3Title": "Obtén feedback instantáneo",
+    "aiStep3Desc": "Ve tu puntaje, nivel de confianza, respuesta ideal y qué mejorar después de cada pregunta.",
+    "aiStep4Title": "Mejora y repite",
+    "aiStep4Desc": "Rastrea tus puntajes con el tiempo y sigue practicando hasta sentirte completamente listo.",
+    "coachStep1Title": "Explorar coaches",
+    "coachStep1Desc": "Filtra por industria, nivel de experiencia, precio y calificación. Lee reseñas de candidatos anteriores.",
+    "coachStep2Title": "Reservar una sesión",
+    "coachStep2Desc": "Elige una fecha, hora y duración que funcione para ti. Paga de forma segura en línea.",
+    "coachStep3Title": "Sesión 1-a-1 en vivo",
+    "coachStep3Desc": "Únete a una videollamada con tu coach experto. Practica escenarios de entrevista en tiempo real.",
+    "coachStep4Title": "Obtén feedback experto",
+    "coachStep4Desc": "Recibe un informe personalizado con próximos pasos accionables y áreas de mejora."
+  },
+  "coaches": {
+    "sectionLabel": "Coaches expertos",
+    "title": "Aprende de los mejores 👨‍💼",
+    "subtitle": "Nuestros coaches han ayudado a candidatos a conseguir puestos en las mejores empresas del mundo.",
+    "sessions": "sesiones",
+    "credits": "créditos",
+    "viewProfile": "Ver perfil",
+    "viewAll": "Ver todos los coaches"
+  },
   "testimonials": {
-    "title": "Lo que dicen nuestros usuarios"
+    "sectionLabel": "Testimonios",
+    "title": "Personas reales. Resultados reales.",
+    "subtitle": "Únete a profesionales que consiguieron el trabajo de sus sueños con IA y coaching experto.",
+    "verifiedUser": "Usuario verificado"
   },
   "cta": {
-    "title": "¿Listo para triunfar en tu próxima entrevista?",
-    "description": "Únete a miles de candidatos que han mejorado sus habilidades de entrevista con Interview Coach.",
-    "button": "Comienza ahora"
+    "title": "¿Listo para conseguir el trabajo de tus sueños?",
+    "description": "Comienza con práctica IA gratuita, luego potencia tu preparación con un coach experto real.",
+    "startPracticing": "Comenzar ahora",
+    "startFree": "Comenzar gratis",
+    "browseCoaches": "Ver coaches →",
+    "joinProfessionals": "Únete a +2,500 profesionales →"
   },
   "footer": {
     "tagline": "Plataforma de práctica de entrevistas impulsada por IA para ayudarte a conseguir el trabajo de tus sueños con confianza.",

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui'
 import { Sparkles, TrendingUp, Play, Menu, X, Twitter, Linkedin, Instagram, ChevronDown, Send, ArrowRight, Check, Users, Star as StarIcon, Globe, Award, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import { VideoModal } from '@/components/VideoModal'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -47,11 +48,11 @@ const demoMessages = [
 ]
 
 const STATS = [
-  { icon: Users, value: 2500, suffix: '+', label: 'Active Users', color: 'text-blue-400' },
-  { icon: Briefcase, value: 50, suffix: '+', label: 'Expert Coaches', color: 'text-purple-400' },
-  { icon: Globe, value: 10, suffix: '+', label: 'Languages', color: 'text-green-400' },
-  { icon: StarIcon, value: 4.9, suffix: '/5', label: 'Average Rating', color: 'text-yellow-400', decimal: true },
-  { icon: Award, value: 500, suffix: '+', label: 'Jobs Landed', color: 'text-blue-600' },
+  { icon: Users, value: 2500, suffix: '+', labelKey: 'stats.activeUsers', color: 'text-blue-400' },
+  { icon: Briefcase, value: 50, suffix: '+', labelKey: 'stats.expertCoaches', color: 'text-purple-400' },
+  { icon: Globe, value: 10, suffix: '+', labelKey: 'stats.languages', color: 'text-green-400' },
+  { icon: StarIcon, value: 4.9, suffix: '/5', labelKey: 'stats.averageRating', color: 'text-yellow-400', decimal: true },
+  { icon: Award, value: 500, suffix: '+', labelKey: 'stats.jobsLanded', color: 'text-blue-600' },
 ]
 
 const MOCK_COACHES = [
@@ -85,21 +86,22 @@ const MOCK_COACHES = [
 ]
 
 const AI_STEPS = [
-  { step: '1', icon: '🎯', title: 'Choose Your Role', desc: 'Select your target job, industry, and level. The AI adapts everything to you.' },
-  { step: '2', icon: '💬', title: 'Practice with AI', desc: 'Answer realistic questions in real-time. The AI responds like a real interviewer.' },
-  { step: '3', icon: '⚡', title: 'Get Instant Feedback', desc: 'See your score, confidence level, ideal answer, and what to improve after each question.' },
-  { step: '4', icon: '📈', title: 'Improve & Repeat', desc: 'Track scores over time and keep practising until you feel completely ready.' },
+  { step: '1', icon: '🎯', titleKey: 'howItWorks.aiStep1Title', descKey: 'howItWorks.aiStep1Desc' },
+  { step: '2', icon: '💬', titleKey: 'howItWorks.aiStep2Title', descKey: 'howItWorks.aiStep2Desc' },
+  { step: '3', icon: '⚡', titleKey: 'howItWorks.aiStep3Title', descKey: 'howItWorks.aiStep3Desc' },
+  { step: '4', icon: '📈', titleKey: 'howItWorks.aiStep4Title', descKey: 'howItWorks.aiStep4Desc' },
 ]
 
 const COACH_STEPS = [
-  { step: '1', icon: '🔍', title: 'Browse Coaches', desc: 'Filter by industry, experience level, price, and rating. Read reviews from past candidates.' },
-  { step: '2', icon: '📅', title: 'Book a Session', desc: 'Choose a date, time, and session length that works for you. Pay securely online.' },
-  { step: '3', icon: '🎥', title: 'Live 1-on-1 Session', desc: 'Join a video call with your expert coach. Practice interview scenarios in real time.' },
-  { step: '4', icon: '✨', title: 'Get Expert Feedback', desc: 'Receive a personalised report with actionable next steps and improvement areas.' },
+  { step: '1', icon: '🔍', titleKey: 'howItWorks.coachStep1Title', descKey: 'howItWorks.coachStep1Desc' },
+  { step: '2', icon: '📅', titleKey: 'howItWorks.coachStep2Title', descKey: 'howItWorks.coachStep2Desc' },
+  { step: '3', icon: '🎥', titleKey: 'howItWorks.coachStep3Title', descKey: 'howItWorks.coachStep3Desc' },
+  { step: '4', icon: '✨', titleKey: 'howItWorks.coachStep4Title', descKey: 'howItWorks.coachStep4Desc' },
 ]
 
 export default function HomePage() {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [getStartedOpen, setGetStartedOpen] = useState(false)
@@ -177,20 +179,20 @@ export default function HomePage() {
 
             {/* Desktop links */}
             <div className="hidden md:flex items-center gap-4">
-              <Link href="/pricing"  className="text-sm text-gray-300 hover:text-primary transition-colors">Pricing</Link>
-              <Link href="/coaches"  className="text-sm text-gray-300 hover:text-primary transition-colors">Coaches</Link>
-              <Link href="/faq"      className="text-sm text-gray-300 hover:text-primary transition-colors">FAQ</Link>
-              <Link href="/contact"  className="text-sm text-gray-300 hover:text-primary transition-colors">Contact</Link>
+              <Link href="/pricing"  className="text-sm text-gray-300 hover:text-primary transition-colors">{t('nav.pricing')}</Link>
+              <Link href="/coaches"  className="text-sm text-gray-300 hover:text-primary transition-colors">{t('nav.coaches')}</Link>
+              <Link href="/faq"      className="text-sm text-gray-300 hover:text-primary transition-colors">{t('nav.faq')}</Link>
+              <Link href="/contact"  className="text-sm text-gray-300 hover:text-primary transition-colors">{t('nav.contact')}</Link>
               <ThemeToggle />
               <LanguageSwitcher />
               {user ? (
                 <Link href="/dashboard">
-                  <Button variant="primary">Dashboard</Button>
+                  <Button variant="primary">{t('nav.dashboard')}</Button>
                 </Link>
               ) : (
                 <>
                   <Link href="/login">
-                    <Button variant="outline">Login</Button>
+                    <Button variant="outline">{t('nav.login')}</Button>
                   </Link>
                   {/* Get Started dropdown */}
                   <div className="relative" ref={getStartedRef}>
@@ -198,22 +200,22 @@ export default function HomePage() {
                       onClick={() => setGetStartedOpen((v) => !v)}
                       className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
                     >
-                      Get Started
+                      {t('nav.getStarted')}
                       <ChevronDown className={`w-4 h-4 transition-transform ${getStartedOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {getStartedOpen && (
                       <div className="absolute right-0 mt-2 w-52 rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50" style={{ background: '#111827' }}>
                         <Link href="/signup/candidate" onClick={() => setGetStartedOpen(false)}>
                           <div className="px-4 py-3 hover:bg-white/5 transition-colors cursor-pointer">
-                            <p className="text-sm font-semibold text-white">🤖 Practice with AI</p>
-                            <p className="text-xs text-gray-400 mt-0.5">Start mock interviews free</p>
+                            <p className="text-sm font-semibold text-white">{t('nav.practiceWithAI')}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{t('nav.practiceWithAIDesc')}</p>
                           </div>
                         </Link>
                         <div className="border-t border-white/10" />
                         <Link href="/signup/coach" onClick={() => setGetStartedOpen(false)}>
                           <div className="px-4 py-3 hover:bg-white/5 transition-colors cursor-pointer">
-                            <p className="text-sm font-semibold text-white">👨‍💼 Become a Coach</p>
-                            <p className="text-xs text-gray-400 mt-0.5">Earn from your expertise</p>
+                            <p className="text-sm font-semibold text-white">{t('nav.becomeCoach')}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{t('nav.becomeCoachDesc')}</p>
                           </div>
                         </Link>
                       </div>
@@ -236,20 +238,20 @@ export default function HomePage() {
           {/* Mobile menu */}
           {mobileMenuOpen && (
             <div className="md:hidden mt-4 glass rounded-xl p-4 space-y-3">
-              <Link href="/pricing"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
-              <Link href="/coaches"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Coaches</Link>
-              <Link href="/faq"      className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>FAQ</Link>
-              <Link href="/contact"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
+              <Link href="/pricing"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>{t('nav.pricing')}</Link>
+              <Link href="/coaches"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>{t('nav.coaches')}</Link>
+              <Link href="/faq"      className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>{t('nav.faq')}</Link>
+              <Link href="/contact"  className="block text-gray-300 hover:text-primary" onClick={() => setMobileMenuOpen(false)}>{t('nav.contact')}</Link>
               <div className="flex items-center gap-2 pt-2 pb-2">
                 <ThemeToggle />
-                <span className="text-sm text-gray-400">Theme</span>
+                <span className="text-sm text-gray-400">{t('nav.theme')}</span>
               </div>
               <div className="pt-2 flex flex-col gap-2">
                 <Link href="/signup/candidate" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="primary" fullWidth>🤖 Practice with AI</Button>
+                  <Button variant="primary" fullWidth>{t('nav.practiceWithAI')}</Button>
                 </Link>
                 <Link href="/signup/coach" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" fullWidth>👨‍💼 Become a Coach</Button>
+                  <Button variant="outline" fullWidth>{t('nav.becomeCoach')}</Button>
                 </Link>
               </div>
               <div className="pt-2"><LanguageSwitcher /></div>
@@ -628,7 +630,7 @@ export default function HomePage() {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <p className="text-purple-400 text-sm font-bold mb-3 uppercase tracking-wider">HOW IT WORKS</p>
+              <p className="text-purple-400 text-sm font-bold mb-3 uppercase tracking-wider">{t('howItWorks.title').toUpperCase()}</p>
               <h2 className="text-5xl md:text-6xl font-bold mb-6">Two ways to get interview-ready</h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed">
                 Use AI practice, book a coach session, or combine both for the best results.
@@ -644,7 +646,7 @@ export default function HomePage() {
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  🤖 AI Practice
+                  {t('howItWorks.aiTab')}
                 </button>
                 <button
                   onClick={() => setHowItWorksTab('coach')}
@@ -655,7 +657,7 @@ export default function HomePage() {
                   }`}
                   style={howItWorksTab === 'coach' ? { background: 'linear-gradient(135deg, #10b981, #059669)' } : {}}
                 >
-                  👨‍💼 Coach Session
+                  {t('howItWorks.coachTab')}
                 </button>
               </div>
             </motion.div>
@@ -700,10 +702,10 @@ export default function HomePage() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-xl font-bold mb-3 text-white">{item.title}</h3>
+                      <h3 className="text-xl font-bold mb-3 text-white">{t(item.titleKey)}</h3>
 
                       {/* Description */}
-                      <p className="text-base text-gray-400 leading-relaxed">{item.desc}</p>
+                      <p className="text-base text-gray-400 leading-relaxed">{t(item.descKey)}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -722,10 +724,10 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <p className="text-green-400 text-sm font-bold mb-3 uppercase tracking-wider">EXPERT COACHES</p>
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">Learn From the Best 👨‍💼</h2>
+            <p className="text-green-400 text-sm font-bold mb-3 uppercase tracking-wider">{t('coaches.sectionLabel').toUpperCase()}</p>
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">{t('coaches.title')}</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Our coaches have helped candidates land roles at top companies worldwide.
+              {t('coaches.subtitle')}
             </p>
           </motion.div>
 
@@ -768,10 +770,10 @@ export default function HomePage() {
                   <div className="flex items-center gap-1">
                     <StarIcon className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     <span className="font-bold text-white">{coach.rating}</span>
-                    <span className="text-gray-500">({coach.sessions} sessions)</span>
+                    <span className="text-gray-500">({coach.sessions} {t('coaches.sessions')})</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-purple-400 font-bold text-base">{coach.price} credits</span>
+                    <span className="text-purple-400 font-bold text-base">{coach.price} {t('coaches.credits')}</span>
                     <span className="text-xs text-gray-500" title="1 credit = $1 USD">ℹ️</span>
                   </div>
                 </div>
@@ -782,7 +784,7 @@ export default function HomePage() {
                     fullWidth
                     className="group-hover:border-green-500 group-hover:text-green-400 transition-all text-base py-3"
                   >
-                    View Profile
+                    {t('coaches.viewProfile')}
                   </Button>
                 </Link>
               </motion.div>
@@ -798,7 +800,7 @@ export default function HomePage() {
           >
             <Link href="/coaches">
               <button className="inline-flex items-center gap-3 px-10 py-4 text-lg font-semibold text-white rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 shadow-2xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-105 transition-all">
-                Browse All Coaches <ArrowRight className="w-5 h-5" />
+                {t('coaches.viewAll')} <ArrowRight className="w-5 h-5" />
               </button>
             </Link>
           </motion.div>
@@ -813,10 +815,10 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <p className="text-blue-400 text-sm font-bold mb-3 uppercase tracking-wider">TESTIMONIALS</p>
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">Real People. Real Results.</h2>
+            <p className="text-blue-400 text-sm font-bold mb-3 uppercase tracking-wider">{t('testimonials.sectionLabel').toUpperCase()}</p>
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">{t('testimonials.title')}</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Join professionals who landed their dream roles with AI practice + expert coaching.
+              {t('testimonials.subtitle')}
             </p>
           </motion.div>
 
@@ -853,7 +855,7 @@ export default function HomePage() {
                     <div className="flex items-center gap-2">
                       <p className="font-bold text-white">Sarah Chen</p>
                       <Check className="w-4 h-4 text-green-400" />
-                      <span className="text-xs text-green-400">Verified User</span>
+                      <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
                     <p className="text-sm text-gray-400">Software Engineer · Google</p>
                   </div>
@@ -892,7 +894,7 @@ export default function HomePage() {
                     <div className="flex items-center gap-2">
                       <p className="font-bold text-white">Jessica Williams</p>
                       <Check className="w-4 h-4 text-green-400" />
-                      <span className="text-xs text-green-400">Verified User</span>
+                      <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
                     <p className="text-sm text-gray-400">Product Manager · Amazon</p>
                   </div>
@@ -931,7 +933,7 @@ export default function HomePage() {
                     <div className="flex items-center gap-2">
                       <p className="font-bold text-white">Raj Patel</p>
                       <Check className="w-4 h-4 text-green-400" />
-                      <span className="text-xs text-green-400">Verified User</span>
+                      <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
                     <p className="text-sm text-gray-400">Senior Engineer · Stripe</p>
                   </div>
@@ -970,7 +972,7 @@ export default function HomePage() {
                     <div className="flex items-center gap-2">
                       <p className="font-bold text-white">Michael Torres</p>
                       <Check className="w-4 h-4 text-green-400" />
-                      <span className="text-xs text-green-400">Verified User</span>
+                      <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
                     <p className="text-sm text-gray-400">Career Coach · Ex-McKinsey</p>
                   </div>
@@ -1031,7 +1033,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-5xl md:text-6xl font-bold mb-6 text-white"
               >
-                Ready to Land Your Dream Job?
+                {t('cta.title')}
               </motion.h2>
 
               <motion.p
@@ -1041,7 +1043,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed"
               >
-                Start with free AI practice, then supercharge your prep with a real expert coach.
+                {t('cta.description')}
               </motion.p>
 
               <motion.div
@@ -1054,19 +1056,19 @@ export default function HomePage() {
                 {user ? (
                   <Link href="/interview/setup">
                     <button className="text-lg px-12 py-5 rounded-full bg-white text-purple-700 font-bold hover:bg-gray-100 shadow-2xl hover:scale-105 transition-all">
-                      Start Practicing Now
+                      {t('cta.startPracticing')}
                     </button>
                   </Link>
                 ) : (
                   <>
                     <Link href="/signup/candidate">
                       <button className="text-lg px-12 py-5 rounded-full bg-white text-purple-700 font-bold hover:bg-gray-100 shadow-2xl hover:scale-105 transition-all">
-                        Start Practicing Free
+                        {t('cta.startFree')}
                       </button>
                     </Link>
                     <Link href="/coaches">
                       <button className="text-lg px-12 py-5 rounded-full border-2 border-white text-white font-bold hover:bg-white hover:text-purple-700 shadow-2xl hover:scale-105 transition-all">
-                        Browse Coaches →
+                        {t('cta.browseCoaches')}
                       </button>
                     </Link>
                   </>
@@ -1090,7 +1092,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <span className="text-white font-semibold text-base">
-                  Join 2,500+ professionals →
+                  {t('cta.joinProfessionals')}
                 </span>
               </motion.div>
             </div>
@@ -1247,7 +1249,7 @@ function StatsSection() {
             {STATS.map((stat, index) => {
               const Icon = stat.icon
               return (
-                <StatCard key={stat.label} stat={stat} Icon={Icon} index={index} isInView={isInView} />
+                <StatCard key={stat.labelKey} stat={stat} Icon={Icon} index={index} isInView={isInView} t={t} />
               )
             })}
           </div>
@@ -1258,7 +1260,7 @@ function StatsSection() {
 }
 
 // Individual Stat Card with count-up
-function StatCard({ stat, Icon, index, isInView }: { stat: typeof STATS[0], Icon: any, index: number, isInView: boolean }) {
+function StatCard({ stat, Icon, index, isInView, t }: { stat: typeof STATS[0], Icon: any, index: number, isInView: boolean, t: (key: string) => string }) {
   const count = useCountUp(stat.value, 2000, isInView)
   const displayValue = stat.decimal ? count.toFixed(1) : count
 
@@ -1298,7 +1300,7 @@ function StatCard({ stat, Icon, index, isInView }: { stat: typeof STATS[0], Icon
         </div>
 
         {/* Label */}
-        <p className="text-sm text-gray-400 font-medium">{stat.label}</p>
+        <p className="text-sm text-gray-400 font-medium">{t(stat.labelKey)}</p>
       </div>
     </motion.div>
   )

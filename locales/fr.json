@@ -4,8 +4,14 @@
     "getStarted": "Commencer",
     "dashboard": "Tableau de bord",
     "pricing": "Tarifs",
+    "coaches": "Coachs",
     "faq": "FAQ",
-    "contact": "Contactez-nous"
+    "contact": "Contact",
+    "theme": "Thème",
+    "practiceWithAI": "🤖 Pratiquer avec l'IA",
+    "practiceWithAIDesc": "Commencez vos entretiens gratuits",
+    "becomeCoach": "👨‍💼 Devenir Coach",
+    "becomeCoachDesc": "Gagnez grâce à votre expertise"
   },
   "hero": {
     "title": "Maîtrisez votre prochain entretien avec",
@@ -17,14 +23,11 @@
     "freeInterviews": "3 entretiens gratuits · Sans carte bancaire"
   },
   "stats": {
-    "available": "24/7",
-    "availableLabel": "Toujours disponible",
-    "languages": "10+",
-    "languagesLabel": "Langues supportées",
-    "aiPowered": "Propulsé par IA",
-    "aiPoweredLabel": "Feedback intelligent",
-    "users": "1000+",
-    "usersLabel": "Utilisateurs satisfaits"
+    "activeUsers": "Utilisateurs actifs",
+    "expertCoaches": "Coachs experts",
+    "languages": "Langues",
+    "averageRating": "Note moyenne",
+    "jobsLanded": "Emplois obtenus"
   },
   "features": {
     "title": "Tout ce dont vous avez besoin pour réussir votre entretien",
@@ -41,13 +44,49 @@
     "unlimited": "Pratique illimitée",
     "unlimitedDesc": "Pas de limite sur les sessions. Continuez à vous améliorer jusqu'à être 100% confiant."
   },
+  "howItWorks": {
+    "title": "Comment fonctionne Interview Coach",
+    "aiTab": "Pratiquer avec l'IA",
+    "coachTab": "Réserver un vrai Coach",
+    "aiStep1Title": "Choisissez votre rôle",
+    "aiStep1Desc": "Sélectionnez votre poste cible, secteur et niveau. L'IA s'adapte à vous.",
+    "aiStep2Title": "Pratiquez avec l'IA",
+    "aiStep2Desc": "Répondez à des questions réalistes en temps réel. L'IA réagit comme un vrai recruteur.",
+    "aiStep3Title": "Obtenez un feedback instantané",
+    "aiStep3Desc": "Voyez votre score, niveau de confiance, réponse idéale et ce qu'il faut améliorer après chaque question.",
+    "aiStep4Title": "Améliorez et répétez",
+    "aiStep4Desc": "Suivez vos scores dans le temps et continuez à pratiquer jusqu'à vous sentir prêt.",
+    "coachStep1Title": "Parcourir les coachs",
+    "coachStep1Desc": "Filtrez par secteur, niveau d'expérience, prix et note. Lisez les avis des candidats précédents.",
+    "coachStep2Title": "Réserver une session",
+    "coachStep2Desc": "Choisissez une date, heure et durée qui vous conviennent. Payez en ligne en toute sécurité.",
+    "coachStep3Title": "Session 1-à-1 en direct",
+    "coachStep3Desc": "Rejoignez un appel vidéo avec votre coach expert. Pratiquez des scénarios d'entretien en temps réel.",
+    "coachStep4Title": "Recevez un feedback expert",
+    "coachStep4Desc": "Recevez un rapport personnalisé avec des prochaines étapes actionnables et des axes d'amélioration."
+  },
+  "coaches": {
+    "sectionLabel": "Coachs experts",
+    "title": "Apprenez des meilleurs 👨‍💼",
+    "subtitle": "Nos coachs ont aidé des candidats à décrocher des postes dans les meilleures entreprises du monde.",
+    "sessions": "sessions",
+    "credits": "crédits",
+    "viewProfile": "Voir le profil",
+    "viewAll": "Voir tous les coachs"
+  },
   "testimonials": {
-    "title": "Ce que disent nos utilisateurs"
+    "sectionLabel": "Témoignages",
+    "title": "De vraies personnes. De vrais résultats.",
+    "subtitle": "Rejoignez des professionnels qui ont décroché le poste de leurs rêves grâce à l'IA et au coaching expert.",
+    "verifiedUser": "Utilisateur vérifié"
   },
   "cta": {
-    "title": "Prêt à réussir votre prochain entretien ?",
-    "description": "Rejoignez des milliers de candidats qui ont amélioré leurs compétences d'entretien avec Interview Coach.",
-    "button": "Commencer maintenant"
+    "title": "Prêt à   décrocher le job de vos rêves?",
+    "description": "Commencez avec la pratique IA gratuite, puis boostez votre préparation avec un coach expert.",
+    "startPracticing": "Commencer maintenant",
+    "startFree": "Commencer gratuitement",
+    "browseCoaches": "Voir les coachs →",
+    "joinProfessionals": "Rejoignez 2 500+ professionnels →"
   },
   "footer": {
     "tagline": "Plateforme de pratique d'entretien propulsée par IA pour vous aider à décrocher le job de vos rêves avec confiance.",
