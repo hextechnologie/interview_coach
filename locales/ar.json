@@ -749,7 +749,9 @@
         "startYearRequired": "سنة البدء مطلوبة",
         "currentWorkHere": "أعمل هنا حاليًا",
         "endDate": "تاريخ الانتهاء",
-        "descriptionPlaceholder": "صف دورك وإنجازاتك ومسؤولياتك...",
+        "endDateRequired": "تاريخ الانتهاء مطلوب ما لم تكن تعمل هنا حاليًا",
+        "endDateInvalid": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
+        "descriptionPlaceholder": "صف دورك وإنجازاتك ومسؤولياتك...", 
         "saveFailed": "فشل حفظ الخبرة",
         "updateButton": "تحديث الخبرة",
         "addButton": "إضافة خبرة"

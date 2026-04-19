@@ -747,7 +747,9 @@
         "startYearRequired": "El año de inicio es obligatorio",
         "currentWorkHere": "Actualmente trabajo aquí",
         "endDate": "Fecha de finalización",
-        "descriptionPlaceholder": "Describe tu rol, logros y responsabilidades...",
+        "endDateRequired": "La fecha de finalización es obligatoria salvo que trabajes aquí actualmente",
+        "endDateInvalid": "La fecha de finalización debe ser posterior a la fecha de inicio",
+        "descriptionPlaceholder": "Describe tu rol, logros y responsabilidades...", 
         "saveFailed": "No se pudo guardar la experiencia",
         "updateButton": "Actualizar experiencia",
         "addButton": "Agregar experiencia"

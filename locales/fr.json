@@ -747,7 +747,9 @@
         "startYearRequired": "L'année de début est requise",
         "currentWorkHere": "J'y travaille actuellement",
         "endDate": "Date de fin",
-        "descriptionPlaceholder": "Décrivez votre rôle, vos réalisations et responsabilités...",
+        "endDateRequired": "La date de fin est requise sauf si vous travaillez actuellement ici",
+        "endDateInvalid": "La date de fin doit être postérieure à la date de début",
+        "descriptionPlaceholder": "Décrivez votre rôle, vos réalisations et responsabilités...", 
         "saveFailed": "Échec de l'enregistrement de l'expérience",
         "updateButton": "Mettre à jour l'expérience",
         "addButton": "Ajouter une expérience"

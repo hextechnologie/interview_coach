@@ -749,6 +749,8 @@
         "startYearRequired": "Start year is required",
         "currentWorkHere": "I currently work here",
         "endDate": "End Date",
+        "endDateRequired": "End date is required unless you currently work here",
+        "endDateInvalid": "End date must be after the start date",
         "descriptionPlaceholder": "Describe your role, achievements, responsibilities...",
         "saveFailed": "Failed to save experience",
         "updateButton": "Update Experience",

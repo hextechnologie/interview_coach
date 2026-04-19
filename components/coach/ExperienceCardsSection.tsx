@@ -4,9 +4,17 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, MapPin, Building2, Edit2, Trash2, Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { COUNTRIES } from '@/lib/countries'
 import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachExperience, ExperienceFormData, EmploymentType } from '@/lib/types/profile'
 import { MONTHS, YEARS, EMPLOYMENT_TYPES, JOB_TITLES, COMPANIES } from '@/lib/types/profile'
+
+const LOCATION_SUGGESTIONS = Array.from(new Set([
+  'Remote',
+  'Hybrid',
+  'On-site',
+  ...COUNTRIES.flatMap((country) => country.cities.map((city) => `${city}, ${country.label}`)),
+]))
 
 
 interface ExperienceCardsSectionProps {
@@ -246,6 +254,7 @@ function ExperienceModal({
   const [loading, setLoading] = useState(false)
   const [jobTitleSuggestions, setJobTitleSuggestions] = useState<string[]>([])
   const [companySuggestions, setCompanySuggestions] = useState<string[]>([])
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([])
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ExperienceFormData, string>> = {}
@@ -253,6 +262,17 @@ function ExperienceModal({
     if (!formData.job_title.trim()) newErrors.job_title = t('profile.experienceSection.modal.jobTitleRequired')
     if (!formData.company_name.trim()) newErrors.company_name = t('profile.experienceSection.modal.companyRequired')
     if (!formData.start_year) newErrors.start_year = t('profile.experienceSection.modal.startYearRequired')
+
+    if (!formData.is_current) {
+      if (!formData.end_month || !formData.end_year) {
+        newErrors.end_year = t('profile.experienceSection.modal.endDateRequired')
+      } else if (
+        formData.end_year < formData.start_year ||
+        (formData.end_year === formData.start_year && formData.start_month && formData.end_month < formData.start_month)
+      ) {
+        newErrors.end_year = t('profile.experienceSection.modal.endDateInvalid')
+      }
+    }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -313,6 +333,20 @@ function ExperienceModal({
       setCompanySuggestions(suggestions)
     } else {
       setCompanySuggestions([])
+    }
+  }
+
+  const handleLocationChange = (value: string) => {
+    setFormData({ ...formData, location: value })
+    const query = value.trim().toLowerCase()
+
+    if (query.length > 0) {
+      const suggestions = LOCATION_SUGGESTIONS.filter((location) =>
+        location.toLowerCase().includes(query)
+      ).slice(0, 6)
+      setLocationSuggestions(suggestions)
+    } else {
+      setLocationSuggestions(LOCATION_SUGGESTIONS.slice(0, 6))
     }
   }
 
@@ -438,17 +472,35 @@ function ExperienceModal({
           </div>
 
           {/* Location */}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-300 mb-2">
               {t('profile.experienceSection.modal.location')}
             </label>
             <input
               type="text"
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              value={formData.location || ''}
+              onChange={(e) => handleLocationChange(e.target.value)}
+              onFocus={() => setLocationSuggestions(formData.location ? LOCATION_SUGGESTIONS.filter((location) => location.toLowerCase().includes((formData.location || '').toLowerCase())).slice(0, 6) : LOCATION_SUGGESTIONS.slice(0, 6))}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
               placeholder={t('profile.experienceSection.modal.locationPlaceholder')}
             />
+            {locationSuggestions.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-52 overflow-y-auto">
+                {locationSuggestions.map((location) => (
+                  <button
+                    key={location}
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, location })
+                      setLocationSuggestions([])
+                    }}
+                    className="w-full px-4 py-2 text-left text-white hover:bg-gray-700 transition"
+                  >
+                    {location}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Start Date */}
@@ -486,7 +538,17 @@ function ExperienceModal({
               <input
                 type="checkbox"
                 checked={formData.is_current}
-                onChange={(e) => setFormData({ ...formData, is_current: e.target.checked })}
+                onChange={(e) => {
+                  const isCurrent = e.target.checked
+                  setFormData({
+                    ...formData,
+                    is_current: isCurrent,
+                    ...(isCurrent ? { end_month: undefined, end_year: undefined } : {}),
+                  })
+                  if (isCurrent) {
+                    setErrors((prev) => ({ ...prev, end_year: undefined }))
+                  }
+                }}
                 className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-2 focus:ring-blue-500"
               />
               {t('profile.experienceSection.modal.currentWorkHere')}
@@ -497,7 +559,7 @@ function ExperienceModal({
           {!formData.is_current && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                {t('profile.experienceSection.modal.endDate')}
+                {t('profile.experienceSection.modal.endDate')} <span className="text-red-400">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <select
@@ -521,6 +583,7 @@ function ExperienceModal({
                   ))}
                 </select>
               </div>
+              {errors.end_year && <p className="text-red-400 text-sm mt-1">{errors.end_year}</p>}
             </div>
           )}
 
