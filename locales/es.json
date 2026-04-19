@@ -133,12 +133,27 @@
     "joinProfessionals": "Únete a +2,500 profesionales →"
   },
   "footer": {
-    "tagline": "Plataforma de práctica de entrevistas impulsada por IA para ayudarte a conseguir el trabajo de tus sueños con confianza.",
+    "tagline": "Entrevistas simuladas con IA + coaches expertos reales. Consigue tu trabajo soñado más rápido.",
+    "newsletterTitle": "Recibe consejos semanales de entrevistas",
+    "emailPlaceholder": "Tu dirección de correo electrónico",
+    "subscribe": "Suscribirse",
     "product": "Producto",
+    "pricing": "Precios",
+    "findCoach": "Encuentra un Coach",
+    "browseJobs": "Explorar Empleos",
+    "dashboard": "Panel de Control",
+    "forCoaches": "Para Coaches",
+    "becomeCoach": "Conviértete en Coach",
+    "coachDashboard": "Panel de Coach",
+    "earnings": "Ganancias y Pagos",
     "support": "Soporte",
+    "contactUs": "Contáctanos",
+    "faq": "FAQ",
     "legal": "Legal",
-    "privacyPolicy": "Política de privacidad",
-    "termsOfService": "Términos de servicio",
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio",
+    "about": "Acerca de",
+    "madeWith": "Hecho con ❤️ para buscadores de empleo en todo el mundo",
     "copyright": "© 2026 Interview Coach. Todos los derechos reservados. Impulsado por Claude AI."
   }
 }

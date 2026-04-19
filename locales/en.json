@@ -135,12 +135,27 @@
     "joinProfessionals": "Join 2,500+ professionals →"
   },
   "footer": {
-    "tagline": "AI-powered interview practice platform to help you land your dream job with confidence.",
+    "tagline": "AI mock interviews + real expert coaches. Land your dream job faster.",
+    "newsletterTitle": "Get weekly interview tips",
+    "emailPlaceholder": "Your email address",
+    "subscribe": "Subscribe",
     "product": "Product",
+    "pricing": "Pricing",
+    "findCoach": "Find a Coach",
+    "browseJobs": "Browse Jobs",
+    "dashboard": "Dashboard",
+    "forCoaches": "For Coaches",
+    "becomeCoach": "Become a Coach",
+    "coachDashboard": "Coach Dashboard",
+    "earnings": "Earnings & Payouts",
     "support": "Support",
+    "contactUs": "Contact Us",
+    "faq": "FAQ",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
+    "about": "About",
+    "madeWith": "Made with ❤️ for job seekers worldwide",
     "copyright": "© 2026 Interview Coach. All rights reserved. Powered by Claude AI."
   }
 }

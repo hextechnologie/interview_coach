@@ -133,12 +133,27 @@
     "joinProfessionals": "Rejoignez 2 500+ professionnels →"
   },
   "footer": {
-    "tagline": "Plateforme de pratique d'entretien propulsée par IA pour vous aider à décrocher le job de vos rêves avec confiance.",
+    "tagline": "Entretiens simulés IA + vrais coachs experts. Décrochez votre emploi de rêve plus rapidement.",
+    "newsletterTitle": "Recevez des conseils d'entretien hebdomadaires",
+    "emailPlaceholder": "Votre adresse e-mail",
+    "subscribe": "S'abonner",
     "product": "Produit",
+    "pricing": "Tarifs",
+    "findCoach": "Trouver un Coach",
+    "browseJobs": "Parcourir les Emplois",
+    "dashboard": "Tableau de Bord",
+    "forCoaches": "Pour les Coachs",
+    "becomeCoach": "Devenir Coach",
+    "coachDashboard": "Tableau de Bord Coach",
+    "earnings": "Revenus et Paiements",
     "support": "Support",
+    "contactUs": "Nous Contacter",
+    "faq": "FAQ",
     "legal": "Légal",
-    "privacyPolicy": "Politique de confidentialité",
-    "termsOfService": "Conditions d'utilisation",
+    "privacyPolicy": "Politique de Confidentialité",
+    "termsOfService": "Conditions d'Utilisation",
+    "about": "À Propos",
+    "madeWith": "Fait avec ❤️ pour les chercheurs d'emploi du monde entier",
     "copyright": "© 2026 Interview Coach. Tous droits réservés. Propulsé par Claude AI."
   }
 }

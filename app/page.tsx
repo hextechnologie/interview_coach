@@ -1108,23 +1108,23 @@ export default function HomePage() {
                 <span className="text-xl font-bold gradient-text">Interview Coach</span>
               </div>
               <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                AI mock interviews + real expert coaches. Land your dream job faster.
+                {t('footer.tagline')}
               </p>
               
               {/* Newsletter Signup */}
               <div className="space-y-3">
                 <p className="text-white font-semibold flex items-center gap-2">
                   <Send className="w-4 h-4" />
-                  Get weekly interview tips
+                  {t('footer.newsletterTitle')}
                 </p>
                 <div className="flex gap-2">
                   <input
                     type="email"
-                    placeholder="Your email address"
+                    placeholder={t('footer.emailPlaceholder')}
                     className="flex-1 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
                   />
                   <button className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-sm font-semibold text-white hover:from-purple-500 hover:to-blue-500 transition-all shadow-lg shadow-purple-600/20">
-                    Subscribe
+                    {t('footer.subscribe')}
                   </button>
                 </div>
               </div>
@@ -1132,37 +1132,37 @@ export default function HomePage() {
 
             {/* Product */}
             <div>
-              <h4 className="font-bold text-white mb-4">Product</h4>
+              <h4 className="font-bold text-white mb-4">{t('footer.product')}</h4>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li><Link href="/pricing" className="hover:text-purple-400 transition-colors">Pricing</Link></li>
-                <li><Link href="/coaches" className="hover:text-purple-400 transition-colors">Find a Coach</Link></li>
-                <li><Link href="/jobs" className="hover:text-purple-400 transition-colors">Browse Jobs</Link></li>
-                <li><Link href="/dashboard" className="hover:text-purple-400 transition-colors">Dashboard</Link></li>
+                <li><Link href="/pricing" className="hover:text-purple-400 transition-colors">{t('footer.pricing')}</Link></li>
+                <li><Link href="/coaches" className="hover:text-purple-400 transition-colors">{t('footer.findCoach')}</Link></li>
+                <li><Link href="/jobs" className="hover:text-purple-400 transition-colors">{t('footer.browseJobs')}</Link></li>
+                <li><Link href="/dashboard" className="hover:text-purple-400 transition-colors">{t('footer.dashboard')}</Link></li>
               </ul>
             </div>
 
             {/* For Coaches */}
             <div>
-              <h4 className="font-bold text-white mb-4">For Coaches</h4>
+              <h4 className="font-bold text-white mb-4">{t('footer.forCoaches')}</h4>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li><Link href="/signup/coach" className="hover:text-purple-400 transition-colors">Become a Coach</Link></li>
-                <li><Link href="/coach/dashboard" className="hover:text-purple-400 transition-colors">Coach Dashboard</Link></li>
-                <li><Link href="/coach/earnings" className="hover:text-purple-400 transition-colors">Earnings & Payouts</Link></li>
+                <li><Link href="/signup/coach" className="hover:text-purple-400 transition-colors">{t('footer.becomeCoach')}</Link></li>
+                <li><Link href="/coach/dashboard" className="hover:text-purple-400 transition-colors">{t('footer.coachDashboard')}</Link></li>
+                <li><Link href="/coach/earnings" className="hover:text-purple-400 transition-colors">{t('footer.earnings')}</Link></li>
               </ul>
             </div>
 
             {/* Support + Legal */}
             <div>
-              <h4 className="font-bold text-white mb-4">Support</h4>
+              <h4 className="font-bold text-white mb-4">{t('footer.support')}</h4>
               <ul className="space-y-3 text-sm text-gray-400 mb-6">
-                <li><Link href="/contact" className="hover:text-purple-400 transition-colors">Contact Us</Link></li>
-                <li><Link href="/faq" className="hover:text-purple-400 transition-colors">FAQ</Link></li>
+                <li><Link href="/contact" className="hover:text-purple-400 transition-colors">{t('footer.contactUs')}</Link></li>
+                <li><Link href="/faq" className="hover:text-purple-400 transition-colors">{t('footer.faq')}</Link></li>
               </ul>
-              <h4 className="font-bold text-white mb-4">Legal</h4>
+              <h4 className="font-bold text-white mb-4">{t('footer.legal')}</h4>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li><Link href="/privacy" className="hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-purple-400 transition-colors">Terms of Service</Link></li>
-                <li><Link href="/about" className="hover:text-purple-400 transition-colors">About</Link></li>
+                <li><Link href="/privacy" className="hover:text-purple-400 transition-colors">{t('footer.privacyPolicy')}</Link></li>
+                <li><Link href="/terms" className="hover:text-purple-400 transition-colors">{t('footer.termsOfService')}</Link></li>
+                <li><Link href="/about" className="hover:text-purple-400 transition-colors">{t('footer.about')}</Link></li>
               </ul>
             </div>
           </div>
@@ -1198,10 +1198,10 @@ export default function HomePage() {
           {/* Copyright + Tagline */}
           <div className="text-center text-gray-400 pt-8 space-y-2">
             <p className="text-sm">
-              Made with <span className="text-red-500">❤️</span> for job seekers worldwide
+              {t('footer.madeWith')}
             </p>
             <p className="text-xs">
-              &copy; 2026 Interview Coach. All rights reserved. Powered by Claude AI.
+              {t('footer.copyright')}
             </p>
           </div>
         </footer>
