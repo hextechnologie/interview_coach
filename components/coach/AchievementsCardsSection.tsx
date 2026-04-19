@@ -359,15 +359,15 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Type <span className="text-red-500">*</span>
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 place-items-center">
               {ACHIEVEMENT_TYPES.map((type) => (
                 <button
                   key={type.value}
                   type="button"
                   onClick={() => setFormData({ ...formData, achievement_type: type.value })}
-                  className={`flex items-center gap-2 p-3 rounded-lg border transition ${
+                  className={`flex items-center gap-2 p-3 rounded-lg border transition w-full ${
                     formData.achievement_type === type.value
-                      ? 'bg-blue-500/20 border-blue-500 text-blue-400'
+                      ? 'bg-purple-900/30 border-purple-500 text-purple-400'
                       : 'bg-gray-700 border-gray-600 text-gray-300 hover:border-gray-500'
                   }`}
                 >
@@ -387,7 +387,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g., Best Speaker Award, Published Research Paper..."
+              placeholder="e.g., Best Speaker Award..."
               className={`w-full px-4 py-2 bg-gray-700 border rounded-lg text-white focus:outline-none focus:border-blue-500 ${
                 errors.title ? 'border-red-500' : 'border-gray-600'
               }`}
@@ -461,7 +461,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition"
+              className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 hover:border-gray-400 hover:bg-gray-700 text-white rounded-lg transition"
             >
               {t('profile.cancel')}
             </button>
@@ -469,7 +469,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
               type="button"
               onClick={() => handleSubmit()}
               disabled={isSaving}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition disabled:opacity-50"
             >
               {isSaving ? t('profile.saving') : achievement ? t('profile.achievementsSection.modal.updateButton') : t('profile.achievementsSection.modal.addButton')}
             </button>

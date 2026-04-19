@@ -323,8 +323,15 @@ export default function InterviewSetupPage() {
       <header className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
-              <ChevronLeft className="w-4 h-4" /> {t('nav.dashboard')}
+            <Link
+              href="/dashboard"
+              title="Press Alt+← to go back"
+              aria-label={t('nav.dashboard')}
+              className="group inline-flex items-center gap-2 rounded-lg border border-purple-500/50 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-200 shadow-sm transition-all duration-200 hover:scale-105 hover:border-purple-500 hover:bg-purple-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400/70"
+            >
+              <ChevronLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+              <span className="sm:hidden">{t('nav.dashboardShort') || 'Dashboard'}</span>
+              <span className="hidden sm:inline">{t('nav.dashboard')}</span>
             </Link>
             <Link href="/" className="flex items-center gap-2">
               <Sparkles className="w-8 h-8 text-primary" />

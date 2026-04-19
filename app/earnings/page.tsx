@@ -120,8 +120,15 @@ export default function CoachEarningsPage() {
   return (
     <div className="min-h-screen bg-background text-white px-6 py-8">
       <div className="mx-auto max-w-5xl">
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" /> {t('earnings.backToDashboard')}
+        <Link
+          href="/dashboard"
+          title="Press Alt+← to go back"
+          aria-label={t('earnings.backToDashboard')}
+          className="group inline-flex items-center gap-2 rounded-lg border border-purple-500/50 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-200 shadow-sm transition-all duration-200 hover:scale-105 hover:border-purple-500 hover:bg-purple-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400/70 mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
+          <span className="sm:hidden">Dashboard</span>
+          <span className="hidden sm:inline">{t('earnings.backToDashboard')}</span>
         </Link>
 
         <h1 className="text-3xl font-bold mb-6">{t('earnings.pageTitle')}</h1>
