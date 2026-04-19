@@ -709,6 +709,7 @@ export default function HomePage() {
                 ))}
               </motion.div>
             </AnimatePresence>
+            </div>
           </div>
         </section>
 
