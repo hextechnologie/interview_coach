@@ -152,9 +152,12 @@ function AchievementCard({
   onDelete: () => void
 }) {
   const { t } = useLanguage()
-  const typeConfig = ACHIEVEMENT_TYPES.find(t => t.value === achievement.achievement_type)
+  const safeAchievementType: AchievementType = achievement.achievement_type ?? 'Other'
+  const typeConfig = ACHIEVEMENT_TYPES.find(t => t.value === safeAchievementType)
 
-  const getAchievementTypeLabel = (type: AchievementType) => {
+  const getAchievementTypeLabel = (type?: AchievementType) => {
+    const safeType = type ?? 'Other'
+
     const keyMap: Record<AchievementType, string> = {
       'Professional Achievement': 'professional',
       'Project': 'project',
@@ -164,7 +167,7 @@ function AchievementCard({
       'Other': 'other',
     }
 
-    return t(`profile.achievementsSection.types.${keyMap[type]}`)
+    return t(`profile.achievementsSection.types.${keyMap[safeType]}`)
   }
   const Icon = typeConfig?.icon || Star
 
@@ -193,7 +196,7 @@ function AchievementCard({
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                 <span className="flex items-center gap-1">
                   <Icon className="w-4 h-4" />
-                  {getAchievementTypeLabel(achievement.achievement_type)}
+                  {getAchievementTypeLabel(safeAchievementType)}
                 </span>
                 {formatDate() && (
                   <>
