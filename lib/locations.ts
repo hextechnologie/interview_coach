@@ -1316,7 +1316,7 @@ export const COUNTRIES: Country[] = [
 export function getCountryOptions() {
   return COUNTRIES.map(c => ({
     value: c.value,
-    label: `${getCountryFlag(c.label)} ${c.label}`,
+    label: c.label,
     letter: c.letter
   }))
 }

@@ -53,6 +53,26 @@
   * {
     border-color: rgb(var(--border-color));
   }
+
+  select {
+    color-scheme: dark;
+  }
+
+  select option,
+  select optgroup {
+    background-color: #111827 !important;
+    color: #f9fafb !important;
+  }
+
+  [data-theme="light"] select {
+    color-scheme: light;
+  }
+
+  [data-theme="light"] select option,
+  [data-theme="light"] select optgroup {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+  }
 }
 
 @layer utilities {
