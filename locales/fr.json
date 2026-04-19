@@ -1280,5 +1280,111 @@ Locations": "Tous les Lieux",
       "month": "Dernier mois",
       "all": "Tout le temps"
     }
+  },
+  "coachDashboard": {
+    "welcomeMessage": "Bienvenue à bord. Complétez votre profil et connectez Stripe pour commencer à accepter les réservations.",
+    "title": "Tableau de bord coach",
+    "subtitle": "Gérez les réservations, les revenus et les relations avec les candidats depuis un seul endroit.",
+    "myBookings": "Mes Réservations",
+    "earnings": "Revenus",
+    "editProfile": "Modifier le profil",
+    "withdraw": "Retirer",
+    "stats": {
+      "totalEarned": "Total gagné",
+      "thisMonth": "Ce mois-ci",
+      "pending": "En attente",
+      "withdrawn": "Retiré"
+    },
+    "upcomingBookings": {
+      "title": "Réservations à venir",
+      "noBookings": "Pas encore de réservations réelles. Elles apparaîtront ici lorsque les candidats réserveront vos sessions.",
+      "when": "Quand :",
+      "duration": "Durée :",
+      "notes": "Notes :",
+      "noNotes": "Aucune note de session fournie",
+      "notScheduled": "Pas encore planifié",
+      "viewProfile": "Voir le profil",
+      "confirmed": "confirmé",
+      "pending": "en attente",
+      "min": "min"
+    },
+    "recentReviews": {
+      "title": "Avis récents",
+      "noReviews": "Pas encore d'avis. Votre premier avis de candidat réel apparaîtra ici.",
+      "candidateReview": "Avis du candidat",
+      "noComment": "Aucun commentaire écrit fourni."
+    },
+    "quickStats": {
+      "title": "Statistiques rapides",
+      "totalSessions": "Sessions totales :",
+      "averageRating": "Note moyenne :",
+      "repeatClients": "Clients réguliers :"
+    },
+    "payoutStatus": {
+      "title": "Statut des paiements",
+      "description": "Stripe Connect sera affiché ici une fois que votre compte sera connecté et que vous aurez terminé des sessions payantes.",
+      "platformFee": "Frais de plateforme : 20% • Paiement coach : 80%"
+    },
+    "yourAccount": {
+      "title": "Votre compte coach",
+      "signedInAs": "Connecté en tant que {name}"
+    },
+    "candidate": "Candidat"
+  },
+  "coachProfileEdit": {
+    "backToDashboard": "Retour au tableau de bord",
+    "title": "Profil Coach",
+    "subtitle": "Mettez à jour votre profil public visible par les candidats.",
+    "yourName": "Votre nom",
+    "sections": {
+      "personalInfo": "Informations personnelles",
+      "bio": "Biographie",
+      "coachingInfo": "Informations de coaching",
+      "professionalExperience": "Expérience professionnelle",
+      "educationCertifications": "Éducation et certifications",
+      "skillsExpertise": "Compétences et expertise",
+      "achievementsHighlights": "Réalisations et points forts"
+    },
+    "labels": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "country": "Pays",
+      "region": "Région/État",
+      "city": "Ville",
+      "linkedinUrl": "URL LinkedIn",
+      "professionalSummary": "Résumé professionnel",
+      "professionalTitle": "Titre professionnel",
+      "pricePerHour": "Tarif par heure ($)",
+      "yearsExperience": "Années d'expérience",
+      "bioLabel": "Biographie",
+      "companies": "Entreprises où vous avez travaillé",
+      "specializations": "Spécialisations"
+    },
+    "placeholders": {
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "country": "Sélectionner le pays",
+      "region": "Sélectionner la région",
+      "city": "Sélectionner la ville",
+      "selectCountryFirst": "Sélectionnez d'abord le pays",
+      "selectRegionFirst": "Sélectionnez d'abord la région",
+      "linkedinUrl": "https://linkedin.com/in/votre-profil",
+      "professionalSummary": "Rédigez un résumé professionnel sur votre parcours, votre style de coaching, votre expertise et comment vous aidez les candidats...",
+      "professionalTitle": "Ingénieur senior chez Google · 8 ans d'exp",
+      "price": "75",
+      "years": "3",
+      "bio": "Parlez aux candidats de votre parcours, de votre style de coaching et de ce que vous pouvez les aider...",
+      "company": "Tapez une entreprise et appuyez sur Entrée (ex. Google, Meta)"
+    },
+    "helpers": {
+      "companiesInstruction": "Appuyez sur Entrée ou virgule pour ajouter chaque entreprise."
+    },
+    "required": "*",
+    "saveChanges": "Enregistrer les modifications",
+    "saving": "Enregistrement...",
+    "saved": "Profil enregistré avec succès !",
+    "errors": {
+      "bioRequired": "La biographie est requise"
+    }
   }
 }

@@ -1280,5 +1280,111 @@
       "month": "Last month",
       "all": "All time"
     }
+  },
+  "coachDashboard": {
+    "welcomeMessage": "Welcome aboard. Complete your profile and connect Stripe to start accepting bookings.",
+    "title": "Coach dashboard",
+    "subtitle": "Manage bookings, earnings, and candidate relationships from one place.",
+    "myBookings": "My Bookings",
+    "earnings": "Earnings",
+    "editProfile": "Edit profile",
+    "withdraw": "Withdraw",
+    "stats": {
+      "totalEarned": "Total earned",
+      "thisMonth": "This month",
+      "pending": "Pending",
+      "withdrawn": "Withdrawn"
+    },
+    "upcomingBookings": {
+      "title": "Upcoming bookings",
+      "noBookings": "No real bookings yet. They will appear here when candidates book your sessions.",
+      "when": "When:",
+      "duration": "Duration:",
+      "notes": "Notes:",
+      "noNotes": "No session notes provided",
+      "notScheduled": "Not scheduled yet",
+      "viewProfile": "View Profile",
+      "confirmed": "confirmed",
+      "pending": "pending",
+      "min": "min"
+    },
+    "recentReviews": {
+      "title": "Recent reviews",
+      "noReviews": "No reviews yet. Your first real candidate review will appear here.",
+      "candidateReview": "Candidate review",
+      "noComment": "No written comment provided."
+    },
+    "quickStats": {
+      "title": "Quick stats",
+      "totalSessions": "Total sessions:",
+      "averageRating": "Average rating:",
+      "repeatClients": "Repeat clients:"
+    },
+    "payoutStatus": {
+      "title": "Payout status",
+      "description": "Stripe Connect will be shown here once your account is connected and you complete paid sessions.",
+      "platformFee": "Platform fee: 20% • Coach payout: 80%"
+    },
+    "yourAccount": {
+      "title": "Your coach account",
+      "signedInAs": "Signed in as {name}"
+    },
+    "candidate": "Candidate"
+  },
+  "coachProfileEdit": {
+    "backToDashboard": "Back to Dashboard",
+    "title": "Coach Profile",
+    "subtitle": "Update your public profile visible to candidates.",
+    "yourName": "Your Name",
+    "sections": {
+      "personalInfo": "Personal Info",
+      "bio": "Bio",
+      "coachingInfo": "Coaching Info",
+      "professionalExperience": "Professional Experience",
+      "educationCertifications": "Education & Certifications",
+      "skillsExpertise": "Skills & Expertise",
+      "achievementsHighlights": "Achievements & Highlights"
+    },
+    "labels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "country": "Country",
+      "region": "Region/State",
+      "city": "City",
+      "linkedinUrl": "LinkedIn URL",
+      "professionalSummary": "Professional Summary",
+      "professionalTitle": "Professional Title",
+      "pricePerHour": "Price per Hour ($)",
+      "yearsExperience": "Years of Experience",
+      "bioLabel": "Bio",
+      "companies": "Companies You've Worked At",
+      "specializations": "Specializations"
+    },
+    "placeholders": {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "country": "Select country",
+      "region": "Select region",
+      "city": "Select city",
+      "selectCountryFirst": "Select country first",
+      "selectRegionFirst": "Select region first",
+      "linkedinUrl": "https://linkedin.com/in/yourprofile",
+      "professionalSummary": "Write a professional summary about your background, coaching style, expertise, and how you help candidates...",
+      "professionalTitle": "Senior Engineer at Google · 8 yrs exp",
+      "price": "75",
+      "years": "3",
+      "bio": "Tell candidates about your background, coaching style, and what you can help with...",
+      "company": "Type a company and press Enter (e.g. Google, Meta)"
+    },
+    "helpers": {
+      "companiesInstruction": "Press Enter or comma to add each company."
+    },
+    "required": "*",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "saved": "Profile saved successfully!",
+    "errors": {
+      "bioRequired": "Bio is required"
+    }
   }
 }

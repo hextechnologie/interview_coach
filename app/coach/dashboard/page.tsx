@@ -9,6 +9,7 @@ import { NotificationBell } from '@/components/NotificationBell'
 import CoachNavbar from '@/components/CoachNavbar'
 import { supabase } from '@/lib/supabase'
 import { CalendarDays, DollarSign, PencilLine, Wallet } from 'lucide-react'
+import { useLanguage } from '@/components/LanguageProvider'
 
 type CoachDashboardStats = {
   totalEarned: number
@@ -22,6 +23,7 @@ type CoachDashboardStats = {
 
 export default function CoachDashboardPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
   const [welcome, setWelcome] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -123,30 +125,30 @@ export default function CoachDashboardPage() {
       <div className="mx-auto max-w-7xl space-y-6">
         {welcome && (
           <div className="rounded-2xl border border-primary/30 bg-primary/10 px-5 py-4 text-primary">
-            Welcome aboard. Complete your profile and connect Stripe to start accepting bookings.
+            {t('coachDashboard.welcomeMessage')}
           </div>
         )}
 
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="text-4xl font-bold">Coach dashboard</h1>
-            <p className="mt-2 text-gray-400">Manage bookings, earnings, and candidate relationships from one place.</p>
+            <h1 className="text-4xl font-bold">{t('coachDashboard.title')}</h1>
+            <p className="mt-2 text-gray-400">{t('coachDashboard.subtitle')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <NotificationBell />
-            <Link href="/bookings"><Button variant="outline"><CalendarDays className="h-4 w-4" />My Bookings</Button></Link>
-            <Link href="/earnings"><Button variant="outline"><DollarSign className="h-4 w-4" />Earnings</Button></Link>
-            <Link href="/coach/profile"><Button variant="outline"><PencilLine className="h-4 w-4" />Edit profile</Button></Link>
-            <Link href="/earnings/withdraw"><Button variant="primary"><Wallet className="h-4 w-4" />Withdraw</Button></Link>
+            <Link href="/bookings"><Button variant="outline"><CalendarDays className="h-4 w-4" />{t('coachDashboard.myBookings')}</Button></Link>
+            <Link href="/earnings"><Button variant="outline"><DollarSign className="h-4 w-4" />{t('coachDashboard.earnings')}</Button></Link>
+            <Link href="/coach/profile"><Button variant="outline"><PencilLine className="h-4 w-4" />{t('coachDashboard.editProfile')}</Button></Link>
+            <Link href="/earnings/withdraw"><Button variant="primary"><Wallet className="h-4 w-4" />{t('coachDashboard.withdraw')}</Button></Link>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: 'Total earned', value: `$${stats.totalEarned.toFixed(0)}`, icon: DollarSign },
-            { label: 'This month', value: `$${stats.thisMonth.toFixed(0)}`, icon: DollarSign },
-            { label: 'Pending', value: `$${stats.pending.toFixed(0)}`, icon: Wallet },
-            { label: 'Withdrawn', value: `$${stats.withdrawn.toFixed(0)}`, icon: Wallet },
+            { label: t('coachDashboard.stats.totalEarned'), value: `$${stats.totalEarned.toFixed(0)}`, icon: DollarSign },
+            { label: t('coachDashboard.stats.thisMonth'), value: `$${stats.thisMonth.toFixed(0)}`, icon: DollarSign },
+            { label: t('coachDashboard.stats.pending'), value: `$${stats.pending.toFixed(0)}`, icon: Wallet },
+            { label: t('coachDashboard.stats.withdrawn'), value: `$${stats.withdrawn.toFixed(0)}`, icon: Wallet },
           ].map((item) => (
             <Card key={item.label}>
               <div className="flex items-center justify-between">
@@ -163,10 +165,10 @@ export default function CoachDashboardPage() {
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <div className="space-y-6">
             <Card>
-              <h2 className="mb-4 text-2xl font-bold">Upcoming bookings</h2>
+              <h2 className="mb-4 text-2xl font-bold">{t('coachDashboard.upcomingBookings.title')}</h2>
               {upcoming.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border bg-background/40 p-6 text-sm text-gray-400">
-                  No real bookings yet. They will appear here when candidates book your sessions.
+                  {t('coachDashboard.upcomingBookings.noBookings')}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -174,7 +176,7 @@ export default function CoachDashboardPage() {
                     const candidateName = session.candidate_name_snapshot
                       || session.candidate?.full_name
                       || [session.candidate?.first_name, session.candidate?.last_name].filter(Boolean).join(' ')
-                      || 'Candidate'
+                      || t('coachDashboard.candidate')
 
                     const scheduledText = session.scheduled_at
                       ? new Date(session.scheduled_at).toLocaleString([], {
@@ -184,7 +186,7 @@ export default function CoachDashboardPage() {
                           hour: '2-digit',
                           minute: '2-digit',
                         })
-                      : 'Not scheduled yet'
+                      : t('coachDashboard.upcomingBookings.notScheduled')
 
                     return (
                       <div key={session.id} className="rounded-xl border border-border bg-background/40 p-4">
@@ -192,15 +194,15 @@ export default function CoachDashboardPage() {
                           <div className="space-y-2">
                             <p className="font-semibold text-white">{candidateName}</p>
                             <div className="space-y-1 text-sm text-gray-400">
-                              <p><span className="text-gray-500">When:</span> {scheduledText}</p>
-                              <p><span className="text-gray-500">Duration:</span> {session.duration_minutes || 60} min</p>
-                              <p><span className="text-gray-500">Notes:</span> {session.notes || 'No session notes provided'}</p>
+                              <p><span className="text-gray-500">{t('coachDashboard.upcomingBookings.when')}</span> {scheduledText}</p>
+                              <p><span className="text-gray-500">{t('coachDashboard.upcomingBookings.duration')}</span> {session.duration_minutes || 60} {t('coachDashboard.upcomingBookings.min')}</p>
+                              <p><span className="text-gray-500">{t('coachDashboard.upcomingBookings.notes')}</span> {session.notes || t('coachDashboard.upcomingBookings.noNotes')}</p>
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2">
-                            <Badge variant={session.status === 'confirmed' ? 'success' : 'warning'}>{session.status}</Badge>
+                            <Badge variant={session.status === 'confirmed' ? 'success' : 'warning'}>{session.status === 'confirmed' ? t('coachDashboard.upcomingBookings.confirmed') : t('coachDashboard.upcomingBookings.pending')}</Badge>
                             <Link href={`/candidates/${session.candidate_id}`}>
-                              <Button variant="outline" className="text-xs">View Profile</Button>
+                              <Button variant="outline" className="text-xs">{t('coachDashboard.upcomingBookings.viewProfile')}</Button>
                             </Link>
                           </div>
                         </div>
@@ -212,20 +214,20 @@ export default function CoachDashboardPage() {
             </Card>
 
             <Card>
-              <h2 className="mb-4 text-2xl font-bold">Recent reviews</h2>
+              <h2 className="mb-4 text-2xl font-bold">{t('coachDashboard.recentReviews.title')}</h2>
               {reviews.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-border bg-background/40 p-6 text-sm text-gray-400">
-                  No reviews yet. Your first real candidate review will appear here.
+                  {t('coachDashboard.recentReviews.noReviews')}
                 </div>
               ) : (
                 <div className="space-y-3">
                   {reviews.map((review: any) => (
                     <div key={review.id} className="rounded-xl border border-border bg-background/40 p-4">
                       <div className="mb-1 flex items-center justify-between">
-                        <p className="font-semibold">Candidate review</p>
+                        <p className="font-semibold">{t('coachDashboard.recentReviews.candidateReview')}</p>
                         <span className="text-yellow-300">⭐ {review.rating}</span>
                       </div>
-                      <p className="text-sm text-gray-300">{review.comment || 'No written comment provided.'}</p>
+                      <p className="text-sm text-gray-300">{review.comment || t('coachDashboard.recentReviews.noComment')}</p>
                     </div>
                   ))}
                 </div>
@@ -235,26 +237,26 @@ export default function CoachDashboardPage() {
 
           <div className="space-y-6">
             <Card>
-              <h2 className="mb-4 text-2xl font-bold">Quick stats</h2>
+              <h2 className="mb-4 text-2xl font-bold">{t('coachDashboard.quickStats.title')}</h2>
               <div className="space-y-3 text-sm text-gray-300">
-                <p>Total sessions: <span className="font-semibold text-white">{stats.totalSessions}</span></p>
-                <p>Average rating: <span className="font-semibold text-white">{stats.averageRating || 0}</span></p>
-                <p>Repeat clients: <span className="font-semibold text-white">{stats.repeatClients}</span></p>
+                <p>{t('coachDashboard.quickStats.totalSessions')} <span className="font-semibold text-white">{stats.totalSessions}</span></p>
+                <p>{t('coachDashboard.quickStats.averageRating')} <span className="font-semibold text-white">{stats.averageRating || 0}</span></p>
+                <p>{t('coachDashboard.quickStats.repeatClients')} <span className="font-semibold text-white">{stats.repeatClients}</span></p>
               </div>
             </Card>
 
             <Card>
-              <h2 className="mb-4 text-2xl font-bold">Payout status</h2>
-              <p className="text-sm text-gray-300">Stripe Connect will be shown here once your account is connected and you complete paid sessions.</p>
+              <h2 className="mb-4 text-2xl font-bold">{t('coachDashboard.payoutStatus.title')}</h2>
+              <p className="text-sm text-gray-300">{t('coachDashboard.payoutStatus.description')}</p>
               <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm text-gray-300">
-                Platform fee: 20% • Coach payout: 80%
+                {t('coachDashboard.payoutStatus.platformFee')}
               </div>
             </Card>
 
             {profile?.full_name && (
               <Card>
-                <h2 className="mb-2 text-xl font-bold">Your coach account</h2>
-                <p className="text-sm text-gray-300">Signed in as {profile.full_name}</p>
+                <h2 className="mb-2 text-xl font-bold">{t('coachDashboard.yourAccount.title')}</h2>
+                <p className="text-sm text-gray-300">{t('coachDashboard.yourAccount.signedInAs', { name: profile.full_name })}</p>
                 <p className="text-sm text-gray-500">{profile.email}</p>
               </Card>
             )}

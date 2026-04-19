@@ -1278,5 +1278,111 @@
       "month": "Último mes",
       "all": "Todo el tiempo"
     }
+  },
+  "coachDashboard": {
+    "welcomeMessage": "Bienvenido a bordo. Completa tu perfil y conecta Stripe para empezar a aceptar reservas.",
+    "title": "Panel de coach",
+    "subtitle": "Gestiona reservas, ingresos y relaciones con candidatos desde un solo lugar.",
+    "myBookings": "Mis Reservas",
+    "earnings": "Ingresos",
+    "editProfile": "Editar perfil",
+    "withdraw": "Retirar",
+    "stats": {
+      "totalEarned": "Total ganado",
+      "thisMonth": "Este mes",
+      "pending": "Pendiente",
+      "withdrawn": "Retirado"
+    },
+    "upcomingBookings": {
+      "title": "Reservas próximas",
+      "noBookings": "Aún no hay reservas reales. Aparecerán aquí cuando los candidatos reserven tus sesiones.",
+      "when": "Cuándo:",
+      "duration": "Duración:",
+      "notes": "Notas:",
+      "noNotes": "No se proporcionaron notas de sesión",
+      "notScheduled": "Aún no programado",
+      "viewProfile": "Ver perfil",
+      "confirmed": "confirmado",
+      "pending": "pendiente",
+      "min": "min"
+    },
+    "recentReviews": {
+      "title": "Reseñas recientes",
+      "noReviews": "Aún no hay reseñas. Tu primera reseña de candidato real aparecerá aquí.",
+      "candidateReview": "Reseña del candidato",
+      "noComment": "No se proporcionó comentario escrito."
+    },
+    "quickStats": {
+      "title": "Estadísticas rápidas",
+      "totalSessions": "Sesiones totales:",
+      "averageRating": "Calificación promedio:",
+      "repeatClients": "Clientes recurrentes:"
+    },
+    "payoutStatus": {
+      "title": "Estado de pagos",
+      "description": "Stripe Connect se mostrará aquí una vez que tu cuenta esté conectada y completes sesiones pagadas.",
+      "platformFee": "Tarifa de plataforma: 20% • Pago al coach: 80%"
+    },
+    "yourAccount": {
+      "title": "Tu cuenta de coach",
+      "signedInAs": "Conectado como {name}"
+    },
+    "candidate": "Candidato"
+  },
+  "coachProfileEdit": {
+    "backToDashboard": "Volver al panel",
+    "title": "Perfil de Coach",
+    "subtitle": "Actualiza tu perfil público visible para los candidatos.",
+    "yourName": "Tu nombre",
+    "sections": {
+      "personalInfo": "Información personal",
+      "bio": "Biografía",
+      "coachingInfo": "Información de coaching",
+      "professionalExperience": "Experiencia profesional",
+      "educationCertifications": "Educación y certificaciones",
+      "skillsExpertise": "Habilidades y experiencia",
+      "achievementsHighlights": "Logros y aspectos destacados"
+    },
+    "labels": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "country": "País",
+      "region": "Región/Estado",
+      "city": "Ciudad",
+      "linkedinUrl": "URL de LinkedIn",
+      "professionalSummary": "Resumen profesional",
+      "professionalTitle": "Título profesional",
+      "pricePerHour": "Precio por hora ($)",
+      "yearsExperience": "Años de experiencia",
+      "bioLabel": "Biografía",
+      "companies": "Empresas en las que has trabajado",
+      "specializations": "Especializaciones"
+    },
+    "placeholders": {
+      "firstName": "María",
+      "lastName": "García",
+      "country": "Seleccionar país",
+      "region": "Seleccionar región",
+      "city": "Seleccionar ciudad",
+      "selectCountryFirst": "Selecciona primero el país",
+      "selectRegionFirst": "Selecciona primero la región",
+      "linkedinUrl": "https://linkedin.com/in/tuperfil",
+      "professionalSummary": "Escribe un resumen profesional sobre tu trayectoria, estilo de coaching, experiencia y cómo ayudas a los candidatos...",
+      "professionalTitle": "Ingeniero senior en Google · 8 años exp",
+      "price": "75",
+      "years": "3",
+      "bio": "Cuéntale a los candidatos sobre tu trayectoria, estilo de coaching y en qué puedes ayudarles...",
+      "company": "Escribe una empresa y presiona Enter (ej. Google, Meta)"
+    },
+    "helpers": {
+      "companiesInstruction": "Presiona Enter o coma para agregar cada empresa."
+    },
+    "required": "*",
+    "saveChanges": "Guardar cambios",
+    "saving": "Guardando...",
+    "saved": "¡Perfil guardado con éxito!",
+    "errors": {
+      "bioRequired": "La biografía es obligatoria"
+    }
   }
 }

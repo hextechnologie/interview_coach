@@ -1280,5 +1280,111 @@
       "month": "الشهر الماضي",
       "all": "كل الوقت"
     }
+  },
+  "coachDashboard": {
+    "welcomeMessage": "مرحباً بك. أكمل ملفك الشخصي واربط Stripe لبدء قبول الحجوزات.",
+    "title": "لوحة تحكم المدرب",
+    "subtitle": "إدارة الحجوزات والأرباح والعلاقات مع المرشحين من مكان واحد.",
+    "myBookings": "حجوزاتي",
+    "earnings": "الأرباح",
+    "editProfile": "تعديل الملف الشخصي",
+    "withdraw": "سحب",
+    "stats": {
+      "totalEarned": "إجمالي الأرباح",
+      "thisMonth": "هذا الشهر",
+      "pending": "قيد الانتظار",
+      "withdrawn": "مسحوب"
+    },
+    "upcomingBookings": {
+      "title": "الحجوزات القادمة",
+      "noBookings": "لا توجد حجوزات حقيقية حتى الآن. ستظهر هنا عندما يحجز المرشحون جلساتك.",
+      "when": "متى:",
+      "duration": "المدة:",
+      "notes": "ملاحظات:",
+      "noNotes": "لم يتم تقديم ملاحظات الجلسة",
+      "notScheduled": "لم يتم الجدولة بعد",
+      "viewProfile": "عرض الملف الشخصي",
+      "confirmed": "مؤكد",
+      "pending": "قيد الانتظار",
+      "min": "دقيقة"
+    },
+    "recentReviews": {
+      "title": "المراجعات الأخيرة",
+      "noReviews": "لا توجد مراجعات بعد. ستظهر أول مراجعة مرشح حقيقي هنا.",
+      "candidateReview": "مراجعة المرشح",
+      "noComment": "لم يتم تقديم تعليق مكتوب."
+    },
+    "quickStats": {
+      "title": "إحصائيات سريعة",
+      "totalSessions": "إجمالي الجلسات:",
+      "averageRating": "متوسط التقييم:",
+      "repeatClients": "العملاء المتكررون:"
+    },
+    "payoutStatus": {
+      "title": "حالة الدفع",
+      "description": "سيتم عرض Stripe Connect هنا بمجرد ربط حسابك وإكمال الجلسات المدفوعة.",
+      "platformFee": "رسوم المنصة: 20٪ • دفع المدرب: 80٪"
+    },
+    "yourAccount": {
+      "title": "حساب المدرب الخاص بك",
+      "signedInAs": "تم تسجيل الدخول باسم {name}"
+    },
+    "candidate": "المرشح"
+  },
+  "coachProfileEdit": {
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "title": "ملف المدرب الشخصي",
+    "subtitle": "قم بتحديث ملفك الشخصي العام المرئي للمرشحين.",
+    "yourName": "اسمك",
+    "sections": {
+      "personalInfo": "المعلومات الشخصية",
+      "bio": "السيرة الذاتية",
+      "coachingInfo": "معلومات التدريب",
+      "professionalExperience": "الخبرة المهنية",
+      "educationCertifications": "التعليم والشهادات",
+      "skillsExpertise": "المهارات والخبرة",
+      "achievementsHighlights": "الإنجازات والمميزات"
+    },
+    "labels": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "country": "البلد",
+      "region": "المنطقة/الولاية",
+      "city": "المدينة",
+      "linkedinUrl": "رابط LinkedIn",
+      "professionalSummary": "الملخص المهني",
+      "professionalTitle": "المسمى الوظيفي",
+      "pricePerHour": "السعر في الساعة ($)",
+      "yearsExperience": "سنوات الخبرة",
+      "bioLabel": "السيرة الذاتية",
+      "companies": "الشركات التي عملت بها",
+      "specializations": "التخصصات"
+    },
+    "placeholders": {
+      "firstName": "ليلى",
+      "lastName": "أحمد",
+      "country": "اختر البلد",
+      "region": "اختر المنطقة",
+      "city": "اختر المدينة",
+      "selectCountryFirst": "اختر البلد أولاً",
+      "selectRegionFirst": "اختر المنطقة أولاً",
+      "linkedinUrl": "https://linkedin.com/in/yourprofile",
+      "professionalSummary": "اكتب ملخصاً مهنياً عن خلفيتك وأسلوب التدريب والخبرة وكيفية مساعدة المرشحين...",
+      "professionalTitle": "مهندس أول في Google · 8 سنوات خبرة",
+      "price": "75",
+      "years": "3",
+      "bio": "أخبر المرشحين عن خلفيتك وأسلوب التدريب وما يمكنك مساعدتهم به...",
+      "company": "اكتب اسم شركة واضغط Enter (مثل Google، Meta)"
+    },
+    "helpers": {
+      "companiesInstruction": "اضغط Enter أو الفاصلة لإضافة كل شركة."
+    },
+    "required": "*",
+    "saveChanges": "حفظ التغييرات",
+    "saving": "جارٍ الحفظ...",
+    "saved": "تم حفظ الملف الشخصي بنجاح!",
+    "errors": {
+      "bioRequired": "السيرة الذاتية مطلوبة"
+    }
   }
 }

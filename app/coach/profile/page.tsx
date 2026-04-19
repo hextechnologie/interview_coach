@@ -14,9 +14,11 @@ import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function CoachProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
 
   // Personal info (profiles table)
@@ -150,7 +152,7 @@ export default function CoachProfilePage() {
 
     // Validation
     if (!profileBio.trim()) {
-      setError('Bio is required')
+      setError(t('coachProfileEdit.errors.bioRequired'))
       return
     }
 
@@ -234,10 +236,10 @@ export default function CoachProfilePage() {
       <div className="container mx-auto max-w-2xl px-4 py-10">
         <div className="mb-2">
           <Link href="/coach/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
-            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+            <ArrowLeft className="w-4 h-4" /> {t('coachProfileEdit.backToDashboard')}
           </Link>
-          <h1 className="text-3xl font-bold mb-1">Coach Profile</h1>
-          <p className="text-gray-400 text-sm">Update your public profile visible to candidates.</p>
+          <h1 className="text-3xl font-bold mb-1">{t('coachProfileEdit.title')}</h1>
+          <p className="text-gray-400 text-sm">{t('coachProfileEdit.subtitle')}</p>
         </div>
 
         {/* Avatar */}
@@ -257,7 +259,7 @@ export default function CoachProfilePage() {
             </label>
           </div>
           <div>
-            <p className="font-semibold">{[firstName, lastName].filter(Boolean).join(' ') || 'Your Name'}</p>
+            <p className="font-semibold">{[firstName, lastName].filter(Boolean).join(' ') || t('coachProfileEdit.yourName')}</p>
             <p className="text-sm text-gray-400">{user.email}</p>
             {title && <p className="text-xs text-purple-400 mt-1">{title}</p>}
           </div>
@@ -266,49 +268,49 @@ export default function CoachProfilePage() {
         <form onSubmit={handleSave} className="space-y-5">
           {/* Personal Info */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Personal Info</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.personalInfo')}</h2>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" />
-              <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe" />
+              <Input label={t('coachProfileEdit.labels.firstName')} value={firstName} onChange={setFirstName} placeholder={t('coachProfileEdit.placeholders.firstName')} />
+              <Input label={t('coachProfileEdit.labels.lastName')}  value={lastName}  onChange={setLastName}  placeholder={t('coachProfileEdit.placeholders.lastName')} />
             </div>
             <div className="grid gap-5 sm:grid-cols-3">
               <Select 
-                label="Country" 
+                label={t('coachProfileEdit.labels.country')} 
                 value={country} 
                 onChange={handleCountryChange} 
                 options={countryOptions} 
-                placeholder="Select country" 
+                placeholder={t('coachProfileEdit.placeholders.country')} 
               />
               <Select 
-                label="Region/State" 
+                label={t('coachProfileEdit.labels.region')} 
                 value={region} 
                 onChange={handleRegionChange} 
                 options={regionOptions} 
-                placeholder={country ? "Select region" : "Select country first"} 
+                placeholder={country ? t('coachProfileEdit.placeholders.region') : t('coachProfileEdit.placeholders.selectCountryFirst')} 
                 disabled={!country}
               />
               <Select 
-                label="City" 
+                label={t('coachProfileEdit.labels.city')} 
                 value={city} 
                 onChange={setCity} 
                 options={cityOptions} 
-                placeholder={region ? "Select city" : "Select region first"} 
+                placeholder={region ? t('coachProfileEdit.placeholders.city') : t('coachProfileEdit.placeholders.selectRegionFirst')} 
                 disabled={!region}
               />
             </div>
-            <Input label="LinkedIn URL" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="https://linkedin.com/in/yourprofile" />
+            <Input label={t('coachProfileEdit.labels.linkedinUrl')} value={linkedinUrl} onChange={setLinkedinUrl} placeholder={t('coachProfileEdit.placeholders.linkedinUrl')} />
           </div>
 
           {/* Bio */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Bio <span className="text-red-400">*</span></h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.bio')} <span className="text-red-400">{t('coachProfileEdit.required')}</span></h2>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Professional Summary <span className="text-red-400">*</span></label>
+              <label className="mb-2 block text-sm font-medium text-gray-200">{t('coachProfileEdit.labels.professionalSummary')} <span className="text-red-400">{t('coachProfileEdit.required')}</span></label>
               <textarea
                 value={profileBio}
                 onChange={e => setProfileBio(e.target.value)}
                 rows={5}
-                placeholder="Write a professional summary about your background, coaching style, expertise, and how you help candidates..."
+                placeholder={t('coachProfileEdit.placeholders.professionalSummary')}
                 className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
                 style={{ background: '#0a0f1e' }}
                 required
@@ -318,21 +320,21 @@ export default function CoachProfilePage() {
 
           {/* Coach Info */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Coaching Info</h2>
-            <Input label="Professional Title" value={title} onChange={setTitle} placeholder="Senior Engineer at Google · 8 yrs exp" />
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.coachingInfo')}</h2>
+            <Input label={t('coachProfileEdit.labels.professionalTitle')} value={title} onChange={setTitle} placeholder={t('coachProfileEdit.placeholders.professionalTitle')} />
             <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="Price per Hour ($)" type="number" value={price} onChange={setPrice} placeholder="75" />
-              <Input label="Years of Experience" type="number" value={yearsExperience} onChange={setYearsExperience} placeholder="3" />
+              <Input label={t('coachProfileEdit.labels.pricePerHour')} type="number" value={price} onChange={setPrice} placeholder={t('coachProfileEdit.placeholders.price')} />
+              <Input label={t('coachProfileEdit.labels.yearsExperience')} type="number" value={yearsExperience} onChange={setYearsExperience} placeholder={t('coachProfileEdit.placeholders.years')} />
             </div>
 
             {/* Bio */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Bio</label>
+              <label className="mb-2 block text-sm font-medium text-gray-200">{t('coachProfileEdit.labels.bioLabel')}</label>
               <textarea
                 value={bio}
                 onChange={e => setBio(e.target.value)}
                 rows={5}
-                placeholder="Tell candidates about your background, coaching style, and what you can help with..."
+                placeholder={t('coachProfileEdit.placeholders.bio')}
                 className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
                 style={{ background: '#0a0f1e' }}
               />
@@ -340,7 +342,7 @@ export default function CoachProfilePage() {
 
             {/* Companies */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Companies You&apos;ve Worked At</label>
+              <label className="mb-2 block text-sm font-medium text-gray-200">{t('coachProfileEdit.labels.companies')}</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {companies.map(c => (
                   <span key={c} className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-600/20 text-purple-300 border border-purple-500/30">
@@ -356,16 +358,16 @@ export default function CoachProfilePage() {
                 value={companyInput}
                 onChange={e => setCompanyInput(e.target.value)}
                 onKeyDown={onCompanyKeyDown}
-                placeholder="Type a company and press Enter (e.g. Google, Meta)"
+                placeholder={t('coachProfileEdit.placeholders.company')}
                 className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 style={{ background: '#0a0f1e' }}
               />
-              <p className="text-xs text-gray-500 mt-1">Press Enter or comma to add each company.</p>
+              <p className="text-xs text-gray-500 mt-1">{t('coachProfileEdit.helpers.companiesInstruction')}</p>
             </div>
 
             {/* Specializations */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">Specializations</label>
+              <label className="mb-2 block text-sm font-medium text-gray-200">{t('coachProfileEdit.labels.specializations')}</label>
               <div className="flex flex-wrap gap-2">
                 {marketplaceSpecializations.map(spec => (
                   <button
@@ -387,22 +389,22 @@ export default function CoachProfilePage() {
 
           {/* Structured Profile Sections */}
           <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Professional Experience</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.professionalExperience')}</h2>
             <ExperienceCardsSection coachId={user.id} />
           </div>
 
           <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Education & Certifications</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.educationCertifications')}</h2>
             <EducationCardsSection coachId={user.id} userCountry={country || undefined} />
           </div>
 
           <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Skills & Expertise</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.skillsExpertise')}</h2>
             <SkillsSelector coachId={user.id} />
           </div>
 
           <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Achievements & Highlights</h2>
+            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">{t('coachProfileEdit.sections.achievementsHighlights')}</h2>
             <AchievementsCardsSection coachId={user.id} />
           </div>
 
@@ -414,12 +416,12 @@ export default function CoachProfilePage() {
           )}
           {saved && (
             <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">
-              <CheckCircle className="w-4 h-4" /> Profile saved successfully!
+              <CheckCircle className="w-4 h-4" /> {t('coachProfileEdit.saved')}
             </div>
           )}
 
           <Button type="submit" variant="primary" fullWidth loading={saving}>
-            Save Changes
+            {t('coachProfileEdit.saveChanges')}
           </Button>
         </form>
       </div>
