@@ -325,5 +325,121 @@
       "freshGraduate": "💼 Jeune Diplômé",
       "other": "🌍 Autre"
     }
+  },
+  "interviewSetup": {
+    "profileIncomplete": {
+      "title": "Complétez d'abord votre profil",
+      "description": "Pour personnaliser vos entretiens IA, nous devons connaître votre parcours. Cela prend ~2 min et débloque des questions adaptées à votre CV.",
+      "completeProfile": "Compléter le Profil",
+      "backToDashboard": "Retour au Tableau de Bord"
+    },
+    "limitReached": {
+      "title": "Vous avez utilisé vos sessions gratuites",
+      "description": "Débloquez des entretiens IA illimités, un coaching détaillé et des sessions avec de vrais coachs avec notre Plan Pro.",
+      "seePricing": "Voir les Tarifs",
+      "backToDashboard": "Retour au Tableau de Bord"
+    },
+    "header": {
+      "sessionsUsed": "sessions utilisées",
+      "freePlan": "Plan gratuit:"
+    },
+    "intro": {
+      "label": "ONBOARDING PERSONNALISÉ",
+      "title": "Créez votre coach d'entretien IA",
+      "description": "Téléchargez votre parcours, ciblez le poste, et obtenez des questions adaptées à votre prochain emploi.",
+      "stepOf": "Étape {step} sur 4",
+      "steps": ["CV", "Description de poste", "Rôle", "Expérience"]
+    },
+    "step1": {
+      "title": "Étape 1 — Téléchargez ou collez votre CV",
+      "description": "Cela aide l'IA à cibler vos compétences, projets et expérience les plus forts.",
+      "resumeDetected": "CV importé avec succès.",
+      "resumeLoaded": "Votre CV est déjà chargé et sera utilisé pour personnaliser l'entretien.",
+      "editResume": "Éditer ou Remplacer le CV",
+      "uploadButton": "Télécharger le CV (PDF, DOCX)",
+      "placeholder": "Collez votre CV ici uniquement si vous souhaitez le taper manuellement ou modifier le texte importé.",
+      "error": "Collez ou téléchargez suffisamment de contenu de CV pour personnaliser votre entretien."
+    },
+    "step2": {
+      "title": "Étape 2 — Ajoutez la description du poste (facultatif)",
+      "description": "Si vous avez l'offre d'emploi, collez-la ici. Sinon, vous pouvez laisser ce champ vide et continuer.",
+      "placeholder": "Facultatif: collez la description complète du poste ou quelques mots-clés du rôle."
+    },
+    "step3": {
+      "title": "Étape 3 — Sélectionnez votre rôle",
+      "description": "Choisissez le rôle pour que les questions correspondent aux attentes de l'équipe de recrutement.",
+      "error": "Sélectionnez le rôle pour lequel vous passez un entretien."
+    },
+    "step4": {
+      "title": "Étape 4 — Définissez votre expérience et le mode d'entretien",
+      "description": "Nous ajusterons la difficulté, le ton et le style d'évaluation pour correspondre à vos objectifs.",
+      "experienceLevel": "Niveau d'expérience",
+      "interviewType": "Type d'entretien",
+      "interviewLanguage": "Langue de l'entretien",
+      "yearsOfExperience": "Années d'expérience",
+      "yearsPlaceholder": "Exemple: 4",
+      "realCompanyMode": "Activer le mode d'entretien entreprise réelle",
+      "realCompanyDesc": "Ajoute une pression plus réaliste et des questions de haut niveau basées sur votre entreprise cible.",
+      "targetCompany": "Entreprise cible",
+      "targetCompanyPlaceholder": "Entreprise cible, ex: Google, Stripe, Amazon",
+      "focusSkills": "Compétences ciblées (facultatif)",
+      "focusSkillsPlaceholder": "Tapez une compétence et appuyez sur Entrée, ex: React, SQL, planification de feuille de route",
+      "error": "Choisissez votre niveau d'expérience."
+    },
+    "navigation": {
+      "back": "Retour",
+      "cancel": "Annuler",
+      "next": "Suivant",
+      "startInterview": "Démarrer l'Entretien"
+    },
+    "preview": {
+      "title": "Aperçu de votre entretien",
+      "resumeContext": "Contexte du CV",
+      "resumeLoaded": "Chargé et prêt pour la personnalisation",
+      "resumeMissing": "Ajoutez votre CV pour débloquer des questions personnalisées",
+      "targetRole": "Rôle cible",
+      "notSelected": "Pas encore sélectionné",
+      "coachWillTailor": "Le coach personnalisera pour:",
+      "levelDifficulty": "Difficulté niveau {level}",
+      "yourExperience": "Votre niveau d'expérience",
+      "interviewQuestions": "Questions d'entretien {type}",
+      "companyPressure": "Pression style {company}",
+      "generalStyle": "Style général de recruteur"
+    },
+    "benefits": {
+      "title": "Ce que vous obtiendrez",
+      "benefit1": "Questions adaptées à votre CV et poste cible",
+      "benefit2": "Réponses idéales et réécritures style STAR",
+      "benefit3": "Coaching confiance, clarté et mots de remplissage",
+      "benefit4": "Un tableau de bord pour suivre l'amélioration au fil du temps"
+    },
+    "roles": {
+      "softwareEngineer": "Ingénieur Logiciel",
+      "productManager": "Chef de Produit",
+      "dataScientist": "Data Scientist",
+      "frontendEngineer": "Ingénieur Frontend",
+      "backendEngineer": "Ingénieur Backend",
+      "devOpsEngineer": "Ingénieur DevOps",
+      "marketingManager": "Responsable Marketing",
+      "salesManager": "Responsable Commercial",
+      "customerSuccessManager": "Responsable Succès Client",
+      "other": "Autre"
+    },
+    "experienceLevels": {
+      "junior": "Junior",
+      "mid": "Intermédiaire",
+      "senior": "Senior"
+    },
+    "interviewTypes": {
+      "technical": "Technique",
+      "behavioral": "Comportemental",
+      "mixed": "Mixte"
+    },
+    "languages": {
+      "english": "Anglais",
+      "french": "Français",
+      "spanish": "Espagnol",
+      "arabic": "Arabe"
+    }
   }
 }

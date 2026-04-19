@@ -2,32 +2,56 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner } from '@/components/ui'
 import { Sparkles, ChevronRight, ChevronLeft, Upload, Briefcase, FileText, ShieldCheck, X } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-const ROLES = [
-  'Software Engineer',
-  'Product Manager',
-  'Data Scientist',
-  'Frontend Engineer',
-  'Backend Engineer',
-  'DevOps Engineer',
-  'Marketing Manager',
-  'Sales Manager',
-  'Customer Success Manager',
-  'Other',
-]
-
-const EXPERIENCE_LEVELS = ['junior', 'mid', 'senior']
-const INTERVIEW_TYPES = ['Technical', 'Behavioral', 'Mixed']
-const LANGUAGES = ['English', 'French', 'Spanish', 'Arabic']
-
 export default function InterviewSetupPage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
+
+  const ROLES = [
+    t('interviewSetup.roles.softwareEngineer'),
+    t('interviewSetup.roles.productManager'),
+    t('interviewSetup.roles.dataScientist'),
+    t('interviewSetup.roles.frontendEngineer'),
+    t('interviewSetup.roles.backendEngineer'),
+    t('interviewSetup.roles.devOpsEngineer'),
+    t('interviewSetup.roles.marketingManager'),
+    t('interviewSetup.roles.salesManager'),
+    t('interviewSetup.roles.customerSuccessManager'),
+    t('interviewSetup.roles.other'),
+  ]
+
+  const EXPERIENCE_LEVELS = [
+    { value: 'junior', label: t('interviewSetup.experienceLevels.junior') },
+    { value: 'mid', label: t('interviewSetup.experienceLevels.mid') },
+    { value: 'senior', label: t('interviewSetup.experienceLevels.senior') }
+  ]
+  
+  const INTERVIEW_TYPES = [
+    { value: 'Technical', label: t('interviewSetup.interviewTypes.technical') },
+    { value:'Behavioral', label: t('interviewSetup.interviewTypes.behavioral') },
+    { value: 'Mixed', label: t('interviewSetup.interviewTypes.mixed') }
+  ]
+  
+  const LANGUAGES = [
+    { value: 'English', label: t('interviewSetup.languages.english') },
+    { value: 'French', label: t('interviewSetup.languages.french') },
+    { value: 'Spanish', label: t('interviewSetup.languages.spanish') },
+    { value: 'Arabic', label: t('interviewSetup.languages.arabic') }
+  ]
+
+  const STEP_NAMES = [
+    t('interviewSetup.intro.steps.0'),
+    t('interviewSetup.intro.steps.1'),
+    t('interviewSetup.intro.steps.2'),
+    t('interviewSetup.intro.steps.3')
+  ]
 
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -76,16 +100,16 @@ export default function InterviewSetupPage() {
     const nextErrors: Record<string, string> = {}
 
     if (currentStep === 1 && resumeText.trim().length < 30) {
-      nextErrors.resumeText = 'Paste or upload enough resume content to personalize your interview.'
+      nextErrors.resumeText = t('interviewSetup.step1.error')
     }
 
 
     if (currentStep === 3 && !jobTitle) {
-      nextErrors.jobTitle = 'Select the role you are interviewing for.'
+      nextErrors.jobTitle = t('interviewSetup.step3.error')
     }
 
     if (currentStep === 4 && !experienceLevel) {
-      nextErrors.experienceLevel = 'Choose your experience level.'
+      nextErrors.experienceLevel = t('interviewSetup.step4.error')
     }
 
     setErrors(nextErrors)
@@ -252,16 +276,16 @@ export default function InterviewSetupPage() {
         <div className="container mx-auto px-6 py-20 max-w-3xl">
           <Card className="text-center border-red-500/30 bg-red-500/5">
             <FileText className="w-14 h-14 text-red-400 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold mb-3">Complete Your Profile First</h1>
+            <h1 className="text-3xl font-bold mb-3">{t('interviewSetup.profileIncomplete.title')}</h1>
             <p className="text-gray-400 mb-6">
-              Before starting an interview, you need to complete your profile with your professional headline, about section, experience, education, and skills.
+              {t('interviewSetup.profileIncomplete.description')}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3">
               <Link href="/profile">
-                <Button variant="primary">Complete Profile</Button>
+                <Button variant="primary">{t('interviewSetup.profileIncomplete.completeProfile')}</Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="outline">Back to Dashboard</Button>
+                <Button variant="outline">{t('interviewSetup.profileIncomplete.backToDashboard')}</Button>
               </Link>
             </div>
           </Card>
@@ -276,16 +300,16 @@ export default function InterviewSetupPage() {
         <div className="container mx-auto px-6 py-20 max-w-3xl">
           <Card className="text-center border-primary/30 bg-primary/5">
             <ShieldCheck className="w-14 h-14 text-primary mx-auto mb-4" />
-            <h1 className="text-3xl font-bold mb-3">You’ve used your free interview sessions</h1>
+            <h1 className="text-3xl font-bold mb-3">{t('interviewSetup.limitReached.title')}</h1>
             <p className="text-gray-400 mb-6">
-              Upgrade your plan to unlock more tailored mock interviews, deeper analytics, and continuous coaching.
+              {t('interviewSetup.limitReached.description')}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-3">
               <Link href="/pricing">
-                <Button variant="primary">See Pricing</Button>
+                <Button variant="primary">{t('interviewSetup.limitReached.seePricing')}</Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="outline">Back to Dashboard</Button>
+                <Button variant="outline">{t('interviewSetup.limitReached.backToDashboard')}</Button>
               </Link>
             </div>
           </Card>
@@ -307,7 +331,7 @@ export default function InterviewSetupPage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>
           </div>
-          <p className="text-sm text-gray-400">Free plan: {profile?.interviews_used_this_month || 0} / {profile?.interviews_limit || 3} sessions used</p>
+          <p className="text-sm text-gray-400">{t('interviewSetup.header.freePlan')} {profile?.interviews_used_this_month || 0} / {profile?.interviews_limit || 3} {t('interviewSetup.header.sessionsUsed')}</p>
         </div>
       </header>
 
@@ -315,15 +339,15 @@ export default function InterviewSetupPage() {
         <div className="grid lg:grid-cols-[1.3fr_0.7fr] gap-6 items-start">
           <Card className="p-6 md:p-8 transition-all duration-300">
             <div className="mb-8">
-              <p className="text-primary text-sm font-semibold mb-2">PERSONALIZED ONBOARDING</p>
-              <h1 className="text-4xl font-bold mb-2">Build your AI interview coach</h1>
-              <p className="text-gray-400">Upload your background, target the role, and get questions tailored to your next job.</p>
+              <p className="text-primary text-sm font-semibold mb-2">{t('interviewSetup.intro.label')}</p>
+              <h1 className="text-4xl font-bold mb-2">{t('interviewSetup.intro.title')}</h1>
+              <p className="text-gray-400">{t('interviewSetup.intro.description')}</p>
             </div>
 
             <div className="mb-8">
               <div className="flex items-center justify-between mb-3 text-sm">
-                <span className="text-primary font-semibold">Step {step} of 4</span>
-                <span className="text-gray-400">{['Resume', 'Job Description', 'Role', 'Experience'][step - 1]}</span>
+                <span className="text-primary font-semibold">{t('interviewSetup.intro.stepOf').replace('{step}', step.toString())}</span>
+                <span className="text-gray-400">{STEP_NAMES[step - 1]}</span>
               </div>
               <div className="h-2 rounded-full bg-white/10 overflow-hidden">
                 <div className="h-full bg-gradient-primary transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }} />

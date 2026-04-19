@@ -325,5 +325,121 @@
       "freshGraduate": "💼 Recién Graduado",
       "other": "🌍 Otro"
     }
+  },
+  "interviewSetup": {
+    "profileIncomplete": {
+      "title": "Completa tu perfil primero",
+      "description": "Para personalizar tus entrevistas con IA, necesitamos conocer tu trayectoria. Esto toma ~2 min y desbloquea preguntas que coinciden con tu CV.",
+      "completeProfile": "Completar Perfil",
+      "backToDashboard": "Volver al Panel"
+    },
+    "limitReached": {
+      "title": "Has usado tus sesiones de entrevista gratuitas",
+      "description": "Desbloquea entrevistas con IA ilimitadas, coaching detallado y sesiones con coaches reales con nuestro Plan Pro.",
+      "seePricing": "Ver Precios",
+      "backToDashboard": "Volver al Panel"
+    },
+    "header": {
+      "sessionsUsed": "sesiones usadas",
+      "freePlan": "Plan gratuito:"
+    },
+    "intro": {
+      "label": "INCORPORACIÓN PERSONALIZADA",
+      "title": "Construye tu coach de entrevistas con IA",
+      "description": "Sube tu trayectoria, apunta al puesto y obtén preguntas adaptadas a tu próximo trabajo.",
+      "stepOf": "Paso {step} de 4",
+      "steps": ["CV", "Descripción del trabajo", "Puesto", "Experiencia"]
+    },
+    "step1": {
+      "title": "Paso 1 — Sube o pega tu currículum",
+      "description": "Esto ayuda a la IA a apuntar a tus habilidades, proyectos y experiencia más fuertes.",
+      "resumeDetected": "Currículum importado exitosamente.",
+      "resumeLoaded": "Tu CV ya está cargado y se usará para personalizar la entrevista.",
+      "editResume": "Editar o Reemplazar CV",
+      "uploadButton": "Subir currículum (PDF, DOCX)",
+      "placeholder": "Pega tu currículum aquí solo si quieres escribirlo manualmente o editar el texto importado.",
+      "error": "Pega o sube suficiente contenido de currículum para personalizar tu entrevista."
+    },
+    "step2": {
+      "title": "Paso 2 — Agrega la descripción del trabajo (opcional)",
+      "description": "Si tienes la publicación del trabajo, pégala aquí. Si no, puedes dejar esto en blanco y continuar.",
+      "placeholder": "Opcional: pega la descripción completa del trabajo o algunas palabras clave del puesto."
+    },
+    "step3": {
+      "title": "Paso 3 — Selecciona tu puesto",
+      "description": "Elige el puesto para que las preguntas coincidan con las expectativas del equipo de contratación.",
+      "error": "Selecciona el puesto para el que estás entrevistando."
+    },
+    "step4": {
+      "title": "Paso 4 — Establece tu experiencia y modo de entrevista",
+      "description": "Ajustaremos la dificultad, el tono y el estilo de evaluación para que se adapten a tus objetivos.",
+      "experienceLevel": "Nivel de experiencia",
+      "interviewType": "Tipo de entrevista",
+      "interviewLanguage": "Idioma de la entrevista",
+      "yearsOfExperience": "Años de experiencia",
+      "yearsPlaceholder": "Ejemplo: 4",
+      "realCompanyMode": "Habilitar modo de entrevista de empresa real",
+      "realCompanyDesc": "Agrega presión más realista y preguntas de alto nivel basadas en tu empresa objetivo.",
+      "targetCompany": "Empresa objetivo",
+      "targetCompanyPlaceholder": "Empresa objetivo, ej: Google, Stripe, Amazon",
+      "focusSkills": "Habilidades de enfoque (opcional)",
+      "focusSkillsPlaceholder": "Escribe una habilidad y presiona Enter, ej: React, SQL, planificación de hoja de ruta",
+      "error": "Elige tu nivel de experiencia."
+    },
+    "navigation": {
+      "back": "Atrás",
+      "cancel": "Cancelar",
+      "next": "Siguiente",
+      "startInterview": "Iniciar Entrevista"
+    },
+    "preview": {
+      "title": "Vista previa de tu entrevista",
+      "resumeContext": "Contexto del currículum",
+      "resumeLoaded": "Cargado y listo para personalización",
+      "resumeMissing": "Agrega tu currículum para desbloquear preguntas personalizadas",
+      "targetRole": "Puesto objetivo",
+      "notSelected": "Aún no seleccionado",
+      "coachWillTailor": "El coach personalizará para:",
+      "levelDifficulty": "Dificultad de nivel {level}",
+      "yourExperience": "Tu nivel de experiencia",
+      "interviewQuestions": "Preguntas de entrevista {type}",
+      "companyPressure": "Presión estilo {company}",
+      "generalStyle": "Estilo general de gerente de contratación"
+    },
+    "benefits": {
+      "title": "Lo que obtendrás",
+      "benefit1": "Preguntas adaptadas a tu currículum y trabajo objetivo",
+      "benefit2": "Respuestas ideales y reescrituras estilo STAR",
+      "benefit3": "Coaching de confianza, claridad y palabras de relleno",
+      "benefit4": "Un panel de progreso para rastrear mejoras con el tiempo"
+    },
+    "roles": {
+      "softwareEngineer": "Ingeniero de Software",
+      "productManager": "Gerente de Producto",
+      "dataScientist": "Científico de Datos",
+      "frontendEngineer": "Ingeniero Frontend",
+      "backendEngineer": "Ingeniero Backend",
+      "devOpsEngineer": "Ingeniero DevOps",
+      "marketingManager": "Gerente de Marketing",
+      "salesManager": "Gerente de Ventas",
+      "customerSuccessManager": "Gerente de Éxito del Cliente",
+      "other": "Otro"
+    },
+    "experienceLevels": {
+      "junior": "Junior",
+      "mid": "Intermedio",
+      "senior": "Senior"
+    },
+    "interviewTypes": {
+      "technical": "Técnica",
+      "behavioral": "Conductual",
+      "mixed": "Mixta"
+    },
+    "languages": {
+      "english": "Inglés",
+      "french": "Francés",
+      "spanish": "Español",
+      "arabic": "Árabe"
+    }
   }
 }
