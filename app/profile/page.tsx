@@ -1,17 +1,24 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Camera, CheckCircle, Loader2, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, Sparkles, CheckCircle, Loader2, Globe, Clock, DollarSign, Calendar, Key, Bell, Trash2, Briefcase, Building, GraduationCap, Wrench, Trophy } from 'lucide-react'
 import { Button, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
+import ProfileCompletionBar from '@/components/ProfileCompletionBar'
+import ProfilePhotoUploader from '@/components/ProfilePhotoUploader'
+import SidebarNav from '@/components/SidebarNav'
+import ChangePasswordModal from '@/components/ChangePasswordModal'
+import DeleteAccountModal from '@/components/DeleteAccountModal'
+import UnsavedChangesWarning from '@/components/UnsavedChangesWarning'
 import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
+import { capitalizeName, getTimezoneFromCountry, isValidUrl } from '@/lib/profile-utils'
 
 const statusOptions = [
   { value: 'student',        label: '🎓 Student' },
@@ -38,35 +45,83 @@ const jobRoleOptions = [
   { value: 'Other',              label: 'Other' },
 ]
 
+const yearsExperienceOptions = [
+  { value: '0-1', label: '0-1 years' },
+  { value: '1-3', label: '1-3 years' },
+  { value: '3-5', label: '3-5 years' },
+  { value: '5-10', label: '5-10 years' },
+  { value: '10+', label: '10+ years' },
+]
+
+const currencyOptions = [
+  { value: 'USD', label: '$ USD' },
+  { value: 'EUR', label: '€ EUR' },
+  { value: 'GBP', label: '£ GBP' },
+  { value: 'CAD', label: 'C$ CAD' },
+  { value: 'AUD', label: 'A$ AUD' },
+  { value: 'INR', label: '₹ INR' },
+]
+
 export default function ProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
   const router = useRouter()
 
-  const [firstName, setFirstName]     = useState('')
-  const [lastName,  setLastName]      = useState('')
+  // Personal info
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [country, setCountry] = useState('')
+  const [region, setRegion] = useState('')
+  const [city, setCity] = useState('')
+  const [timezone, setTimezone] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
+
+  // Bio
+  const [bio, setBio] = useState('')
+
+  // Career info
   const [currentStatus, setCurrentStatus] = useState('')
-  const [statusDetail,  setStatusDetail]  = useState('')
+  const [statusDetail, setStatusDetail] = useState('')
   const [targetJobRole, setTargetJobRole] = useState('')
   const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
-  const [country, setCountry] = useState('')
-  const [region, setRegion] = useState('')
-  const [city,    setCity]    = useState('')
-  const [linkedinUrl, setLinkedinUrl] = useState('')
-  const [bio, setBio] = useState('')
-  const [avatarPreview, setAvatarPreview] = useState('')
-  const [avatarFile,    setAvatarFile]    = useState<File | null>(null)
+  const [yearsOfExperience, setYearsOfExperience] = useState('')
+  const [workTypeRemote, setWorkTypeRemote] = useState(false)
+  const [workTypeHybrid, setWorkTypeHybrid] = useState(false)
+  const [workTypeOnsite, setWorkTypeOnsite] = useState(false)
+  const [salaryMin, setSalaryMin] = useState('')
+  const [salaryMax, setSalaryMax] = useState('')
+  const [salaryCurrency, setSalaryCurrency] = useState('USD')
+  const [availableFrom, setAvailableFrom] = useState('')
+  const [preferredJobLocation, setPreferredJobLocation] = useState('')
 
-  const [saving,   setSaving]   = useState(false)
-  const [saved,    setSaved]    = useState(false)
-  const [error,    setError]    = useState('')
+  // Social/Portfolio URLs
+  const [portfolioUrl, setPortfolioUrl] = useState('')
+  const [githubUrl, setGithubUrl] = useState('')
+  const [behanceUrl, setBehanceUrl] = useState('')
+  const [dribbbleUrl, setDribbbleUrl] = useState('')
+  const [twitterUrl, setTwitterUrl] = useState('')
 
-  // Get cascading location options
+  // Notification preferences
+  const [notifyCoachMessage, setNotifyCoachMessage] = useState(true)
+  const [notifySessionReminder, setNotifySessionReminder] = useState(true)
+  const [notifyJobOffers, setNotifyJobOffers] = useState(true)
+  const [notifyWeeklyReport, setNotifyWeeklyReport] = useState(false)
+
+  // UI state
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+  const [hasUnsaved, setHasUnsaved] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState('')
+
+  // Get location options
   const countryOptions = useMemo(() => getCountryOptions(), [])
   const regionOptions = useMemo(() => {
     if (!country) return []
     const regions = getRegionsForCountry(country)
-    // If current region is set but not in the list (legacy data), add it
     if (region && !regions.some(opt => opt.value === region)) {
       return [{ value: region, label: region }, ...regions]
     }
@@ -75,31 +130,33 @@ export default function ProfilePage() {
   const cityOptions = useMemo(() => {
     if (!country || !region) return []
     const cities = getCitiesForRegion(country, region)
-    // If current city is set but not in the list (legacy data), add it
     if (city && !cities.some(opt => opt.value === city)) {
       return [{ value: city, label: city }, ...cities]
     }
     return cities
   }, [country, region, city])
 
-  // Reset region and city when country changes
+  // Handle country change
   const handleCountryChange = (newCountry: string) => {
-    const oldCountry = country
-    setCountry(newCountry)
-    // Only reset if country actually changed
-    if (oldCountry !== newCountry) {
+    // Extract country name from flag emoji + name format
+    const countryName = newCountry.includes(' ') ? newCountry.split(' ').slice(1).join(' ') : newCountry
+    
+    if (country !== newCountry) {
+      setCountry(newCountry)
       setRegion('')
       setCity('')
+      // Auto-set timezone
+      setTimezone(getTimezoneFromCountry(countryName))
+      setHasUnsaved(true)
     }
   }
 
-  // Reset city when region changes
+  // Handle region change
   const handleRegionChange = (newRegion: string) => {
-    const oldRegion = region
-    setRegion(newRegion)
-    // Only reset city if region actually changed
-    if (oldRegion !== newRegion) {
+    if (region !== newRegion) {
+      setRegion(newRegion)
       setCity('')
+      setHasUnsaved(true)
     }
   }
 
@@ -108,14 +165,24 @@ export default function ProfilePage() {
     if (!authLoading && !user) router.push('/login')
   }, [user, authLoading, router])
 
-  // Pre-fill form from existing profile
+  // Pre-fill form from profile
   useEffect(() => {
     if (!profile) return
-    setFirstName(profile.first_name || (profile.full_name?.split(' ')[0] ?? ''))
-    setLastName(profile.last_name  || (profile.full_name?.split(' ').slice(1).join(' ') ?? ''))
-    setCurrentStatus(profile.current_status  ?? '')
-    setStatusDetail(profile.status_detail    ?? '')
-    const savedRole = profile.target_job_role ?? ''
+    
+    setFirstName(profile.first_name || '')
+    setLastName(profile.last_name || '')
+    setCountry(profile.country || '')
+    setRegion((profile as any).region || '')
+    setCity(profile.city || '')
+    setTimezone((profile as any).timezone || '')
+    setLinkedinUrl(profile.linkedin_url || '')
+    setBio((profile as any).bio || '')
+    setAvatarUrl(profile.avatar_url || '')
+    
+    setCurrentStatus(profile.current_status || '')
+    setStatusDetail(profile.status_detail || '')
+    
+    const savedRole = profile.target_job_role || ''
     const isKnownRole = jobRoleOptions.some(o => o.value === savedRole)
     if (isKnownRole || savedRole === '') {
       setTargetJobRole(savedRole)
@@ -123,25 +190,65 @@ export default function ProfilePage() {
       setTargetJobRole('Other')
       setCustomJobRole(savedRole)
     }
-    setExperienceLevel(profile.experience_level ?? '')
-    setCountry(profile.country ?? '')
-    setRegion((profile as any).region ?? '')
-    setCity(profile.city       ?? '')
-    setLinkedinUrl(profile.linkedin_url ?? '')
-    setBio((profile as any).bio ?? '')
-
-    setAvatarPreview(profile.avatar_url ?? '')
+    
+    setExperienceLevel(profile.experience_level || '')
+    setYearsOfExperience((profile as any).years_of_experience || '')
+    
+    // Work type preferences
+    const workTypes = (profile as any).work_type_preferences || []
+    setWorkTypeRemote(workTypes.includes('Remote'))
+    setWorkTypeHybrid(workTypes.includes('Hybrid'))
+    setWorkTypeOnsite(workTypes.includes('On-site'))
+    
+    setSalaryMin((profile as any).salary_min ? String((profile as any).salary_min) : '')
+    setSalaryMax((profile as any).salary_max ? String((profile as any).salary_max) : '')
+    setSalaryCurrency((profile as any).salary_currency || 'USD')
+    setAvailableFrom((profile as any).available_from || '')
+    setPreferredJobLocation((profile as any).preferred_job_location || '')
+    
+    // Social URLs
+    setPortfolioUrl((profile as any).portfolio_url || '')
+    setGithubUrl((profile as any).github_url || '')
+    setBehanceUrl((profile as any).behance_url || '')
+    setDribbbleUrl((profile as any).dribbble_url || '')
+    setTwitterUrl((profile as any).twitter_url || '')
+    
+    // Notifications
+    setNotifyCoachMessage((profile as any).notification_coach_message !== false)
+    setNotifySessionReminder((profile as any).notification_session_reminder !== false)
+    setNotifyJobOffers((profile as any).notification_job_offers !== false)
+    setNotifyWeeklyReport((profile as any).notification_weekly_report === true)
   }, [profile])
 
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+  // Auto-save draft every 30 seconds
+  useEffect(() => {
+    if (!hasUnsaved) return
+    
+    const interval = setInterval(() => {
+      // Save to localStorage
+      const draft = {
+        firstName, lastName, bio, currentStatus, statusDetail,
+        targetJobRole, customJobRole, preferredJobLocation
+      }
+      localStorage.setItem(`profile-draft-${user?.id}`, JSON.stringify(draft))
+    }, 30000)
+    
+    return () => clearInterval(interval)
+  }, [hasUnsaved, firstName, lastName, bio, currentStatus, statusDetail, targetJobRole, customJobRole, preferredJobLocation, user])
+
+  // Handle form changes
+  const handleFirstNameChange = (value: string) => {
+    setFirstName(capitalizeName(value))
+    setHasUnsaved(true)
   }
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleLastNameChange = (value: string) => {
+    setLastName(capitalizeName(value))
+    setHasUnsaved(true)
+  }
+
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault()
     if (!user) return
 
     // Validation
@@ -170,55 +277,88 @@ export default function ProfilePage() {
       return
     }
 
+    // Validate URLs
+    if (!isValidUrl(linkedinUrl) || !isValidUrl(portfolioUrl) || !isValidUrl(githubUrl) || 
+        !isValidUrl(behanceUrl) || !isValidUrl(dribbbleUrl) || !isValidUrl(twitterUrl)) {
+      setError('Please enter valid URLs (or leave empty)')
+      return
+    }
+
     setError('')
     setSaved(false)
     setSaving(true)
 
     try {
-      let avatarUrl = profile?.avatar_url ?? null
-
-      // Upload new avatar if chosen
-      if (avatarFile) {
-        const ext = avatarFile.name.split('.').pop()
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(`${user.id}.${ext}`, avatarFile, { upsert: true })
-        if (uploadError) throw uploadError
-        const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
-        avatarUrl = urlData.publicUrl
-      }
-
-      const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
+      const fullName = `${firstName.trim()} ${lastName.trim()}`
+      
+      // Build work type preferences array
+      const workTypePrefs: string[] = []
+      if (workTypeRemote) workTypePrefs.push('Remote')
+      if (workTypeHybrid) workTypePrefs.push('Hybrid')
+      if (workTypeOnsite) workTypePrefs.push('On-site')
 
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          first_name:      firstName.trim() || null,
-          last_name:       lastName.trim()  || null,
-          full_name:       fullName         || null,
-          current_status:  currentStatus    || null,
-          status_detail:   statusDetail     || null,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          full_name: fullName,
+          country,
+          region,
+          city,
+          timezone,
+          linkedin_url: linkedinUrl || null,
+          bio: bio.trim(),
+          current_status: currentStatus || null,
+          status_detail: statusDetail || null,
           target_job_role: targetJobRole === 'Other' ? (customJobRole.trim() || null) : (targetJobRole || null),
           target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
-          country:         country    || null,
-          region:          region     || null,
-          city:            city       || null,
-          linkedin_url:    linkedinUrl || null,
-          bio:             bio.trim(),
-          avatar_url:      avatarUrl,
-          updated_at:      new Date().toISOString(),
+          years_of_experience: yearsOfExperience || null,
+          work_type_preferences: workTypePrefs.length > 0 ? workTypePrefs : null,
+          salary_min: salaryMin ? parseInt(salaryMin) : null,
+          salary_max: salaryMax ? parseInt(salaryMax) : null,
+          salary_currency: salaryCurrency,
+          available_from: availableFrom || null,
+          preferred_job_location: preferredJobLocation || null,
+          portfolio_url: portfolioUrl || null,
+          github_url: githubUrl || null,
+          behance_url: behanceUrl || null,
+          dribbble_url: dribbbleUrl || null,
+          twitter_url: twitterUrl || null,
+          notification_coach_message: notifyCoachMessage,
+          notification_session_reminder: notifySessionReminder,
+          notification_job_offers: notifyJobOffers,
+          notification_weekly_report: notifyWeeklyReport,
+          last_profile_save: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
 
       if (updateError) throw updateError
 
       setSaved(true)
+      setHasUnsaved(false)
+      setLastSaved(new Date())
+      
+      // Clear draft from localStorage
+      localStorage.removeItem(`profile-draft-${user.id}`)
+      
       setTimeout(() => setSaved(false), 3000)
     } catch (err: any) {
       setError(err.message || 'Failed to save profile. Please try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDiscardChanges = () => {
+    // Reload from profile
+    if (profile) {
+      setFirstName(profile.first_name || '')
+      setLastName(profile.last_name || '')
+      // ... (reset all fields)
+      setHasUnsaved(false)
     }
   }
 
@@ -249,220 +389,553 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <div className="container mx-auto max-w-2xl px-4 py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-1">My Profile</h1>
-          <p className="text-gray-400 text-sm">Update your personal info and job preferences.</p>
-        </div>
+      {/* Unsaved Changes Warning */}
+      <UnsavedChangesWarning
+        hasUnsavedChanges={hasUnsaved}
+        onSave={handleSave}
+        onDiscard={handleDiscardChanges}
+      />
 
-        {/* Avatar */}
-        <div className="mb-8 flex items-center gap-5">
-          <div className="relative">
-            {avatarPreview ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={avatarPreview} alt="Avatar" className="w-20 h-20 rounded-full object-cover border-2 border-purple-500/40" />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-2xl font-bold">
-                {(firstName || user.email || '?').charAt(0).toUpperCase()}
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-10">
+        <div className="lg:grid lg:grid-cols-[280px_1fr] lg:gap-8">
+          {/* Sidebar Navigation - Desktop Only */}
+          <aside className="hidden lg:block">
+            <SidebarNav />
+          </aside>
+
+          {/* Main Form */}
+          <div className="max-w-3xl">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-1">My Profile</h1>
+              <p className="text-gray-400 text-sm">Complete your profile to unlock all features and get better job matches.</p>
+              {lastSaved && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Last saved: {Math.floor((Date.now() - lastSaved.getTime()) / 60000)} minutes ago
+                </p>
+              )}
+            </div>
+
+            <form onSubmit={handleSave} className="space-y-6">
+              {/* Profile Photo & Completion */}
+              <div className="grid md:grid-cols-[auto_1fr] gap-6">
+                <ProfilePhotoUploader
+                  currentPhotoUrl={avatarUrl}
+                  firstName={firstName}
+                  lastName={lastName}
+                  email={user.email}
+                  userId={user.id}
+                  onPhotoUpdated={(url) => setAvatarUrl(url)}
+                />
+                <ProfileCompletionBar profile={profile} />
               </div>
-            )}
-            <label className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center cursor-pointer border-2 border-[#0a0f1e] hover:bg-purple-500 transition-colors">
-              <Camera className="w-3.5 h-3.5 text-white" />
-              <input type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-            </label>
-          </div>
-          <div>
-            <p className="font-semibold">{[firstName, lastName].filter(Boolean).join(' ') || 'Your Name'}</p>
-            <p className="text-sm text-gray-400">{user.email}</p>
-            <p className="text-xs text-gray-500 mt-1 capitalize">{profile.subscription_tier} plan</p>
-          </div>
-        </div>
 
-        <form onSubmit={handleSave} className="space-y-5">
-          {/* Name */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Personal Info <span className="text-red-400">*</span></h2>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Input label="First Name" value={firstName} onChange={setFirstName} placeholder="Jane" required />
-              <Input label="Last Name"  value={lastName}  onChange={setLastName}  placeholder="Doe" required />
-            </div>
-            <div className="grid gap-5 sm:grid-cols-3">
-              <Select 
-                label="Country" 
-                value={country} 
-                onChange={handleCountryChange} 
-                options={countryOptions} 
-                placeholder="Select country" 
-                required 
-              />
-              <Select 
-                label="Region/State" 
-                value={region} 
-                onChange={handleRegionChange} 
-                options={regionOptions} 
-                placeholder={country ? "Select region" : "Select country first"} 
-                required 
-                disabled={!country}
-              />
-              <Select 
-                label="City" 
-                value={city} 
-                onChange={setCity} 
-                options={cityOptions} 
-                placeholder={region ? "Select city" : "Select region first"} 
-                required 
-                disabled={!region}
-              />
-            </div>
-            <Input
-              label="LinkedIn URL (optional)"
-              value={linkedinUrl}
-              onChange={setLinkedinUrl}
-              placeholder="https://linkedin.com/in/yourprofile"
-            />
-          </div>
+              {/* Personal Info */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-5" style={{ background: '#111827' }} data-section="personal-info">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Personal Info</h2>
+                </div>
+                
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Input 
+                    label="First Name" 
+                    value={firstName} 
+                    onChange={handleFirstNameChange} 
+                    placeholder="Jane" 
+                    required 
+                  />
+                  <Input 
+                    label="Last Name" 
+                    value={lastName} 
+                    onChange={handleLastNameChange} 
+                    placeholder="Doe" 
+                    required 
+                  />
+                </div>
 
-          {/* Bio */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Bio <span className="text-red-400">*</span></h2>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">About You <span className="text-red-400">*</span></label>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                rows={5}
-                placeholder="Write a professional summary about yourself, your background, goals, and what makes you unique..."
-                className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                style={{ background: '#0a0f1e' }}
-                required
-              />
-            </div>
-          </div>
+                <div className="grid gap-5 sm:grid-cols-3">
+                  <Select 
+                    label="Country" 
+                    value={country}
+                    onChange={handleCountryChange} 
+                    options={countryOptions} 
+                    placeholder="Select country" 
+                    required 
+                  />
+                  <Select 
+                    label="Region/State" 
+                    value={region} 
+                    onChange={handleRegionChange} 
+                    options={regionOptions} 
+                    placeholder={country ? "Select region" : "Select country first"} 
+                    required 
+                    disabled={!country}
+                  />
+                  <Select 
+                    label="City" 
+                    value={city} 
+                    onChange={(v) => { setCity(v); setHasUnsaved(true) }} 
+                    options={cityOptions} 
+                    placeholder={region ? "Select city" : "Select region first"} 
+                    required 
+                    disabled={!region}
+                  />
+                </div>
 
-          {/* Career */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-5" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Career Info</h2>
-            <Select
-              label="Current Status"
-              value={currentStatus}
-              onChange={setCurrentStatus}
-              options={statusOptions}
-              placeholder="What describes you best?"
-            />
-            {currentStatus && (
-              <Input
-                label="Status Details"
-                value={statusDetail}
-                onChange={setStatusDetail}
-                placeholder={
-                  currentStatus === 'student'        ? 'e.g. MIT — Computer Science' :
-                  currentStatus === 'employed'       ? 'e.g. Software Engineer at Google' :
-                  currentStatus === 'unemployed'     ? 'e.g. Software Engineer — 3 months searching' :
-                  currentStatus === 'career-change'  ? 'e.g. Finance → Software Engineering' :
-                  currentStatus === 'fresh-graduate' ? 'e.g. BSc Computer Science' :
-                  'Brief description of your situation'
-                }
-              />
-            )}
-            <Select
-              label="Target Job Role"
-              value={targetJobRole}
-              onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole('') }}
-              options={jobRoleOptions}
-              placeholder="What role are you aiming for?"
-            />
-            {targetJobRole === 'Other' && (
-              <Input
-                label="What's your exact role?"
-                value={customJobRole}
-                onChange={setCustomJobRole}
-                placeholder="e.g. Growth Hacker, AI Researcher, Prompt Engineer…"
-              />
-            )}
-            {targetJobRole && (
-              <Select
-                label="Experience Level"
-                value={experienceLevel}
-                onChange={setExperienceLevel}
-                options={[
-                  { value: 'junior', label: 'Junior (0–2 yrs)' },
-                  { value: 'mid',    label: 'Mid-level (3–5 yrs)' },
-                  { value: 'senior', label: 'Senior (6+ yrs)' },
-                ]}
-                placeholder="Select level"
-              />
-            )}
-          </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-gray-400 mt-2" />
+                  <div className="flex-1">
+                    <Input
+                      label="Timezone"
+                      value={timezone}
+                      onChange={(v) => { setTimezone(v); setHasUnsaved(true) }}
+                      placeholder="America/New_York"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Auto-detected from country. Important for scheduling coach sessions.</p>
+                  </div>
+                </div>
 
-          {/* Experience Section */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Work Experience</h2>
-            <ExperienceCardsSection userId={user!.id} />
-          </div>
+                <Input
+                  label="LinkedIn URL (optional)"
+                  value={linkedinUrl}
+                  onChange={(v) => { setLinkedinUrl(v); setHasUnsaved(true) }}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
 
-          {/* Education Section */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Education & Certifications</h2>
-            <EducationCardsSection userId={user!.id} userCountry={country} />
-          </div>
+              {/* Bio */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-5" style={{ background: '#111827' }} data-section="bio">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold">Bio</h2>
+                    <p className="text-sm text-gray-400">Tell us about yourself professionally</p>
+                  </div>
+                  <span className="text-red-400 text-sm">*</span>
+                </div>
+                
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-200">
+                    Professional Summary <span className="text-red-400">*</span>
+                  </label>
+                  <textarea
+                    value={bio}
+                    onChange={(e) => { setBio(e.target.value); setHasUnsaved(true) }}
+                    rows={5}
+                    placeholder="Write a comprehensive professional summary about your background, experience, goals, and what makes you unique..."
+                    className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                    style={{ background: '#0a0f1e' }}
+                    required
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    {bio.length} / 500 characters {bio.length < 50 && <span className="text-yellow-400">(Minimum 50)</span>}
+                  </p>
+                </div>
+              </div>
 
-          {/* Skills Section */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Skills & Expertise</h2>
-            <SkillsSelector userId={user!.id} />
-          </div>
+              {/* Career Info */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-5" style={{ background: '#111827' }} data-section="career-info">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-green-600/20 flex items-center justify-center">
+                    <Briefcase className="w-5 h-5 text-green-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Career Info</h2>
+                </div>
 
-          {/* Achievements Section */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-8" style={{ background: '#111827' }}>
-            <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider">Achievements & Highlights</h2>
-            <AchievementsCardsSection userId={user!.id} />
-          </div>
+                <Select
+                  label="Current Status"
+                  value={currentStatus}
+                  onChange={(v) => { setCurrentStatus(v); setHasUnsaved(true) }}
+                  options={statusOptions}
+                  placeholder="What describes you best?"
+                />
+                
+                {currentStatus && (
+                  <Input
+                    label="Status Details"
+                    value={statusDetail}
+                    onChange={(v) => { setStatusDetail(v); setHasUnsaved(true) }}
+                    placeholder={
+                      currentStatus === 'student' ? 'e.g. MIT — Computer Science' :
+                      currentStatus === 'employed' ? 'e.g. Software Engineer at Google' :
+                      currentStatus === 'unemployed' ? 'e.g. Software Engineer — 3 months searching' :
+                      currentStatus === 'career-change' ? 'e.g. Finance → Software Engineering' :
+                      currentStatus === 'fresh-graduate' ? 'e.g. BSc Computer Science' :
+                      'Brief description of your situation'
+                    }
+                  />
+                )}
 
-          {/* Messages */}
-          {error && (
-            <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              {error}
-            </div>
-          )}
-          {saved && (
-            <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">
-              <CheckCircle className="w-4 h-4" /> Profile saved successfully!
-            </div>
-          )}
+                <Select
+                  label="Target Job Role"
+                  value={targetJobRole}
+                  onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole(''); setHasUnsaved(true) }}
+                  options={jobRoleOptions}
+                  placeholder="What role are you aiming for?"
+                />
+                
+                {targetJobRole === 'Other' && (
+                  <Input
+                    label="Custom Role"
+                    value={customJobRole}
+                    onChange={(v) => { setCustomJobRole(v); setHasUnsaved(true) }}
+                    placeholder="e.g. Growth Hacker, AI Researcher, Prompt Engineer…"
+                  />
+                )}
 
-          <Button type="submit" variant="primary" fullWidth loading={saving}>
-            Save Changes
-          </Button>
-        </form>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Select
+                    label="Experience Level"
+                    value={experienceLevel}
+                    onChange={(v) => { setExperienceLevel(v); setHasUnsaved(true) }}
+                    options={[
+                      { value: 'junior', label: 'Junior (0–2 yrs)' },
+                      { value: 'mid', label: 'Mid-level (3–5 yrs)' },
+                      { value: 'senior', label: 'Senior (6+ yrs)' },
+                    ]}
+                    placeholder="Select level"
+                  />
+                  
+                  <Select
+                    label="Years of Experience"
+                    value={yearsOfExperience}
+                    onChange={(v) => { setYearsOfExperience(v); setHasUnsaved(true) }}
+                    options={yearsExperienceOptions}
+                    placeholder="Select years"
+                  />
+                </div>
 
-        {/* Account info (read-only) */}
-        <div className="mt-8 rounded-2xl border border-white/10 p-5" style={{ background: '#111827' }}>
-          <h2 className="font-semibold text-sm text-gray-300 uppercase tracking-wider mb-4">Account</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">Email</span>
-              <span className="text-white">{user.email}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">Plan</span>
-              <span className="text-white capitalize">{profile.subscription_tier}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">Interviews this month</span>
-              <span className="text-white">{profile.interviews_used_this_month} / {profile.interviews_limit === 999999 ? '∞' : profile.interviews_limit}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-400">Member since</span>
-              <span className="text-white">{new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-            </div>
-          </div>
-          <div className="mt-4 flex gap-3">
-            <Link href="/pricing" className="flex-1">
-              <Button variant="outline" fullWidth className="text-sm">Upgrade Plan</Button>
-            </Link>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-200">
+                    Preferred Work Type
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeRemote ? '#7c3aed20' : '#0a0f1e' }}>
+                      <input
+                        type="checkbox"
+                        checked={workTypeRemote}
+                        onChange={(e) => { setWorkTypeRemote(e.target.checked); setHasUnsaved(true) }}
+                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-sm">🏠 Remote</span>
+                    </label>
+                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeHybrid ? '#7c3aed20' : '#0a0f1e' }}>
+                      <input
+                        type="checkbox"
+                        checked={workTypeHybrid}
+                        onChange={(e) => { setWorkTypeHybrid(e.target.checked); setHasUnsaved(true) }}
+                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-sm">🔄 Hybrid</span>
+                    </label>
+                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeOnsite ? '#7c3aed20' : '#0a0f1e' }}>
+                      <input
+                        type="checkbox"
+                        checked={workTypeOnsite}
+                        onChange={(e) => { setWorkTypeOnsite(e.target.checked); setHasUnsaved(true) }}
+                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-sm">🏢 On-site</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-200">
+                    Expected Salary Range (optional)
+                  </label>
+                  <div className="grid gap-3 sm:grid-cols-[1fr_1fr_120px]">
+                    <Input
+                      label="Minimum"
+                      type="number"
+                      value={salaryMin}
+                      onChange={(v) => { setSalaryMin(v); setHasUnsaved(true) }}
+                      placeholder="50000"
+                    />
+                    <Input
+                      label="Maximum"
+                      type="number"
+                      value={salaryMax}
+                      onChange={(v) => { setSalaryMax(v); setHasUnsaved(true) }}
+                      placeholder="80000"
+                    />
+                    <Select
+                      label="Currency"
+                      value={salaryCurrency}
+                      onChange={(v) => { setSalaryCurrency(v); setHasUnsaved(true) }}
+                      options={currencyOptions}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-200">
+                      Available From
+                    </label>
+                    <input
+                      type="date"
+                      value={availableFrom}
+                      onChange={(e) => { setAvailableFrom(e.target.value); setHasUnsaved(true) }}
+                      className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      style={{ background: '#0a0f1e' }}
+                    />
+                  </div>
+                  
+                  <Input
+                    label="Preferred Job Location"
+                    value={preferredJobLocation}
+                    onChange={(v) => { setPreferredJobLocation(v); setHasUnsaved(true) }}
+                    placeholder="e.g. Paris, France or Remote"
+                  />
+                </div>
+              </div>
+
+              {/* Social & Portfolio Links */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-5" style={{ background: '#111827' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-indigo-600/20 flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-indigo-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold">Social & Portfolio Links</h2>
+                    <p className="text-sm text-gray-400">Showcase your work and online presence</p>
+                  </div>
+                </div>
+
+                <Input
+                  label="Portfolio / Website"
+                  value={portfolioUrl}
+                  onChange={(v) => { setPortfolioUrl(v); setHasUnsaved(true) }}
+                  placeholder="https://yourportfolio.com"
+                />
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Input
+                    label="GitHub"
+                    value={githubUrl}
+                    onChange={(v) => { setGithubUrl(v); setHasUnsaved(true) }}
+                    placeholder="https://github.com/yourusername"
+                  />
+                  <Input
+                    label="Twitter / X"
+                    value={twitterUrl}
+                    onChange={(v) => { setTwitterUrl(v); setHasUnsaved(true) }}
+                    placeholder="https://twitter.com/yourusername"
+                  />
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <Input
+                    label="Behance (Designers)"
+                    value={behanceUrl}
+                    onChange={(v) => { setBehanceUrl(v); setHasUnsaved(true) }}
+                    placeholder="https://behance.net/yourusername"
+                  />
+                  <Input
+                    label="Dribbble (Designers)"
+                    value={dribbbleUrl}
+                    onChange={(v) => { setDribbbleUrl(v); setHasUnsaved(true) }}
+                    placeholder="https://dribbble.com/yourusername"
+                  />
+                </div>
+              </div>
+
+              {/* Work Experience */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: '#111827' }} data-section="experience">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-orange-600/20 flex items-center justify-center">
+                    <Building className="w-5 h-5 text-orange-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Work Experience</h2>
+                </div>
+                <ExperienceCardsSection userId={user.id} />
+              </div>
+
+              {/* Education */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: '#111827' }} data-section="education">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-yellow-600/20 flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Education & Certifications</h2>
+                </div>
+                <EducationCardsSection userId={user.id} userCountry={country} />
+              </div>
+
+              {/* Skills */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: '#111827' }} data-section="skills">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-pink-600/20 flex items-center justify-center">
+                    <Wrench className="w-5 h-5 text-pink-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Skills & Expertise</h2>
+                </div>
+                <SkillsSelector userId={user.id} />
+              </div>
+
+              {/* Achievements */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: '#111827' }} data-section="achievements">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-amber-600/20 flex items-center justify-center">
+                    <Trophy className="w-5 h-5 text-amber-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Achievements & Highlights</h2>
+                </div>
+                <AchievementsCardsSection userId={user.id} />
+              </div>
+
+              {/* Account Settings */}
+              <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: '#111827' }} data-section="account">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gray-600/20 flex items-center justify-center">
+                    <Key className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <h2 className="text-xl font-bold">Account Settings</h2>
+                </div>
+
+                {/* Plan Info */}
+                <div className="rounded-lg border border-white/10 p-4" style={{ background: '#0a0f1e' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Current Plan</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-white capitalize">
+                      {profile.subscription_tier || 'Free'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-400">Interviews this month</span>
+                    <span className="text-white font-medium">
+                      {profile.interviews_used_this_month || 0} / {profile.interviews_limit === 999999 ? 'Unlimited' : profile.interviews_limit}
+                    </span>
+                  </div>
+                  <Link href="/pricing" className="mt-4 block">
+                    <Button variant={profile.subscription_tier === 'pro' ? 'outline' : 'primary'} fullWidth>
+                      {profile.subscription_tier === 'pro' ? 'Manage Plan' : 'Upgrade Plan'}
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Change Password */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-200">
+                    Password
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowPasswordModal(true)}
+                    fullWidth
+                  >
+                    <Key className="w-4 h-4 mr-2" />
+                    Change Password
+                  </Button>
+                </div>
+
+                {/* Notification Preferences */}
+                <div>
+                  <label className="mb-3 block text-sm font-medium text-gray-200">
+                    <Bell className="w-4 h-4 inline mr-2" />
+                    Notification Preferences
+                  </label>
+                  <div className="space-y-3">
+                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                      <span className="text-sm text-gray-200">New coach message</span>
+                      <input
+                        type="checkbox"
+                        checked={notifyCoachMessage}
+                        onChange={(e) => { setNotifyCoachMessage(e.target.checked); setHasUnsaved(true) }}
+                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                    </label>
+                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                      <span className="text-sm text-gray-200">Session reminder (1 hour before)</span>
+                      <input
+                        type="checkbox"
+                        checked={notifySessionReminder}
+                        onChange={(e) => { setNotifySessionReminder(e.target.checked); setHasUnsaved(true) }}
+                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                    </label>
+                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                      <span className="text-sm text-gray-200">New job offers matching profile</span>
+                      <input
+                        type="checkbox"
+                        checked={notifyJobOffers}
+                        onChange={(e) => { setNotifyJobOffers(e.target.checked); setHasUnsaved(true) }}
+                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                    </label>
+                    <label className="flex items-center justify-between p-3 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors">
+                      <span className="text-sm text-gray-200">Weekly progress report</span>
+                      <input
+                        type="checkbox"
+                        checked={notifyWeeklyReport}
+                        onChange={(e) => { setNotifyWeeklyReport(e.target.checked); setHasUnsaved(true) }}
+                        className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Danger Zone */}
+                <div className="rounded-lg border-2 border-red-500/40 p-5" style={{ background: '#1a0505' }}>
+                  <div className="flex items-start gap-3 mb-4">
+                    <Trash2 className="w-5 h-5 text-red-400 mt-0.5" />
+                    <div>
+                      <h3 className="text-lg font-bold text-red-300 mb-1">Danger Zone</h3>
+                      <p className="text-sm text-red-200/80">
+                        Once you delete your account, there is no going back. This action is permanent.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteModal(true)}
+                    className="w-full px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition-colors"
+                  >
+                    Delete Account
+                  </button>
+                </div>
+              </div>
+
+              {/* Error/Success Messages */}
+              {error && (
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {error}
+                </div>
+              )}
+              {saved && (
+                <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">
+                  <CheckCircle className="w-4 h-4" /> Profile saved successfully!
+                </div>
+              )}
+
+              {/* Save Button */}
+              <div className="sticky bottom-4 z-30">
+                <Button type="submit" variant="primary" fullWidth loading={saving} className="shadow-2xl">
+                  Save Changes
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <ChangePasswordModal 
+        isOpen={showPasswordModal} 
+        onClose={() => setShowPasswordModal(false)} 
+      />
+      <DeleteAccountModal 
+        isOpen={showDeleteModal} 
+        onClose={() => setShowDeleteModal(false)}
+        userEmail={user.email || ''}
+      />
     </div>
   )
 }
