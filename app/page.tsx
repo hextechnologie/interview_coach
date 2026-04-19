@@ -8,7 +8,6 @@ import { useAuth } from '@/components/AuthProvider'
 import { VideoModal } from '@/components/VideoModal'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { CookieConsent } from '@/components/CookieConsent'
-import { SocialProofNotification } from '@/components/SocialProofNotification'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 // Count-up animation hook
@@ -1184,7 +1183,6 @@ export default function HomePage() {
 
       <VideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
       <CookieConsent />
-      <SocialProofNotification />
     </div>
   )
 }
