@@ -50,7 +50,7 @@ const STATS = [
   { icon: Briefcase, value: 50, suffix: '+', label: 'Expert Coaches', color: 'text-purple-400' },
   { icon: Globe, value: 10, suffix: '+', label: 'Languages', color: 'text-green-400' },
   { icon: StarIcon, value: 4.9, suffix: '/5', label: 'Average Rating', color: 'text-yellow-400', decimal: true },
-  { icon: Award, value: 500, suffix: '+', label: 'Jobs Landed', color: 'text-orange-400' },
+  { icon: Award, value: 500, suffix: '+', label: 'Jobs Landed', color: 'text-blue-400' },
 ]
 
 const MOCK_COACHES = [
