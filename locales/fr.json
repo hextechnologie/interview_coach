@@ -1236,9 +1236,7 @@
       "jobType": "Type d'Emploi",
       "level": "Niveau",
       "datePosted": "Date de Publication",
-      "all
-
-Locations": "Tous les Lieux",
+      "allLocations": "Tous les Lieux",
       "allTypes": "Tous les Types",
       "allLevels": "Tous les Niveaux",
       "allDates": "Toutes les Dates",

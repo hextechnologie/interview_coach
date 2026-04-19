@@ -501,10 +501,10 @@ export default function InterviewPage() {
     const onFireUnlocked = [score, ...recentScores].slice(0, 3).length === 3 && [score, ...recentScores].slice(0, 3).every((item) => item >= 7)
 
     return [
-      { icon: '🥉', label: t.firstInterview, unlocked: recentScores.length + 1 >= 1, highlight: recentScores.length === 0 },
-      { icon: '🥈', label: t.passingScore, unlocked: score > 5, highlight: score > 5 && !recentScores.some((item) => item > 5) },
-      { icon: '🥇', label: t.excellenceBadge, unlocked: score > 8, highlight: score > 8 && !recentScores.some((item) => item > 8) },
-      { icon: '🔥', label: t.onFire, unlocked: onFireUnlocked, highlight: onFireUnlocked },
+      { icon: '🥉', label: t('interview.achievements.firstInterview'), unlocked: recentScores.length + 1 >= 1, highlight: recentScores.length === 0 },
+      { icon: '🥈', label: t('interview.achievements.passingScore'), unlocked: score > 5, highlight: score > 5 && !recentScores.some((item) => item > 5) },
+      { icon: '🥇', label: t('interview.achievements.excellenceBadge'), unlocked: score > 8, highlight: score > 8 && !recentScores.some((item) => item > 8) },
+      { icon: '🔥', label: t('interview.achievements.onFire'), unlocked: onFireUnlocked, highlight: onFireUnlocked },
     ]
   }
 

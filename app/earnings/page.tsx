@@ -111,7 +111,8 @@ export default function CoachEarningsPage() {
 
   if (!user) {
     return (
-      <div {t('earnings.loginRequired')}</p>
+      <div className="min-h-screen bg-background text-white px-6 py-8">
+        <p>{t('earnings.loginRequired')}</p>
       </div>
     )
   }
