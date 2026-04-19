@@ -7,6 +7,7 @@ import { ArrowLeft, Sparkles, CheckCircle, Loader2, Globe, Clock, DollarSign, Ca
 import { Button, Input, Select, Toggle } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import ProfileCompletionBar from '@/components/ProfileCompletionBar'
 import ProfilePhotoUploader from '@/components/ProfilePhotoUploader'
 import SidebarNav from '@/components/SidebarNav'
@@ -20,51 +21,53 @@ import AchievementsCardsSection from '@/components/coach/AchievementsCardsSectio
 import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
 import { capitalizeName, getTimezoneFromCountry, isValidUrl } from '@/lib/profile-utils'
 
-const statusOptions = [
-  { value: 'student',        label: '🎓 Student' },
-  { value: 'employed',       label: '👨‍💼 Employed' },
-  { value: 'unemployed',     label: '🔍 Actively Job Seeking' },
-  { value: 'career-change',  label: '🔄 Career Change' },
-  { value: 'fresh-graduate', label: '💼 Fresh Graduate' },
-  { value: 'other',          label: '🌍 Other' },
-]
-
-const jobRoleOptions = [
-  { value: 'Software Engineer',  label: 'Software Engineer' },
-  { value: 'Product Manager',    label: 'Product Manager' },
-  { value: 'Data Analyst',       label: 'Data Analyst' },
-  { value: 'Product Designer',   label: 'Product Designer' },
-  { value: 'Marketing Manager',  label: 'Marketing Manager' },
-  { value: 'Sales Executive',    label: 'Sales Executive' },
-  { value: 'Business Analyst',   label: 'Business Analyst' },
-  { value: 'DevOps Engineer',    label: 'DevOps Engineer' },
-  { value: 'Data Scientist',     label: 'Data Scientist' },
-  { value: 'UX Researcher',      label: 'UX Researcher' },
-  { value: 'Finance Analyst',    label: 'Finance Analyst' },
-  { value: 'HR Specialist',      label: 'HR Specialist' },
-  { value: 'Other',              label: 'Other' },
-]
-
-const yearsExperienceOptions = [
-  { value: '0-1', label: '0-1 years' },
-  { value: '1-3', label: '1-3 years' },
-  { value: '3-5', label: '3-5 years' },
-  { value: '5-10', label: '5-10 years' },
-  { value: '10+', label: '10+ years' },
-]
-
-const currencyOptions = [
-  { value: 'USD', label: '$ USD' },
-  { value: 'EUR', label: '€ EUR' },
-  { value: 'GBP', label: '£ GBP' },
-  { value: 'CAD', label: 'C$ CAD' },
-  { value: 'AUD', label: 'A$ AUD' },
-  { value: 'INR', label: '₹ INR' },
-]
-
 export default function ProfilePage() {
   const { user, profile, loading: authLoading } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
+
+  // Translation-dependent constants
+  const statusOptions = [
+    { value: 'student',        label: t('profile.statusOptions.student') },
+    { value: 'employed',       label: t('profile.statusOptions.employed') },
+    { value: 'unemployed',     label: t('profile.statusOptions.unemployed') },
+    { value: 'career-change',  label: t('profile.statusOptions.careerChange') },
+    { value: 'fresh-graduate', label: t('profile.statusOptions.freshGraduate') },
+    { value: 'other',          label: t('profile.statusOptions.other') },
+  ]
+
+  const jobRoleOptions = [
+    { value: 'Software Engineer',  label: t('profile.jobRoles.softwareEngineer') },
+    { value: 'Product Manager',    label: t('profile.jobRoles.productManager') },
+    { value: 'Data Analyst',       label: t('profile.jobRoles.dataAnalyst') },
+    { value: 'Product Designer',   label: t('profile.jobRoles.productDesigner') },
+    { value: 'Marketing Manager',  label: t('profile.jobRoles.marketingManager') },
+    { value: 'Sales Executive',    label: t('profile.jobRoles.salesExecutive') },
+    { value: 'Business Analyst',   label: t('profile.jobRoles.businessAnalyst') },
+    { value: 'DevOps Engineer',    label: t('profile.jobRoles.devOpsEngineer') },
+    { value: 'Data Scientist',     label: t('profile.jobRoles.dataScientist') },
+    { value: 'UX Researcher',      label: t('profile.jobRoles.uxResearcher') },
+    { value: 'Finance Analyst',    label: t('profile.jobRoles.financeAnalyst') },
+    { value: 'HR Specialist',      label: t('profile.jobRoles.hrSpecialist') },
+    { value: 'Other',              label: t('profile.jobRoles.other') },
+  ]
+
+  const yearsExperienceOptions = [
+    { value: '0-1',  label: t('profile.yearsExperience.0-1') },
+    { value: '1-3',  label: t('profile.yearsExperience.1-3') },
+    { value: '3-5',  label: t('profile.yearsExperience.3-5') },
+    { value: '5-10', label: t('profile.yearsExperience.5-10') },
+    { value: '10+',  label: t('profile.yearsExperience.10+') },
+  ]
+
+  const currencyOptions = [
+    { value: 'USD', label: t('profile.currencies.usd') },
+    { value: 'EUR', label: t('profile.currencies.eur') },
+    { value: 'GBP', label: t('profile.currencies.gbp') },
+    { value: 'CAD', label: t('profile.currencies.cad') },
+    { value: 'AUD', label: t('profile.currencies.aud') },
+    { value: 'INR', label: t('profile.currencies.inr') },
+  ]
 
   // Personal info
   const [firstName, setFirstName] = useState('')
@@ -484,11 +487,11 @@ export default function ProfilePage() {
           {/* Main Form */}
           <div className="max-w-3xl">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-1">My Profile</h1>
-              <p className="text-gray-400 text-sm">Complete your profile to unlock all features and get better job matches.</p>
+              <h1 className="text-3xl font-bold mb-1">{t('profile.title')}</h1>
+              <p className="text-gray-400 text-sm">{t('profile.description')}</p>
               {lastSaved && (
                 <p className="text-xs text-gray-500 mt-2">
-                  Last saved: {Math.floor((Date.now() - lastSaved.getTime()) / 60000)} minutes ago
+                  {t('profile.lastSaved')}: {Math.floor((Date.now() - lastSaved.getTime()) / 60000)} {t('profile.minutes ago')}
                 </p>
               )}
             </div>
@@ -513,23 +516,23 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-purple-600/20 flex items-center justify-center">
                     <Sparkles className="w-5 h-5 text-purple-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Personal Info</h2>
+                  <h2 className="text-xl font-bold">{t('profile.personalInfo.title')}</h2>
                 </div>
                 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Input 
-                    label="First Name" 
+                    label={t('profile.personalInfo.firstName')} 
                     value={firstName} 
                     onChange={handleFirstNameChange} 
-                    placeholder="Jane" 
+                    placeholder={t('profile.personalInfo.firstNamePlaceholder')} 
                     required
                     style={{ textTransform: 'capitalize' }}
                   />
                   <Input 
-                    label="Last Name" 
+                    label={t('profile.personalInfo.lastName')} 
                     value={lastName} 
                     onChange={handleLastNameChange} 
-                    placeholder="Doe" 
+                    placeholder={t('profile.personalInfo.lastNamePlaceholder')} 
                     required
                     style={{ textTransform: 'capitalize' }}
                   />
@@ -537,28 +540,28 @@ export default function ProfilePage() {
 
                 <div className="grid gap-5 sm:grid-cols-3">
                   <Select 
-                    label="Country" 
+                    label={t('profile.personalInfo.country')} 
                     value={country}
                     onChange={handleCountryChange} 
                     options={countryOptions} 
-                    placeholder={country ? undefined : "Select country"}
+                    placeholder={country ? undefined : t('profile.personalInfo.selectCountry')}
                     required 
                   />
                   <Select 
-                    label="Region/State" 
+                    label={t('profile.personalInfo.region')} 
                     value={region} 
                     onChange={handleRegionChange} 
                     options={regionOptions} 
-                    placeholder={country ? (region ? undefined : "Select region") : "Select country first"}
+                    placeholder={country ? (region ? undefined : t('profile.personalInfo.selectRegion')) : t('profile.personalInfo.selectCountryFirst')}
                     required 
                     disabled={!country}
                   />
                   <Select 
-                    label="City" 
+                    label={t('profile.personalInfo.city')} 
                     value={city} 
                     onChange={(v) => { setCity(v); setHasUnsaved(true) }} 
                     options={cityOptions} 
-                    placeholder={region ? (city ? undefined : "Select city") : "Select region first"}
+                    placeholder={region ? (city ? undefined : t('profile.personalInfo.selectCity')) : t('profile.personalInfo.selectRegionFirst')}
                     required 
                     disabled={!region}
                   />
@@ -568,20 +571,20 @@ export default function ProfilePage() {
                   <Clock className="w-5 h-5 text-gray-400 mt-2" />
                   <div className="flex-1">
                     <Input
-                      label="Timezone"
+                      label={t('profile.personalInfo.timezone')}
                       value={timezone}
                       onChange={(v) => { setTimezone(v); setHasUnsaved(true) }}
                       placeholder={Intl.DateTimeFormat().resolvedOptions().timeZone}
                     />
-                    <p className="text-xs text-gray-400 mt-1">Auto-detected from your browser. Important for scheduling coach sessions.</p>
+                    <p className="text-xs text-gray-400 mt-1">{t('profile.personalInfo.timezoneHelper')}</p>
                   </div>
                 </div>
 
                 <Input
-                  label="LinkedIn URL (optional)"
+                  label={t('profile.personalInfo.linkedinUrl')}
                   value={linkedinUrl}
                   onChange={(v) => { setLinkedinUrl(v); setHasUnsaved(true) }}
-                  placeholder="https://linkedin.com/in/yourprofile"
+                  placeholder={t('profile.personalInfo.linkedinPlaceholder')}
                 />
               </div>
 
@@ -592,21 +595,21 @@ export default function ProfilePage() {
                     <Globe className="w-5 h-5 text-blue-400" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold">Bio</h2>
-                    <p className="text-sm text-gray-400">Tell us about yourself professionally</p>
+                    <h2 className="text-xl font-bold">{t('profile.bio.title')}</h2>
+                    <p className="text-sm text-gray-400">{t('profile.bio.subtitle')}</p>
                   </div>
                   <span className="text-red-400 text-sm">*</span>
                 </div>
                 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-200">
-                    Professional Summary <span className="text-red-400">*</span>
+                    {t('profile.bio.label')} <span className="text-red-400">{t('profile.bio.required')}</span>
                   </label>
                   <textarea
                     value={bio}
                     onChange={(e) => { setBio(e.target.value); setHasUnsaved(true) }}
                     rows={5}
-                    placeholder="Write a comprehensive professional summary about your background, experience, goals, and what makes you unique..."
+                    placeholder={t('profile.bio.placeholder')}
                     className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
                     style={{ background: '#0a0f1e' }}
                     required
@@ -623,47 +626,47 @@ export default function ProfilePage() {
                   <div className="w-10 h-10 rounded-lg bg-green-600/20 flex items-center justify-center">
                     <Briefcase className="w-5 h-5 text-green-400" />
                   </div>
-                  <h2 className="text-xl font-bold">Career Info</h2>
+                  <h2 className="text-xl font-bold">{t('profile.careerInfo.title')}</h2>
                 </div>
 
                 <Select
-                  label="Current Status"
+                  label={t('profile.careerInfo.currentStatus')}
                   value={currentStatus}
                   onChange={(v) => { setCurrentStatus(v); setHasUnsaved(true) }}
                   options={statusOptions}
-                  placeholder="What describes you best?"
+                  placeholder={t('profile.careerInfo.statusPlaceholder')}
                 />
                 
                 {currentStatus && (
                   <Input
-                    label="Status Details"
+                    label={t('profile.careerInfo.statusDetail')}
                     value={statusDetail}
                     onChange={(v) => { setStatusDetail(v); setHasUnsaved(true) }}
                     placeholder={
-                      currentStatus === 'student' ? 'e.g. MIT — Computer Science' :
-                      currentStatus === 'employed' ? 'e.g. Software Engineer at Google' :
-                      currentStatus === 'unemployed' ? 'e.g. Software Engineer — 3 months searching' :
-                      currentStatus === 'career-change' ? 'e.g. Finance → Software Engineering' :
-                      currentStatus === 'fresh-graduate' ? 'e.g. BSc Computer Science' :
-                      'Brief description of your situation'
+                      currentStatus === 'student' ? t('profile.careerInfo.statusDetailPlaceholder.student') :
+                      currentStatus === 'employed' ? t('profile.careerInfo.statusDetailPlaceholder.employed') :
+                      currentStatus === 'unemployed' ? t('profile.careerInfo.statusDetailPlaceholder.unemployed') :
+                      currentStatus === 'career-change' ? t('profile.careerInfo.statusDetailPlaceholder.careerChange') :
+                      currentStatus === 'fresh-graduate' ? t('profile.careerInfo.statusDetailPlaceholder.freshGraduate') :
+                      t('profile.careerInfo.statusDetailPlaceholder.other')
                     }
                   />
                 )}
 
                 <Select
-                  label="Target Job Role"
+                  label={t('profile.careerInfo.targetJobRole')}
                   value={targetJobRole}
                   onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole(''); setHasUnsaved(true) }}
                   options={jobRoleOptions}
-                  placeholder="What role are you aiming for?"
+                  placeholder={t('profile.careerInfo.targetJobPlaceholder')}
                 />
                 
                 {targetJobRole === 'Other' && (
                   <Input
-                    label="Custom Role"
+                    label={t('profile.jobRoles.other')}
                     value={customJobRole}
                     onChange={(v) => { setCustomJobRole(v); setHasUnsaved(true) }}
-                    placeholder="e.g. Growth Hacker, AI Researcher, Prompt Engineer…"
+                    placeholder={t('profile.careerInfo.customRolePlaceholder')}
                   />
                 )}
 
