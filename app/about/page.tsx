@@ -1,12 +1,26 @@
+'use client'
+
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function AboutPage() {
+  const { t } = useLanguage()
+  
   const team = [
-    { name: 'Product Lead', role: 'Designing a smarter interview journey' },
-    { name: 'AI Engineer', role: 'Building realistic interview feedback systems' },
-    { name: 'Growth Lead', role: 'Helping candidates reach more opportunities' },
+    { 
+      name: t('about.team.productLead.name'), 
+      role: t('about.team.productLead.role')
+    },
+    { 
+      name: t('about.team.aiEngineer.name'), 
+      role: t('about.team.aiEngineer.role')
+    },
+    { 
+      name: t('about.team.growthLead.name'), 
+      role: t('about.team.growthLead.role')
+    },
   ]
 
   return (
@@ -19,53 +33,53 @@ export default function AboutPage() {
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>
-            <Link href="/dashboard"><Button variant="outline">Dashboard</Button></Link>
+            <Link href="/dashboard"><Button variant="outline">{t('about.dashboard')}</Button></Link>
           </div>
         </header>
 
         <div className="container mx-auto px-6 py-16 max-w-6xl">
           <div className="text-center mb-14">
-            <h1 className="text-5xl font-bold mb-4">About Interview Coach</h1>
+            <h1 className="text-5xl font-bold mb-4">{t('about.title')}</h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              We built Interview Coach to make world-class interview practice accessible, practical, and confidence-boosting for everyone.
+              {t('about.subtitle')}
             </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6 mb-10">
             <Card>
-              <h2 className="text-2xl font-bold mb-3">Our Mission</h2>
+              <h2 className="text-2xl font-bold mb-3">{t('about.mission.heading')}</h2>
               <p className="text-gray-300 leading-relaxed">
-                Our mission is to help job seekers prepare with confidence using realistic AI-powered mock interviews, fast feedback, and personalized improvement tips.
+                {t('about.mission.content')}
               </p>
             </Card>
             <Card>
-              <h2 className="text-2xl font-bold mb-3">Why We Built This</h2>
+              <h2 className="text-2xl font-bold mb-3">{t('about.why.heading')}</h2>
               <p className="text-gray-300 leading-relaxed">
-                Too many candidates miss great opportunities because they never get enough practice. We wanted to create a private, affordable, always-available coach.
+                {t('about.why.content')}
               </p>
             </Card>
           </div>
 
           <Card className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">How the App Works</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('about.howItWorks.heading')}</h2>
             <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-300">
               <div className="rounded-xl border border-border p-4">
-                <p className="text-primary font-semibold mb-2">1. Choose your interview</p>
-                <p>Select the role, level, language, and interview type.</p>
+                <p className="text-primary font-semibold mb-2">{t('about.howItWorks.step1Title')}</p>
+                <p>{t('about.howItWorks.step1Desc')}</p>
               </div>
               <div className="rounded-xl border border-border p-4">
-                <p className="text-primary font-semibold mb-2">2. Practice with AI</p>
-                <p>Answer realistic questions in a guided mock interview experience.</p>
+                <p className="text-primary font-semibold mb-2">{t('about.howItWorks.step2Title')}</p>
+                <p>{t('about.howItWorks.step2Desc')}</p>
               </div>
               <div className="rounded-xl border border-border p-4">
-                <p className="text-primary font-semibold mb-2">3. Improve faster</p>
-                <p>Review your score, strengths, weak spots, and coaching suggestions.</p>
+                <p className="text-primary font-semibold mb-2">{t('about.howItWorks.step3Title')}</p>
+                <p>{t('about.howItWorks.step3Desc')}</p>
               </div>
             </div>
           </Card>
 
           <div>
-            <h2 className="text-2xl font-bold mb-4">Team</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('about.team.heading')}</h2>
             <div className="grid md:grid-cols-3 gap-4">
               {team.map((member) => (
                 <Card key={member.name}>

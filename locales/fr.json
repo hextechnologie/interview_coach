@@ -830,5 +830,77 @@
         "answer": "Visitez la page des tarifs, choisissez le plan qui correspond à vos besoins et finalisez le paiement. Les limites de votre compte seront automatiquement mises à jour après le paiement."
       }
     ]
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Vous avez une question ou besoin d'aide ? Nous sommes là pour vous aider !",
+    "formHeading": "Envoyez-nous un message",
+    "successMessage": "Merci ! Nous vous répondrons dans les 24 heures.",
+    "labels": {
+      "fullName": "Nom complet",
+      "email": "Adresse e-mail",
+      "subject": "Sujet",
+      "message": "Message"
+    },
+    "placeholders": {
+      "name": "Jean Dupont",
+      "email": "vous@exemple.com",
+      "subject": "Facturation, assistance, partenariat...",
+      "message": "Dites-nous comment nous pouvons vous aider..."
+    },
+    "sendButton": "Envoyer le message",
+    "whatsapp": {
+      "heading": "Assistance WhatsApp",
+      "description": "Obtenez de l'aide instantanée via WhatsApp. Nous sommes disponibles du lundi au vendredi, de 9h à 18h EST.",
+      "button": "Discuter sur WhatsApp"
+    },
+    "emailSection": {
+      "heading": "Envoyez-nous un e-mail",
+      "description": "Pour les demandes détaillées ou les demandes d'assistance",
+      "email": "support@interviewcoach.com"
+    },
+    "faq": {
+      "heading": "Vous cherchez des réponses ?",
+      "description": "Consultez notre page FAQ pour des réponses rapides aux questions courantes.",
+      "button": "Parcourir la FAQ"
+    },
+    "dashboard": "Tableau de bord"
+  },
+  "about": {
+    "title": "À propos d'Interview Coach",
+    "subtitle": "Nous avons créé Interview Coach pour rendre la pratique d'entretiens de classe mondiale accessible, pratique et stimulante pour tous.",
+    "mission": {
+      "heading": "Notre mission",
+      "content": "Notre mission est d'aider les chercheurs d'emploi à se préparer avec confiance en utilisant des entretiens simulés réalistes alimentés par l'IA, des retours rapides et des conseils d'amélioration personnalisés."
+    },
+    "why": {
+      "heading": "Pourquoi nous avons créé cela",
+      "content": "Trop de candidats manquent de grandes opportunités parce qu'ils ne s'entraînent jamais assez. Nous voulions créer un coach privé, abordable et toujours disponible."
+    },
+    "howItWorks": {
+      "heading": "Comment fonctionne l'application",
+      "step1Title": "1. Choisissez votre entretien",
+      "step1Desc": "Sélectionnez le rôle, le niveau, la langue et le type d'entretien.",
+      "step2Title": "2. Pratiquez avec l'IA",
+      "step2Desc": "Répondez à des questions réalistes dans une expérience d'entretien simulé guidé.",
+      "step3Title": "3. Améliorez-vous plus rapidement",
+      "step3Desc": "Consultez votre score, vos points forts, vos points faibles et les suggestions de coaching."
+    },
+    "team": {
+      "heading": "Équipe",
+      "productLead": {
+        "name": "Responsable produit",
+        "role": "Concevoir un parcours d'entretien plus intelligent"
+      },
+      "aiEngineer": {
+        "name": "Ingénieur IA",
+        "role": "Créer des systèmes de feedback d'entretien réalistes"
+      },
+      "growthLead": {
+        "name": "Responsable croissance",
+        "role": "Aider les candidats à atteindre plus d'opportunités"
+      }
+    },
+    "dashboard": "Tableau de bord"
   }
 }

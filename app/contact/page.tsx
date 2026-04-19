@@ -4,8 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Sparkles, Mail, MessageSquare, Phone } from 'lucide-react'
 import { Button, Input, Card } from '@/components/ui'
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function ContactPage() {
+  const { t } = useLanguage()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [subject, setSubject] = useState('General Inquiry')
@@ -71,7 +73,7 @@ export default function ContactPage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>
             <Link href="/dashboard">
-              <Button variant="outline">Dashboard</Button>
+              <Button variant="outline">{t('contact.dashboard')}</Button>
             </Link>
           </div>
         </div>
@@ -82,9 +84,9 @@ export default function ContactPage() {
         <div className="container mx-auto px-6 py-20">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-5xl font-bold mb-4">Get in Touch</h1>
+            <h1 className="text-5xl font-bold mb-4">{t('contact.title')}</h1>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Have a question or need support? We're here to help!
+              {t('contact.subtitle')}
             </p>
           </div>
 
@@ -92,11 +94,11 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div>
               <Card>
-                <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
+                <h2 className="text-2xl font-bold mb-6">{t('contact.formHeading')}</h2>
                 
                 {success && (
                   <div className="bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded-lg mb-6">
-                    Thank you! We'll get back to you within 24 hours.
+                    {t('contact.successMessage')}
                   </div>
                 )}
 
@@ -108,38 +110,38 @@ export default function ContactPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <Input
-                    label="Full Name"
+                    label={t('contact.labels.fullName')}
                     type="text"
                     value={name}
                     onChange={setName}
-                    placeholder="John Doe"
+                    placeholder={t('contact.placeholders.name')}
                     required
                   />
 
                   <Input
-                    label="Email Address"
+                    label={t('contact.labels.email')}
                     type="email"
                     value={email}
                     onChange={setEmail}
-                    placeholder="you@example.com"
+                    placeholder={t('contact.placeholders.email')}
                     required
                   />
 
                   <Input
-                    label="Subject"
+                    label={t('contact.labels.subject')}
                     type="text"
                     value={subject}
                     onChange={setSubject}
-                    placeholder="Billing, support, partnership..."
+                    placeholder={t('contact.placeholders.subject')}
                     required
                   />
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Message</label>
+                    <label className="block text-sm font-medium mb-2">{t('contact.labels.message')}</label>
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Tell us how we can help you..."
+                      placeholder={t('contact.placeholders.message')}
                       required
                       rows={6}
                       className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-white placeholder-gray-500"
@@ -147,7 +149,7 @@ export default function ContactPage() {
                   </div>
 
                   <Button type="submit" variant="primary" fullWidth loading={loading}>
-                    Send Message
+                    {t('contact.sendButton')}
                   </Button>
                 </form>
               </Card>
@@ -181,12 +183,12 @@ export default function ContactPage() {
                     <Mail className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">Email Us</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t('contact.emailSection.heading')}</h3>
                     <p className="text-gray-400 mb-2">
-                      For detailed inquiries or support requests
+                      {t('contact.emailSection.description')}
                     </p>
-                    <a href="mailto:support@interviewcoach.com" className="text-primary hover:underline">
-                      support@interviewcoach.com
+                    <a href={`mailto:${t('contact.emailSection.email')}`} className="text-primary hover:underline">
+                      {t('contact.emailSection.email')}
                     </a>
                   </div>
                 </div>
@@ -194,12 +196,12 @@ export default function ContactPage() {
 
               {/* FAQ */}
               <div className="glass p-6 rounded-xl">
-                <h3 className="text-lg font-semibold mb-2">Looking for Answers?</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('contact.faq.heading')}</h3>
                 <p className="text-gray-400 mb-4">
-                  Check out our FAQ page for quick answers to common questions.
+                  {t('contact.faq.description')}
                 </p>
                 <Link href="/faq">
-                  <Button variant="outline">Visit FAQ</Button>
+                  <Button variant="outline">{t('contact.faq.button')}</Button>
                 </Link>
               </div>
 

@@ -830,5 +830,77 @@
         "answer": "Visita la página de precios, elige el plan que se ajuste a tus necesidades y completa el pago. Los límites de tu cuenta se actualizarán automáticamente después del pago."
       }
     ]
+  },
+  "contact": {
+    "title": "Ponte en contacto",
+    "subtitle": "¿Tienes una pregunta o necesitas ayuda? ¡Estamos aquí para ayudarte!",
+    "formHeading": "Envíanos un mensaje",
+    "successMessage": "¡Gracias! Te responderemos en menos de 24 horas.",
+    "labels": {
+      "fullName": "Nombre completo",
+      "email": "Dirección de correo electrónico",
+      "subject": "Asunto",
+      "message": "Mensaje"
+    },
+    "placeholders": {
+      "name": "Juan Pérez",
+      "email": "tu@ejemplo.com",
+      "subject": "Facturación, soporte, asociación...",
+      "message": "Cuéntanos cómo podemos ayudarte..."
+    },
+    "sendButton": "Enviar mensaje",
+    "whatsapp": {
+      "heading": "Soporte por WhatsApp",
+      "description": "Obtén ayuda instantánea a través de WhatsApp. Estamos disponibles de lunes a viernes, de 9 AM a 6 PM EST.",
+      "button": "Chatear en WhatsApp"
+    },
+    "emailSection": {
+      "heading": "Envíanos un correo",
+      "description": "Para consultas detalladas o solicitudes de soporte",
+      "email": "support@interviewcoach.com"
+    },
+    "faq": {
+      "heading": "¿Buscas respuestas?",
+      "description": "Consulta nuestra página de preguntas frecuentes para respuestas rápidas a preguntas comunes.",
+      "button": "Explorar FAQ"
+    },
+    "dashboard": "Panel de control"
+  },
+  "about": {
+    "title": "Acerca de Interview Coach",
+    "subtitle": "Construimos Interview Coach para hacer la práctica de entrevistas de clase mundial accesible, práctica y motivadora para todos.",
+    "mission": {
+      "heading": "Nuestra misión",
+      "content": "Nuestra misión es ayudar a los buscadores de empleo a prepararse con confianza utilizando entrevistas simuladas realistas impulsadas por IA, retroalimentación rápida y consejos de mejora personalizados."
+    },
+    "why": {
+      "heading": "Por qué construimos esto",
+      "content": "Demasiados candidatos pierden grandes oportunidades porque nunca practican lo suficiente. Queríamos crear un coach privado, asequible y siempre disponible."
+    },
+    "howItWorks": {
+      "heading": "Cómo funciona la aplicación",
+      "step1Title": "1. Elige tu entrevista",
+      "step1Desc": "Selecciona el puesto, nivel, idioma y tipo de entrevista.",
+      "step2Title": "2. Practica con IA",
+      "step2Desc": "Responde preguntas realistas en una experiencia de entrevista simulada guiada.",
+      "step3Title": "3. Mejora más rápido",
+      "step3Desc": "Revisa tu puntuación, fortalezas, puntos débiles y sugerencias de coaching."
+    },
+    "team": {
+      "heading": "Equipo",
+      "productLead": {
+        "name": "Líder de producto",
+        "role": "Diseñando un recorrido de entrevista más inteligente"
+      },
+      "aiEngineer": {
+        "name": "Ingeniero de IA",
+        "role": "Construyendo sistemas de retroalimentación de entrevistas realistas"
+      },
+      "growthLead": {
+        "name": "Líder de crecimiento",
+        "role": "Ayudando a los candidatos a alcanzar más oportunidades"
+      }
+    },
+    "dashboard": "Panel de control"
   }
 }

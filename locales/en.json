@@ -832,5 +832,77 @@
       "q4": "Can I switch between monthly and annual?",
       "a4": "Absolutely. You can change your billing cadence whenever it makes sense for you."
     }
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Have a question or need support? We're here to help!",
+    "formHeading": "Send us a Message",
+    "successMessage": "Thank you! We'll get back to you within 24 hours.",
+    "labels": {
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Message"
+    },
+    "placeholders": {
+      "name": "John Doe",
+      "email": "you@example.com",
+      "subject": "Billing, support, partnership...",
+      "message": "Tell us how we can help you..."
+    },
+    "sendButton": "Send Message",
+    "whatsapp": {
+      "heading": "WhatsApp Support",
+      "description": "Get instant help via WhatsApp. We're available Monday to Friday, 9 AM - 6 PM EST.",
+      "button": "Chat on WhatsApp"
+    },
+    "emailSection": {
+      "heading": "Email Us",
+      "description": "For detailed inquiries or support requests",
+      "email": "support@interviewcoach.com"
+    },
+    "faq": {
+      "heading": "Looking for Answers?",
+      "description": "Check out our FAQ page for quick answers to common questions.",
+      "button": "Browse FAQ"
+    },
+    "dashboard": "Dashboard"
+  },
+  "about": {
+    "title": "About Interview Coach",
+    "subtitle": "We built Interview Coach to make world-class interview practice accessible, practical, and confidence-boosting for everyone.",
+    "mission": {
+      "heading": "Our Mission",
+      "content": "Our mission is to help job seekers prepare with confidence using realistic AI-powered mock interviews, fast feedback, and personalized improvement tips."
+    },
+    "why": {
+      "heading": "Why We Built This",
+      "content": "Too many candidates miss great opportunities because they never get enough practice. We wanted to create a private, affordable, always-available coach."
+    },
+    "howItWorks": {
+      "heading": "How the App Works",
+      "step1Title": "1. Choose your interview",
+      "step1Desc": "Select the role, level, language, and interview type.",
+      "step2Title": "2. Practice with AI",
+      "step2Desc": "Answer realistic questions in a guided mock interview experience.",
+      "step3Title": "3. Improve faster",
+      "step3Desc": "Review your score, strengths, weak spots, and coaching suggestions."
+    },
+    "team": {
+      "heading": "Team",
+      "productLead": {
+        "name": "Product Lead",
+        "role": "Designing a smarter interview journey"
+      },
+      "aiEngineer": {
+        "name": "AI Engineer",
+        "role": "Building realistic interview feedback systems"
+      },
+      "growthLead": {
+        "name": "Growth Lead",
+        "role": "Helping candidates reach more opportunities"
+      }
+    },
+    "dashboard": "Dashboard"
   }
 }
