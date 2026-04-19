@@ -90,6 +90,7 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-400">{t('profile.achievementsSection.subtitle')}</p>
         <button
+          type="button"
           onClick={openAddModal}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
         >
@@ -114,6 +115,7 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
           <Trophy className="w-12 h-12 mx-auto mb-3 text-gray-600" />
           <p className="text-gray-400 mb-2">{t('profile.achievementsSection.emptyState')}</p>
           <button
+            type="button"
             onClick={openAddModal}
             className="text-blue-500 hover:text-blue-400 transition"
           >
@@ -206,6 +208,7 @@ function AchievementCard({
             {/* Actions */}
             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
               <button
+                type="button"
                 onClick={onEdit}
                 className="p-1.5 hover:bg-gray-700 rounded transition"
                 title={t('profile.shared.edit')}
@@ -213,6 +216,7 @@ function AchievementCard({
                 <Edit2 className="w-4 h-4 text-gray-400" />
               </button>
               <button
+                type="button"
                 onClick={onDelete}
                 className="p-1.5 hover:bg-gray-700 rounded transition"
                 title={t('profile.shared.delete')}
@@ -279,8 +283,9 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
     if (!validateForm()) return
 
     setIsSaving(true)
@@ -340,6 +345,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
             {achievement ? t('profile.achievementsSection.modal.editTitle') : t('profile.achievementsSection.modal.addTitle')}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-700 rounded-lg transition"
           >
@@ -347,7 +353,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           {/* Achievement Type */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -460,14 +466,15 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
               {t('profile.cancel')}
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={() => handleSubmit()}
               disabled={isSaving}
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
             >
               {isSaving ? t('profile.saving') : achievement ? t('profile.achievementsSection.modal.updateButton') : t('profile.achievementsSection.modal.addButton')}
             </button>
           </div>
-        </form>
+        </div>
       </motion.div>
     </motion.div>
   )

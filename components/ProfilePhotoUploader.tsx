@@ -135,6 +135,7 @@ export default function ProfilePhotoUploader({
             />
             {!uploading && (
               <button
+                type="button"
                 onClick={handleRemovePhoto}
                 className="absolute top-0 right-0 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-2 border-[#0a0f1e]"
                 title={t('profile.photoUploader.removePhoto')}

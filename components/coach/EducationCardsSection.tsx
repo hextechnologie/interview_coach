@@ -86,6 +86,7 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-400">{t('profile.educationSection.countAdded').replace('{count}', String(educations.length))}</p>
         <button
+          type="button"
           onClick={handleAddClick}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition"
         >
@@ -218,6 +219,7 @@ function EducationCard({
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={onEdit}
             className="p-2 hover:bg-gray-700 rounded-lg transition"
             title={t('profile.shared.edit')}
@@ -225,6 +227,7 @@ function EducationCard({
             <Edit2 className="w-4 h-4 text-gray-400" />
           </button>
           <button
+            type="button"
             onClick={onDelete}
             className="p-2 hover:bg-red-500/20 rounded-lg transition"
             title={t('profile.shared.delete')}
@@ -340,8 +343,9 @@ function EducationModal({
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
     if (!validate()) return
 
     setLoading(true)
@@ -391,6 +395,7 @@ function EducationModal({
             {education ? t('profile.educationSection.modal.editTitle') : t('profile.educationSection.modal.addTitle')}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition"
           >
@@ -398,7 +403,7 @@ function EducationModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <div className="p-6 space-y-4">
           {/* Education Type */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -917,14 +922,15 @@ function EducationModal({
               {t('profile.cancel')}
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={() => handleSubmit()}
               className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
               disabled={loading}
             >
               {loading ? t('profile.saving') : education ? t('profile.educationSection.modal.updateButton') : t('profile.educationSection.modal.addButton')}
             </button>
           </div>
-        </form>
+        </div>
       </motion.div>
     </motion.div>
   )
