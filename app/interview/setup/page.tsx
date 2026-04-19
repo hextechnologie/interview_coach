@@ -357,8 +357,8 @@ export default function InterviewSetupPage() {
             {step === 1 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Step 1 — Upload or paste your resume</h2>
-                  <p className="text-gray-400">This helps the AI target your strongest skills, projects, and experience.</p>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step1.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step1.description')}</p>
                 </div>
 
                 <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm cursor-pointer hover:bg-primary/10 transition-colors">
@@ -369,10 +369,10 @@ export default function InterviewSetupPage() {
 
                 {resumeFileName && !showResumeEditor ? (
                   <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4">
-                    <p className="text-sm text-green-400 font-medium mb-2">{resumeStatus || 'Resume imported successfully.'}</p>
-                    <p className="text-sm text-gray-300 mb-3">Your CV is already loaded and will be used to personalize the interview.</p>
+                    <p className="text-sm text-green-400 font-medium mb-2">{resumeStatus || t('interviewSetup.step1.resumeDetected')}</p>
+                    <p className="text-sm text-gray-300 mb-3">{t('interviewSetup.step1.resumeLoaded')}</p>
                     <Button variant="outline" className="text-sm px-4 py-2" onClick={() => setShowResumeEditor(true)}>
-                      Review or edit extracted text
+                      {t('interviewSetup.step1.editResume')}
                     </Button>
                   </div>
                 ) : (
@@ -381,7 +381,7 @@ export default function InterviewSetupPage() {
                     onChange={(e) => setResumeText(e.target.value)}
                     rows={10}
                     className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.resumeText ? 'border-red-500' : 'border-border'}`}
-                    placeholder="Paste your resume here only if you want to type it manually or edit the imported text."
+                    placeholder={t('interviewSetup.step1.placeholder')}
                   />
                 )}
                 {resumeStatus && !resumeFileName && (
@@ -405,15 +405,15 @@ export default function InterviewSetupPage() {
             {step === 2 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Step 2 — Add the job description (optional)</h2>
-                  <p className="text-gray-400">If you have the job post, paste it here. If not, you can leave this blank and continue.</p>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step2.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step2.description')}</p>
                 </div>
                 <textarea
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   rows={12}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  placeholder="Optional: paste the full job description or just a few keywords from the role."
+                  placeholder={t('interviewSetup.step2.placeholder')}
                 />
               </div>
             )}
@@ -421,8 +421,8 @@ export default function InterviewSetupPage() {
             {step === 3 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Step 3 — Select your role</h2>
-                  <p className="text-gray-400">Choose the role so the questions match the expectations of the hiring team.</p>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step3.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step3.description')}</p>
                 </div>
                 <select
                   value={jobTitle}
@@ -441,54 +441,54 @@ export default function InterviewSetupPage() {
             {step === 4 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">Step 4 — Set your experience and interview mode</h2>
-                  <p className="text-gray-400">We’ll adjust the difficulty, tone, and evaluation style to fit your goals.</p>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step4.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step4.description')}</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-300 mb-2">Experience level</label>
+                    <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step4.experienceLevelLabel')}</label>
                     <select
                       value={experienceLevel}
                       onChange={(e) => setExperienceLevel(e.target.value)}
                       className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.experienceLevel ? 'border-red-500' : 'border-border'}`}
                     >
-                      <option value="">Select level...</option>
+                      <option value="">{t('interviewSetup.step4.selectLevel')}</option>
                       {EXPERIENCE_LEVELS.map((level) => (
-                        <option key={level} value={level}>{level.charAt(0).toUpperCase() + level.slice(1)}</option>
+                        <option key={level.value} value={level.value}>{level.label}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-300 mb-2">Interview type</label>
+                    <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step4.interviewTypeLabel')}</label>
                     <select
                       value={interviewType}
                       onChange={(e) => setInterviewType(e.target.value)}
                       className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       {INTERVIEW_TYPES.map((type) => (
-                        <option key={type} value={type}>{type}</option>
+                        <option key={type.value} value={type.value}>{type.label}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-300 mb-2">Interview language</label>
+                    <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step4.interviewLanguageLabel')}</label>
                     <select
                       value={language}
                       onChange={(e) => setLanguage(e.target.value)}
                       className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       {LANGUAGES.map((item) => (
-                        <option key={item} value={item}>{item}</option>
+                        <option key={item.value} value={item.value}>{item.label}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">Years of experience</label>
+                  <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step4.yearsOfExperienceLabel')}</label>
                   <input
                     type="number"
                     min="0"
@@ -496,7 +496,7 @@ export default function InterviewSetupPage() {
                     value={yearsOfExperience}
                     onChange={(e) => setYearsOfExperience(e.target.value)}
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Example: 4"
+                    placeholder={t('interviewSetup.step4.yearsPlaceholder')}
                   />
                 </div>
 
@@ -508,9 +508,9 @@ export default function InterviewSetupPage() {
                       onChange={(e) => setRealCompanyMode(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="font-medium">Enable real company interview mode</span>
+                    <span className="font-medium">{t('interviewSetup.step4.realCompanyMode')}</span>
                   </label>
-                  <p className="text-sm text-gray-400 mt-2">Adds more realistic pressure and higher-signal questions based on your target company.</p>
+                  <p className="text-sm text-gray-400 mt-2">{t('interviewSetup.step4.realCompanyModeDescription')}</p>
                 </div>
 
                 {realCompanyMode && (
@@ -519,19 +519,19 @@ export default function InterviewSetupPage() {
                     value={targetCompany}
                     onChange={(e) => setTargetCompany(e.target.value)}
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Target company, e.g. Google, Stripe, Amazon"
+                    placeholder={t('interviewSetup.step4.targetCompanyPlaceholder')}
                   />
                 )}
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">Optional focus skills</label>
+                  <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step4.focusSkillsLabel')}</label>
                   <input
                     type="text"
                     value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={addSkill}
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Type a skill and press Enter, e.g. React, SQL, roadmap planning"
+                    placeholder={t('interviewSetup.step4.focusSkillsPlaceholder')}
                   />
                   <div className="flex flex-wrap gap-2 mt-3">
                     {mainSkills.map((skill) => (
@@ -555,18 +555,18 @@ export default function InterviewSetupPage() {
                 </Button>
               ) : (
                 <Link href="/dashboard">
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant="outline">{t('interviewSetup.navigation.cancel')}</Button>
                 </Link>
               )}
 
               {step < 4 ? (
                 <Button onClick={handleNext}>
-                  Next
+                  {t('interviewSetup.navigation.next')}
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               ) : (
                 <Button onClick={handleStartInterview} loading={loading}>
-                  Start personalized interview
+                  {t('interviewSetup.navigation.startInterview')}
                   {!loading && <Sparkles className="w-4 h-4" />}
                 </Button>
               )}
@@ -575,40 +575,40 @@ export default function InterviewSetupPage() {
 
           <div className="space-y-6 lg:sticky lg:top-6">
             <Card>
-              <h3 className="text-xl font-bold mb-4">Your interview preview</h3>
+              <h3 className="text-xl font-bold mb-4">{t('interviewSetup.preview.title')}</h3>
               <div className="space-y-4 text-sm">
                 <div className="flex gap-3">
                   <FileText className="w-4 h-4 text-primary mt-0.5" />
                   <div>
-                    <p className="font-medium">Resume context</p>
-                    <p className="text-gray-400">{resumeText ? 'Loaded and ready for personalization' : 'Add your resume to unlock tailored questions'}</p>
+                    <p className="font-medium">{t('interviewSetup.preview.resumeContext')}</p>
+                    <p className="text-gray-400">{resumeText ? t('interviewSetup.preview.resumeLoaded') : t('interviewSetup.preview.resumeMissing')}</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <Briefcase className="w-4 h-4 text-primary mt-0.5" />
                   <div>
-                    <p className="font-medium">Target role</p>
-                    <p className="text-gray-400">{jobTitle || 'Not selected yet'}</p>
+                    <p className="font-medium">{t('interviewSetup.preview.targetRole')}</p>
+                    <p className="text-gray-400">{jobTitle || t('interviewSetup.preview.notSelected')}</p>
                   </div>
                 </div>
                 <div>
-                  <p className="font-medium mb-1">Coach will tailor for:</p>
+                  <p className="font-medium mb-1">{t('interviewSetup.preview.coachWillTailor')}</p>
                   <ul className="text-gray-400 space-y-1 list-disc pl-5">
-                    <li>{experienceLevel ? `${experienceLevel} level difficulty` : 'Your experience level'}</li>
-                    <li>{interviewType} interview questions</li>
-                    <li>{realCompanyMode && targetCompany ? `${targetCompany} style pressure` : 'General hiring manager style'}</li>
+                    <li>{experienceLevel ? t('interviewSetup.preview.levelDifficulty').replace('{level}', experienceLevel) : t('interviewSetup.preview.yourExperience')}</li>
+                    <li>{t('interviewSetup.preview.interviewQuestions').replace('{type}', interviewType)}</li>
+                    <li>{realCompanyMode && targetCompany ? t('interviewSetup.preview.companyPressure').replace('{company}', targetCompany) : t('interviewSetup.preview.generalStyle')}</li>
                   </ul>
                 </div>
               </div>
             </Card>
 
             <Card className="bg-primary/5 border-primary/30">
-              <h3 className="text-lg font-bold mb-2">What you’ll get</h3>
+              <h3 className="text-lg font-bold mb-2">{t('interviewSetup.benefits.title')}</h3>
               <ul className="space-y-2 text-sm text-gray-300">
-                <li>• Questions tailored to your resume and target job</li>
-                <li>• Ideal answers and STAR-style rewrites</li>
-                <li>• Confidence, clarity, and filler-word coaching</li>
-                <li>• A progress dashboard to track improvement over time</li>
+                <li>• {t('interviewSetup.benefits.benefit1')}</li>
+                <li>• {t('interviewSetup.benefits.benefit2')}</li>
+                <li>• {t('interviewSetup.benefits.benefit3')}</li>
+                <li>• {t('interviewSetup.benefits.benefit4')}</li>
               </ul>
             </Card>
           </div>
