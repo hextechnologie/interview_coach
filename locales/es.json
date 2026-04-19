@@ -155,5 +155,28 @@
     "about": "Acerca de",
     "madeWith": "Hecho con ❤️ para buscadores de empleo en todo el mundo",
     "copyright": "© 2026 Interview Coach. Todos los derechos reservados. Impulsado por Claude AI."
+  },
+  "login": {
+    "choosePath": "Elige tu camino",
+    "title": "Iniciar sesión por tipo de cuenta",
+    "subtitle": "Los candidatos pueden practicar y reservar sesiones. Los coaches pueden gestionar clientes, disponibilidad y pagos.",
+    "candidateTitle": "Estoy buscando trabajo 🎯",
+    "candidateDesc": "Practica con IA, reserva coaches expertos y sigue tu progreso.",
+    "candidateBadge": "Candidato",
+    "coachTitle": "Soy un Coach 💼",
+    "coachDesc": "Crea tu perfil, acepta reservas y gana con Stripe Connect.",
+    "coachBadge": "Coach",
+    "loginButton": "Iniciar sesión",
+    "signupButton": "Registrarse"
+  },
+  "signup": {
+    "createAccount": "Crea tu cuenta",
+    "title": "Elige tu flujo de registro",
+    "subtitle": "Selecciona la experiencia que coincida con cómo quieres usar la plataforma.",
+    "candidateTitle": "Cuenta de candidato",
+    "candidateDesc": "Practica entrevistas con IA, reserva coaches y sigue tu preparación para la búsqueda de empleo.",
+    "coachTitle": "Cuenta de coach",
+    "coachDesc": "Construye tu perfil de experto, establece tus precios y gana con las sesiones.",
+    "continue": "Continuar"
   }
 }

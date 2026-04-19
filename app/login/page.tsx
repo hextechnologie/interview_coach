@@ -4,27 +4,30 @@ import Link from 'next/link'
 import { ArrowRight, Briefcase, Sparkles, UserRound } from 'lucide-react'
 import { Button, Card, Badge } from '@/components/ui'
 import { motion } from 'framer-motion'
-
-const loginTypes = [
-  {
-    title: "I'm looking for a job 🎯",
-    description: 'Practice with AI, book expert coaches, and track your progress.',
-    icon: UserRound,
-    href: '/login/candidate',
-    signupHref: '/signup/candidate',
-    badge: 'Candidate',
-  },
-  {
-    title: "I'm a Coach 💼",
-    description: 'Create your profile, accept bookings, and earn with Stripe Connect.',
-    icon: Briefcase,
-    href: '/login/coach',
-    signupHref: '/signup/coach',
-    badge: 'Coach',
-  },
-]
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function LoginPage() {
+  const { t } = useLanguage()
+  
+  const loginTypes = [
+    {
+      title: t('login.candidateTitle'),
+      description: t('login.candidateDesc'),
+      icon: UserRound,
+      href: '/login/candidate',
+      signupHref: '/signup/candidate',
+      badge: t('login.candidateBadge'),
+    },
+    {
+      title: t('login.coachTitle'),
+      description: t('login.coachDesc'),
+      icon: Briefcase,
+      href: '/login/coach',
+      signupHref: '/signup/coach',
+      badge: t('login.coachBadge'),
+    },
+  ]
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background px-6 py-10">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.24),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_35%)]" />
@@ -36,10 +39,10 @@ export default function LoginPage() {
         </Link>
 
         <div className="mx-auto mb-10 max-w-3xl text-center">
-          <Badge className="mb-4">Choose your path</Badge>
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl">Login by account type</h1>
+          <Badge className="mb-4">{t('login.choosePath')}</Badge>
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">{t('login.title')}</h1>
           <p className="text-lg text-gray-300">
-            Candidates can practice and book sessions. Coaches can manage clients, availability, and payouts.
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -67,13 +70,13 @@ export default function LoginPage() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Link href={item.href}>
                       <Button variant="primary" fullWidth className="gap-2">
-                        Login
+                        {t('login.loginButton')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     </Link>
                     <Link href={item.signupHref}>
                       <Button variant="outline" fullWidth>
-                        Signup
+                        {t('login.signupButton')}
                       </Button>
                     </Link>
                   </div>

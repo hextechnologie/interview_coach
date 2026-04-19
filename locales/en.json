@@ -157,5 +157,28 @@
     "about": "About",
     "madeWith": "Made with ❤️ for job seekers worldwide",
     "copyright": "© 2026 Interview Coach. All rights reserved. Powered by Claude AI."
+  },
+  "login": {
+    "choosePath": "Choose your path",
+    "title": "Login by account type",
+    "subtitle": "Candidates can practice and book sessions. Coaches can manage clients, availability, and payouts.",
+    "candidateTitle": "I'm looking for a job 🎯",
+    "candidateDesc": "Practice with AI, book expert coaches, and track your progress.",
+    "candidateBadge": "Candidate",
+    "coachTitle": "I'm a Coach 💼",
+    "coachDesc": "Create your profile, accept bookings, and earn with Stripe Connect.",
+    "coachBadge": "Coach",
+    "loginButton": "Login",
+    "signupButton": "Signup"
+  },
+  "signup": {
+    "createAccount": "Create your account",
+    "title": "Choose your signup flow",
+    "subtitle": "Pick the experience that matches how you want to use the platform.",
+    "candidateTitle": "Candidate account",
+    "candidateDesc": "Practice AI interviews, book coaches, and track your job search prep.",
+    "coachTitle": "Coach account",
+    "coachDesc": "Build your expert profile, set your pricing, and earn from sessions.",
+    "continue": "Continue"
   }
 }
