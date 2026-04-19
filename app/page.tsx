@@ -602,7 +602,25 @@ export default function HomePage() {
 
         {/* ══ HOW IT WORKS ══ */}
         <section className="container mx-auto px-6 py-24">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-900/10 via-black/40 to-blue-900/10 border border-white/10 p-8 md:p-16">
+          <div className="relative overflow-hidden rounded-3xl p-8 md:p-16">
+            {/* Animated gradient background */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-[length:200%_100%]"
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: 'linear',
+              }}
+            />
+            
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
+            
+            {/* Content wrapper */}
+            <div className="relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1206,10 +1224,23 @@ function StatsSection() {
         transition={{ duration: 0.6 }}
         className="relative"
       >
-        {/* Background card with gradient */}
-        <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-purple-900/20 via-black/40 to-blue-900/20 backdrop-blur-sm p-8 md:p-12">
-          {/* Subtle glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-transparent to-blue-600/5" />
+        {/* Background card with animated gradient */}
+        <div className="relative rounded-3xl overflow-hidden p-8 md:p-12">
+          {/* Animated gradient background */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-[length:200%_100%]"
+            animate={{
+              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+          
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40" />
           
           <div className="relative grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
             {STATS.map((stat, index) => {
