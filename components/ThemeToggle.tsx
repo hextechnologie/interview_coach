@@ -1,12 +1,26 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from './ThemeProvider'
 import { motion } from 'framer-motion'
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10">
+        <Moon className="w-5 h-5 text-blue-400" />
+      </div>
+    )
+  }
 
   return (
     <motion.button
