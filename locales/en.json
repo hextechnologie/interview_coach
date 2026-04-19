@@ -990,6 +990,45 @@
       "perfect": "Perfect",
       "tooLong": "Too Long"
     },
-    "linkedInShare": "I just scored {score}/10 on an AI mock interview for {role}! Practicing with Interview Coach 🎯"
+    "linkedInShare": "I just scored {score}/10 on an AI mock interview for {role}! Practicing with Interview Coach 🎯",
+    "summary": {
+      "backToDashboard": "Back to Dashboard",
+      "interviewCoach": "Interview Coach",
+      "title": "Interview Complete! 🎉",
+      "jobRoleLevel": "{role} - {level} Level",
+      "overallScore": "Overall Score",
+      "sessionNotFound": "Session not found",
+      "badges": {
+        "excellent": "Excellent Performance",
+        "good": "Good Effort",
+        "keepPracticing": "Keep Practicing"
+      },
+      "stats": {
+        "highestScore": "Highest Score",
+        "lowestScore": "Lowest Score",
+        "questionsAnswered": "Questions Answered"
+      },
+      "answerReview": {
+        "title": "Answer Review",
+        "questionNumber": "Question {number}",
+        "defaultQuestion": "Interview question",
+        "yourAnswer": "Your answer:",
+        "strengths": "Strengths",
+        "areasToImprove": "Areas to Improve",
+        "improvedAnswer": "Improved Answer"
+      },
+      "keyTakeaways": {
+        "title": "Key Improvement Tips",
+        "tip1": "Review the improved answer examples to understand better response structures",
+        "tip2": "Focus on providing specific examples from your experience",
+        "tip3": "Practice the areas where you scored lowest",
+        "tip4": "Use the STAR method (Situation, Task, Action, Result) for behavioral questions",
+        "tip5": "Schedule regular practice sessions to build confidence"
+      },
+      "actions": {
+        "startAnother": "Start Another Interview",
+        "backToDashboard": "Back to Dashboard"
+      }
+    }
   }
 }

@@ -990,6 +990,45 @@
       "perfect": "مثالي",
       "tooLong": "طويل جداً"
     },
-    "linkedInShare": "لقد حصلت للتو على {score}/10 في مقابلة تدريبية بالذكاء الاصطناعي لـ {role}! أتدرب مع Interview Coach 🎯"
+    "linkedInShare": "لقد حصلت للتو على {score}/10 في مقابلة تدريبية بالذكاء الاصطناعي لـ {role}! أتدرب مع Interview Coach 🎯",
+    "summary": {
+      "backToDashboard": "العودة إلى لوحة التحكم",
+      "interviewCoach": "Interview Coach",
+      "title": "اكتملت المقابلة! 🎉",
+      "jobRoleLevel": "{role} - مستوى {level}",
+      "overallScore": "الدرجة الإجمالية",
+      "sessionNotFound": "الجلسة غير موجودة",
+      "badges": {
+        "excellent": "أداء ممتاز",
+        "good": "مجهود جيد",
+        "keepPracticing": "استمر في التدريب"
+      },
+      "stats": {
+        "highestScore": "أعلى درجة",
+        "lowestScore": "أدنى درجة",
+        "questionsAnswered": "الأسئلة المجابة"
+      },
+      "answerReview": {
+        "title": "مراجعة الإجابات",
+        "questionNumber": "السؤال {number}",
+        "defaultQuestion": "سؤال المقابلة",
+        "yourAnswer": "إجابتك:",
+        "strengths": "نقاط القوة",
+        "areasToImprove": "مجالات التحسين",
+        "improvedAnswer": "الإجابة المحسنة"
+      },
+      "keyTakeaways": {
+        "title": "نصائح التحسين الرئيسية",
+        "tip1": "راجع أمثلة الإجابات المحسنة لفهم هياكل الاستجابة بشكل أفضل",
+        "tip2": "ركز على تقديم أمثلة محددة من تجربتك",
+        "tip3": "تدرب على المجالات التي حصلت فيها على أقل الدرجات",
+        "tip4": "استخدم طريقة STAR (الموقف، المهمة، الإجراء، النتيجة) للأسئلة السلوكية",
+        "tip5": "جدولة جلسات تدريب منتظمة لبناء الثقة"
+      },
+      "actions": {
+        "startAnother": "بدء مقابلة أخرى",
+        "backToDashboard": "العودة إلى لوحة التحكم"
+      }
+    }
   }
 }

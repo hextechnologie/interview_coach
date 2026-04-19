@@ -988,6 +988,45 @@
       "perfect": "Perfecta",
       "tooLong": "Muy larga"
     },
-    "linkedInShare": "¡Acabo de obtener {score}/10 en una entrevista simulada con IA para {role}! Practicando con Interview Coach 🎯"
+    "linkedInShare": "¡Acabo de obtener {score}/10 en una entrevista simulada con IA para {role}! Practicando con Interview Coach 🎯",
+    "summary": {
+      "backToDashboard": "Volver al Panel",
+      "interviewCoach": "Interview Coach",
+      "title": "¡Entrevista Completada! 🎉",
+      "jobRoleLevel": "{role} - Nivel {level}",
+      "overallScore": "Puntuación General",
+      "sessionNotFound": "Sesión no encontrada",
+      "badges": {
+        "excellent": "Excelente Rendimiento",
+        "good": "Buen Esfuerzo",
+        "keepPracticing": "Sigue Practicando"
+      },
+      "stats": {
+        "highestScore": "Puntuación Más Alta",
+        "lowestScore": "Puntuación Más Baja",
+        "questionsAnswered": "Preguntas Respondidas"
+      },
+      "answerReview": {
+        "title": "Revisión de Respuestas",
+        "questionNumber": "Pregunta {number}",
+        "defaultQuestion": "Pregunta de entrevista",
+        "yourAnswer": "Tu respuesta:",
+        "strengths": "Fortalezas",
+        "areasToImprove": "Áreas a Mejorar",
+        "improvedAnswer": "Respuesta Mejorada"
+      },
+      "keyTakeaways": {
+        "title": "Consejos Clave de Mejora",
+        "tip1": "Revisa los ejemplos de respuestas mejoradas para entender mejores estructuras de respuesta",
+        "tip2": "Enfócate en proporcionar ejemplos específicos de tu experiencia",
+        "tip3": "Practica las áreas donde obtuviste las puntuaciones más bajas",
+        "tip4": "Usa el método STAR (Situación, Tarea, Acción, Resultado) para preguntas de comportamiento",
+        "tip5": "Programa sesiones de práctica regulares para desarrollar confianza"
+      },
+      "actions": {
+        "startAnother": "Comenzar Otra Entrevista",
+        "backToDashboard": "Volver al Panel"
+      }
+    }
   }
 }

@@ -988,6 +988,45 @@
       "perfect": "Parfait",
       "tooLong": "Trop long"
     },
-    "linkedInShare": "Je viens d'obtenir {score}/10 lors d'un entretien simulé IA pour {role} ! Je m'entraîne avec Interview Coach 🎯"
+    "linkedInShare": "Je viens d'obtenir {score}/10 lors d'un entretien simulé IA pour {role} ! Je m'entraîne avec Interview Coach 🎯",
+    "summary": {
+      "backToDashboard": "Retour au Tableau de Bord",
+      "interviewCoach": "Interview Coach",
+      "title": "Entretien Terminé ! 🎉",
+      "jobRoleLevel": "{role} - Niveau {level}",
+      "overallScore": "Score Global",
+      "sessionNotFound": "Session non trouvée",
+      "badges": {
+        "excellent": "Excellente Performance",
+        "good": "Bon Effort",
+        "keepPracticing": "Continuez à Pratiquer"
+      },
+      "stats": {
+        "highestScore": "Score le Plus Élevé",
+        "lowestScore": "Score le Plus Bas",
+        "questionsAnswered": "Questions Répondues"
+      },
+      "answerReview": {
+        "title": "Révision des Réponses",
+        "questionNumber": "Question {number}",
+        "defaultQuestion": "Question d'entretien",
+        "yourAnswer": "Votre réponse :",
+        "strengths": "Points Forts",
+        "areasToImprove": "Points à Améliorer",
+        "improvedAnswer": "Réponse Améliorée"
+      },
+      "keyTakeaways": {
+        "title": "Conseils Clés d'Amélioration",
+        "tip1": "Examinez les exemples de réponses améliorées pour comprendre de meilleures structures de réponse",
+        "tip2": "Concentrez-vous sur la fourniture d'exemples spécifiques de votre expérience",
+        "tip3": "Pratiquez les domaines où vous avez obtenu les scores les plus bas",
+        "tip4": "Utilisez la méthode STAR (Situation, Tâche, Action, Résultat) pour les questions comportementales",
+        "tip5": "Planifiez des sessions de pratique régulières pour développer votre confiance"
+      },
+      "actions": {
+        "startAnother": "Commencer un Autre Entretien",
+        "backToDashboard": "Retour au Tableau de Bord"
+      }
+    }
   }
 }
