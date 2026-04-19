@@ -606,6 +606,11 @@
       "hrSpecialist": "أخصائي موارد بشرية",
       "other": "أخرى"
     },
+    "experienceLevels": {
+      "junior": "مبتدئ",
+      "mid": "متوسط",
+      "senior": "متقدم"
+    },
     "yearsExperience": {
       "0-1": "0-1 سنة",
       "1-3": "1-3 سنوات",

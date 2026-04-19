@@ -604,6 +604,11 @@
       "hrSpecialist": "Spécialiste RH",
       "other": "Autre"
     },
+    "experienceLevels": {
+      "junior": "Junior",
+      "mid": "Intermédiaire",
+      "senior": "Senior"
+    },
     "yearsExperience": {
       "0-1": "0-1 an",
       "1-3": "1-3 ans",

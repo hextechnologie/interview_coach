@@ -19,6 +19,7 @@ import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
+import { JOB_TITLES } from '@/lib/types/profile'
 import { capitalizeName, getTimezoneFromCountry, isValidUrl } from '@/lib/profile-utils'
 
 export default function ProfilePage() {
@@ -60,6 +61,17 @@ export default function ProfilePage() {
     { value: '10+',  label: t('profile.yearsExperience.10+') },
   ]
 
+  const translateWithFallback = (key: string, fallback: string) => {
+    const value = t(key)
+    return value === key ? fallback : value
+  }
+
+  const experienceLevelOptions = [
+    { value: 'junior', label: `${translateWithFallback('profile.experienceLevels.junior', 'Junior')} (0–2 yrs)` },
+    { value: 'mid', label: `${translateWithFallback('profile.experienceLevels.mid', 'Mid')} (3–5 yrs)` },
+    { value: 'senior', label: `${translateWithFallback('profile.experienceLevels.senior', 'Senior')} (6+ yrs)` },
+  ]
+
 
   // Personal info
   const [firstName, setFirstName] = useState('')
@@ -78,6 +90,7 @@ export default function ProfilePage() {
   const [statusDetail, setStatusDetail] = useState('')
   const [targetJobRole, setTargetJobRole] = useState('')
   const [customJobRole, setCustomJobRole] = useState('')
+  const [showCustomJobSuggestions, setShowCustomJobSuggestions] = useState(false)
   const [experienceLevel, setExperienceLevel] = useState('')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
 
@@ -96,6 +109,20 @@ export default function ProfilePage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState('')
+
+  const customJobSuggestions = targetJobRole === 'Other'
+    ? Array.from(new Set([
+        ...jobRoleOptions.filter((role) => role.value !== 'Other').map((role) => role.value),
+        ...JOB_TITLES,
+        'FPGA Engineer',
+        'Embedded Systems Engineer',
+        'RTL Design Engineer',
+        'Hardware Engineer',
+      ])).filter((role) => {
+        const query = customJobRole.trim().toLowerCase()
+        return query.length > 0 && role.toLowerCase().includes(query) && role.toLowerCase() !== query
+      }).slice(0, 8)
+    : []
 
   // Get location options
   const countryOptions = useMemo(() => getCountryOptions(), [])
@@ -568,18 +595,56 @@ export default function ProfilePage() {
                 <Select
                   label={t('profile.careerInfo.targetJobRole')}
                   value={targetJobRole}
-                  onChange={(val) => { setTargetJobRole(val); if (val !== 'Other') setCustomJobRole(''); setHasUnsaved(true) }}
+                  onChange={(val) => {
+                    setTargetJobRole(val)
+                    if (val !== 'Other') {
+                      setCustomJobRole('')
+                      setShowCustomJobSuggestions(false)
+                    }
+                    setHasUnsaved(true)
+                  }}
                   options={jobRoleOptions}
                   placeholder={t('profile.careerInfo.targetJobPlaceholder')}
                 />
                 
                 {targetJobRole === 'Other' && (
-                  <Input
-                    label={t('profile.jobRoles.other')}
-                    value={customJobRole}
-                    onChange={(v) => { setCustomJobRole(v); setHasUnsaved(true) }}
-                    placeholder={t('profile.careerInfo.customRolePlaceholder')}
-                  />
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      {t('profile.jobRoles.other')}
+                    </label>
+                    <input
+                      type="text"
+                      value={customJobRole}
+                      onChange={(e) => {
+                        setCustomJobRole(e.target.value)
+                        setShowCustomJobSuggestions(true)
+                        setHasUnsaved(true)
+                      }}
+                      onFocus={() => setShowCustomJobSuggestions(customJobSuggestions.length > 0)}
+                      onBlur={() => window.setTimeout(() => setShowCustomJobSuggestions(false), 150)}
+                      placeholder={t('profile.careerInfo.customRolePlaceholder')}
+                      className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                    {showCustomJobSuggestions && customJobSuggestions.length > 0 && (
+                      <div className="absolute z-20 w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-lg max-h-56 overflow-y-auto">
+                        {customJobSuggestions.map((role) => (
+                          <button
+                            key={role}
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault()
+                              setCustomJobRole(role)
+                              setShowCustomJobSuggestions(false)
+                              setHasUnsaved(true)
+                            }}
+                            className="w-full px-4 py-2 text-left text-white hover:bg-gray-800 transition"
+                          >
+                            {role}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 <div className="grid gap-5 sm:grid-cols-2">
@@ -587,11 +652,7 @@ export default function ProfilePage() {
                     label={t('profile.careerInfo.experienceLevel')}
                     value={experienceLevel}
                     onChange={(v) => { setExperienceLevel(v); setHasUnsaved(true) }}
-                    options={[
-                      { value: 'junior', label: `${t('profile.experienceLevels.junior')} (0–2 yrs)` },
-                      { value: 'mid', label: `${t('profile.experienceLevels.mid')} (3–5 yrs)` },
-                      { value: 'senior', label: `${t('profile.experienceLevels.senior')} (6+ yrs)` },
-                    ]}
+                    options={experienceLevelOptions}
                     placeholder={t('profile.careerInfo.selectLevel') || 'Select level'}
                   />
                   
@@ -600,7 +661,7 @@ export default function ProfilePage() {
                     value={yearsOfExperience}
                     onChange={(v) => { setYearsOfExperience(v); setHasUnsaved(true) }}
                     options={yearsExperienceOptions}
-                    placeholder="Select years"
+                    placeholder={t('profile.careerInfo.selectYears')}
                   />
                 </div>
 
