@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Sparkles, CheckCircle, Loader2, Globe, Clock, DollarSign, Calendar, Key, Bell, Trash2, Briefcase, Building, GraduationCap, Wrench, Trophy } from 'lucide-react'
+import { ArrowLeft, Sparkles, CheckCircle, Loader2, Globe, Clock, Key, Bell, Trash2, Briefcase, Building, GraduationCap, Wrench, Trophy } from 'lucide-react'
 import { Button, Input, Select, Toggle } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
@@ -60,14 +60,6 @@ export default function ProfilePage() {
     { value: '10+',  label: t('profile.yearsExperience.10+') },
   ]
 
-  const currencyOptions = [
-    { value: 'USD', label: t('profile.currencies.usd') },
-    { value: 'EUR', label: t('profile.currencies.eur') },
-    { value: 'GBP', label: t('profile.currencies.gbp') },
-    { value: 'CAD', label: t('profile.currencies.cad') },
-    { value: 'AUD', label: t('profile.currencies.aud') },
-    { value: 'INR', label: t('profile.currencies.inr') },
-  ]
 
   // Personal info
   const [firstName, setFirstName] = useState('')
@@ -88,22 +80,6 @@ export default function ProfilePage() {
   const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
-  const [workTypeRemote, setWorkTypeRemote] = useState(false)
-  const [workTypeHybrid, setWorkTypeHybrid] = useState(false)
-  const [workTypeOnsite, setWorkTypeOnsite] = useState(false)
-  const [salaryMin, setSalaryMin] = useState('')
-  const [salaryMax, setSalaryMax] = useState('')
-  const [salaryCurrency, setSalaryCurrency] = useState('USD')
-  const [availableFrom, setAvailableFrom] = useState('')
-  const [availabilityMode, setAvailabilityMode] = useState<'immediately' | 'specific'>('immediately')
-  const [preferredJobLocation, setPreferredJobLocation] = useState('')
-
-  // Social/Portfolio URLs
-  const [portfolioUrl, setPortfolioUrl] = useState('')
-  const [githubUrl, setGithubUrl] = useState('')
-  const [behanceUrl, setBehanceUrl] = useState('')
-  const [dribbbleUrl, setDribbbleUrl] = useState('')
-  const [twitterUrl, setTwitterUrl] = useState('')
 
   // Notification preferences
   const [notifyCoachMessage, setNotifyCoachMessage] = useState(true)
@@ -204,26 +180,7 @@ export default function ProfilePage() {
     setExperienceLevel(profile.experience_level || '')
     setYearsOfExperience((profile as any).years_of_experience || '')
     
-    // Work type preferences
-    const workTypes = (profile as any).work_type_preferences || []
-    setWorkTypeRemote(workTypes.includes('Remote'))
-    setWorkTypeHybrid(workTypes.includes('Hybrid'))
-    setWorkTypeOnsite(workTypes.includes('On-site'))
-    
-    setSalaryMin((profile as any).salary_min ? String((profile as any).salary_min) : '')
-    setSalaryMax((profile as any).salary_max ? String((profile as any).salary_max) : '')
-    setSalaryCurrency((profile as any).salary_currency || 'USD')
-    setAvailableFrom((profile as any).available_from || '')
-    setAvailabilityMode((profile as any).available_from && (profile as any).available_from !== 'immediately' ? 'specific' : 'immediately')
-    setPreferredJobLocation((profile as any).preferred_job_location || '')
-    
-    // Social URLs
-    setPortfolioUrl((profile as any).portfolio_url || '')
-    setGithubUrl((profile as any).github_url || '')
-    setBehanceUrl((profile as any).behance_url || '')
-    setDribbbleUrl((profile as any).dribbble_url || '')
-    setTwitterUrl((profile as any).twitter_url || '')
-    
+
     // Notifications
     setNotifyCoachMessage((profile as any).notification_coach_message !== false)
     setNotifySessionReminder((profile as any).notification_session_reminder !== false)
@@ -239,13 +196,13 @@ export default function ProfilePage() {
       // Save to localStorage
       const draft = {
         firstName, lastName, bio, currentStatus, statusDetail,
-        targetJobRole, customJobRole, preferredJobLocation
+        targetJobRole, customJobRole
       }
       localStorage.setItem(`profile-draft-${user?.id}`, JSON.stringify(draft))
     }, 30000)
     
     return () => clearInterval(interval)
-  }, [hasUnsaved, firstName, lastName, bio, currentStatus, statusDetail, targetJobRole, customJobRole, preferredJobLocation, user])
+  }, [hasUnsaved, firstName, lastName, bio, currentStatus, statusDetail, targetJobRole, customJobRole, user])
 
   // Handle form changes
   const handleFirstNameChange = (value: string) => {
@@ -289,22 +246,9 @@ export default function ProfilePage() {
     }
 
     // Validate URLs
-    if (!isValidUrl(linkedinUrl) || !isValidUrl(portfolioUrl) || !isValidUrl(githubUrl) || 
-        !isValidUrl(behanceUrl) || !isValidUrl(dribbbleUrl) || !isValidUrl(twitterUrl)) {
-      setError('Please enter valid URLs (or leave empty)')
+    if (!isValidUrl(linkedinUrl)) {
+      setError('Please enter a valid URL (or leave empty)')
       return
-    }
-
-    // Validate Available From date (must not be in the past)
-    if (availabilityMode === 'specific' && availableFrom && availableFrom !== 'immediately') {
-      const selectedDate = new Date(availableFrom)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0) // Reset time to compare only dates
-      
-      if (selectedDate < today) {
-        setError('Available From date cannot be in the past. Please select today or a future date.')
-        return
-      }
     }
 
     setError('')
@@ -314,12 +258,6 @@ export default function ProfilePage() {
     try {
       const fullName = `${firstName.trim()} ${lastName.trim()}`
       
-      // Build work type preferences array
-      const workTypePrefs: string[] = []
-      if (workTypeRemote) workTypePrefs.push('Remote')
-      if (workTypeHybrid) workTypePrefs.push('Hybrid')
-      if (workTypeOnsite) workTypePrefs.push('On-site')
-
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -338,17 +276,6 @@ export default function ProfilePage() {
           target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
           years_of_experience: yearsOfExperience || null,
-          work_type_preferences: workTypePrefs.length > 0 ? workTypePrefs : null,
-          salary_min: salaryMin ? parseInt(salaryMin) : null,
-          salary_max: salaryMax ? parseInt(salaryMax) : null,
-          salary_currency: salaryCurrency,
-          available_from: availableFrom || null,
-          preferred_job_location: preferredJobLocation || null,
-          portfolio_url: portfolioUrl || null,
-          github_url: githubUrl || null,
-          behance_url: behanceUrl || null,
-          dribbble_url: dribbbleUrl || null,
-          twitter_url: twitterUrl || null,
           notification_coach_message: notifyCoachMessage,
           notification_session_reminder: notifySessionReminder,
           notification_job_offers: notifyJobOffers,
@@ -401,22 +328,7 @@ export default function ProfilePage() {
         setExperienceLevel(updatedProfile.experience_level || '')
         setYearsOfExperience(updatedProfile.years_of_experience || '')
         
-        // Work type preferences
-        const workTypes = updatedProfile.work_type_preferences || []
-        setWorkTypeRemote(workTypes.includes('Remote'))
-        setWorkTypeHybrid(workTypes.includes('Hybrid'))
-        setWorkTypeOnsite(workTypes.includes('On-site'))
-        
-        setSalaryMin(updatedProfile.salary_min ? String(updatedProfile.salary_min) : '')
-        setSalaryMax(updatedProfile.salary_max ? String(updatedProfile.salary_max) : '')
-        setSalaryCurrency(updatedProfile.salary_currency || 'USD')
-        setAvailableFrom(updatedProfile.available_from || '')
-    setAvailabilityMode(updatedProfile.available_from && updatedProfile.available_from !== 'immediately' ? 'specific' : 'immediately')
-        setGithubUrl(updatedProfile.github_url || '')
-        setBehanceUrl(updatedProfile.behance_url || '')
-        setDribbbleUrl(updatedProfile.dribbble_url || '')
-        setTwitterUrl(updatedProfile.twitter_url || '')
-        
+
         // Notifications
         setNotifyCoachMessage(updatedProfile.notification_coach_message !== false)
         setNotifySessionReminder(updatedProfile.notification_session_reminder !== false)
@@ -692,166 +604,9 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-200">
-                    {t('profile.careerInfo.workTypePreferences')}
-                  </label>
-                  <div className="flex flex-wrap gap-3">
-                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeRemote ? '#7c3aed20' : '#0a0f1e' }}>
-                      <input
-                        type="checkbox"
-                        checked={workTypeRemote}
-                        onChange={(e) => { setWorkTypeRemote(e.target.checked); setHasUnsaved(true) }}
-                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-                      />
-                      <span className="text-sm">{t('profile.careerInfo.remote')}</span>
-                    </label>
-                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeHybrid ? '#7c3aed20' : '#0a0f1e' }}>
-                      <input
-                        type="checkbox"
-                        checked={workTypeHybrid}
-                        onChange={(e) => { setWorkTypeHybrid(e.target.checked); setHasUnsaved(true) }}
-                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-                      />
-                      <span className="text-sm">{t('profile.careerInfo.hybrid')}</span>
-                    </label>
-                    <label className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-white/10 hover:border-purple-500/50 cursor-pointer transition-colors" style={{ background: workTypeOnsite ? '#7c3aed20' : '#0a0f1e' }}>
-                      <input
-                        type="checkbox"
-                        checked={workTypeOnsite}
-                        onChange={(e) => { setWorkTypeOnsite(e.target.checked); setHasUnsaved(true) }}
-                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
-                      />
-                      <span className="text-sm">{t('profile.careerInfo.onsite')}</span>
-                    </label>
-                  </div>
-                </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-200">
-                    {t('profile.careerInfo.desiredSalary')}
-                  </label>
-                  <div className="grid gap-3 sm:grid-cols-[1fr_1fr_120px]">
-                    <Input
-                      label={t('profile.careerInfo.salaryMin')}
-                      type="number"
-                      value={salaryMin}
-                      onChange={(v) => { setSalaryMin(v); setHasUnsaved(true) }}
-                      placeholder={t('profile.careerInfo.salaryMinPlaceholder')}
-                    />
-                    <Input
-                      label={t('profile.careerInfo.salaryMax')}
-                      type="number"
-                      value={salaryMax}
-                      onChange={(v) => { setSalaryMax(v); setHasUnsaved(true) }}
-                      placeholder={t('profile.careerInfo.salaryMaxPlaceholder')}
-                    />
-                    <Select
-                      label={t('profile.careerInfo.currency')}
-                      value={salaryCurrency}
-                      onChange={(v) => { setSalaryCurrency(v); setHasUnsaved(true) }}
-                      options={currencyOptions}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-200">
-                      {t('profile.careerInfo.availableFrom')}
-                    </label>
-                    <div className="space-y-2">
-                      <Select
-                        value={availabilityMode}
-                        onChange={(val) => {
-                          const mode = val as 'immediately' | 'specific'
-                          setAvailabilityMode(mode)
-                          if (mode === 'immediately') {
-                            setAvailableFrom('immediately')
-                          } else {
-                            // Don't clear the date if one exists
-                            if (availableFrom === 'immediately' || !availableFrom) {
-                              setAvailableFrom('')
-                            }
-                          }
-                          setHasUnsaved(true)
-                        }}
-                        options={[
-                          { value: 'immediately', label: t('profile.careerInfo.immediately') },
-                          { value: 'specific', label: t('profile.careerInfo.specificDate') },
-                        ]}
-                      />
-                      {availabilityMode === 'specific' && (
-                        <input
-                          type="date"
-                          value={availableFrom === 'immediately' ? '' : availableFrom}
-                          min={new Date().toISOString().split('T')[0]}
-                          onChange={(e) => { setAvailableFrom(e.target.value); setHasUnsaved(true) }}
-                          className="w-full rounded-lg border border-white/10 px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          style={{ background: '#0a0f1e' }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Input
-                    label={t('profile.careerInfo.preferredJobLocation')}
-                    value={preferredJobLocation}
-                    onChange={(v) => { setPreferredJobLocation(v); setHasUnsaved(true) }}
-                    placeholder={t('profile.careerInfo.preferredLocationPlaceholder')}
-                  />
-                </div>
               </div>
 
-              {/* Social & Portfolio Links */}
-              <div className="rounded-2xl border border-white/10 p-6 space-y-5" style={{ background: '#111827' }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-600/20 flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-indigo-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold">{t('profile.socialLinks.title')}</h2>
-                    <p className="text-sm text-gray-400">{t('profile.socialLinks.subtitle')}</p>
-                  </div>
-                </div>
-
-                <Input
-                  label={t('profile.socialLinks.portfolioUrl')}
-                  value={portfolioUrl}
-                  onChange={(v) => { setPortfolioUrl(v); setHasUnsaved(true) }}
-                  placeholder={t('profile.socialLinks.portfolioPlaceholder')}
-                />
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Input
-                    label={t('profile.socialLinks.githubUrl')}
-                    value={githubUrl}
-                    onChange={(v) => { setGithubUrl(v); setHasUnsaved(true) }}
-                    placeholder={t('profile.socialLinks.githubPlaceholder')}
-                  />
-                  <Input
-                    label={t('profile.socialLinks.twitterUrl')}
-                    value={twitterUrl}
-                    onChange={(v) => { setTwitterUrl(v); setHasUnsaved(true) }}
-                    placeholder={t('profile.socialLinks.twitterPlaceholder')}
-                  />
-                </div>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Input
-                    label={t('profile.socialLinks.behanceUrl')}
-                    value={behanceUrl}
-                    onChange={(v) => { setBehanceUrl(v); setHasUnsaved(true) }}
-                    placeholder={t('profile.socialLinks.behancePlaceholder')}
-                  />
-                  <Input
-                    label={t('profile.socialLinks.dribbbleUrl')}
-                    value={dribbbleUrl}
-                    onChange={(v) => { setDribbbleUrl(v); setHasUnsaved(true) }}
-                    placeholder={t('profile.socialLinks.dribbblePlaceholder')}
-                  />
-                </div>
-              </div>
 
               {/* Work Experience */}
               <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: '#111827' }} data-section="experience">
