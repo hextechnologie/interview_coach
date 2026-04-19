@@ -1,6 +1,7 @@
 'use client'
 
 import { AlertCircle, Save, X } from 'lucide-react'
+import { useLanguage } from '@/components/LanguageProvider'
 
 interface UnsavedChangesWarningProps {
   hasUnsavedChanges: boolean
@@ -13,6 +14,7 @@ export default function UnsavedChangesWarning({
   onSave,
   onDiscard,
 }: UnsavedChangesWarningProps) {
+  const { t } = useLanguage()
   if (!hasUnsavedChanges) return null
 
   return (
@@ -20,7 +22,7 @@ export default function UnsavedChangesWarning({
       <div className="rounded-lg border border-yellow-500/40 bg-yellow-500/10 backdrop-blur-md px-4 py-3 shadow-lg flex items-center gap-4">
         <AlertCircle className="w-5 h-5 text-yellow-400 shrink-0" />
         <p className="text-sm font-medium text-yellow-200">
-          You have unsaved changes!
+          {t('profile.unsavedWarning.message')}
         </p>
         <div className="flex items-center gap-2">
           <button
@@ -28,14 +30,14 @@ export default function UnsavedChangesWarning({
             className="px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-medium transition-colors flex items-center gap-1.5"
           >
             <Save className="w-3.5 h-3.5" />
-            Save Now
+            {t('profile.unsavedWarning.saveNow')}
           </button>
           <button
             onClick={onDiscard}
             className="px-3 py-1.5 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white text-sm font-medium transition-colors flex items-center gap-1.5"
           >
             <X className="w-3.5 h-3.5" />
-            Discard
+            {t('profile.unsavedWarning.discard')}
           </button>
         </div>
       </div>

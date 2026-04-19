@@ -484,7 +484,9 @@
       "subtitle": "Parlez-nous de vous professionnellement",
       "required": "*",
       "label": "Résumé professionnel",
-      "placeholder": "Rédigez un résumé professionnel complet sur votre parcours, votre expérience, vos objectifs et ce qui vous rend unique..."
+      "placeholder": "Rédigez un résumé professionnel complet sur votre parcours, votre expérience, vos objectifs et ce qui vous rend unique...",
+      "characters": "caractères",
+      "minimum": "Minimum 50"
     },
     "careerInfo": {
       "title": "Informations de carrière",
@@ -503,7 +505,9 @@
       "targetJobPlaceholder": "Le poste pour lequel vous passez un entretien",
       "customRolePlaceholder": "ex. Rédacteur UX",
       "experienceLevel": "Niveau d'expérience",
+      "selectLevel": "Sélectionner un niveau",
       "yearsOfExperience": "Années d'expérience",
+      "selectYears": "Sélectionner les années",
       "workTypePreferences": "Préférences de type de travail",
       "remote": "Télétravail",
       "hybrid": "Hybride",
@@ -614,6 +618,96 @@
       "cad": "C$ CAD",
       "aud": "A$ AUD",
       "inr": "₹ INR"
+    },
+    "nav": {
+      "backToDashboard": "Retour au tableau de bord"
+    },
+    "sidebar": {
+      "personalInfo": "Informations personnelles",
+      "bio": "Bio",
+      "careerInfo": "Carrière",
+      "workExperience": "Expérience pro",
+      "education": "Éducation",
+      "skills": "Compétences",
+      "achievements": "Réalisations",
+      "account": "Compte"
+    },
+    "completion": {
+      "title": "Complétion du profil",
+      "completeThese": "Complétez ceci pour améliorer votre profil :",
+      "status": {
+        "complete": "Profil complet ! ✅",
+        "almostComplete": "Presque terminé !",
+        "gettingThere": "Vous progressez !",
+        "justGettingStarted": "Vous commencez à peine"
+      },
+      "missing": {
+        "fullName": "Ajoutez votre nom complet",
+        "profilePhoto": "Ajoutez une photo de profil",
+        "location": "Ajoutez votre localisation",
+        "bio": "Ajoutez une bio (min 50 caractères)",
+        "currentStatus": "Ajoutez votre statut actuel",
+        "targetJobRole": "Ajoutez le poste visé",
+        "workExperience": "Ajoutez une expérience professionnelle",
+        "educationDetails": "Ajoutez vos informations d'études",
+        "skills": "Ajoutez au moins 3 compétences",
+        "linkedin": "Ajoutez l'URL LinkedIn"
+      }
+    },
+    "photoUploader": {
+      "invalidType": "Veuillez téléverser une image JPG, PNG ou WebP",
+      "fileTooLarge": "L'image doit faire moins de 2 Mo",
+      "uploadFailed": "Échec du téléversement de la photo",
+      "removeFailed": "Échec de la suppression de la photo",
+      "removePhoto": "Supprimer la photo",
+      "uploading": "Téléversement...",
+      "changePhoto": "Changer la photo",
+      "uploadPhoto": "Téléverser une photo",
+      "formatHint": "JPG, PNG ou WebP • Max 2 Mo"
+    },
+    "unsavedWarning": {
+      "message": "Vous avez des modifications non enregistrées !",
+      "saveNow": "Enregistrer",
+      "discard": "Ignorer"
+    },
+    "changePasswordModal": {
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe",
+      "minChars": "Minimum 8 caractères",
+      "allFieldsRequired": "Tous les champs sont obligatoires",
+      "passwordTooShort": "Le nouveau mot de passe doit contenir au moins 8 caractères",
+      "passwordsDoNotMatch": "Les nouveaux mots de passe ne correspondent pas",
+      "passwordMustDiffer": "Le nouveau mot de passe doit être différent de l'actuel",
+      "noUserFound": "Aucun utilisateur trouvé",
+      "currentPasswordIncorrect": "Le mot de passe actuel est incorrect",
+      "changeFailed": "Échec du changement de mot de passe",
+      "success": "Mot de passe changé avec succès !"
+    },
+    "deleteModal": {
+      "warningTitle": "Cette action est irréversible !",
+      "warningText": "La suppression de votre compte retirera définitivement :",
+      "typeDeleteConfirm": "Tapez",
+      "placeholder": "Tapez DELETE",
+      "hintDefault": "Tapez DELETE en majuscules pour confirmer",
+      "hintExact": "Veuillez taper exactement : DELETE",
+      "hintConfirmed": "Confirmé - le compte à rebours a commencé",
+      "yourEmail": "Votre e-mail",
+      "keepAccount": "Garder mon compte",
+      "deleting": "Suppression du compte...",
+      "deleteButton": "Supprimer le compte",
+      "waitToProceed": "Attendez {countdown} secondes pour continuer...",
+      "failedDelete": "Échec de la suppression du compte",
+      "noUserFound": "Aucun utilisateur trouvé",
+      "items": {
+        "profile": "Votre profil et vos informations personnelles",
+        "history": "Tout l'historique d'entretien et les retours IA",
+        "recordings": "Tous les enregistrements de session",
+        "applications": "Les candidatures enregistrées et notes",
+        "bookings": "Les réservations et avis de coach",
+        "subscription": "L'abonnement et le solde des crédits",
+        "messages": "Tous les messages et conversations"
+      }
     }
   },
   "pricing": {

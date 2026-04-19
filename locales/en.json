@@ -486,7 +486,9 @@
       "subtitle": "Tell us about yourself professionally",
       "required": "*",
       "label": "Professional Summary",
-      "placeholder": "Write a comprehensive professional summary about your background, experience, goals, and what makes you unique..."
+      "placeholder": "Write a comprehensive professional summary about your background, experience, goals, and what makes you unique...",
+      "characters": "characters",
+      "minimum": "Minimum 50"
     },
     "careerInfo": {
       "title": "Career Info",
@@ -505,7 +507,9 @@
       "targetJobPlaceholder": "The role you're interviewing for",
       "customRolePlaceholder": "e.g. UX Writer",
       "experienceLevel": "Experience Level",
+      "selectLevel": "Select level",
       "yearsOfExperience": "Years of Experience",
+      "selectYears": "Select years",
       "workTypePreferences": "Work Type Preferences",
       "remote": "Remote",
       "hybrid": "Hybrid",
@@ -616,6 +620,96 @@
       "cad": "C$ CAD",
       "aud": "A$ AUD",
       "inr": "₹ INR"
+    },
+    "nav": {
+      "backToDashboard": "Back to Dashboard"
+    },
+    "sidebar": {
+      "personalInfo": "Personal Info",
+      "bio": "Bio",
+      "careerInfo": "Career Info",
+      "workExperience": "Work Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "achievements": "Achievements",
+      "account": "Account"
+    },
+    "completion": {
+      "title": "Profile Completion",
+      "completeThese": "Complete these to improve your profile:",
+      "status": {
+        "complete": "Profile complete! ✅",
+        "almostComplete": "Almost complete!",
+        "gettingThere": "Getting there!",
+        "justGettingStarted": "Just getting started"
+      },
+      "missing": {
+        "fullName": "Add your full name",
+        "profilePhoto": "Add profile photo",
+        "location": "Add location",
+        "bio": "Add bio (min 50 characters)",
+        "currentStatus": "Add current status",
+        "targetJobRole": "Add target job role",
+        "workExperience": "Add work experience",
+        "educationDetails": "Add education details",
+        "skills": "Add at least 3 skills",
+        "linkedin": "Add LinkedIn URL"
+      }
+    },
+    "photoUploader": {
+      "invalidType": "Please upload a JPG, PNG, or WebP image",
+      "fileTooLarge": "Image must be less than 2MB",
+      "uploadFailed": "Failed to upload photo",
+      "removeFailed": "Failed to remove photo",
+      "removePhoto": "Remove photo",
+      "uploading": "Uploading...",
+      "changePhoto": "Change Photo",
+      "uploadPhoto": "Upload Photo",
+      "formatHint": "JPG, PNG, or WebP • Max 2MB"
+    },
+    "unsavedWarning": {
+      "message": "You have unsaved changes!",
+      "saveNow": "Save now",
+      "discard": "Discard"
+    },
+    "changePasswordModal": {
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "minChars": "Minimum 8 characters",
+      "allFieldsRequired": "All fields are required",
+      "passwordTooShort": "New password must be at least 8 characters",
+      "passwordsDoNotMatch": "New passwords do not match",
+      "passwordMustDiffer": "New password must be different from current password",
+      "noUserFound": "No user found",
+      "currentPasswordIncorrect": "Current password is incorrect",
+      "changeFailed": "Failed to change password",
+      "success": "Password changed successfully!"
+    },
+    "deleteModal": {
+      "warningTitle": "This action cannot be undone!",
+      "warningText": "Deleting your account will permanently remove:",
+      "typeDeleteConfirm": "Type",
+      "placeholder": "Type DELETE",
+      "hintDefault": "Type DELETE in capital letters to confirm",
+      "hintExact": "Please type exactly: DELETE",
+      "hintConfirmed": "Confirmed - countdown started",
+      "yourEmail": "Your email",
+      "keepAccount": "Keep My Account",
+      "deleting": "Deleting Account...",
+      "deleteButton": "Delete Account",
+      "waitToProceed": "Wait {countdown} seconds to proceed...",
+      "failedDelete": "Failed to delete account",
+      "noUserFound": "No user found",
+      "items": {
+        "profile": "Your profile and personal information",
+        "history": "All interview history and AI feedback",
+        "recordings": "All session recordings",
+        "applications": "Saved job applications and notes",
+        "bookings": "Coach bookings and reviews",
+        "subscription": "Subscription and credits balance",
+        "messages": "All messages and conversations"
+      }
     }
   },
   "faqPage": {

@@ -484,7 +484,9 @@
       "subtitle": "Cuéntanos sobre ti profesionalmente",
       "required": "*",
       "label": "Resumen profesional",
-      "placeholder": "Escribe un resumen profesional completo sobre tu experiencia, tus objetivos y qué te hace único..."
+      "placeholder": "Escribe un resumen profesional completo sobre tu experiencia, tus objetivos y qué te hace único...",
+      "characters": "caracteres",
+      "minimum": "Mínimo 50"
     },
     "careerInfo": {
       "title": "Información Profesional",
@@ -503,7 +505,9 @@
       "targetJobPlaceholder": "El puesto para el que estás entrevistando",
       "customRolePlaceholder": "ej. Redactor UX",
       "experienceLevel": "Nivel de experiencia",
+      "selectLevel": "Selecciona un nivel",
       "yearsOfExperience": "Años de experiencia",
+      "selectYears": "Selecciona los años",
       "workTypePreferences": "Preferencias de tipo de trabajo",
       "remote": "Remoto",
       "hybrid": "Híbrido",
@@ -614,6 +618,96 @@
       "cad": "C$ CAD",
       "aud": "A$ AUD",
       "inr": "₹ INR"
+    },
+    "nav": {
+      "backToDashboard": "Volver al panel"
+    },
+    "sidebar": {
+      "personalInfo": "Información personal",
+      "bio": "Bio",
+      "careerInfo": "Información profesional",
+      "workExperience": "Experiencia laboral",
+      "education": "Educación",
+      "skills": "Habilidades",
+      "achievements": "Logros",
+      "account": "Cuenta"
+    },
+    "completion": {
+      "title": "Perfil completado",
+      "completeThese": "Completa esto para mejorar tu perfil:",
+      "status": {
+        "complete": "¡Perfil completo! ✅",
+        "almostComplete": "¡Casi completo!",
+        "gettingThere": "¡Vas bien!",
+        "justGettingStarted": "Apenas estás empezando"
+      },
+      "missing": {
+        "fullName": "Añade tu nombre completo",
+        "profilePhoto": "Añade foto de perfil",
+        "location": "Añade ubicación",
+        "bio": "Añade bio (mín. 50 caracteres)",
+        "currentStatus": "Añade estado actual",
+        "targetJobRole": "Añade el puesto objetivo",
+        "workExperience": "Añade experiencia laboral",
+        "educationDetails": "Añade detalles de educación",
+        "skills": "Añade al menos 3 habilidades",
+        "linkedin": "Añade URL de LinkedIn"
+      }
+    },
+    "photoUploader": {
+      "invalidType": "Por favor sube una imagen JPG, PNG o WebP",
+      "fileTooLarge": "La imagen debe ser menor a 2 MB",
+      "uploadFailed": "No se pudo subir la foto",
+      "removeFailed": "No se pudo eliminar la foto",
+      "removePhoto": "Eliminar foto",
+      "uploading": "Subiendo...",
+      "changePhoto": "Cambiar foto",
+      "uploadPhoto": "Subir foto",
+      "formatHint": "JPG, PNG o WebP • Máx 2 MB"
+    },
+    "unsavedWarning": {
+      "message": "¡Tienes cambios sin guardar!",
+      "saveNow": "Guardar ahora",
+      "discard": "Descartar"
+    },
+    "changePasswordModal": {
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmNewPassword": "Confirmar nueva contraseña",
+      "minChars": "Mínimo 8 caracteres",
+      "allFieldsRequired": "Todos los campos son obligatorios",
+      "passwordTooShort": "La nueva contraseña debe tener al menos 8 caracteres",
+      "passwordsDoNotMatch": "Las nuevas contraseñas no coinciden",
+      "passwordMustDiffer": "La nueva contraseña debe ser diferente de la actual",
+      "noUserFound": "No se encontró usuario",
+      "currentPasswordIncorrect": "La contraseña actual es incorrecta",
+      "changeFailed": "No se pudo cambiar la contraseña",
+      "success": "¡Contraseña cambiada con éxito!"
+    },
+    "deleteModal": {
+      "warningTitle": "¡Esta acción no se puede deshacer!",
+      "warningText": "Eliminar tu cuenta borrará permanentemente:",
+      "typeDeleteConfirm": "Escribe",
+      "placeholder": "Escribe DELETE",
+      "hintDefault": "Escribe DELETE en mayúsculas para confirmar",
+      "hintExact": "Por favor escribe exactamente: DELETE",
+      "hintConfirmed": "Confirmado: la cuenta regresiva comenzó",
+      "yourEmail": "Tu correo",
+      "keepAccount": "Conservar mi cuenta",
+      "deleting": "Eliminando cuenta...",
+      "deleteButton": "Eliminar cuenta",
+      "waitToProceed": "Espera {countdown} segundos para continuar...",
+      "failedDelete": "No se pudo eliminar la cuenta",
+      "noUserFound": "No se encontró usuario",
+      "items": {
+        "profile": "Tu perfil e información personal",
+        "history": "Todo el historial de entrevistas y feedback de IA",
+        "recordings": "Todas las grabaciones de sesiones",
+        "applications": "Solicitudes guardadas y notas",
+        "bookings": "Reservas y reseñas de coaches",
+        "subscription": "Suscripción y saldo de créditos",
+        "messages": "Todos los mensajes y conversaciones"
+      }
     }
   },
   "pricing": {

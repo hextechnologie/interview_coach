@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, ChangeEvent } from 'react'
-import { Camera, Loader2, Upload, X } from 'lucide-react'
+import { Camera, Loader2, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { getInitials } from '@/lib/profile-utils'
+import { useLanguage } from '@/components/LanguageProvider'
 
 interface ProfilePhotoUploaderProps {
   currentPhotoUrl?: string | null
@@ -26,6 +27,7 @@ export default function ProfilePhotoUploader({
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState('')
+  const { t } = useLanguage()
 
   const initials = getInitials(firstName, lastName, email)
 
@@ -35,13 +37,13 @@ export default function ProfilePhotoUploader({
 
     // Validate file type
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      setError('Please upload a JPG, PNG, or WebP image')
+      setError(t('profile.photoUploader.invalidType'))
       return
     }
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      setError('Image must be less than 2MB')
+      setError(t('profile.photoUploader.fileTooLarge'))
       return
     }
 
@@ -89,7 +91,7 @@ export default function ProfilePhotoUploader({
       onPhotoUpdated(publicUrl)
       setTimeout(() => setUploadProgress(0), 1000)
     } catch (err: any) {
-      setError(err.message || 'Failed to upload photo')
+      setError(err.message || t('profile.photoUploader.uploadFailed'))
       setPreview(currentPhotoUrl || '')
     } finally {
       setUploading(false)
@@ -109,7 +111,7 @@ export default function ProfilePhotoUploader({
       setPreview('')
       onPhotoUpdated('')
     } catch (err: any) {
-      setError(err.message || 'Failed to remove photo')
+      setError(err.message || t('profile.photoUploader.removeFailed'))
     } finally {
       setUploading(false)
     }
@@ -131,7 +133,7 @@ export default function ProfilePhotoUploader({
               <button
                 onClick={handleRemovePhoto}
                 className="absolute top-0 right-0 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity border-2 border-[#0a0f1e]"
-                title="Remove photo"
+                title={t('profile.photoUploader.removePhoto')}
               >
                 <X className="w-4 h-4 text-white" />
               </button>
@@ -160,12 +162,12 @@ export default function ProfilePhotoUploader({
           {uploading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Uploading...
+              {t('profile.photoUploader.uploading')}
             </>
           ) : (
             <>
               <Camera className="w-4 h-4" />
-              {preview ? 'Change Photo' : 'Upload Photo'}
+              {preview ? t('profile.photoUploader.changePhoto') : t('profile.photoUploader.uploadPhoto')}
             </>
           )}
         </div>
@@ -179,7 +181,7 @@ export default function ProfilePhotoUploader({
       </label>
 
       <p className="text-xs text-gray-400 text-center">
-        JPG, PNG, or WebP • Max 2MB
+        {t('profile.photoUploader.formatHint')}
       </p>
 
       {/* Error message */}

@@ -464,7 +464,7 @@ export default function ProfilePage() {
             </span>
           </Link>
           <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Dashboard
+            <ArrowLeft className="w-4 h-4" /> {t('profile.nav.backToDashboard')}
           </Link>
         </div>
       </header>
@@ -615,7 +615,7 @@ export default function ProfilePage() {
                     required
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    {bio.length} / 500 characters {bio.length < 50 && <span className="text-yellow-400">(Minimum 50)</span>}
+                    {bio.length} / 500 {t('profile.bio.characters')} {bio.length < 50 && <span className="text-yellow-400">({t('profile.bio.minimum')})</span>}
                   </p>
                 </div>
               </div>
@@ -986,9 +986,9 @@ export default function ProfilePage() {
                   <div className="flex items-start gap-3 mb-4">
                     <Trash2 className="w-5 h-5 text-red-400 mt-0.5" />
                     <div>
-                      <h3 className="text-lg font-bold text-red-300 mb-1">Danger Zone</h3>
+                      <h3 className="text-lg font-bold text-red-300 mb-1">{t('profile.accountSettings.dangerZone')}</h3>
                       <p className="text-sm text-red-200/80">
-                        Once you delete your account, there is no going back. This action is permanent.
+                        {t('profile.accountSettings.deleteAccountWarning')}
                       </p>
                     </div>
                   </div>
@@ -998,7 +998,7 @@ export default function ProfilePage() {
                     className="w-full px-4 py-2.5 rounded-lg bg-transparent border border-red-500 text-red-500 hover:bg-red-500 hover:text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete Account
+                    {t('profile.accountSettings.deleteAccount')}
                   </button>
                 </div>
               </div>
@@ -1011,7 +1011,7 @@ export default function ProfilePage() {
               )}
               {saved && (
                 <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">
-                  <CheckCircle className="w-4 h-4" /> Profile saved successfully!
+                  <CheckCircle className="w-4 h-4" /> {t('profile.savedSuccess')}
                 </div>
               )}
 

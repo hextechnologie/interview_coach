@@ -2,20 +2,22 @@
 
 import { useEffect, useState } from 'react'
 import { User, FileText, Briefcase, Building, GraduationCap, Wrench, Trophy, Settings } from 'lucide-react'
-
-const sections = [
-  { id: 'personal-info', label: 'Personal Info', icon: User },
-  { id: 'bio', label: 'Bio', icon: FileText },
-  { id: 'career-info', label: 'Career Info', icon: Briefcase },
-  { id: 'experience', label: 'Work Experience', icon: Building },
-  { id: 'education', label: 'Education', icon: GraduationCap },
-  { id: 'skills', label: 'Skills', icon: Wrench },
-  { id: 'achievements', label: 'Achievements', icon: Trophy },
-  { id: 'account', label: 'Account', icon: Settings },
-]
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function SidebarNav() {
   const [activeSection, setActiveSection] = useState('personal-info')
+  const { t } = useLanguage()
+
+  const sections = [
+    { id: 'personal-info', label: t('profile.sidebar.personalInfo'), icon: User },
+    { id: 'bio', label: t('profile.sidebar.bio'), icon: FileText },
+    { id: 'career-info', label: t('profile.sidebar.careerInfo'), icon: Briefcase },
+    { id: 'experience', label: t('profile.sidebar.workExperience'), icon: Building },
+    { id: 'education', label: t('profile.sidebar.education'), icon: GraduationCap },
+    { id: 'skills', label: t('profile.sidebar.skills'), icon: Wrench },
+    { id: 'achievements', label: t('profile.sidebar.achievements'), icon: Trophy },
+    { id: 'account', label: t('profile.sidebar.account'), icon: Settings },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {

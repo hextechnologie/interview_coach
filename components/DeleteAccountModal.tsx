@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/components/LanguageProvider'
 
 interface DeleteAccountModalProps {
   isOpen: boolean
@@ -14,6 +15,7 @@ interface DeleteAccountModalProps {
 }
 
 export default function DeleteAccountModal({ isOpen, onClose, userEmail }: DeleteAccountModalProps) {
+  const { t } = useLanguage()
   const [confirmText, setConfirmText] = useState('')
   const [countdown, setCountdown] = useState(5)
   const [isCountingDown, setIsCountingDown] = useState(false)
@@ -73,7 +75,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
     try {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No user found')
+      if (!user) throw new Error(t('profile.deleteModal.noUserFound'))
 
       // Delete user profile (CASCADE will handle related data)
       const { error: deleteError } = await supabase
@@ -89,7 +91,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
       // Redirect to homepage with message
       router.push('/?account=deleted')
     } catch (err: any) {
-      setError(err.message || 'Failed to delete account')
+      setError(err.message || t('profile.deleteModal.failedDelete'))
     } finally {
       setLoading(false)
     }
@@ -98,13 +100,13 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
   if (!isOpen) return null
 
   const deletionItems = [
-    { icon: User, text: 'Your profile and personal information', color: 'text-red-400' },
-    { icon: Target, text: 'All interview history and AI feedback', color: 'text-orange-400' },
-    { icon: Video, text: 'All session recordings', color: 'text-yellow-400' },
-    { icon: FileText, text: 'Saved job applications and notes', color: 'text-blue-400' },
-    { icon: Calendar, text: 'Coach bookings and reviews', color: 'text-purple-400' },
-    { icon: CreditCard, text: 'Subscription and credits balance', color: 'text-green-400' },
-    { icon: Mail, text: 'All messages and conversations', color: 'text-pink-400' },
+    { icon: User, text: t('profile.deleteModal.items.profile'), color: 'text-red-400' },
+    { icon: Target, text: t('profile.deleteModal.items.history'), color: 'text-orange-400' },
+    { icon: Video, text: t('profile.deleteModal.items.recordings'), color: 'text-yellow-400' },
+    { icon: FileText, text: t('profile.deleteModal.items.applications'), color: 'text-blue-400' },
+    { icon: Calendar, text: t('profile.deleteModal.items.bookings'), color: 'text-purple-400' },
+    { icon: CreditCard, text: t('profile.deleteModal.items.subscription'), color: 'text-green-400' },
+    { icon: Mail, text: t('profile.deleteModal.items.messages'), color: 'text-pink-400' },
   ]
 
   const progressPercentage = ((5 - countdown) / 5) * 100
@@ -130,7 +132,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
               <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
                 <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>
-              <h2 className="text-2xl font-bold text-white">Delete Account</h2>
+              <h2 className="text-2xl font-bold text-white">{t('profile.accountSettings.deleteAccount')}</h2>
             </div>
             <button
               onClick={onClose}
@@ -144,10 +146,10 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
             {/* Warning */}
             <div className="rounded-lg border border-red-500 bg-red-950/50 p-4">
               <p className="text-base font-bold text-white mb-2 flex items-center gap-2">
-                🔴 This action cannot be undone!
+                🔴 {t('profile.deleteModal.warningTitle')}
               </p>
               <p className="text-sm text-gray-300">
-                Deleting your account will <strong className="text-white">permanently remove</strong>:
+                {t('profile.deleteModal.warningText')}
               </p>
             </div>
 
@@ -170,7 +172,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
             {/* Confirmation Input */}
             <div>
               <label className="block text-sm font-medium text-gray-200 mb-2">
-                Type <span className="font-bold text-red-400">DELETE</span> to confirm
+                {t('profile.deleteModal.typeDeleteConfirm')} <span className="font-bold text-red-400">DELETE</span>
               </label>
               <div className="relative">
                 <input
@@ -178,7 +180,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
                   className="w-full rounded-lg border border-red-500/40 px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-500 bg-black/60 pr-12"
-                  placeholder="Type DELETE"
+                  placeholder={t('profile.deleteModal.placeholder')}
                   autoComplete="off"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -199,18 +201,18 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
               </div>
               <p className="mt-2 text-xs text-gray-400">
                 {confirmText === '' ? (
-                  'Type DELETE in capital letters to confirm'
+                  t('profile.deleteModal.hintDefault')
                 ) : !isDeleteTyped ? (
-                  <span className="text-red-400">✗ Please type exactly: DELETE</span>
+                  <span className="text-red-400">✗ {t('profile.deleteModal.hintExact')}</span>
                 ) : (
-                  <span className="text-green-400">✓ Confirmed - countdown started</span>
+                  <span className="text-green-400">✓ {t('profile.deleteModal.hintConfirmed')}</span>
                 )}
               </p>
             </div>
 
             {/* Email Display */}
             <div className="text-sm text-gray-400">
-              Your email: <span className="text-white font-medium">{userEmail}</span>
+              {t('profile.deleteModal.yourEmail')}: <span className="text-white font-medium">{userEmail}</span>
             </div>
 
             {/* Error */}
@@ -235,7 +237,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
                 disabled={loading}
                 className="!bg-gradient-to-r !from-purple-600 !to-blue-600 !text-white !text-base !py-3"
               >
-                ← Keep My Account
+                ← {t('profile.deleteModal.keepAccount')}
               </Button>
               
               {/* Delete Button with Countdown */}
@@ -251,11 +253,11 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
                   }`}
                 >
                   {loading ? (
-                    'Deleting Account...'
+                    t('profile.deleteModal.deleting')
                   ) : countdown > 0 && isDeleteTyped ? (
-                    `Delete Account (${countdown})`
+                    `${t('profile.deleteModal.deleteButton')} (${countdown})`
                   ) : (
-                    'Delete Account'
+                    t('profile.deleteModal.deleteButton')
                   )}
                 </button>
                 
@@ -272,7 +274,7 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
               
               {countdown > 0 && isDeleteTyped && (
                 <p className="text-xs text-center text-gray-400">
-                  Wait {countdown} second{countdown !== 1 ? 's' : ''} to proceed...
+                  {t('profile.deleteModal.waitToProceed').replace('{countdown}', String(countdown))}
                 </p>
               )}
             </div>

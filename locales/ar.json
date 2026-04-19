@@ -486,7 +486,9 @@
       "subtitle": "أخبرنا عن نفسك مهنيًا",
       "required": "*",
       "label": "الملخص المهني",
-      "placeholder": "اكتب ملخصًا مهنيًا شاملاً عن خلفيتك وخبرتك وأهدافك وما يجعلك فريدًا..."
+      "placeholder": "اكتب ملخصًا مهنيًا شاملاً عن خلفيتك وخبرتك وأهدافك وما يجعلك فريدًا...",
+      "characters": "حرف",
+      "minimum": "الحد الأدنى 50"
     },
     "careerInfo": {
       "title": "المعلومات المهنية",
@@ -505,7 +507,9 @@
       "targetJobPlaceholder": "الوظيفة التي تتقدم لها",
       "customRolePlaceholder": "مثال: كاتب تجربة المستخدم",
       "experienceLevel": "مستوى الخبرة",
+      "selectLevel": "اختر المستوى",
       "yearsOfExperience": "سنوات الخبرة",
+      "selectYears": "اختر عدد السنوات",
       "workTypePreferences": "تفضيلات نوع العمل",
       "remote": "عن بُعد",
       "hybrid": "هجين",
@@ -616,6 +620,96 @@
       "cad": "C$ CAD",
       "aud": "A$ AUD",
       "inr": "₹ INR"
+    },
+    "nav": {
+      "backToDashboard": "العودة إلى لوحة التحكم"
+    },
+    "sidebar": {
+      "personalInfo": "المعلومات الشخصية",
+      "bio": "السيرة الذاتية",
+      "careerInfo": "المعلومات المهنية",
+      "workExperience": "الخبرة العملية",
+      "education": "التعليم",
+      "skills": "المهارات",
+      "achievements": "الإنجازات",
+      "account": "الحساب"
+    },
+    "completion": {
+      "title": "اكتمال الملف الشخصي",
+      "completeThese": "أكمل هذه العناصر لتحسين ملفك الشخصي:",
+      "status": {
+        "complete": "اكتمل الملف الشخصي! ✅",
+        "almostComplete": "أوشك على الاكتمال!",
+        "gettingThere": "أنت تتقدم!",
+        "justGettingStarted": "لقد بدأت للتو"
+      },
+      "missing": {
+        "fullName": "أضف اسمك الكامل",
+        "profilePhoto": "أضف صورة الملف الشخصي",
+        "location": "أضف الموقع",
+        "bio": "أضف نبذة (50 حرفًا على الأقل)",
+        "currentStatus": "أضف حالتك الحالية",
+        "targetJobRole": "أضف الوظيفة المستهدفة",
+        "workExperience": "أضف الخبرة العملية",
+        "educationDetails": "أضف تفاصيل التعليم",
+        "skills": "أضف 3 مهارات على الأقل",
+        "linkedin": "أضف رابط LinkedIn"
+      }
+    },
+    "photoUploader": {
+      "invalidType": "يرجى رفع صورة بصيغة JPG أو PNG أو WebP",
+      "fileTooLarge": "يجب أن يكون حجم الصورة أقل من 2 ميجابايت",
+      "uploadFailed": "فشل رفع الصورة",
+      "removeFailed": "فشل إزالة الصورة",
+      "removePhoto": "إزالة الصورة",
+      "uploading": "جارٍ الرفع...",
+      "changePhoto": "تغيير الصورة",
+      "uploadPhoto": "رفع صورة",
+      "formatHint": "JPG أو PNG أو WebP • الحد الأقصى 2 ميجابايت"
+    },
+    "unsavedWarning": {
+      "message": "لديك تغييرات غير محفوظة!",
+      "saveNow": "احفظ الآن",
+      "discard": "تجاهل"
+    },
+    "changePasswordModal": {
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+      "minChars": "8 أحرف على الأقل",
+      "allFieldsRequired": "جميع الحقول مطلوبة",
+      "passwordTooShort": "يجب أن تكون كلمة المرور الجديدة 8 أحرف على الأقل",
+      "passwordsDoNotMatch": "كلمتا المرور الجديدتان غير متطابقتين",
+      "passwordMustDiffer": "يجب أن تكون كلمة المرور الجديدة مختلفة عن الحالية",
+      "noUserFound": "لم يتم العثور على مستخدم",
+      "currentPasswordIncorrect": "كلمة المرور الحالية غير صحيحة",
+      "changeFailed": "فشل تغيير كلمة المرور",
+      "success": "تم تغيير كلمة المرور بنجاح!"
+    },
+    "deleteModal": {
+      "warningTitle": "لا يمكن التراجع عن هذا الإجراء!",
+      "warningText": "سيؤدي حذف حسابك إلى إزالة ما يلي نهائيًا:",
+      "typeDeleteConfirm": "اكتب",
+      "placeholder": "اكتب DELETE",
+      "hintDefault": "اكتب DELETE بأحرف كبيرة للتأكيد",
+      "hintExact": "يرجى كتابة DELETE تمامًا",
+      "hintConfirmed": "تم التأكيد - بدأ العد التنازلي",
+      "yourEmail": "بريدك الإلكتروني",
+      "keepAccount": "الاحتفاظ بحسابي",
+      "deleting": "جارٍ حذف الحساب...",
+      "deleteButton": "حذف الحساب",
+      "waitToProceed": "انتظر {countdown} ثوانٍ للمتابعة...",
+      "failedDelete": "فشل حذف الحساب",
+      "noUserFound": "لم يتم العثور على مستخدم",
+      "items": {
+        "profile": "ملفك الشخصي ومعلوماتك الشخصية",
+        "history": "كل سجل المقابلات وملاحظات الذكاء الاصطناعي",
+        "recordings": "كل تسجيلات الجلسات",
+        "applications": "طلبات التوظيف والملاحظات المحفوظة",
+        "bookings": "حجوزات ومراجعات المدربين",
+        "subscription": "الاشتراك ورصيد النقاط",
+        "messages": "جميع الرسائل والمحادثات"
+      }
     }
   },
   "pricing": {

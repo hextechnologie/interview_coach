@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { X, Eye, EyeOff, CheckCircle } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
+import { useLanguage } from '@/components/LanguageProvider'
 
 interface ChangePasswordModalProps {
   isOpen: boolean
@@ -11,6 +12,7 @@ interface ChangePasswordModalProps {
 }
 
 export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProps) {
+  const { t } = useLanguage()
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -30,22 +32,22 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
 
     // Validation
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError('All fields are required')
+      setError(t('profile.changePasswordModal.allFieldsRequired'))
       return
     }
 
     if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters')
+      setError(t('profile.changePasswordModal.passwordTooShort'))
       return
     }
 
     if (newPassword !== confirmPassword) {
-      setError('New passwords do not match')
+      setError(t('profile.changePasswordModal.passwordsDoNotMatch'))
       return
     }
 
     if (newPassword === currentPassword) {
-      setError('New password must be different from current password')
+      setError(t('profile.changePasswordModal.passwordMustDiffer'))
       return
     }
 
@@ -54,7 +56,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
     try {
       // First, verify current password by attempting to sign in
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user?.email) throw new Error('No user found')
+      if (!user?.email) throw new Error(t('profile.changePasswordModal.noUserFound'))
 
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: user.email,
@@ -62,7 +64,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
       })
 
       if (signInError) {
-        throw new Error('Current password is incorrect')
+        throw new Error(t('profile.changePasswordModal.currentPasswordIncorrect'))
       }
 
       // Update password
@@ -82,7 +84,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
         setSuccess(false)
       }, 2000)
     } catch (err: any) {
-      setError(err.message || 'Failed to change password')
+      setError(err.message || t('profile.changePasswordModal.changeFailed'))
     } finally {
       setLoading(false)
     }
@@ -93,7 +95,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
       <div className="w-full max-w-md rounded-2xl border border-white/10 p-6 shadow-2xl" style={{ background: '#111827' }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">Change Password</h2>
+          <h2 className="text-2xl font-bold text-white">{t('profile.accountSettings.changePassword')}</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/5 transition-colors text-gray-400 hover:text-white"
@@ -107,7 +109,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
           {/* Current Password */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
-              Current Password
+              {t('profile.changePasswordModal.currentPassword')}
             </label>
             <div className="relative">
               <input
@@ -131,7 +133,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
           {/* New Password */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
-              New Password
+              {t('profile.changePasswordModal.newPassword')}
             </label>
             <div className="relative">
               <input
@@ -150,13 +152,13 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
                 {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="mt-1 text-xs text-gray-400">Minimum 8 characters</p>
+            <p className="mt-1 text-xs text-gray-400">{t('profile.changePasswordModal.minChars')}</p>
           </div>
 
           {/* Confirm Password */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
-              Confirm New Password
+              {t('profile.changePasswordModal.confirmNewPassword')}
             </label>
             <div className="relative">
               <input
@@ -186,7 +188,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
           {success && (
             <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">
               <CheckCircle className="w-4 h-4" />
-              Password changed successfully!
+              {t('profile.changePasswordModal.success')}
             </div>
           )}
 
@@ -199,7 +201,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
               onClick={onClose}
               disabled={loading}
             >
-              Cancel
+              {t('profile.cancel')}
             </Button>
             <Button
               type="submit"
@@ -207,7 +209,7 @@ export default function ChangePasswordModal({ isOpen, onClose }: ChangePasswordM
               fullWidth
               loading={loading}
             >
-              Change Password
+              {t('profile.accountSettings.changePassword')}
             </Button>
           </div>
         </form>
