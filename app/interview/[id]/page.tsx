@@ -147,9 +147,94 @@ const UI_TEXT = {
 
 export default function InterviewPage() {
   const { user, loading: authLoading } = useAuth()
+  const { t: translate } = useLanguage()
   const router = useRouter()
   const params = useParams()
   const sessionId = params.id as string
+
+  const t = {
+    header: {
+      logoText: translate('interview.header.logoText'),
+      questionCount: translate('interview.header.questionCount'),
+    },
+    controls: {
+      mute: translate('interview.controls.mute'),
+      unmute: translate('interview.controls.unmute'),
+      replayQuestion: translate('interview.controls.replayQuestion'),
+      startRecording: translate('interview.controls.startRecording'),
+      stopRecording: translate('interview.controls.stopRecording'),
+    },
+    feedback: {
+      strengths: translate('interview.feedback.strengths'),
+      areas: translate('interview.feedback.areas'),
+      quickFix: translate('interview.feedback.quickFix'),
+      showIdeal: translate('interview.feedback.showIdeal'),
+      improve: translate('interview.feedback.improve'),
+      improvedAnswer: translate('interview.feedback.improvedAnswer'),
+      tryAgain: translate('interview.feedback.tryAgain'),
+      next: translate('interview.feedback.next'),
+      copy: translate('interview.feedback.copy'),
+      share: translate('interview.feedback.share'),
+      yourAnswer: translate('interview.feedback.yourAnswer'),
+      idealAnswer: translate('interview.feedback.idealAnswer'),
+      whatsDifferent: translate('interview.feedback.whatsDifferent'),
+      viewSummary: translate('interview.feedback.viewSummary'),
+    },
+    metrics: {
+      confidence: translate('interview.metrics.confidence'),
+      clarity: translate('interview.metrics.clarity'),
+      fillerWords: translate('interview.metrics.fillerWords'),
+      keywordsUsed: translate('interview.metrics.keywordsUsed'),
+      starMethod: translate('interview.metrics.starMethod'),
+      tone: translate('interview.metrics.tone'),
+    },
+    score: {
+      label: translate('interview.score.label'),
+      needsWork: translate('interview.score.needsWork'),
+      gettingThere: translate('interview.score.gettingThere'),
+      excellent: translate('interview.score.excellent'),
+      improvedBy: translate('interview.score.improvedBy'),
+      motivationLow: translate('interview.score.motivationLow'),
+      motivationHigh: translate('interview.score.motivationHigh'),
+    },
+    achievements: {
+      title: translate('interview.achievements.title'),
+      firstInterview: translate('interview.achievements.firstInterview'),
+      passingScore: translate('interview.achievements.passingScore'),
+      excellenceBadge: translate('interview.achievements.excellenceBadge'),
+      onFire: translate('interview.achievements.onFire'),
+    },
+    input: {
+      placeholder: translate('interview.input.placeholder'),
+      tip: translate('interview.input.tip'),
+    },
+    loading: {
+      thinking: translate('interview.loading.thinking'),
+      loading: translate('interview.loading.loading'),
+    },
+    messages: {
+      copied: translate('interview.messages.copied'),
+      copyFailed: translate('interview.messages.copyFailed'),
+      questionFailed: translate('interview.messages.questionFailed'),
+      questionError: translate('interview.messages.questionError'),
+      answerFailed: translate('interview.messages.answerFailed'),
+      noFeedback: translate('interview.messages.noFeedback'),
+      interviewComplete: translate('interview.messages.interviewComplete'),
+      voiceNotSupported: translate('interview.messages.voiceNotSupported'),
+      retrySuccess: translate('interview.messages.retrySuccess'),
+    },
+    tones: {
+      professional: translate('interview.tones.professional'),
+      casual: translate('interview.tones.casual'),
+      nervous: translate('interview.tones.nervous'),
+    },
+    lengths: {
+      tooShort: translate('interview.lengths.tooShort'),
+      perfect: translate('interview.lengths.perfect'),
+      tooLong: translate('interview.lengths.tooLong'),
+    },
+    linkedInShare: translate('interview.linkedInShare'),
+  }
 
   const [messages, setMessages] = useState<Message[]>([])
   const [currentAnswer, setCurrentAnswer] = useState('')
@@ -293,8 +378,8 @@ export default function InterviewPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        toast.error(data.error || 'Failed to get question')
-        returnt.messages.questionFailed
+        toast.error(data.error || t.messages.questionFailed)
+        return
       }
 
       if (data.question) {
@@ -501,10 +586,10 @@ export default function InterviewPage() {
     const onFireUnlocked = [score, ...recentScores].slice(0, 3).length === 3 && [score, ...recentScores].slice(0, 3).every((item) => item >= 7)
 
     return [
-      { icon: '🥉', label: t('interview.achievements.firstInterview'), unlocked: recentScores.length + 1 >= 1, highlight: recentScores.length === 0 },
-      { icon: '🥈', label: t('interview.achievements.passingScore'), unlocked: score > 5, highlight: score > 5 && !recentScores.some((item) => item > 5) },
-      { icon: '🥇', label: t('interview.achievements.excellenceBadge'), unlocked: score > 8, highlight: score > 8 && !recentScores.some((item) => item > 8) },
-      { icon: '🔥', label: t('interview.achievements.onFire'), unlocked: onFireUnlocked, highlight: onFireUnlocked },
+      { icon: '🥉', label: t.achievements.firstInterview, unlocked: recentScores.length + 1 >= 1, highlight: recentScores.length === 0 },
+      { icon: '🥈', label: t.achievements.passingScore, unlocked: score > 5, highlight: score > 5 && !recentScores.some((item) => item > 5) },
+      { icon: '🥇', label: t.achievements.excellenceBadge, unlocked: score > 8, highlight: score > 8 && !recentScores.some((item) => item > 8) },
+      { icon: '🔥', label: t.achievements.onFire, unlocked: onFireUnlocked, highlight: onFireUnlocked },
     ]
   }
 
@@ -523,29 +608,25 @@ export default function InterviewPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <Link href="/" className="flex items-center gap-2">
               <Sparkles className="w-8 h-8 text-primary" />
-              <span className="text-2xl font-bold gradient-text">Interview Coach</span>
+              <span className="text-2xl font-bold gradient-text">{t.header.logoText}</span>
             </Link>
             <div className="flex flex-wrap items-center gap-2 md:justify-end">
               {session && (
                 <div className="text-right mr-2">
-                  <p className="text-sm text-gray-400">Question {questionCount} of ~6</p>
+                  <p className="text-sm text-gray-400">
+                    {t.header.questionCount.replace('{current}', String(questionCount)).replace('{total}', '6')}
+                  </p>
                   <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
                 </div>
               )}
-              <div className=achievements.firstInterview, unlocked: recentScores.length + 1 >= 1, highlight: recentScores.length === 0 },
-      { icon: '🥈', label: t.achievements.passingScore, unlocked: score > 5, highlight: score > 5 && !recentScores.some((item) => item > 5) },
-      { icon: '🥇', label: t.achievements.excellenceBadge, unlocked: score > 8, highlight: score > 8 && !recentScores.some((item) => item > 8) },
-      { icon: '🔥', label: t.achievements
-                    key={lang}
-                    type="button"
-                    disabled={translating}
-                    onClick={() => translateAllFeedback(lang)}
-                    className={`rounded-lg px-2 py-1 text-xs font-semibold transition-all ${feedbackLanguage === lang ? 'bg-primary text-white' : 'text-gray-300 hover:bg-white/10'}`}
-                  >
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
+              <Button variant="outline" className="px-3 py-2 text-xs" onClick={toggleSpeech}>
+                <VolumeX className="w-3 h-3" />
+                {speechEnabled ? t.controls.mute : t.controls.unmute}
+              </Button>
+              <Button variant="outline" className="px-3 py-2 text-xs" onClick={replayLastQuestion} disabled={!speechEnabled}>
+                <RotateCcw className="w-3 h-3" />
+                {t.controls.replayQuestion}
+              </Button>
             </div>
           </div>
         </div>
@@ -608,11 +689,7 @@ export default function InterviewPage() {
 
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                            <MetricBar label={t.confidence} value={message.feedback.metrics?.confidence || 0} />
-                            <MetricBar label={t.clarity} value={message.feedback.metrics?.clarity || 0} colorClass="from-blue-400 to-cyan-500" />
-                            <MetricBar label={t.starMethod} value={message.feedback.metrics?.star_method_score || 0} max={10} suffix="/10" colorClass="from-violet-400 to-purple-500" />
-                          </div>
-metrics.confidence} value={message.feedback.metrics?.confidence || 0} />
+                            <MetricBar label={t.metrics.confidence} value={message.feedback.metrics?.confidence || 0} />
                             <MetricBar label={t.metrics.clarity} value={message.feedback.metrics?.clarity || 0} colorClass="from-blue-400 to-cyan-500" />
                             <MetricBar label={t.metrics.starMethod} value={message.feedback.metrics?.star_method_score || 0} max={10} suffix="/10" colorClass="from-violet-400 to-purple-500" />
                           </div>
@@ -632,7 +709,11 @@ metrics.confidence} value={message.feedback.metrics?.confidence || 0} />
                                 {message.feedback.metrics?.tone || t.tones.professional}
                               </Badge>
                               <Badge variant={message.feedback.metrics?.answer_length === 'Perfect' ? 'success' : 'warning'}>
-                                {message.feedback.metrics?.answer_length === 'Too Short' ? t.lengths.tooShort : message.feedback.metrics?.answer_length === 'Too Long' ? t.lengths.tooLong : t.lengths.perfect
+                                {message.feedback.metrics?.answer_length === 'Too Short' ? t.lengths.tooShort : message.feedback.metrics?.answer_length === 'Too Long' ? t.lengths.tooLong : t.lengths.perfect}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div>

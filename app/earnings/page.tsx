@@ -247,8 +247,7 @@ export default function CoachEarningsPage() {
                     }`}>
                       {tx.type === 'earned' ? '+' : '-'}⭐ {Math.abs(tx.amount)}
                     </p>
-                    <p className="text-xs text-gray-500">{t('earnings.balance')}
-                    <p className="text-xs text-gray-500">Balance: {tx.balance_after}</p>
+                    <p className="text-xs text-gray-500">{t('earnings.balance')}: {tx.balance_after}</p>
                   </div>
                 </div>
               ))}

@@ -8,10 +8,15 @@ import es from '@/locales/es.json'
 
 type Locale = 'en' | 'ar' | 'fr' | 'es'
 
+type TranslationParams = {
+  returnObjects?: boolean
+  [key: string]: any
+}
+
 interface LanguageContextType {
   locale: Locale
   setLocale: (locale: string) => void
-  t: (key: string) => string
+  t: (key: string, params?: TranslationParams) => any
   dir: 'ltr' | 'rtl'
 }
 
@@ -43,19 +48,30 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const t = (key: string): string => {
+  const t = (key: string, params?: TranslationParams): any => {
     const keys = key.split('.')
     let value: any = translations[locale]
-    
+
     for (const k of keys) {
-      if (value && typeof value === 'object') {
+      if (value && typeof value === 'object' && k in value) {
         value = value[k]
       } else {
-        return key // Return key if translation not found
+        return key
       }
     }
-    
-    return typeof value === 'string' ? value : key
+
+    if (params?.returnObjects) {
+      return value
+    }
+
+    if (typeof value === 'string') {
+      return Object.entries(params || {}).reduce((result, [paramKey, paramValue]) => {
+        if (paramKey === 'returnObjects') return result
+        return result.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), String(paramValue ?? ''))
+      }, value)
+    }
+
+    return value ?? key
   }
 
   const dir = locale === 'ar' ? 'rtl' : 'ltr'
