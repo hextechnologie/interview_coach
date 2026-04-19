@@ -6,6 +6,7 @@ import { ArrowLeft, DollarSign, TrendingUp, Wallet, Download } from 'lucide-reac
 import { Badge, Button, Card } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 
 type EarningsSummary = {
   totalEarned: number
@@ -28,6 +29,7 @@ const MIN_WITHDRAWAL = 50
 
 export default function CoachEarningsPage() {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const [summary, setSummary] = useState<EarningsSummary>({
     totalEarned: 0,
     pendingInEscrow: 0,
@@ -109,8 +111,7 @@ export default function CoachEarningsPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-white">
-        <p>Please log in to view earnings</p>
+      <div {t('earnings.loginRequired')}</p>
       </div>
     )
   }
@@ -119,47 +120,47 @@ export default function CoachEarningsPage() {
     <div className="min-h-screen bg-background text-white px-6 py-8">
       <div className="mx-auto max-w-5xl">
         <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" /> Back to dashboard
+          <ArrowLeft className="h-4 w-4" /> {t('earnings.backToDashboard')}
         </Link>
 
-        <h1 className="text-3xl font-bold mb-6">💰 Earnings</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('earnings.pageTitle')}</h1>
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
             <div className="flex items-center gap-3 mb-2">
               <TrendingUp className="h-5 w-5 text-blue-400" />
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Total Earned</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">{t('earnings.totalEarned')}</p>
             </div>
             <p className="text-2xl font-bold text-blue-400">⭐ {summary.totalEarned}</p>
-            <p className="text-xs text-gray-500 mt-1">All-time earnings</p>
+            <p className="text-xs text-gray-500 mt-1">{t('earnings.totalEarnedDesc')}</p>
           </Card>
 
           <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border-yellow-500/20">
             <div className="flex items-center gap-3 mb-2">
               <Wallet className="h-5 w-5 text-yellow-400" />
-              <p className="text-xs text-gray-400 uppercase tracking-wide">In Escrow</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">{t('earnings.inEscrow')}</p>
             </div>
             <p className="text-2xl font-bold text-yellow-400">⭐ {summary.pendingInEscrow}</p>
-            <p className="text-xs text-gray-500 mt-1">Held until session complete</p>
+            <p className="text-xs text-gray-500 mt-1">{t('earnings.inEscrowDesc')}</p>
           </Card>
 
           <Card className="bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20">
             <div className="flex items-center gap-3 mb-2">
               <DollarSign className="h-5 w-5 text-green-400" />
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Available</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">{t('earnings.available')}</p>
             </div>
             <p className="text-2xl font-bold text-green-400">⭐ {summary.availableToWithdraw}</p>
-            <p className="text-xs text-gray-500 mt-1">Ready to withdraw</p>
+            <p className="text-xs text-gray-500 mt-1">{t('earnings.availableDesc')}</p>
           </Card>
 
           <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/20">
             <div className="flex items-center gap-3 mb-2">
               <Download className="h-5 w-5 text-purple-400" />
-              <p className="text-xs text-gray-400 uppercase tracking-wide">Withdrawn</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">{t('earnings.withdrawn')}</p>
             </div>
             <p className="text-2xl font-bold text-purple-400">⭐ {summary.totalWithdrawn}</p>
-            <p className="text-xs text-gray-500 mt-1">Total withdrawals</p>
+            <p className="text-xs text-gray-500 mt-1">{t('earnings.withdrawnDesc')}</p>
           </Card>
         </div>
 
@@ -167,11 +168,11 @@ export default function CoachEarningsPage() {
         <Card className="mb-8 bg-primary/5 border-primary/20">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold mb-1">Withdraw Credits</h3>
+              <h3 className="text-lg font-semibold mb-1">{t('earnings.withdrawCredits')}</h3>
               <p className="text-sm text-gray-400">
                 {canWithdraw 
-                  ? `You have ${summary.availableToWithdraw} credits available to withdraw` 
-                  : `Minimum ${MIN_WITHDRAWAL} credits required (you have ${summary.availableToWithdraw})`
+                  ? t('earnings.withdrawAvailable', { amount: summary.availableToWithdraw })
+                  : t('earnings.withdrawMinimum', { min: MIN_WITHDRAWAL, amount: summary.availableToWithdraw })
                 }
               </p>
             </div>
@@ -182,7 +183,7 @@ export default function CoachEarningsPage() {
                 className="gap-2"
               >
                 <Download className="h-4 w-4" />
-                Withdraw
+                {t('earnings.withdrawButton')}
               </Button>
             </Link>
           </div>
@@ -191,7 +192,7 @@ export default function CoachEarningsPage() {
         {/* Transaction History */}
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Transaction History</h2>
+            <h2 className="text-xl font-bold">{t('earnings.transactionHistory')}</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => setFilter('all')}
@@ -199,7 +200,7 @@ export default function CoachEarningsPage() {
                   filter === 'all' ? 'bg-primary text-white' : 'bg-background/40 text-gray-400'
                 }`}
               >
-                All
+                {t('earnings.filterAll')}
               </button>
               <button
                 onClick={() => setFilter('earned')}
@@ -207,7 +208,7 @@ export default function CoachEarningsPage() {
                   filter === 'earned' ? 'bg-primary text-white' : 'bg-background/40 text-gray-400'
                 }`}
               >
-                Earned
+                {t('earnings.filterEarned')}
               </button>
               <button
                 onClick={() => setFilter('withdrawn')}
@@ -215,15 +216,15 @@ export default function CoachEarningsPage() {
                   filter === 'withdrawn' ? 'bg-primary text-white' : 'bg-background/40 text-gray-400'
                 }`}
               >
-                Withdrawn
+                {t('earnings.filterWithdrawn')}
               </button>
             </div>
           </div>
 
           {loading ? (
-            <p className="text-gray-400 text-center py-8">Loading...</p>
+            <p className="text-gray-400 text-center py-8">{t('earnings.loading')}</p>
           ) : filteredTransactions.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">No transactions yet</p>
+            <p className="text-gray-400 text-center py-8">{t('earnings.noTransactions')}</p>
           ) : (
             <div className="space-y-3">
               {filteredTransactions.map((tx) => (
@@ -231,7 +232,7 @@ export default function CoachEarningsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <Badge variant={tx.type === 'earned' ? 'success' : 'default'}>
-                        {tx.type}
+                        {t(`earnings.${tx.type}`)}
                       </Badge>
                       <p className="text-sm text-gray-300">{tx.description}</p>
                     </div>
@@ -245,6 +246,7 @@ export default function CoachEarningsPage() {
                     }`}>
                       {tx.type === 'earned' ? '+' : '-'}⭐ {Math.abs(tx.amount)}
                     </p>
+                    <p className="text-xs text-gray-500">{t('earnings.balance')}
                     <p className="text-xs text-gray-500">Balance: {tx.balance_after}</p>
                   </div>
                 </div>

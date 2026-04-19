@@ -3,8 +3,11 @@
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui'
+import { useLanguage } from '@/components/LanguageProvider'
 
 export default function TermsPage() {
+  const { t } = useLanguage()
+  
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Background gradients */}
@@ -19,7 +22,7 @@ export default function TermsPage() {
               <span className="text-2xl font-bold gradient-text">Interview Coach</span>
             </Link>
             <Link href="/dashboard">
-              <Button variant="outline">Dashboard</Button>
+              <Button variant="outline">{t('terms.dashboardButton')}</Button>
             </Link>
           </div>
         </div>
@@ -29,213 +32,213 @@ export default function TermsPage() {
       <div className="relative z-10">
         <div className="container mx-auto px-6 py-20">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold mb-4">Terms of Service</h1>
-            <p className="text-gray-400 mb-8">Last updated: April 17, 2026</p>
+            <h1 className="text-5xl font-bold mb-4">{t('terms.pageTitle')}</h1>
+            <p className="text-gray-400 mb-8">{t('terms.lastUpdated')}</p>
 
             <div className="prose prose-invert max-w-none space-y-8">
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section1Title')}</h2>
                 <p className="text-gray-300 leading-relaxed">
-                  By accessing or using Interview Coach ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Service. We reserve the right to modify these Terms at any time, and your continued use constitutes acceptance of such changes.
+                  {t('terms.section1Text')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">2. Description of Service</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section2Title')}</h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  Interview Coach provides an AI-powered interview preparation platform that:
+                  {t('terms.section2Intro')}
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-                  <li>Simulates realistic job interview scenarios</li>
-                  <li>Generates personalized interview questions</li>
-                  <li>Provides AI-driven feedback and performance analysis</li>
-                  <li>Tracks your progress over multiple sessions</li>
-                  <li>Supports multiple languages and industries</li>
+                  <li>{t('terms.section2Item1')}</li>
+                  <li>{t('terms.section2Item2')}</li>
+                  <li>{t('terms.section2Item3')}</li>
+                  <li>{t('terms.section2Item4')}</li>
+                  <li>{t('terms.section2Item5')}</li>
                 </ul>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">3. User Accounts</h2>
-                <h3 className="text-xl font-semibold mb-3 text-primary">3.1 Account Creation</h3>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section3Title')}</h2>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section3_1Title')}</h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  To use our Service, you must:
+                  {t('terms.section3_1Intro')}
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-                  <li>Be at least 16 years old</li>
-                  <li>Provide accurate and complete information</li>
-                  <li>Maintain the security of your password</li>
-                  <li>Notify us immediately of any unauthorized access</li>
+                  <li>{t('terms.section3_1Item1')}</li>
+                  <li>{t('terms.section3_1Item2')}</li>
+                  <li>{t('terms.section3_1Item3')}</li>
+                  <li>{t('terms.section3_1Item4')}</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold mb-3 mt-6 text-primary">3.2 Account Responsibility</h3>
+                <h3 className="text-xl font-semibold mb-3 mt-6 text-primary">{t('terms.section3_2Title')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  You are responsible for all activities under your account. We are not liable for any loss or damage from your failure to maintain account security.
+                  {t('terms.section3_2Text')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">4. Subscription Plans and Billing</h2>
-                <h3 className="text-xl font-semibold mb-3 text-primary">4.1 Plan Types</h3>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section4Title')}</h2>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section4_1Title')}</h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  We offer Free, Basic, and Pro subscription plans with different interview limits and features.
+                  {t('terms.section4_1Text')}
                 </p>
 
-                <h3 className="text-xl font-semibold mb-3 text-primary">4.2 Billing</h3>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section4_2Title')}</h3>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-                  <li>Subscriptions are billed monthly or annually in advance</li>
-                  <li>All fees are non-refundable except as required by law</li>
-                  <li>We offer a 7-day money-back guarantee for first-time subscribers</li>
-                  <li>Prices may change with 30 days notice</li>
-                  <li>Failed payments may result in service suspension</li>
+                  <li>{t('terms.section4_2Item1')}</li>
+                  <li>{t('terms.section4_2Item2')}</li>
+                  <li>{t('terms.section4_2Item3')}</li>
+                  <li>{t('terms.section4_2Item4')}</li>
+                  <li>{t('terms.section4_2Item5')}</li>
                 </ul>
 
-                <h3 className="text-xl font-semibold mb-3 mt-6 text-primary">4.3 Cancellation</h3>
+                <h3 className="text-xl font-semibold mb-3 mt-6 text-primary">{t('terms.section4_3Title')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  You may cancel your subscription at any time. Access continues until the end of the billing period. No refunds for partial months.
+                  {t('terms.section4_3Text')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">5. Acceptable Use Policy</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section5Title')}</h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  You agree NOT to:
+                  {t('terms.section5Intro')}
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-                  <li>Use the Service for any illegal purpose</li>
-                  <li>Attempt to circumvent usage limits or payment requirements</li>
-                  <li>Share your account credentials with others</li>
-                  <li>Reverse engineer, decompile, or hack the Service</li>
-                  <li>Use automated scripts or bots (except browser automation features we provide)</li>
-                  <li>Upload malicious content or code</li>
-                  <li>Harass, abuse, or harm other users</li>
-                  <li>Scrape or extract data without permission</li>
-                  <li>Resell or redistribute the Service</li>
-                </ul>
-              </section>
-
-              <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">6. Intellectual Property</h2>
-                <h3 className="text-xl font-semibold mb-3 text-primary">6.1 Our Content</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  All content, features, and functionality of the Service are owned by Interview Coach and protected by copyright, trademark, and other intellectual property laws.
-                </p>
-
-                <h3 className="text-xl font-semibold mb-3 text-primary">6.2 Your Content</h3>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  You retain ownership of your interview responses. By using the Service, you grant us a license to:
-                </p>
-                <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-                  <li>Process and analyze your responses to provide feedback</li>
-                  <li>Store your data for service delivery</li>
-                  <li>Use anonymized, aggregated data to improve our AI</li>
+                  <li>{t('terms.section5Item1')}</li>
+                  <li>{t('terms.section5Item2')}</li>
+                  <li>{t('terms.section5Item3')}</li>
+                  <li>{t('terms.section5Item4')}</li>
+                  <li>{t('terms.section5Item5')}</li>
+                  <li>{t('terms.section5Item6')}</li>
+                  <li>{t('terms.section5Item7')}</li>
+                  <li>{t('terms.section5Item8')}</li>
+                  <li>{t('terms.section5Item9')}</li>
                 </ul>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">7. AI-Generated Content</h2>
-                <p className="text-gray-300 leading-relaxed">
-                  Our Service uses AI to generate interview questions and feedback. While we strive for accuracy, AI-generated content may contain errors or biases. The feedback is for educational purposes only and should not be considered professional career advice. We are not liable for decisions made based on AI feedback.
-                </p>
-              </section>
-
-              <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">8. Disclaimers and Limitations of Liability</h2>
-                <h3 className="text-xl font-semibold mb-3 text-primary">8.1 Service "As Is"</h3>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section6Title')}</h2>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section6_1Title')}</h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  The Service is provided "as is" and "as available" without warranties of any kind, either express or implied.
+                  {t('terms.section6_1Text')}
                 </p>
 
-                <h3 className="text-xl font-semibold mb-3 text-primary">8.2 No Guarantee of Results</h3>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section6_2Title')}</h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  We do not guarantee that use of our Service will result in job offers, improved interview performance, or any specific outcome.
-                </p>
-
-                <h3 className="text-xl font-semibold mb-3 text-primary">8.3 Limitation of Liability</h3>
-                <p className="text-gray-300 leading-relaxed">
-                  To the maximum extent permitted by law, Interview Coach shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service. Our total liability shall not exceed the amount you paid in the 12 months preceding the claim.
-                </p>
-              </section>
-
-              <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">9. Indemnification</h2>
-                <p className="text-gray-300 leading-relaxed">
-                  You agree to indemnify and hold harmless Interview Coach from any claims, damages, or expenses arising from your use of the Service, violation of these Terms, or infringement of any third-party rights.
-                </p>
-              </section>
-
-              <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">10. Termination</h2>
-                <p className="text-gray-300 leading-relaxed mb-4">
-                  We may suspend or terminate your account if you:
+                  {t('terms.section6_2Intro')}
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
-                  <li>Violate these Terms</li>
-                  <li>Engage in fraudulent activity</li>
-                  <li>Fail to pay subscription fees</li>
-                  <li>Abuse the Service or harm other users</li>
+                  <li>{t('terms.section6_2Item1')}</li>
+                  <li>{t('terms.section6_2Item2')}</li>
+                  <li>{t('terms.section6_2Item3')}</li>
+                </ul>
+              </section>
+
+              <section className="glass p-8 rounded-xl">
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section7Title')}</h2>
+                <p className="text-gray-300 leading-relaxed">
+                  {t('terms.section7Text')}
+                </p>
+              </section>
+
+              <section className="glass p-8 rounded-xl">
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section8Title')}</h2>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section8_1Title')}</h3>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  {t('terms.section8_1Text')}
+                </p>
+
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section8_2Title')}</h3>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  {t('terms.section8_2Text')}
+                </p>
+
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section8_3Title')}</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  {t('terms.section8_3Text')}
+                </p>
+              </section>
+
+              <section className="glass p-8 rounded-xl">
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section9Title')}</h2>
+                <p className="text-gray-300 leading-relaxed">
+                  {t('terms.section9Text')}
+                </p>
+              </section>
+
+              <section className="glass p-8 rounded-xl">
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section10Title')}</h2>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  {t('terms.section10Intro')}
+                </p>
+                <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
+                  <li>{t('terms.section10Item1')}</li>
+                  <li>{t('terms.section10Item2')}</li>
+                  <li>{t('terms.section10Item3')}</li>
+                  <li>{t('terms.section10Item4')}</li>
                 </ul>
                 <p className="text-gray-300 leading-relaxed mt-4">
-                  Upon termination, your right to use the Service ceases immediately. You may request data export within 30 days.
+                  {t('terms.section10Outro')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">11. Data Privacy</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section11Title')}</h2>
                 <p className="text-gray-300 leading-relaxed">
-                  Your use of the Service is also governed by our <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>, which is incorporated into these Terms by reference.
+                  {t('terms.section11Text')} <Link href="/privacy" className="text-primary hover:underline">{t('terms.section11Link')}</Link>{t('terms.section11Text2')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">12. Dispute Resolution</h2>
-                <h3 className="text-xl font-semibold mb-3 text-primary">12.1 Informal Resolution</h3>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section12Title')}</h2>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section12_1Title')}</h3>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  Before filing a claim, you agree to contact us at <a href="mailto:legal@interviewcoach.com" className="text-primary hover:underline">legal@interviewcoach.com</a> to resolve the dispute informally.
+                  {t('terms.section12_1Text')} <a href="mailto:legal@interviewcoach.com" className="text-primary hover:underline">legal@interviewcoach.com</a> {t('terms.section12_1Text2')}
                 </p>
 
-                <h3 className="text-xl font-semibold mb-3 text-primary">12.2 Arbitration</h3>
+                <h3 className="text-xl font-semibold mb-3 text-primary">{t('terms.section12_2Title')}</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Any disputes shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association. You waive your right to a jury trial or class action.
+                  {t('terms.section12_2Text')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">13. Governing Law</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section13Title')}</h2>
                 <p className="text-gray-300 leading-relaxed">
-                  These Terms are governed by the laws of the State of Delaware, USA, without regard to conflict of law principles.
+                  {t('terms.section13Text')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">14. Severability</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section14Title')}</h2>
                 <p className="text-gray-300 leading-relaxed">
-                  If any provision of these Terms is found to be unenforceable, the remaining provisions shall remain in full effect.
+                  {t('terms.section14Text')}
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl">
-                <h2 className="text-2xl font-bold mb-4">15. Contact Information</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.section15Title')}</h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  For questions about these Terms:
+                  {t('terms.section15Intro')}
                 </p>
                 <p className="text-gray-300">
-                  Email: <a href="mailto:legal@interviewcoach.com" className="text-primary hover:underline">legal@interviewcoach.com</a><br />
-                  Company: Interview Coach, Inc.<br />
-                  Or visit our <Link href="/contact" className="text-primary hover:underline">Contact Page</Link>
+                  {t('terms.section15Email')} <a href="mailto:legal@interviewcoach.com" className="text-primary hover:underline">legal@interviewcoach.com</a><br />
+                  {t('terms.section15Company')}<br />
+                  {t('terms.section15Contact')} <Link href="/contact" className="text-primary hover:underline">{t('terms.section15ContactLink')}</Link>
                 </p>
               </section>
 
               <section className="glass p-8 rounded-xl bg-gradient-primary/10 border-primary/20">
-                <h2 className="text-2xl font-bold mb-4">Agreement</h2>
+                <h2 className="text-2xl font-bold mb-4">{t('terms.agreementTitle')}</h2>
                 <p className="text-gray-300 leading-relaxed">
-                  By clicking "I Accept" during registration or by using the Service, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
+                  {t('terms.agreementText')}
                 </p>
               </section>
             </div>
 
             <div className="mt-12 text-center">
               <Link href="/">
-                <Button variant="outline">Back to Home</Button>
+                <Button variant="outline">{t('terms.backToHome')}</Button>
               </Link>
             </div>
           </div>
@@ -245,7 +248,7 @@ export default function TermsPage() {
         <footer className="border-t border-border mt-20 py-8">
           <div className="container mx-auto px-6">
             <div className="text-center text-gray-400 text-sm">
-              <p>&copy; 2026 Interview Coach. All rights reserved.</p>
+              <p>{t('terms.copyright')}</p>
             </div>
           </div>
         </footer>

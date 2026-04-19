@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Badge, Button, Card, LoadingSpinner } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
+import { useLanguage } from '@/components/LanguageProvider'
 
 type CandidateProfile = {
   id: string
@@ -32,6 +33,7 @@ export default function CandidatePublicProfilePage() {
   const [profile, setProfile] = useState<CandidateProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,8 +63,8 @@ export default function CandidatePublicProfilePage() {
   if (notFound || !profile) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background text-white">
-        <p className="text-xl font-semibold">Candidate profile not found</p>
-        <Link href="/coach/dashboard"><Button variant="outline">Back to Dashboard</Button></Link>
+        <p className="text-xl font-semibold">{t('candidateProfile.notFound')}</p>
+        <Link href="/coach/dashboard"><Button variant="outline">{t('candidateProfile.backToDashboard')}</Button></Link>
       </div>
     )
   }
@@ -74,7 +76,7 @@ export default function CandidatePublicProfilePage() {
     <div className="min-h-screen bg-background px-6 py-8 text-white">
       <div className="mx-auto max-w-5xl space-y-6">
         <Link href="/coach/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+          <ArrowLeft className="h-4 w-4" /> {t('candidateProfile.backToDashboard')}
         </Link>
 
         <Card className="border-primary/20 bg-card/80">
@@ -100,7 +102,7 @@ export default function CandidatePublicProfilePage() {
 
             {profile.linkedin_url && (
               <a href={profile.linkedin_url} target="_blank" rel="noreferrer">
-                <Button variant="outline">Open LinkedIn</Button>
+                <Button variant="outline">{t('candidateProfile.openLinkedIn')}</Button>
               </a>
             )}
           </div>
@@ -110,14 +112,14 @@ export default function CandidatePublicProfilePage() {
           <div className="space-y-6">
             {profile.bio && (
               <Card>
-                <h2 className="mb-3 text-2xl font-bold">About</h2>
+                <h2 className="mb-3 text-2xl font-bold">{t('candidateProfile.about')}</h2>
                 <p className="text-gray-300 whitespace-pre-line">{profile.bio}</p>
               </Card>
             )}
 
             {profile.experience_details && profile.experience_details !== 'No experience' && (
               <Card>
-                <h2 className="mb-3 text-2xl font-bold">Experience</h2>
+                <h2 className="mb-3 text-2xl font-bold">{t('candidateProfile.experience')}</h2>
                 <ul className="space-y-2">
                   {profile.experience_details.split('\n').filter(e => e.trim()).map((exp, i) => (
                     <li key={i} className="flex items-start gap-2 text-gray-300">
@@ -131,7 +133,7 @@ export default function CandidatePublicProfilePage() {
 
             {profile.education_details && (
               <Card>
-                <h2 className="mb-3 text-2xl font-bold">Education / Formation</h2>
+                <h2 className="mb-3 text-2xl font-bold">{t('candidateProfile.education')}</h2>
                 <ul className="space-y-2">
                   {profile.education_details.split('\n').filter(e => e.trim()).map((edu, i) => (
                     <li key={i} className="flex items-start gap-2 text-gray-300">
@@ -145,7 +147,7 @@ export default function CandidatePublicProfilePage() {
 
             {profile.projects_details && (
               <Card>
-                <h2 className="mb-3 text-2xl font-bold">Projects</h2>
+                <h2 className="mb-3 text-2xl font-bold">{t('candidateProfile.projects')}</h2>
                 <p className="text-gray-300 whitespace-pre-line">{profile.projects_details}</p>
               </Card>
             )}
@@ -153,18 +155,18 @@ export default function CandidatePublicProfilePage() {
 
           <div className="space-y-6">
             <Card>
-              <h2 className="mb-4 text-xl font-bold">Career Snapshot</h2>
+              <h2 className="mb-4 text-xl font-bold">{t('candidateProfile.careerSnapshot')}</h2>
               <div className="space-y-2 text-sm text-gray-300">
-                {profile.current_status && <p>Status: <span className="text-white">{profile.current_status}</span></p>}
-                {profile.status_detail && <p>Details: <span className="text-white">{profile.status_detail}</span></p>}
-                {profile.target_job_role && <p>Target role: <span className="text-white">{profile.target_job_role}</span></p>}
-                {profile.experience_level && <p>Level: <span className="text-white capitalize">{profile.experience_level}</span></p>}
+                {profile.current_status && <p>{t('candidateProfile.status')}: <span className="text-white">{profile.current_status}</span></p>}
+                {profile.status_detail && <p>{t('candidateProfile.details')}: <span className="text-white">{profile.status_detail}</span></p>}
+                {profile.target_job_role && <p>{t('candidateProfile.targetRole')}: <span className="text-white">{profile.target_job_role}</span></p>}
+                {profile.experience_level && <p>{t('candidateProfile.level')}: <span className="text-white capitalize">{profile.experience_level}</span></p>}
               </div>
             </Card>
 
             {profile.skills && profile.skills.length > 0 && (
               <Card>
-                <h2 className="mb-4 text-xl font-bold">Skills</h2>
+                <h2 className="mb-4 text-xl font-bold">{t('candidateProfile.skills')}</h2>
                 <div className="flex flex-wrap gap-2">
                   {profile.skills.map((skill) => <Badge key={skill}>{skill}</Badge>)}
                 </div>
