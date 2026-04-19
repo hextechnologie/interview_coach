@@ -760,13 +760,9 @@ export default function HomePage() {
             className="text-center"
           >
             <Link href="/coaches">
-              <Button
-                variant="primary"
-                className="gap-3 px-10 py-4 text-lg shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 transition-all"
-                style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
-              >
+              <button className="inline-flex items-center gap-3 px-10 py-4 text-lg font-semibold text-white rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 shadow-2xl shadow-green-600/30 hover:shadow-green-600/50 hover:scale-105 transition-all">
                 Browse All Coaches <ArrowRight className="w-5 h-5" />
-              </Button>
+              </button>
             </Link>
           </motion.div>
         </section>
