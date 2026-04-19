@@ -395,7 +395,7 @@ export default function HomePage() {
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-semibold text-green-400">Live Demo</span>
+                <span className="text-sm font-semibold text-green-400">{t('hero.liveDemo')}</span>
               </motion.div>
 
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50 bg-slate-950">
@@ -406,8 +406,8 @@ export default function HomePage() {
                     {/* Demo header */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <p className="text-sm font-semibold text-white">AI Practice + Coach Feedback</p>
-                        <p className="text-xs text-gray-400">Live mock interview preview</p>
+                        <p className="text-sm font-semibold text-white">{t('hero.demoTitle')}</p>
+                        <p className="text-xs text-gray-400">{t('hero.demoSubtitle')}</p>
                       </div>
                       <div className="flex gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-red-500/70" />
@@ -476,9 +476,9 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl md:text-6xl font-bold mb-6">Why Choose Interview Coach</h2>
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">{t('whyChoose.title')}</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              The only platform that combines unlimited AI practice with real human coaching — so you're always one step ahead.
+              {t('whyChoose.subtitle')}
             </p>
           </motion.div>
 
@@ -495,26 +495,26 @@ export default function HomePage() {
               <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mb-6 text-4xl group-hover:scale-110 transition-transform shadow-lg shadow-purple-600/30">
                 🤖
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">AI Mock Interviews 🤖</h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">{t('whyChoose.aiTitle')}</h3>
               <p className="text-base text-gray-300 mb-6 leading-relaxed">
-                Practice 24/7 with our AI that adapts to your role, experience level, and target company. Get instant scoring and detailed feedback on every answer.
+                {t('whyChoose.aiDesc')}
               </p>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">STAR method structure analysis</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.aiFeature1')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Confidence & clarity scoring</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.aiFeature2')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Filler word detection</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.aiFeature3')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Unlimited practice sessions</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.aiFeature4')}</p>
                 </div>
               </div>
             </motion.div>
@@ -534,31 +534,31 @@ export default function HomePage() {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="absolute top-6 right-6 text-xs font-bold rounded-full bg-green-600/20 border border-green-500/40 px-3 py-1.5 text-green-400"
               >
-                NEW
+                {t('whyChoose.coachBadge')}
               </motion.span>
               <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 text-4xl group-hover:scale-110 transition-transform shadow-lg shadow-green-600/30" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.3), rgba(5,150,105,0.3))', border: '2px solid rgba(16,185,129,0.4)' }}>
                 👨‍💼
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Real Expert Coaches 👨‍💼</h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">{t('whyChoose.coachTitle')}</h3>
               <p className="text-base text-gray-300 mb-6 leading-relaxed">
-                Book 1-on-1 sessions with experienced coaches from top companies. Get personalised advice, live feedback, and insider tips you can't get from AI.
+                {t('whyChoose.coachDesc')}
               </p>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Coaches from Google, Amazon, McKinsey</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.coachFeature1')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Video & audio sessions</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.coachFeature2')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">CV & cover letter review</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.coachFeature3')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Salary negotiation coaching</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.coachFeature4')}</p>
                 </div>
               </div>
             </motion.div>
@@ -575,26 +575,26 @@ export default function HomePage() {
               <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-blue-600/30">
                 <TrendingUp className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Track & Improve 📈</h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">{t('whyChoose.trackTitle')}</h3>
               <p className="text-base text-gray-300 mb-6 leading-relaxed">
-                Monitor your progress across both AI sessions and coach feedback. See your scores improve over time with detailed analytics and personalised coaching plans.
+                {t('whyChoose.trackDesc')}
               </p>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">AI + Coach combined analytics</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.trackFeature1')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Score trend charts</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.trackFeature2')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Personalised improvement plan</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.trackFeature3')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-                  <p className="text-base text-gray-400">Full session history</p>
+                  <p className="text-base text-gray-400">{t('whyChoose.trackFeature4')}</p>
                 </div>
               </div>
             </motion.div>
