@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import { supabase } from '@/lib/supabase'
 import { getFirstName } from '@/lib/supabase'
 import CoachNavbar from '@/components/CoachNavbar'
@@ -30,6 +31,7 @@ function StatCard({ icon: Icon, label, value, color }: { icon: React.ElementType
 
 export default function CoachEarningsPage() {
   const { user, loading: authLoading } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
   const [earnings, setEarnings] = useState<EarningRow[]>([])
   const [monthlyStats, setMonthlyStats] = useState<MonthStat[]>([])
@@ -84,22 +86,22 @@ export default function CoachEarningsPage() {
       <CoachNavbar />
       <div className="container mx-auto px-4 md:px-6 py-8 max-w-6xl">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-1">Earnings</h1>
-          <p className="text-gray-400">Track your revenue, session stats and payment history.</p>
+          <h1 className="text-3xl font-bold mb-1">{t('coachEarnings.pageTitle')}</h1>
+          <p className="text-gray-400">{t('coachEarnings.pageDescription')}</p>
         </div>
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={DollarSign} label="Total Earned" value={`$${totalEarnings.toFixed(0)}`} color="bg-green-500/20 text-green-400" />
-          <StatCard icon={TrendingUp} label="This Month" value={`$${thisMonthEarnings.toFixed(0)}`} color="bg-purple-500/20 text-purple-400" />
-          <StatCard icon={Calendar} label="Avg / Session" value={`$${avgPerSession.toFixed(0)}`} color="bg-blue-500/20 text-blue-400" />
-          <StatCard icon={Clock} label="Pending" value={`$${pending.toFixed(0)}`} color="bg-yellow-500/20 text-yellow-400" />
+          <StatCard icon={DollarSign} label={t('coachEarnings.totalEarned')} value={`$${totalEarnings.toFixed(0)}`} color="bg-green-500/20 text-green-400" />
+          <StatCard icon={TrendingUp} label={t('coachEarnings.thisMonth')} value={`$${thisMonthEarnings.toFixed(0)}`} color="bg-purple-500/20 text-purple-400" />
+          <StatCard icon={Calendar} label={t('coachEarnings.avgPerSession')} value={`$${avgPerSession.toFixed(0)}`} color="bg-blue-500/20 text-blue-400" />
+          <StatCard icon={Clock} label={t('coachEarnings.pending')} value={`$${pending.toFixed(0)}`} color="bg-yellow-500/20 text-yellow-400" />
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {/* Chart */}
           <div className="md:col-span-2 rounded-2xl p-5 border border-white/10" style={{ background: '#111827' }}>
-            <h2 className="text-lg font-bold mb-4">Revenue (Last 6 Months)</h2>
+            <h2 className="text-lg font-bold mb-4">{t('coachEarnings.chartTitle')}</h2>
             <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={monthlyStats}>
                 <defs>
@@ -119,7 +121,7 @@ export default function CoachEarningsPage() {
 
           {/* Sessions chart */}
           <div className="rounded-2xl p-5 border border-white/10" style={{ background: '#111827' }}>
-            <h2 className="text-lg font-bold mb-4">Sessions / Month</h2>
+            <h2 className="text-lg font-bold mb-4">{t('coachEarnings.sessionsChartTitle')}</h2>
             <div className="space-y-3">
               {monthlyStats.map((s) => {
                 const max = Math.max(...monthlyStats.map((x) => x.sessions), 1)
@@ -140,21 +142,21 @@ export default function CoachEarningsPage() {
         {/* Transaction history */}
         <div className="mt-6 rounded-2xl border border-white/10 overflow-hidden" style={{ background: '#111827' }}>
           <div className="px-5 py-4 border-b border-white/10">
-            <h2 className="text-lg font-bold">Transaction History</h2>
+            <h2 className="text-lg font-bold">{t('coachEarnings.transactionHistory')}</h2>
           </div>
           {earnings.length === 0 ? (
-            <div className="px-5 py-10 text-center text-gray-500">No transactions yet.</div>
+            <div className="px-5 py-10 text-center text-gray-500">{t('coachEarnings.noTransactions')}</div>
           ) : (
             <div className="divide-y divide-white/5">
               {earnings.map((row) => (
                 <div key={row.id} className="px-5 py-3 flex items-center justify-between hover:bg-white/5 transition-colors">
                   <div>
-                    <p className="text-sm font-medium">Session payment</p>
+                    <p className="text-sm font-medium">{t('coachEarnings.sessionPayment')}</p>
                     <p className="text-xs text-gray-500">{format(new Date(row.created_at), 'MMM d, yyyy · h:mm a')}</p>
                   </div>
                   <div className="text-right">
                     <p className={`text-sm font-bold ${row.status === 'pending' ? 'text-yellow-400' : 'text-green-400'}`}>+${row.amount?.toFixed(2)}</p>
-                    <p className={`text-xs capitalize ${row.status === 'pending' ? 'text-yellow-400/70' : 'text-gray-500'}`}>{row.status || 'paid'}</p>
+                    <p className={`text-xs capitalize ${row.status === 'pending' ? 'text-yellow-400/70' : 'text-gray-500'}`}>{row.status ? t(`coachEarnings.status${row.status.charAt(0).toUpperCase() + row.status.slice(1)}`) : t('coachEarnings.statusPaid')}</p>
                   </div>
                 </div>
               ))}
