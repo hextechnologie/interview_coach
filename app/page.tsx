@@ -277,9 +277,9 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight"
               >
-                Land your dream job with{' '}
+                {t('hero.title')}{' '}
                 <span className="gradient-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 bg-clip-text text-transparent animate-gradient">
-                  AI Coaching + Real Expert Coaches
+                  {t('hero.titleHighlight')}
                 </span>
               </motion.h1>
 
@@ -289,8 +289,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed"
               >
-                Practice unlimited mock interviews with AI, then book a 1-on-1 session with a real interview coach. 
-                Get personalised feedback, improve faster, and walk into every interview with <span className="text-purple-400 font-semibold">real confidence</span>.
+                {t('hero.description')} <span className="text-purple-400 font-semibold">{t('hero.confidence')}</span>.
               </motion.p>
 
               {/* CTA buttons - Conditional based on auth */}
@@ -304,12 +303,12 @@ export default function HomePage() {
                   <>
                     <Link href="/dashboard">
                       <Button variant="primary" className="text-lg px-10 py-4 w-full sm:w-auto shadow-2xl shadow-purple-600/30">
-                        Go to Dashboard
+                        {t('hero.goDashboard')}
                       </Button>
                     </Link>
                     <Link href="/coaches">
                       <Button variant="outline" className="text-lg px-10 py-4 w-full sm:w-auto">
-                        Find a Coach
+                        {t('hero.findCoach')}
                       </Button>
                     </Link>
                   </>
@@ -317,12 +316,12 @@ export default function HomePage() {
                   <>
                     <Link href="/signup/candidate">
                       <Button variant="primary" className="text-lg px-10 py-4 w-full sm:w-auto shadow-2xl shadow-purple-600/30 hover:scale-105 transition-transform">
-                        Start Practicing Free
+                        {t('hero.startFree')}
                       </Button>
                     </Link>
                     <Link href="/coaches">
                       <Button variant="outline" className="text-lg px-10 py-4 w-full sm:w-auto hover:border-purple-400 hover:text-purple-400 transition-all">
-                        Find a Coach
+                        {t('hero.findCoach')}
                       </Button>
                     </Link>
                   </>
@@ -336,7 +335,7 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="text-sm text-gray-400 mb-8 text-center lg:text-left"
               >
-                ✨ No credit card needed · Start for free
+                {t('hero.noCreditCard')}
               </motion.p>
 
               {/* Watch demo */}
@@ -352,7 +351,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 rounded-full bg-purple-600/20 flex items-center justify-center group-hover:bg-purple-600/30 group-hover:scale-110 transition-all">
                     <Play className="w-5 h-5 fill-current" />
                   </div>
-                  <span className="text-base font-medium">Watch Demo Video</span>
+                  <span className="text-base font-medium">{t('hero.watchDemo')}</span>
                 </button>
               </motion.div>
 
@@ -369,7 +368,7 @@ export default function HomePage() {
                       <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 border-2 border-black" />
                     ))}
                   </div>
-                  <span className="text-sm font-medium">👥 Join 2,500+ professionals already practicing</span>
+                  <span className="text-sm font-medium">{t('hero.socialProof')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex text-yellow-400">
@@ -377,7 +376,7 @@ export default function HomePage() {
                       <StarIcon key={i} className="w-5 h-5 fill-current" />
                     ))}
                   </div>
-                  <span className="text-sm text-gray-400">Rated <span className="text-white font-semibold">4.9/5</span> by our users</span>
+                  <span className="text-sm text-gray-400">{t('hero.rating')} <span className="text-white font-semibold">{t('hero.ratingScore')}</span> {t('hero.ratingText')}</span>
                 </div>
               </motion.div>
             </motion.div>

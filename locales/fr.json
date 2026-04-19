@@ -14,13 +14,19 @@
     "becomeCoachDesc": "Gagnez grâce à votre expertise"
   },
   "hero": {
-    "title": "Maîtrisez votre prochain entretien avec",
-    "titleHighlight": "le Coaching IA",
-    "description": "Pratiquez avec un intervieweur IA réaliste, recevez des retours personnalisés instantanés et préparez-vous avec des simulations d'entretien qui reflètent les vraies méthodes de recrutement.",
+    "title": "Décrochez le job de vos rêves avec",
+    "titleHighlight": "Coaching IA + Vrais Coachs Experts",
+    "description": "Pratiquez des entretiens simulés illimités avec l'IA, puis réservez une session 1-à-1 avec un vrai coach d'entretien. Obtenez des retours personnalisés, progressez plus vite et abordez chaque entretien avec",
+    "confidence": "une vraie confiance",
     "startFree": "Commencer gratuitement",
-    "viewPricing": "Voir les tarifs",
-    "watchDemo": "Voir la démo",
-    "freeInterviews": "3 entretiens gratuits · Sans carte bancaire"
+    "findCoach": "Trouver un coach",
+    "goDashboard": "Tableau de bord",
+    "noCreditCard": "✨ Aucune carte bancaire requise · Commencez gratuitement",
+    "socialProof": "👥 Rejoignez 2 500+ professionnels qui pratiquent déjà",
+    "rating": "Noté",
+    "ratingScore": "4.9/5",
+    "ratingText": "par nos utilisateurs",
+    "watchDemo": "Voir la vidéo de démo"
   },
   "stats": {
     "activeUsers": "Utilisateurs actifs",

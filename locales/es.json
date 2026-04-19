@@ -14,13 +14,19 @@
     "becomeCoachDesc": "Gana con tu experiencia"
   },
   "hero": {
-    "title": "Domina tu próxima entrevista con",
-    "titleHighlight": "Coaching IA",
-    "description": "Practica con un entrevistador IA realista, recibe retroalimentación personalizada al instante y prepárate con simulaciones de entrevista que reflejan cómo realmente contratan las empresas.",
-    "startFree": "Comienza gratis",
-    "viewPricing": "Ver precios",
-    "watchDemo": "Ver demostración",
-    "freeInterviews": "3 entrevistas gratis · Sin tarjeta necesaria"
+    "title": "Consigue el trabajo de tus sueños con",
+    "titleHighlight": "Coaching IA + Coaches Expertos Reales",
+    "description": "Practica entrevistas simuladas ilimitadas con IA, luego reserva una sesión 1-a-1 con un coach de entrevistas real. Obtén retroalimentación personalizada, mejora más rápido y enfrenta cada entrevista con",
+    "confidence": "confianza real",
+    "startFree": "Comenzar gratis",
+    "findCoach": "Encontrar un coach",
+    "goDashboard": "Panel de control",
+    "noCreditCard": "✨ No se necesita tarjeta de crédito · Comienza gratis",
+    "socialProof": "👥 Únete a +2,500 profesionales que ya practican",
+    "rating": "Calificado",
+    "ratingScore": "4.9/5",
+    "ratingText": "por nuestros usuarios",
+    "watchDemo": "Ver video de demostración"
   },
   "stats": {
     "activeUsers": "Usuarios activos",
