@@ -1,0 +1,142 @@
+{
+  "dashboard": {
+    "welcome": "Welcome back,",
+    "usedInterviews": "You have used",
+    "ofInterviews": "of",
+    "interviewsThisMonth": "interviews this month",
+    "unlimited": "Unlimited",
+    "manageCoachDashboard": "Manage your sessions and clients from your",
+    "coachDashboard": "Coach Dashboard",
+    
+    "myBookings": "My Bookings",
+    "findCoach": "Find a Coach",
+    "myProfile": "My Profile",
+    "myCredits": "My Credits",
+    "proPlan": "Pro Plan",
+    "logout": "Logout",
+    "newInterview": "New Interview",
+    "goToCoachDashboard": "Go to Coach Dashboard",
+    
+    "stats": {
+      "totalInterviews": "Total Interviews Done",
+      "avgScore": "Average Score",
+      "thisMonth": "This Month",
+      "streak": "Streak 🔥",
+      "days": "days",
+      "emptyTotal": "Start your first interview to begin tracking your progress!",
+      "emptyAvg": "Complete interviews to see your average performance score",
+      "emptyMonth": "Practice this month to track your monthly progress",
+      "emptyStreak": "Start a streak by practicing daily to build consistency!"
+    },
+    
+    "progress": {
+      "title": "Progress Overview",
+      "subtitle": "Your interview scores over time",
+      "emptyTitle": "Complete a few interviews to unlock your score trend chart.",
+      "emptySubtitle": "Start your first interview to see your progress! 🚀"
+    },
+    
+    "coachHub": {
+      "title": "Coach Hub",
+      "subtitle": "Manage your coaching sessions",
+      "upcomingSessions": "Upcoming Sessions",
+      "myCoaches": "My Coaches",
+      "noUpcoming": "No upcoming sessions.",
+      "noUpcomingDesc": "Find a coach to book your first session!",
+      "noCoaches": "No coaches yet. Book a session to get started!",
+      "joinSession": "Join Session",
+      "upcoming": "🟢 Upcoming",
+      "completed": "✅ Completed",
+      "pending": "⏳ Pending",
+      "active": "🟢 Active"
+    },
+    
+    "recentSessions": {
+      "title": "Recent Sessions",
+      "subtitle": "Track your latest practice sessions",
+      "noSessions": "No interviews yet!",
+      "noSessionsDesc": "Begin practicing now and unlock AI-powered feedback.",
+      "startFirst": "Start Your First Interview",
+      "date": "Date",
+      "role": "Role",
+      "level": "Level",
+      "score": "Score",
+      "type": "Type",
+      "action": "Action",
+      "delete": "Delete",
+      "view": "View",
+      "continue": "Continue",
+      "deleteConfirm": "Delete this interview? This action cannot be undone and credits will not be refunded.",
+      "sessionExpired": "Session expired. Please log in again.",
+      "deleteFailed": "Failed to delete interview"
+    },
+    
+    "jobs": {
+      "title": "Remote Job Opportunities",
+      "subtitle": "Live remote listings matched to your target role",
+      "browseAll": "Browse All →"
+    },
+    
+    "recommendedCoaches": {
+      "title": "Recommended Coaches for You",
+      "subtitle": "Based on your interview history and role",
+      "seeAll": "See All →",
+      "comingSoon": "More coaches coming soon! 🌟",
+      "browse": "Browse available coaches →",
+      "viewProfile": "View Profile",
+      "creditsPerHour": "credits/hr",
+      "generalCoaching": "General Coaching"
+    },
+    
+    "achievements": {
+      "title": "Your Achievements",
+      "subtitle": "{count}/{total} badges unlocked",
+      "emptySubtitle": "Complete interviews to unlock badges! 🏅",
+      "unlocked": "✓ Unlocked",
+      "firstInterview": "First Interview",
+      "score7": "Score 7+",
+      "streak3": "3-Day Streak",
+      "fiveSessions": "5 Sessions",
+      "tenSessions": "10 Sessions",
+      "perfect10": "Perfect 10"
+    },
+    
+    "credits": {
+      "title": "💳 Credits",
+      "outOfCredits": "Out of Credits!",
+      "currentBalance": "Current Balance",
+      "credits": "credits",
+      "buyNow": "Buy Credits Now",
+      "topUp": "Top Up Credits",
+      "quickRecharge": "Quick Recharge:"
+    },
+    
+    "dailyTip": {
+      "title": "💡 Daily Interview Tip",
+      "nextTip": "Next Tip",
+      "tip1": "Use the STAR method (Situation, Task, Action, Result) to keep your answers structured and memorable.",
+      "tip2": "Add specific numbers and outcomes to prove the impact of your work.",
+      "tip3": "Take 2-3 seconds to pause before answering — it shows composure, not hesitation.",
+      "tip4": "Keep each answer focused on one strong example instead of listing many weak ones.",
+      "tip5": "Research the company's latest product launches or news before your interview.",
+      "tip6": "Prepare 3 genuine questions to ask the interviewer to demonstrate your interest.",
+      "tip7": "Avoid filler words like \"um\", \"uh\", and \"like\" by practicing answers out loud daily.",
+      "tip8": "Mirror the calm energy of the interviewer — composure always wins.",
+      "tip9": "Tailor each answer to the specific job description and company values.",
+      "tip10": "End each answer with a brief summary sentence to reinforce your key point.",
+      "categoryStructure": "Structure 📋",
+      "categoryConfidence": "Confidence 💪",
+      "categoryPreparation": "Preparation 📚",
+      "categoryCommunication": "Communication 💬"
+    },
+    
+    "statusLabels": {
+      "student": "🎓 Student",
+      "employed": "👨‍💼 Employed",
+      "unemployed": "🔍 Job Seeking",
+      "careerChange": "🔄 Career Change",
+      "freshGraduate": "💼 Fresh Graduate",
+      "other": "🌍 Other"
+    }
+  }
+}
