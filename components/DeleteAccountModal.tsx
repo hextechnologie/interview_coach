@@ -13,17 +13,12 @@ interface DeleteAccountModalProps {
   userEmail: string
 }
 
-type Step = 'confirm' | 'email-sent'
-
 export default function DeleteAccountModal({ isOpen, onClose, userEmail }: DeleteAccountModalProps) {
-  const [step, setStep] = useState<Step>('confirm')
   const [confirmText, setConfirmText] = useState('')
   const [countdown, setCountdown] = useState(5)
   const [isCountingDown, setIsCountingDown] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
-
   const router = useRouter()
 
   const isDeleteTyped = confirmText === 'DELETE'
@@ -61,7 +56,6 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setStep('confirm')
       setConfirmText('')
       setCountdown(5)
       setIsCountingDown(false)
@@ -81,54 +75,25 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No user found')
 
-      // Send deletion confirmation email
-      const response = await fetch('/api/account/delete-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, userId: user.id })
-      })
+      // Delete user profile (CASCADE will handle related data)
+      const { error: deleteError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id)
 
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to send confirmation email')
-      }
+      if (deleteError) throw deleteError
 
-      // Show email sent step
-      setStep('email-sent')
+      // Sign out
+      await supabase.auth.signOut()
+
+      // Redirect to homepage with message
+      router.push('/?account=deleted')
     } catch (err: any) {
-      setError(err.message || 'Failed to process deletion request')
+      setError(err.message || 'Failed to delete account')
     } finally {
       setLoading(false)
     }
   }
-
-  const handleResendEmail = async () => {
-    setLoading(true)
-    setError('')
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No user found')
-
-      const response = await fetch('/api/account/delete-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, userId: user.id })
-      })
-
-      if (!response.ok) throw new Error('Failed to resend email')
-      
-      // Show success feedback
-      setError('Email resent successfully!')
-      setTimeout(() => setError(''), 3000)
-    } catch (err: any) {
-      setError(err.message || 'Failed to resend email')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (!isOpen) return null
 
   if (!isOpen) return null
 
@@ -159,216 +124,161 @@ export default function DeleteAccountModal({ isOpen, onClose, userEmail }: Delet
           className="w-full max-w-md sm:max-w-lg rounded-2xl border border-red-500/40 shadow-2xl overflow-hidden"
           style={{ background: '#1a0a0a' }}
         >
-          {step === 'confirm' ? (
-            <>
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 pb-4 border-b border-red-500/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                    <AlertTriangle className="w-8 h-8 text-red-500" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white">Delete Account</h2>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 pb-4 border-b border-red-500/20">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>
+              <h2 className="text-2xl font-bold text-white">Delete Account</h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
 
-              <div className="p-6 space-y-6">
-                {/* Warning */}
-                <div className="rounded-lg border border-red-500 bg-red-950/50 p-4">
-                  <p className="text-base font-bold text-white mb-2 flex items-center gap-2">
-                    🔴 This action cannot be undone!
-                  </p>
-                  <p className="text-sm text-gray-300">
-                    Deleting your account will <strong className="text-white">permanently remove</strong>:
-                  </p>
-                </div>
+          <div className="p-6 space-y-6">
+            {/* Warning */}
+            <div className="rounded-lg border border-red-500 bg-red-950/50 p-4">
+              <p className="text-base font-bold text-white mb-2 flex items-center gap-2">
+                🔴 This action cannot be undone!
+              </p>
+              <p className="text-sm text-gray-300">
+                Deleting your account will <strong className="text-white">permanently remove</strong>:
+              </p>
+            </div>
 
-                {/* What gets deleted - Visual list */}
-                <div className="space-y-2">
-                  {deletionItems.map((item, index) => (
+            {/* What gets deleted - Visual list */}
+            <div className="space-y-2">
+              {deletionItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-red-950/30 border border-red-900/30"
+                >
+                  <item.icon className={`w-5 h-5 ${item.color} flex-shrink-0`} />
+                  <span className="text-sm text-gray-200">{item.text}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Confirmation Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-200 mb-2">
+                Type <span className="font-bold text-red-400">DELETE</span> to confirm
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
+                  className="w-full rounded-lg border border-red-500/40 px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-500 bg-black/60 pr-12"
+                  placeholder="Type DELETE"
+                  autoComplete="off"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {confirmText && (
                     <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-red-950/30 border border-red-900/30"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500 }}
                     >
-                      <item.icon className={`w-5 h-5 ${item.color} flex-shrink-0`} />
-                      <span className="text-sm text-gray-200">{item.text}</span>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Confirmation Input */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-2">
-                    Type <span className="font-bold text-red-400">DELETE</span> to confirm
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={confirmText}
-                      onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
-                      className="w-full rounded-lg border border-red-500/40 px-4 py-3 text-white text-base focus:outline-none focus:ring-2 focus:ring-red-500 bg-black/60 pr-12"
-                      placeholder="Type DELETE"
-                      autoComplete="off"
-                    />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      {confirmText && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: 'spring', stiffness: 500 }}
-                        >
-                          {isDeleteTyped ? (
-                            <Check className="w-6 h-6 text-green-500" />
-                          ) : (
-                            <XCircle className="w-6 h-6 text-red-500" />
-                          )}
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
-                  <p className="mt-2 text-xs text-gray-400">
-                    {confirmText === '' ? (
-                      'Type DELETE in capital letters to confirm'
-                    ) : !isDeleteTyped ? (
-                      <span className="text-red-400">✗ Please type exactly: DELETE</span>
-                    ) : (
-                      <span className="text-green-400">✓ Confirmed - countdown started</span>
-                    )}
-                  </p>
-                </div>
-
-                {/* Email Display */}
-                <div className="text-sm text-gray-400">
-                  Your email: <span className="text-white font-medium">{userEmail}</span>
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
-                  >
-                    {error}
-                  </motion.div>
-                )}
-
-                {/* Buttons */}
-                <div className="space-y-3">
-                  {/* Cancel Button - Prominent */}
-                  <Button
-                    type="button"
-                    variant="primary"
-                    fullWidth
-                    onClick={onClose}
-                    disabled={loading}
-                    className="!bg-gradient-to-r !from-purple-600 !to-blue-600 !text-white !text-base !py-3"
-                  >
-                    ← Keep My Account
-                  </Button>
-                  
-                  {/* Delete Button with Countdown */}
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={handleDelete}
-                      disabled={!canDelete || loading}
-                      className={`w-full px-4 py-3 rounded-lg text-white text-base font-medium transition-all ${
-                        !canDelete
-                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                          : 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                      }`}
-                    >
-                      {loading ? (
-                        'Processing...'
-                      ) : countdown > 0 && isDeleteTyped ? (
-                        `Delete Account (${countdown})`
+                      {isDeleteTyped ? (
+                        <Check className="w-6 h-6 text-green-500" />
                       ) : (
-                        'Delete Account'
+                        <XCircle className="w-6 h-6 text-red-500" />
                       )}
-                    </button>
-                    
-                    {/* Progress Bar */}
-                    {isDeleteTyped && countdown > 0 && (
-                      <motion.div
-                        initial={{ width: '0%' }}
-                        animate={{ width: `${progressPercentage}%` }}
-                        className="absolute bottom-0 left-0 h-1 bg-red-400 rounded-b-lg"
-                        transition={{ duration: 1 }}
-                      />
-                    )}
-                  </div>
-                  
-                  {countdown > 0 && isDeleteTyped && (
-                    <p className="text-xs text-center text-gray-400">
-                      Wait {countdown} second{countdown !== 1 ? 's' : ''} to proceed...
-                    </p>
+                    </motion.div>
                   )}
                 </div>
               </div>
-            </>
-          ) : (
-            // Email Sent Step
-            <>
-              <div className="p-6 text-center space-y-6">
-                <div className="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto">
-                  <Mail className="w-10 h-10 text-blue-400" />
-                </div>
-                
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">📧 Check Your Email</h2>
-                  <p className="text-gray-300 mb-4">
-                    We sent a confirmation link to:
-                  </p>
-                  <p className="text-lg font-semibold text-white mb-6">
-                    {userEmail}
-                  </p>
-                  <div className="text-sm text-gray-400 space-y-2 text-left bg-white/5 p-4 rounded-lg">
-                    <p>• Click the link to permanently delete your account</p>
-                    <p>• Link expires in <strong className="text-white">24 hours</strong></p>
-                    <p>• If you didn't request this, you can safely ignore the email</p>
-                  </div>
-                </div>
-
-                {error && (
-                  <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                    {error}
-                  </div>
+              <p className="mt-2 text-xs text-gray-400">
+                {confirmText === '' ? (
+                  'Type DELETE in capital letters to confirm'
+                ) : !isDeleteTyped ? (
+                  <span className="text-red-400">✗ Please type exactly: DELETE</span>
+                ) : (
+                  <span className="text-green-400">✓ Confirmed - countdown started</span>
                 )}
+              </p>
+            </div>
 
-                <div className="space-y-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    fullWidth
-                    onClick={handleResendEmail}
-                    disabled={loading}
-                  >
-                    Resend Email
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    fullWidth
-                    onClick={onClose}
-                  >
-                    Close
-                  </Button>
-                </div>
+            {/* Email Display */}
+            <div className="text-sm text-gray-400">
+              Your email: <span className="text-white font-medium">{userEmail}</span>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            {/* Buttons */}
+            <div className="space-y-3">
+              {/* Cancel Button - Prominent */}
+              <Button
+                type="button"
+                variant="primary"
+                fullWidth
+                onClick={onClose}
+                disabled={loading}
+                className="!bg-gradient-to-r !from-purple-600 !to-blue-600 !text-white !text-base !py-3"
+              >
+                ← Keep My Account
+              </Button>
+              
+              {/* Delete Button with Countdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={!canDelete || loading}
+                  className={`w-full px-4 py-3 rounded-lg text-white text-base font-medium transition-all ${
+                    !canDelete
+                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                      : 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                  }`}
+                >
+                  {loading ? (
+                    'Deleting Account...'
+                  ) : countdown > 0 && isDeleteTyped ? (
+                    `Delete Account (${countdown})`
+                  ) : (
+                    'Delete Account'
+                  )}
+                </button>
+                
+                {/* Progress Bar */}
+                {isDeleteTyped && countdown > 0 && (
+                  <motion.div
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${progressPercentage}%` }}
+                    className="absolute bottom-0 left-0 h-1 bg-red-400 rounded-b-lg"
+                    transition={{ duration: 1 }}
+                  />
+                )}
               </div>
-            </>
-          )}
+              
+              {countdown > 0 && isDeleteTyped && (
+                <p className="text-xs text-center text-gray-400">
+                  Wait {countdown} second{countdown !== 1 ? 's' : ''} to proceed...
+                </p>
+              )}
+            </div>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>
   )
 }
-
