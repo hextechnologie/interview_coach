@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
+import { useLanguage } from '@/components/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
@@ -99,6 +100,7 @@ function trendLabel(val: number) {
 
 export default function DashboardPage() {
   const { user, profile, loading: authLoading, signOut } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
   const [sessions, setSessions] = useState<InterviewSession[]>([])
   const [stats, setStats] = useState({ totalInterviews: 0, avgScore: 0, interviewsThisMonth: 0, streakDays: 0 })
@@ -426,8 +428,8 @@ export default function DashboardPage() {
             <div className="hidden md:flex items-center gap-3">
               <CreditBalanceButton />
               <NotificationBell />
-              {!isCoach && <Link href="/bookings"><Button variant="outline" className="text-sm gap-2"><Calendar className="w-4 h-4" />My Bookings</Button></Link>}
-              {!isCoach && <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">Find a Coach</Button></Link>}
+              {!isCoach && <Link href="/bookings"><Button variant="outline" className="text-sm gap-2"><Calendar className="w-4 h-4" />{t('dashboard.myBookings')}</Button></Link>}
+              {!isCoach && <Link href="/coaches"><Button variant="outline" className="text-sm gap-2">{t('dashboard.findCoach')}</Button></Link>}
               {isCoach && <Link href="/coach/dashboard"><Button variant="outline" className="text-sm gap-2">Coach Dashboard</Button></Link>}
 
               {/* Profile dropdown */}
@@ -451,17 +453,17 @@ export default function DashboardPage() {
                     <div className="py-1">
                       <Link href="/profile" onClick={() => setProfileOpen(false)}>
                         <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
-                          <User className="w-4 h-4" /> My Profile
+                          <User className="w-4 h-4" /> {t('dashboard.myProfile')}
                         </button>
                       </Link>
                       <Link href="/credits" onClick={() => setProfileOpen(false)}>
                         <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
-                          <Wallet className="w-4 h-4" /> My Credits
+                          <Wallet className="w-4 h-4" /> {t('dashboard.myCredits')}
                         </button>
                       </Link>
                       <Link href="/pricing" onClick={() => setProfileOpen(false)}>
                         <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2 transition-colors">
-                          <CreditCard className="w-4 h-4" /> Pro Plan
+                          <CreditCard className="w-4 h-4" /> {t('dashboard.proPlan')}
                         </button>
                       </Link>
                       <div className="my-1 border-t border-white/10"></div>
@@ -469,7 +471,7 @@ export default function DashboardPage() {
                         onClick={() => { setProfileOpen(false); signOut() }}
                         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
                       >
-                        <LogOut className="w-4 h-4" /> Logout
+                        <LogOut className="w-4 h-4" /> {t('dashboard.logout')}
                       </button>
                     </div>
                   </div>
@@ -492,14 +494,14 @@ export default function DashboardPage() {
           {/* Mobile menu */}
           {menuOpen && (
             <div className="md:hidden mt-4 pb-2 border-t border-white/10 pt-4 space-y-2">
-              {!isCoach && <Link href="/coaches" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Find a Coach</Button></Link>}
-              {!isCoach && <Link href="/bookings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Calendar className="w-4 h-4 mr-2" /> My Bookings</Button></Link>}
+              {!isCoach && <Link href="/coaches" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">{t('dashboard.findCoach')}</Button></Link>}
+              {!isCoach && <Link href="/bookings" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Calendar className="w-4 h-4 mr-2" /> {t('dashboard.myBookings')}</Button></Link>}
               {isCoach && <Link href="/coach/dashboard" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start">Coach Dashboard</Button></Link>}
-              <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><User className="w-4 h-4 mr-2" /> My Profile</Button></Link>
-              <Link href="/credits" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Wallet className="w-4 h-4 mr-2" /> My Credits</Button></Link>
-              <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> Pro Plan</Button></Link>
+              <Link href="/profile" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><User className="w-4 h-4 mr-2" /> {t('dashboard.myProfile')}</Button></Link>
+              <Link href="/credits" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><Wallet className="w-4 h-4 mr-2" /> {t('dashboard.myCredits')}</Button></Link>
+              <Link href="/pricing" onClick={() => setMenuOpen(false)}><Button variant="outline" fullWidth className="justify-start"><CreditCard className="w-4 h-4 mr-2" /> {t('dashboard.proPlan')}</Button></Link>
               <div className="border-t border-white/10 my-2"></div>
-              <Button variant="outline" fullWidth onClick={signOut} className="justify-start text-red-400"><LogOut className="w-4 h-4 mr-2" /> Logout</Button>
+              <Button variant="outline" fullWidth onClick={signOut} className="justify-start text-red-400"><LogOut className="w-4 h-4 mr-2" /> {t('dashboard.logout')}</Button>
             </div>
           )}
         </div>
@@ -510,7 +512,7 @@ export default function DashboardPage() {
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-1">
-              Welcome back,{' '}
+              {t('dashboard.welcome')}{' '}
               <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{displayName}</span>! 👋
             </h1>
             {statusLabel && (
@@ -518,12 +520,12 @@ export default function DashboardPage() {
             )}
             {!isCoach && (
               <p className="text-gray-400">
-                You have used <span className="text-white font-semibold">{profile.interviews_used_this_month}</span> of{' '}
+                {t('dashboard.usedInterviews')} <span className="text-white font-semibold">{profile.interviews_used_this_month}</span> {t('dashboard.ofInterviews')}{' '}
                 <span className="text-white font-semibold">
                   {profile.interviews_limit === 999999 || profile.interviews_limit >= 999 
-                    ? 'Unlimited' 
+                    ? t('dashboard.unlimited') 
                     : profile.interviews_limit}
-                </span> interviews this month{profile.interviews_limit === 999999 || profile.interviews_limit >= 999 ? ' ✨' : ''}.
+                </span> {t('dashboard.interviewsThisMonth')}{profile.interviews_limit === 999999 || profile.interviews_limit >= 999 ? ' ✨' : ''}.
               </p>
             )}
             {isCoach && (
@@ -531,8 +533,8 @@ export default function DashboardPage() {
             )}
           </div>
           <div className="flex flex-wrap gap-3">
-            {!isCoach && <Link href="/coaches"><Button variant="outline" className="gap-2">Find a Coach</Button></Link>}
-            {!isCoach && <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> New Interview</Button></Link>}
+            {!isCoach && <Link href="/coaches"><Button variant="outline" className="gap-2">{t('dashboard.findCoach')}</Button></Link>}
+            {!isCoach && <Link href="/interview/setup"><Button variant="primary" className="gap-2"><Plus className="w-4 h-4" /> {t('dashboard.newInterview')}</Button></Link>}
             {isCoach && <Link href="/coach/dashboard"><Button variant="primary" className="gap-2"><ArrowRight className="w-4 h-4" /> Go to Coach Dashboard</Button></Link>}
           </div>
         </div>

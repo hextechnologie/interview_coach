@@ -178,5 +178,20 @@
     "coachTitle": "Compte coach",
     "coachDesc": "Créez votre profil d'expert, fixez vos tarifs et gagnez avec les sessions.",
     "continue": "Continuer"
+  },
+  "dashboard": {
+    "welcome": "Bon retour,",
+    "usedInterviews": "Vous avez utilisé",
+    "ofInterviews": "sur",
+    "interviewsThisMonth": "entretiens ce mois-ci",
+    "unlimited": "Illimité",
+    "myBookings": "Mes Réservations",
+    "findCoach": "Trouver un Coach",
+    "myProfile": "Mon Profil",
+    "myCredits": "Mes Crédits",
+    "proPlan": "Plan Pro",
+    "logout": "Déconnexion",
+    "newInterview": "Nouvel Entretien",
+    "startInterview": "Démarrer l'entretien"
   }
 }

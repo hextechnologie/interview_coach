@@ -180,5 +180,20 @@
     "coachTitle": "Coach account",
     "coachDesc": "Build your expert profile, set your pricing, and earn from sessions.",
     "continue": "Continue"
+  },
+  "dashboard": {
+    "welcome": "Welcome back,",
+    "usedInterviews": "You have used",
+    "ofInterviews": "of",
+    "interviewsThisMonth": "interviews this month",
+    "unlimited": "Unlimited",
+    "myBookings": "My Bookings",
+    "findCoach": "Find a Coach",
+    "myProfile": "My Profile",
+    "myCredits": "My Credits",
+    "proPlan": "Pro Plan",
+    "logout": "Logout",
+    "newInterview": "New Interview",
+    "startInterview": "Start Interview"
   }
 }

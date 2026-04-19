@@ -180,5 +180,20 @@
     "coachTitle": "حساب مدرب",
     "coachDesc": "ابنِ ملفك الشخصي الخبير، وحدد أسعارك، واكسب من الجلسات.",
     "continue": "متابعة"
+  },
+  "dashboard": {
+    "welcome": "مرحباً بعودتك،",
+    "usedInterviews": "لقد استخدمت",
+    "ofInterviews": "من",
+    "interviewsThisMonth": "مقابلة هذا الشهر",
+    "unlimited": "غير محدود",
+    "myBookings": "حجوزاتي",
+    "findCoach": "ابحث عن مدرب",
+    "myProfile": "ملفي الشخصي",
+    "myCredits": "نقاطي",
+    "proPlan": "الخطة المحترفة",
+    "logout": "تسجيل الخروج",
+    "newInterview": "مقابلة جديدة",
+    "startInterview": "ابدأ المقابلة"
   }
 }
