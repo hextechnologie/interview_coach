@@ -710,6 +710,114 @@
         "subscription": "الاشتراك ورصيد النقاط",
         "messages": "جميع الرسائل والمحادثات"
       }
+    },
+    "shared": {
+      "edit": "تعديل",
+      "delete": "حذف",
+      "description": "الوصف",
+      "month": "الشهر",
+      "year": "السنة"
+    },
+    "experienceSection": {
+      "countAdded": "تمت إضافة {count} خبرات",
+      "addButton": "إضافة خبرة",
+      "emptyState": "لم تتم إضافة خبرة بعد. انقر على \"إضافة خبرة\" للبدء.",
+      "deleteConfirm": "حذف هذه الخبرة؟",
+      "present": "حتى الآن",
+      "employmentTypes": {
+        "fullTime": "دوام كامل",
+        "partTime": "دوام جزئي",
+        "freelance": "عمل حر",
+        "internship": "تدريب",
+        "contract": "عقد",
+        "selfEmployed": "عمل مستقل"
+      },
+      "modal": {
+        "addTitle": "إضافة خبرة",
+        "editTitle": "تعديل الخبرة",
+        "jobTitle": "المسمى الوظيفي",
+        "jobTitleRequired": "المسمى الوظيفي مطلوب",
+        "jobTitlePlaceholder": "مثال: مهندس برمجيات أول",
+        "companyName": "اسم الشركة",
+        "companyRequired": "اسم الشركة مطلوب",
+        "companyPlaceholder": "مثال: Google",
+        "employmentType": "نوع التوظيف",
+        "selectType": "اختر النوع",
+        "location": "الموقع",
+        "locationPlaceholder": "مثال: دبي، الإمارات أو عن بُعد",
+        "startDate": "تاريخ البدء",
+        "startYearRequired": "سنة البدء مطلوبة",
+        "currentWorkHere": "أعمل هنا حاليًا",
+        "endDate": "تاريخ الانتهاء",
+        "descriptionPlaceholder": "صف دورك وإنجازاتك ومسؤولياتك...",
+        "saveFailed": "فشل حفظ الخبرة",
+        "updateButton": "تحديث الخبرة",
+        "addButton": "إضافة خبرة"
+      }
+    },
+    "educationSection": {
+      "countAdded": "تمت إضافة {count} سجلات تعليمية",
+      "addButton": "إضافة تعليم",
+      "emptyState": "لم تتم إضافة تعليم بعد. انقر على \"إضافة تعليم\" للبدء.",
+      "deleteConfirm": "حذف هذا السجل التعليمي؟",
+      "issued": "تم الإصدار",
+      "present": "حتى الآن",
+      "grade": "التقدير",
+      "credentialId": "معرّف الشهادة",
+      "verify": "تحقق",
+      "modal": {
+        "requiredField": "هذا الحقل مطلوب",
+        "degreeRequired": "الدرجة العلمية مطلوبة",
+        "fieldRequired": "مجال الدراسة مطلوب",
+        "graduationYearRequired": "سنة التخرج مطلوبة",
+        "saveFailed": "فشل حفظ التعليم",
+        "editTitle": "تعديل التعليم",
+        "addTitle": "إضافة تعليم",
+        "updateButton": "تحديث التعليم",
+        "addButton": "إضافة تعليم"
+      }
+    },
+    "skillsSection": {
+      "title": "المهارات",
+      "countAdded": "تمت إضافة {count}/{max} مهارات",
+      "maxAllowed": "الحد الأقصى {max} مهارة",
+      "addFailed": "فشل إضافة المهارة. يرجى المحاولة مرة أخرى.",
+      "removeFailed": "فشل إزالة المهارة. يرجى المحاولة مرة أخرى.",
+      "searchPlaceholder": "اكتب للبحث عن المهارات أو اضغط Enter للإضافة...",
+      "pressEnter": "اضغط Enter لإضافة \"{query}\"",
+      "emptyState": "لم تتم إضافة مهارات بعد. ابدأ بالكتابة للبحث وإضافة مهارات.",
+      "categoriesLabel": "فئات المهارات:",
+      "removeSkill": "إزالة المهارة",
+      "categories": {
+        "technical": "تقنية",
+        "softSkills": "مهارات شخصية",
+        "languages": "اللغات",
+        "tools": "الأدوات"
+      }
+    },
+    "achievementsSection": {
+      "subtitle": "اعرض إنجازاتك",
+      "addButton": "إضافة إنجاز",
+      "emptyState": "لم تتم إضافة إنجازات بعد",
+      "addFirst": "أضف أول إنجاز لك",
+      "deleteConfirm": "هل أنت متأكد من حذف هذا الإنجاز؟",
+      "viewDetails": "عرض التفاصيل",
+      "types": {
+        "professional": "مهني",
+        "project": "مشروع",
+        "publicSpeaking": "تحدث عام",
+        "publication": "منشور",
+        "award": "جائزة",
+        "other": "أخرى"
+      },
+      "modal": {
+        "titleRequired": "العنوان مطلوب",
+        "descriptionLimit": "يجب ألا يتجاوز الوصف 200 حرف",
+        "editTitle": "تعديل الإنجاز",
+        "addTitle": "إضافة إنجاز",
+        "updateButton": "تحديث",
+        "addButton": "إضافة"
+      }
     }
   },
   "pricing": {

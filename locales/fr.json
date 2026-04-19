@@ -708,6 +708,114 @@
         "subscription": "L'abonnement et le solde des crédits",
         "messages": "Tous les messages et conversations"
       }
+    },
+    "shared": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "description": "Description",
+      "month": "Mois",
+      "year": "Année"
+    },
+    "experienceSection": {
+      "countAdded": "{count} expériences ajoutées",
+      "addButton": "Ajouter une expérience",
+      "emptyState": "Aucune expérience ajoutée pour le moment. Cliquez sur \"Ajouter une expérience\" pour commencer.",
+      "deleteConfirm": "Supprimer cette expérience ?",
+      "present": "Présent",
+      "employmentTypes": {
+        "fullTime": "Temps plein",
+        "partTime": "Temps partiel",
+        "freelance": "Freelance",
+        "internship": "Stage",
+        "contract": "Contrat",
+        "selfEmployed": "Indépendant"
+      },
+      "modal": {
+        "addTitle": "Ajouter une expérience",
+        "editTitle": "Modifier l'expérience",
+        "jobTitle": "Intitulé du poste",
+        "jobTitleRequired": "L'intitulé du poste est requis",
+        "jobTitlePlaceholder": "ex. Ingénieur logiciel senior",
+        "companyName": "Nom de l'entreprise",
+        "companyRequired": "Le nom de l'entreprise est requis",
+        "companyPlaceholder": "ex. Google",
+        "employmentType": "Type d'emploi",
+        "selectType": "Sélectionner le type",
+        "location": "Lieu",
+        "locationPlaceholder": "ex. Paris, France ou à distance",
+        "startDate": "Date de début",
+        "startYearRequired": "L'année de début est requise",
+        "currentWorkHere": "J'y travaille actuellement",
+        "endDate": "Date de fin",
+        "descriptionPlaceholder": "Décrivez votre rôle, vos réalisations et responsabilités...",
+        "saveFailed": "Échec de l'enregistrement de l'expérience",
+        "updateButton": "Mettre à jour l'expérience",
+        "addButton": "Ajouter une expérience"
+      }
+    },
+    "educationSection": {
+      "countAdded": "{count} formations ajoutées",
+      "addButton": "Ajouter une formation",
+      "emptyState": "Aucune formation ajoutée pour le moment. Cliquez sur \"Ajouter une formation\" pour commencer.",
+      "deleteConfirm": "Supprimer cette formation ?",
+      "issued": "Délivré",
+      "present": "Présent",
+      "grade": "Note",
+      "credentialId": "ID du certificat",
+      "verify": "Vérifier",
+      "modal": {
+        "requiredField": "Ce champ est requis",
+        "degreeRequired": "Le diplôme est requis",
+        "fieldRequired": "Le domaine d'étude est requis",
+        "graduationYearRequired": "L'année d'obtention est requise",
+        "saveFailed": "Échec de l'enregistrement de la formation",
+        "editTitle": "Modifier la formation",
+        "addTitle": "Ajouter une formation",
+        "updateButton": "Mettre à jour la formation",
+        "addButton": "Ajouter une formation"
+      }
+    },
+    "skillsSection": {
+      "title": "Compétences",
+      "countAdded": "{count}/{max} compétences ajoutées",
+      "maxAllowed": "Maximum de {max} compétences autorisées",
+      "addFailed": "Échec de l'ajout de la compétence. Veuillez réessayer.",
+      "removeFailed": "Échec de la suppression de la compétence. Veuillez réessayer.",
+      "searchPlaceholder": "Tapez pour rechercher des compétences ou appuyez sur Entrée pour ajouter...",
+      "pressEnter": "Appuyez sur Entrée pour ajouter \"{query}\"",
+      "emptyState": "Aucune compétence ajoutée pour le moment. Commencez à taper pour rechercher et ajouter des compétences.",
+      "categoriesLabel": "Catégories de compétences :",
+      "removeSkill": "Supprimer la compétence",
+      "categories": {
+        "technical": "Techniques",
+        "softSkills": "Soft skills",
+        "languages": "Langues",
+        "tools": "Outils"
+      }
+    },
+    "achievementsSection": {
+      "subtitle": "Mettez en valeur vos réussites",
+      "addButton": "Ajouter une réussite",
+      "emptyState": "Aucune réussite ajoutée pour le moment",
+      "addFirst": "Ajoutez votre première réussite",
+      "deleteConfirm": "Voulez-vous vraiment supprimer cette réussite ?",
+      "viewDetails": "Voir les détails",
+      "types": {
+        "professional": "Professionnel",
+        "project": "Projet",
+        "publicSpeaking": "Prise de parole",
+        "publication": "Publication",
+        "award": "Récompense",
+        "other": "Autre"
+      },
+      "modal": {
+        "titleRequired": "Le titre est requis",
+        "descriptionLimit": "La description doit contenir 200 caractères maximum",
+        "editTitle": "Modifier la réussite",
+        "addTitle": "Ajouter une réussite",
+        "updateButton": "Mettre à jour",
+        "addButton": "Ajouter"
+      }
     }
   },
   "pricing": {

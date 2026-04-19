@@ -708,6 +708,114 @@
         "subscription": "Suscripción y saldo de créditos",
         "messages": "Todos los mensajes y conversaciones"
       }
+    },
+    "shared": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "description": "Descripción",
+      "month": "Mes",
+      "year": "Año"
+    },
+    "experienceSection": {
+      "countAdded": "{count} experiencias agregadas",
+      "addButton": "Agregar experiencia",
+      "emptyState": "Aún no se ha agregado experiencia. Haz clic en \"Agregar experiencia\" para comenzar.",
+      "deleteConfirm": "¿Eliminar esta experiencia?",
+      "present": "Actual",
+      "employmentTypes": {
+        "fullTime": "Tiempo completo",
+        "partTime": "Medio tiempo",
+        "freelance": "Freelance",
+        "internship": "Pasantía",
+        "contract": "Contrato",
+        "selfEmployed": "Autónomo"
+      },
+      "modal": {
+        "addTitle": "Agregar experiencia",
+        "editTitle": "Editar experiencia",
+        "jobTitle": "Puesto",
+        "jobTitleRequired": "El puesto es obligatorio",
+        "jobTitlePlaceholder": "p. ej. Ingeniero de software senior",
+        "companyName": "Nombre de la empresa",
+        "companyRequired": "El nombre de la empresa es obligatorio",
+        "companyPlaceholder": "p. ej. Google",
+        "employmentType": "Tipo de empleo",
+        "selectType": "Selecciona el tipo",
+        "location": "Ubicación",
+        "locationPlaceholder": "p. ej. Madrid, España o remoto",
+        "startDate": "Fecha de inicio",
+        "startYearRequired": "El año de inicio es obligatorio",
+        "currentWorkHere": "Actualmente trabajo aquí",
+        "endDate": "Fecha de finalización",
+        "descriptionPlaceholder": "Describe tu rol, logros y responsabilidades...",
+        "saveFailed": "No se pudo guardar la experiencia",
+        "updateButton": "Actualizar experiencia",
+        "addButton": "Agregar experiencia"
+      }
+    },
+    "educationSection": {
+      "countAdded": "{count} registros educativos agregados",
+      "addButton": "Agregar educación",
+      "emptyState": "Aún no se ha agregado educación. Haz clic en \"Agregar educación\" para comenzar.",
+      "deleteConfirm": "¿Eliminar esta formación?",
+      "issued": "Emitido",
+      "present": "Actual",
+      "grade": "Calificación",
+      "credentialId": "ID de credencial",
+      "verify": "Verificar",
+      "modal": {
+        "requiredField": "Este campo es obligatorio",
+        "degreeRequired": "El título es obligatorio",
+        "fieldRequired": "El campo de estudio es obligatorio",
+        "graduationYearRequired": "El año de graduación es obligatorio",
+        "saveFailed": "No se pudo guardar la formación",
+        "editTitle": "Editar educación",
+        "addTitle": "Agregar educación",
+        "updateButton": "Actualizar educación",
+        "addButton": "Agregar educación"
+      }
+    },
+    "skillsSection": {
+      "title": "Habilidades",
+      "countAdded": "{count}/{max} habilidades agregadas",
+      "maxAllowed": "Máximo {max} habilidades permitidas",
+      "addFailed": "No se pudo agregar la habilidad. Inténtalo de nuevo.",
+      "removeFailed": "No se pudo eliminar la habilidad. Inténtalo de nuevo.",
+      "searchPlaceholder": "Escribe para buscar habilidades o presiona Enter para agregar...",
+      "pressEnter": "Presiona Enter para agregar \"{query}\"",
+      "emptyState": "Aún no se han agregado habilidades. Empieza a escribir para buscar y agregarlas.",
+      "categoriesLabel": "Categorías de habilidades:",
+      "removeSkill": "Eliminar habilidad",
+      "categories": {
+        "technical": "Técnicas",
+        "softSkills": "Habilidades blandas",
+        "languages": "Idiomas",
+        "tools": "Herramientas"
+      }
+    },
+    "achievementsSection": {
+      "subtitle": "Muestra tus logros",
+      "addButton": "Agregar logro",
+      "emptyState": "Aún no se han agregado logros",
+      "addFirst": "Agrega tu primer logro",
+      "deleteConfirm": "¿Seguro que quieres eliminar este logro?",
+      "viewDetails": "Ver detalles",
+      "types": {
+        "professional": "Profesional",
+        "project": "Proyecto",
+        "publicSpeaking": "Oratoria",
+        "publication": "Publicación",
+        "award": "Premio",
+        "other": "Otro"
+      },
+      "modal": {
+        "titleRequired": "El título es obligatorio",
+        "descriptionLimit": "La descripción debe tener 200 caracteres o menos",
+        "editTitle": "Editar logro",
+        "addTitle": "Agregar logro",
+        "updateButton": "Actualizar",
+        "addButton": "Agregar"
+      }
     }
   },
   "pricing": {

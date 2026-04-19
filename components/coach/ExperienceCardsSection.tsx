@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, MapPin, Building2, Edit2, Trash2, Plus } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
+import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachExperience, ExperienceFormData, EmploymentType } from '@/lib/types/profile'
 import { MONTHS, YEARS, EMPLOYMENT_TYPES, JOB_TITLES, COMPANIES } from '@/lib/types/profile'
 
@@ -16,6 +17,7 @@ interface ExperienceCardsSectionProps {
 }
 
 export default function ExperienceCardsSection({ coachId, userId }: ExperienceCardsSectionProps) {
+  const { t } = useLanguage()
   const [experiences, setExperiences] = useState<CoachExperience[]>([])
   const [showModal, setShowModal] = useState(false)
   const [editingExperience, setEditingExperience] = useState<CoachExperience | null>(null)
@@ -55,7 +57,7 @@ export default function ExperienceCardsSection({ coachId, userId }: ExperienceCa
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this experience?')) return
+    if (!confirm(t('profile.experienceSection.deleteConfirm'))) return
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
@@ -76,13 +78,13 @@ export default function ExperienceCardsSection({ coachId, userId }: ExperienceCa
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-400">{experiences.length} experience{experiences.length !== 1 ? 's' : ''} added</p>
+        <p className="text-sm text-gray-400">{t('profile.experienceSection.countAdded').replace('{count}', String(experiences.length))}</p>
         <button
           onClick={handleAddClick}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition"
         >
           <Plus className="w-4 h-4" />
-          Add Experience
+          {t('profile.experienceSection.addButton')}
         </button>
       </div>
 
@@ -97,7 +99,7 @@ export default function ExperienceCardsSection({ coachId, userId }: ExperienceCa
         ))}
         {experiences.length === 0 && (
           <div className="text-center py-8 text-gray-500 border border-gray-700 rounded-lg">
-            No experience added yet. Click "Add Experience" to get started.
+            {t('profile.experienceSection.emptyState')}
           </div>
         )}
       </div>
@@ -127,14 +129,29 @@ function ExperienceCard({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const { t } = useLanguage()
+
+  const getEmploymentTypeLabel = (type: EmploymentType) => {
+    const keyMap: Record<EmploymentType, string> = {
+      'Full-time': 'fullTime',
+      'Part-time': 'partTime',
+      'Freelance': 'freelance',
+      'Internship': 'internship',
+      'Contract': 'contract',
+      'Self-employed': 'selfEmployed',
+    }
+
+    return t(`profile.experienceSection.employmentTypes.${keyMap[type]}`)
+  }
+
   const formatDate = () => {
     const startMonth = experience.start_month ? MONTHS.find(m => m.value === experience.start_month)?.label.slice(0, 3) : ''
     const start = `${startMonth} ${experience.start_year}`
     const end = experience.is_current
-      ? 'Present'
+      ? t('profile.experienceSection.present')
       : experience.end_month && experience.end_year
         ? `${MONTHS.find(m => m.value === experience.end_month)?.label.slice(0, 3)} ${experience.end_year}`
-        : experience.end_year || 'Present'
+        : experience.end_year || t('profile.experienceSection.present')
 
     return `${start} → ${end}`
   }
@@ -157,7 +174,7 @@ function ExperienceCard({
               <p className="text-blue-400">{experience.company_name}</p>
               <div className="flex items-center gap-3 mt-2 text-sm text-gray-400">
                 {experience.employment_type && (
-                  <span>{experience.employment_type}</span>
+                  <span>{getEmploymentTypeLabel(experience.employment_type)}</span>
                 )}
                 {experience.location && (
                   <span className="flex items-center gap-1">
@@ -180,14 +197,14 @@ function ExperienceCard({
           <button
             onClick={onEdit}
             className="p-2 hover:bg-gray-700 rounded-lg transition"
-            title="Edit"
+            title={t('profile.shared.edit')}
           >
             <Edit2 className="w-4 h-4 text-gray-400" />
           </button>
           <button
             onClick={onDelete}
             className="p-2 hover:bg-red-500/20 rounded-lg transition"
-            title="Delete"
+            title={t('profile.shared.delete')}
           >
             <Trash2 className="w-4 h-4 text-red-400" />
           </button>
@@ -212,6 +229,7 @@ function ExperienceModal({
   onClose: () => void
   onSave: () => void
 }) {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState<ExperienceFormData>({
     job_title: experience?.job_title || '',
     company_name: experience?.company_name || '',
@@ -233,9 +251,9 @@ function ExperienceModal({
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof ExperienceFormData, string>> = {}
 
-    if (!formData.job_title.trim()) newErrors.job_title = 'Job title is required'
-    if (!formData.company_name.trim()) newErrors.company_name = 'Company name is required'
-    if (!formData.start_year) newErrors.start_year = 'Start year is required'
+    if (!formData.job_title.trim()) newErrors.job_title = t('profile.experienceSection.modal.jobTitleRequired')
+    if (!formData.company_name.trim()) newErrors.company_name = t('profile.experienceSection.modal.companyRequired')
+    if (!formData.start_year) newErrors.start_year = t('profile.experienceSection.modal.startYearRequired')
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -269,7 +287,7 @@ function ExperienceModal({
       onSave()
     } catch (error) {
       console.error('Error saving experience:', error)
-      alert('Failed to save experience')
+      alert(t('profile.experienceSection.modal.saveFailed'))
     } finally {
       setLoading(false)
     }
@@ -316,7 +334,7 @@ function ExperienceModal({
       >
         <div className="sticky top-0 bg-gray-900 border-b border-gray-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white">
-            {experience ? 'Edit Experience' : 'Add Experience'}
+            {experience ? t('profile.experienceSection.modal.editTitle') : t('profile.experienceSection.modal.addTitle')}
           </h2>
           <button
             onClick={onClose}
@@ -330,14 +348,14 @@ function ExperienceModal({
           {/* Job Title */}
           <div className="relative">
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Job Title <span className="text-red-400">*</span>
+              {t('profile.experienceSection.modal.jobTitle')} <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               value={formData.job_title}
               onChange={(e) => handleJobTitleChange(e.target.value)}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
-              placeholder="e.g. Senior Software Engineer"
+              placeholder={t('profile.experienceSection.modal.jobTitlePlaceholder')}
             />
             {errors.job_title && <p className="text-red-400 text-sm mt-1">{errors.job_title}</p>}
             {jobTitleSuggestions.length > 0 && (
@@ -362,14 +380,14 @@ function ExperienceModal({
           {/* Company Name */}
           <div className="relative">
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Company Name <span className="text-red-400">*</span>
+              {t('profile.experienceSection.modal.companyName')} <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               value={formData.company_name}
               onChange={(e) => handleCompanyChange(e.target.value)}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
-              placeholder="e.g. Google"
+              placeholder={t('profile.experienceSection.modal.companyPlaceholder')}
             />
             {errors.company_name && <p className="text-red-400 text-sm mt-1">{errors.company_name}</p>}
             {companySuggestions.length > 0 && (
@@ -394,38 +412,49 @@ function ExperienceModal({
           {/* Employment Type */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Employment Type
+              {t('profile.experienceSection.modal.employmentType')}
             </label>
             <select
               value={formData.employment_type || ''}
               onChange={(e) => setFormData({ ...formData, employment_type: e.target.value as EmploymentType || undefined })}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
             >
-              <option value="">Select type</option>
-              {EMPLOYMENT_TYPES.map((type) => (
-                <option key={type} value={type}>{type}</option>
-              ))}
+              <option value="">{t('profile.experienceSection.modal.selectType')}</option>
+              {EMPLOYMENT_TYPES.map((type) => {
+                const keyMap: Record<EmploymentType, string> = {
+                  'Full-time': 'fullTime',
+                  'Part-time': 'partTime',
+                  'Freelance': 'freelance',
+                  'Internship': 'internship',
+                  'Contract': 'contract',
+                  'Self-employed': 'selfEmployed',
+                }
+
+                return (
+                  <option key={type} value={type}>{t(`profile.experienceSection.employmentTypes.${keyMap[type]}`)}</option>
+                )
+              })}
             </select>
           </div>
 
           {/* Location */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Location
+              {t('profile.experienceSection.modal.location')}
             </label>
             <input
               type="text"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
-              placeholder="e.g. San Francisco, CA or Remote"
+              placeholder={t('profile.experienceSection.modal.locationPlaceholder')}
             />
           </div>
 
           {/* Start Date */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Start Date <span className="text-red-400">*</span>
+              {t('profile.experienceSection.modal.startDate')} <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <select
@@ -433,7 +462,7 @@ function ExperienceModal({
                 onChange={(e) => setFormData({ ...formData, start_month: e.target.value ? parseInt(e.target.value) : undefined })}
                 className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
               >
-                <option value="">Month</option>
+                <option value="">{t('profile.shared.month')}</option>
                 {MONTHS.map((month) => (
                   <option key={month.value} value={month.value}>{month.label}</option>
                 ))}
@@ -460,7 +489,7 @@ function ExperienceModal({
                 onChange={(e) => setFormData({ ...formData, is_current: e.target.checked })}
                 className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-blue-500 focus:ring-2 focus:ring-blue-500"
               />
-              I currently work here
+              {t('profile.experienceSection.modal.currentWorkHere')}
             </label>
           </div>
 
@@ -468,7 +497,7 @@ function ExperienceModal({
           {!formData.is_current && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                End Date
+                {t('profile.experienceSection.modal.endDate')}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <select
@@ -476,7 +505,7 @@ function ExperienceModal({
                   onChange={(e) => setFormData({ ...formData, end_month: e.target.value ? parseInt(e.target.value) : undefined })}
                   className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="">Month</option>
+                  <option value="">{t('profile.shared.month')}</option>
                   {MONTHS.map((month) => (
                     <option key={month.value} value={month.value}>{month.label}</option>
                   ))}
@@ -486,7 +515,7 @@ function ExperienceModal({
                   onChange={(e) => setFormData({ ...formData, end_year: e.target.value ? parseInt(e.target.value) : undefined })}
                   className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="">Year</option>
+                  <option value="">{t('profile.shared.year')}</option>
                   {YEARS.reverse().map((year) => (
                     <option key={year} value={year}>{year}</option>
                   ))}
@@ -498,7 +527,7 @@ function ExperienceModal({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Description
+              {t('profile.shared.description')}
             </label>
             <textarea
               value={formData.description}
@@ -506,9 +535,9 @@ function ExperienceModal({
               rows={3}
               maxLength={300}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none resize-none"
-              placeholder="Describe your role, achievements, responsibilities..."
+              placeholder={t('profile.experienceSection.modal.descriptionPlaceholder')}
             />
-            <p className="text-xs text-gray-500 mt-1">{formData.description?.length || 0}/300 characters</p>
+            <p className="text-xs text-gray-500 mt-1">{formData.description?.length || 0}/300 {t('profile.bio.characters')}</p>
           </div>
 
           {/* Buttons */}
@@ -519,14 +548,14 @@ function ExperienceModal({
               className="flex-1 px-6 py-3 border border-gray-700 rounded-lg text-white hover:bg-gray-800 transition"
               disabled={loading}
             >
-              Cancel
+              {t('profile.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Saving...' : experience ? 'Update Experience' : 'Add Experience'}
+              {loading ? t('profile.saving') : experience ? t('profile.experienceSection.modal.updateButton') : t('profile.experienceSection.modal.addButton')}
             </button>
           </div>
         </form>

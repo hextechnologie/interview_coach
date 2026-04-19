@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, X, Trophy, Code, Mic, FileText, Award, Star } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@supabase/supabase-js'
+import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachAchievement, AchievementType } from '@/lib/types/profile'
 import { MONTHS, YEARS } from '@/lib/types/profile'
 
@@ -25,6 +26,7 @@ interface AchievementsCardsSectionProps {
 }
 
 export default function AchievementsCardsSection({ coachId, userId }: AchievementsCardsSectionProps) {
+  const { t } = useLanguage()
   const [achievements, setAchievements] = useState<CoachAchievement[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAchievement, setEditingAchievement] = useState<CoachAchievement | null>(null)
@@ -74,7 +76,7 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this achievement?')) return
+    if (!confirm(t('profile.achievementsSection.deleteConfirm'))) return
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
@@ -90,13 +92,13 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-400">Showcase your accomplishments</p>
+        <p className="text-sm text-gray-400">{t('profile.achievementsSection.subtitle')}</p>
         <button
           onClick={openAddModal}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
         >
           <Plus className="w-4 h-4" />
-          Add Achievement
+          {t('profile.achievementsSection.addButton')}
         </button>
       </div>
 
@@ -114,12 +116,12 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
       ) : (
         <div className="text-center py-12 border border-gray-700 rounded-lg">
           <Trophy className="w-12 h-12 mx-auto mb-3 text-gray-600" />
-          <p className="text-gray-400 mb-2">No achievements added yet</p>
+          <p className="text-gray-400 mb-2">{t('profile.achievementsSection.emptyState')}</p>
           <button
             onClick={openAddModal}
             className="text-blue-500 hover:text-blue-400 transition"
           >
-            Add your first achievement
+            {t('profile.achievementsSection.addFirst')}
           </button>
         </div>
       )}
@@ -149,7 +151,21 @@ function AchievementCard({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const { t } = useLanguage()
   const typeConfig = ACHIEVEMENT_TYPES.find(t => t.value === achievement.achievement_type)
+
+  const getAchievementTypeLabel = (type: AchievementType) => {
+    const keyMap: Record<AchievementType, string> = {
+      'Professional Achievement': 'professional',
+      'Project': 'project',
+      'Public Speaking': 'publicSpeaking',
+      'Publication': 'publication',
+      'Award': 'award',
+      'Other': 'other',
+    }
+
+    return t(`profile.achievementsSection.types.${keyMap[type]}`)
+  }
   const Icon = typeConfig?.icon || Star
 
   const formatDate = () => {
@@ -177,7 +193,7 @@ function AchievementCard({
               <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                 <span className="flex items-center gap-1">
                   <Icon className="w-4 h-4" />
-                  {achievement.achievement_type}
+                  {getAchievementTypeLabel(achievement.achievement_type)}
                 </span>
                 {formatDate() && (
                   <>
@@ -193,14 +209,14 @@ function AchievementCard({
               <button
                 onClick={onEdit}
                 className="p-1.5 hover:bg-gray-700 rounded transition"
-                title="Edit"
+                title={t('profile.shared.edit')}
               >
                 <Edit2 className="w-4 h-4 text-gray-400" />
               </button>
               <button
                 onClick={onDelete}
                 className="p-1.5 hover:bg-gray-700 rounded transition"
-                title="Delete"
+                title={t('profile.shared.delete')}
               >
                 <Trash2 className="w-4 h-4 text-red-400" />
               </button>
@@ -218,7 +234,7 @@ function AchievementCard({
               rel="noopener noreferrer"
               className="text-sm text-blue-400 hover:text-blue-300 transition inline-flex items-center gap-1"
             >
-              View Details →
+              {t('profile.achievementsSection.viewDetails')} →
             </a>
           )}
         </div>
@@ -237,6 +253,7 @@ interface AchievementModalProps {
 }
 
 function AchievementModal({ tableName, idField, idValue, achievement, onClose, onSave }: AchievementModalProps) {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     achievement_type: achievement?.achievement_type || 'Professional Achievement' as AchievementType,
     title: achievement?.title || '',
@@ -252,11 +269,11 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
     const newErrors: Record<string, string> = {}
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required'
+      newErrors.title = t('profile.achievementsSection.modal.titleRequired')
     }
 
     if (formData.description && formData.description.length > 200) {
-      newErrors.description = 'Description must be 200 characters or less'
+      newErrors.description = t('profile.achievementsSection.modal.descriptionLimit')
     }
 
     setErrors(newErrors)
@@ -323,7 +340,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">
-            {achievement ? 'Edit Achievement' : 'Add Achievement'}
+            {achievement ? t('profile.achievementsSection.modal.editTitle') : t('profile.achievementsSection.modal.addTitle')}
           </h2>
           <button
             onClick={onClose}
@@ -352,7 +369,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
                   }`}
                 >
                   <span className="text-xl">{type.emoji}</span>
-                  <span className="text-sm">{type.label}</span>
+                  <span className="text-sm">{t(`profile.achievementsSection.types.${type.value === 'Professional Achievement' ? 'professional' : type.value === 'Public Speaking' ? 'publicSpeaking' : type.value.toLowerCase()}`)}</span>
                 </button>
               ))}
             </div>
@@ -443,14 +460,14 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
               onClick={onClose}
               className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition"
             >
-              Cancel
+              {t('profile.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSaving}
               className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
             >
-              {isSaving ? 'Saving...' : achievement ? 'Update' : 'Add'}
+              {isSaving ? t('profile.saving') : achievement ? t('profile.achievementsSection.modal.updateButton') : t('profile.achievementsSection.modal.addButton')}
             </button>
           </div>
         </form>

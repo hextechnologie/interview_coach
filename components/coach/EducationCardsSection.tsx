@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar, GraduationCap, Award, BookOpen, Edit2, Trash2, Plus, ExternalLink } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
+import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachEducation, EducationFormData, EducationType } from '@/lib/types/profile'
 import {
   MONTHS,
@@ -27,6 +28,7 @@ interface EducationCardsSectionProps {
 }
 
 export default function EducationCardsSection({ coachId, userId, userCountry }: EducationCardsSectionProps) {
+  const { t } = useLanguage()
   const [educations, setEducations] = useState<CoachEducation[]>([])
   const [showModal, setShowModal] = useState(false)
   const [editingEducation, setEditingEducation] = useState<CoachEducation | null>(null)
@@ -65,7 +67,7 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this education?')) return
+    if (!confirm(t('profile.educationSection.deleteConfirm'))) return
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
     const { error } = await supabase
@@ -86,13 +88,13 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-400">{educations.length} {educations.length === 1 ? 'entry' : 'entries'} added</p>
+        <p className="text-sm text-gray-400">{t('profile.educationSection.countAdded').replace('{count}', String(educations.length))}</p>
         <button
           onClick={handleAddClick}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition"
         >
           <Plus className="w-4 h-4" />
-          Add Education
+          {t('profile.educationSection.addButton')}
         </button>
       </div>
 
@@ -107,7 +109,7 @@ export default function EducationCardsSection({ coachId, userId, userCountry }: 
         ))}
         {educations.length === 0 && (
           <div className="text-center py-8 text-gray-500 border border-gray-700 rounded-lg">
-            No education added yet. Click "Add Education" to get started.
+            {t('profile.educationSection.emptyState')}
           </div>
         )}
       </div>
@@ -138,6 +140,7 @@ function EducationCard({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const { t } = useLanguage()
   const getIcon = () => {
     const eduType = EDUCATION_TYPES.find(t => t.value === education.education_type)
     return eduType?.icon || '🎓'
@@ -147,13 +150,13 @@ function EducationCard({
     if (education.education_type === 'Certification') {
       if (education.issue_month && education.issue_year) {
         const month = MONTHS.find(m => m.value === education.issue_month)?.label.slice(0, 3)
-        return `Issued ${month} ${education.issue_year}`
+        return `${t('profile.educationSection.issued')} ${month} ${education.issue_year}`
       }
-      return education.issue_year ? `Issued ${education.issue_year}` : ''
+      return education.issue_year ? `${t('profile.educationSection.issued')} ${education.issue_year}` : ''
     }
 
     if (education.start_year && education.end_year) {
-      return `${education.start_year} → ${education.is_ongoing ? 'Present' : education.end_year}`
+      return `${education.start_year} → ${education.is_ongoing ? t('profile.educationSection.present') : education.end_year}`
     }
     return education.end_year || education.start_year || ''
   }
@@ -193,11 +196,11 @@ function EducationCard({
               <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
                 <Calendar className="w-3 h-3" />
                 {formatDate()}
-                {education.grade && ` · Grade: ${education.grade}`}
+                {education.grade && ` · ${t('profile.educationSection.grade')}: ${education.grade}`}
               </div>
               {education.credential_id && (
                 <div className="mt-2 text-sm text-gray-400">
-                  Credential ID: {education.credential_id}
+                  {t('profile.educationSection.credentialId')}: {education.credential_id}
                   {education.credential_url && (
                     <a
                       href={education.credential_url}
@@ -206,7 +209,7 @@ function EducationCard({
                       className="ml-2 text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
                     >
                       <ExternalLink className="w-3 h-3" />
-                      Verify
+                      {t('profile.educationSection.verify')}
                     </a>
                   )}
                 </div>
@@ -221,14 +224,14 @@ function EducationCard({
           <button
             onClick={onEdit}
             className="p-2 hover:bg-gray-700 rounded-lg transition"
-            title="Edit"
+            title={t('profile.shared.edit')}
           >
             <Edit2 className="w-4 h-4 text-gray-400" />
           </button>
           <button
             onClick={onDelete}
             className="p-2 hover:bg-red-500/20 rounded-lg transition"
-            title="Delete"
+            title={t('profile.shared.delete')}
           >
             <Trash2 className="w-4 h-4 text-red-400" />
           </button>
@@ -255,6 +258,7 @@ function EducationModal({
   onClose: () => void
   onSave: () => void
 }) {
+  const { t } = useLanguage()
   const [educationType, setEducationType] = useState<EducationType>(education?.education_type || 'University')
   const [formData, setFormData] = useState<EducationFormData>({
     education_type: education?.education_type || 'University',
@@ -324,16 +328,16 @@ function EducationModal({
     const newErrors: Partial<Record<keyof EducationFormData, string>> = {}
 
     if (!formData.institution_name.trim()) {
-      newErrors.institution_name = 'This field is required'
+      newErrors.institution_name = t('profile.educationSection.modal.requiredField')
     }
 
     if (educationType === 'University') {
-      if (!formData.degree) newErrors.degree = 'Degree is required'
-      if (!formData.field_of_study) newErrors.field_of_study = 'Field of study is required'
+      if (!formData.degree) newErrors.degree = t('profile.educationSection.modal.degreeRequired')
+      if (!formData.field_of_study) newErrors.field_of_study = t('profile.educationSection.modal.fieldRequired')
     }
 
     if (educationType === 'High School') {
-      if (!formData.end_year) newErrors.end_year = 'Graduation year is required'
+      if (!formData.end_year) newErrors.end_year = t('profile.educationSection.modal.graduationYearRequired')
     }
 
     setErrors(newErrors)
@@ -366,7 +370,7 @@ function EducationModal({
       onSave()
     } catch (error) {
       console.error('Error saving education:', error)
-      alert('Failed to save education')
+      alert(t('profile.educationSection.modal.saveFailed'))
     } finally {
       setLoading(false)
     }
@@ -389,7 +393,7 @@ function EducationModal({
       >
         <div className="sticky top-0 bg-gray-900 border-b border-gray-700 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="text-xl font-semibold text-white">
-            {education ? 'Edit Education' : 'Add Education'}
+            {education ? t('profile.educationSection.modal.editTitle') : t('profile.educationSection.modal.addTitle')}
           </h2>
           <button
             onClick={onClose}
@@ -915,14 +919,14 @@ function EducationModal({
               className="flex-1 px-6 py-3 border border-gray-700 rounded-lg text-white hover:bg-gray-800 transition"
               disabled={loading}
             >
-              Cancel
+              {t('profile.cancel')}
             </button>
             <button
               type="submit"
               className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Saving...' : education ? 'Update Education' : 'Add Education'}
+              {loading ? t('profile.saving') : education ? t('profile.educationSection.modal.updateButton') : t('profile.educationSection.modal.addButton')}
             </button>
           </div>
         </form>

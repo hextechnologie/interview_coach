@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Search } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
+import { useLanguage } from '@/components/LanguageProvider'
 import type { CoachSkill, SkillCategory } from '@/lib/types/profile'
 import { SKILL_SUGGESTIONS } from '@/lib/types/profile'
 
@@ -24,6 +25,7 @@ interface SkillsSelectorProps {
 }
 
 export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps) {
+  const { t } = useLanguage()
   const [skills, setSkills] = useState<CoachSkill[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [suggestions, setSuggestions] = useState<Array<{skill: string, category: SkillCategory}>>([])
@@ -95,7 +97,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
 
   const addSkill = async (skillName: string, category: SkillCategory) => {
     if (skills.length >= MAX_SKILLS) {
-      alert(`Maximum ${MAX_SKILLS} skills allowed`)
+      alert(t('profile.skillsSection.maxAllowed').replace('{max}', String(MAX_SKILLS)))
       return
     }
 
@@ -122,7 +124,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
       inputRef.current?.blur() // Blur input to close suggestions
     } else {
       console.error('Error adding skill:', error)
-      alert('Failed to add skill. Please try again.')
+      alert(t('profile.skillsSection.addFailed'))
     }
   }
 
@@ -139,7 +141,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
       await loadSkills()
     } else {
       console.error('Error removing skill:', error)
-      alert('Failed to remove skill. Please try again.')
+      alert(t('profile.skillsSection.removeFailed'))
     }
   }
 
@@ -150,6 +152,17 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
       const category = detectCategory(searchQuery)
       addSkill(searchQuery.trim(), category)
     }
+  }
+
+  const getCategoryLabel = (category: SkillCategory) => {
+    const keyMap: Record<SkillCategory, string> = {
+      'Technical': 'technical',
+      'Soft Skills': 'softSkills',
+      'Languages': 'languages',
+      'Tools': 'tools',
+    }
+
+    return t(`profile.skillsSection.categories.${keyMap[category]}`)
   }
 
   const detectCategory = (skill: string): SkillCategory => {
@@ -169,9 +182,9 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
     <div className="overflow-x-hidden">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-white">Skills</h3>
+          <h3 className="text-lg font-semibold text-white">{t('profile.skillsSection.title')}</h3>
           <p className="text-sm text-gray-400">
-            {skills.length}/{MAX_SKILLS} skills added
+            {t('profile.skillsSection.countAdded').replace('{count}', String(skills.length)).replace('{max}', String(MAX_SKILLS))}
           </p>
         </div>
       </div>
@@ -187,7 +200,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             onFocus={() => searchQuery && setShowSuggestions(true)}
-            placeholder="Type to search skills or press Enter to add..."
+            placeholder={t('profile.skillsSection.searchPlaceholder')}
             className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
             disabled={skills.length >= MAX_SKILLS}
           />
@@ -211,7 +224,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
               >
                 <div className={`w-2 h-2 rounded-full ${CATEGORY_COLORS[category].dot}`}></div>
                 <span>{skill}</span>
-                <span className="ml-auto text-xs text-gray-400">{category}</span>
+                <span className="ml-auto text-xs text-gray-400">{getCategoryLabel(category)}</span>
               </button>
             ))}
             {searchQuery && !suggestions.some(s => s.skill.toLowerCase() === searchQuery.toLowerCase()) && (
@@ -224,7 +237,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
                 }}
                 className="w-full px-4 py-2 text-left text-blue-400 hover:bg-gray-700 transition border-t border-gray-700"
               >
-                Press Enter to add "{searchQuery}"
+                {t('profile.skillsSection.pressEnter').replace('{query}', searchQuery)}
               </button>
             )}
           </div>
@@ -244,18 +257,18 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
         </div>
       ) : (
         <div className="text-center py-8 text-gray-500 border border-gray-700 rounded-lg min-h-[3rem]">
-          No skills added yet. Start typing to search and add skills.
+          {t('profile.skillsSection.emptyState')}
         </div>
       )}
 
       {/* Category Legend */}
       <div className="mt-6 pt-6 border-t border-gray-700">
-        <p className="text-sm text-gray-400 mb-3">Skill Categories:</p>
+        <p className="text-sm text-gray-400 mb-3">{t('profile.skillsSection.categoriesLabel')}</p>
         <div className="flex flex-wrap gap-4 text-sm">
           {Object.entries(CATEGORY_COLORS).map(([category, colors]) => (
             <div key={category} className="flex items-center gap-2">
               <div className={`w-3 h-3 rounded-full ${colors.dot}`}></div>
-              <span className="text-gray-300">{category}</span>
+              <span className="text-gray-300">{getCategoryLabel(category as SkillCategory)}</span>
             </div>
           ))}
         </div>
@@ -265,6 +278,7 @@ export default function SkillsSelector({ coachId, userId }: SkillsSelectorProps)
 }
 
 function SkillTag({ skill, onRemove }: { skill: CoachSkill; onRemove: () => void }) {
+  const { t } = useLanguage()
   const colors = CATEGORY_COLORS[skill.skill_category]
 
   return (
@@ -277,7 +291,7 @@ function SkillTag({ skill, onRemove }: { skill: CoachSkill; onRemove: () => void
         type="button"
         onClick={onRemove}
         className="ml-1 p-0.5 hover:bg-gray-700 rounded transition flex-shrink-0"
-        title="Remove skill"
+        title={t('profile.skillsSection.removeSkill')}
       >
         <X className="w-3 h-3 text-gray-400" />
       </button>
