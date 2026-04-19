@@ -605,7 +605,7 @@ export default function HomePage() {
           <div className="relative overflow-hidden rounded-3xl p-8 md:p-16">
             {/* Animated gradient background */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-[length:200%_100%]"
+              className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-[length:200%_100%]"
               animate={{
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
               }}
@@ -991,7 +991,7 @@ export default function HomePage() {
           >
             {/* Animated gradient background */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-[length:200%_100%]"
+              className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-[length:200%_100%]"
               animate={{
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
               }}
@@ -1229,7 +1229,7 @@ function StatsSection() {
         <div className="relative rounded-3xl overflow-hidden p-8 md:p-12">
           {/* Animated gradient background */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-[length:200%_100%]"
+            className="absolute inset-0 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 bg-[length:200%_100%]"
             animate={{
               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
             }}
