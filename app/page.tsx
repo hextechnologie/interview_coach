@@ -135,15 +135,15 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-background text-foreground">
       {/* Enhanced Background with animated gradient */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/20 via-background to-background" />
       <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-secondary/10 blur-3xl rounded-full" />
       <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-primary/10 blur-3xl rounded-full" />
       
       {/* Subtle grid pattern */}
-      <div className="absolute inset-0 opacity-[0.02]" style={{ 
-        backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
+      <div className="absolute inset-0 dark:opacity-[0.02] opacity-[0.05]" style={{ 
+        backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
         backgroundSize: '50px 50px'
       }} />
 
@@ -166,7 +166,7 @@ export default function HomePage() {
 
         {/* ══ NAVBAR ══ */}
         <header className={`sticky top-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-black/80 backdrop-blur-xl border-b border-white/10' : ''
+          scrolled ? 'bg-background/80 backdrop-blur-xl border-b border-border' : ''
         }`}>
           <div className="container mx-auto px-6 py-6">
             <nav className="flex items-center justify-between">

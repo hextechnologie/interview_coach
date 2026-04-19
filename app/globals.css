@@ -5,10 +5,10 @@
 @layer base {
   :root {
     --background: 255 255 255;
-    --foreground: 10 10 15;
+    --foreground: 15 23 42;
     --card: 249 250 251;
-    --card-foreground: 10 10 15;
-    --border: 229 231 235;
+    --card-foreground: 15 23 42;
+    --border: 226 232 240;
     --primary: 139 92 246;
     --primary-dark: 109 40 217;
     --primary-light: 167 139 250;
@@ -39,6 +39,31 @@
 
   * {
     border-color: rgb(var(--border));
+  }
+  
+  /* Make gray text colors adapt to theme */
+  .dark .text-gray-300 {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .dark .text-gray-400 {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .dark .text-white {
+    color: rgba(255, 255, 255, 1);
+  }
+  
+  :not(.dark) .text-gray-300 {
+    color: rgba(15, 23, 42, 0.7);
+  }
+  
+  :not(.dark) .text-gray-400 {
+    color: rgba(15, 23, 42, 0.6);
+  }
+  
+  :not(.dark) .text-white {
+    color: rgb(15, 23, 42);
   }
 }
 
