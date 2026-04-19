@@ -78,6 +78,8 @@
   },
   "howItWorks": {
     "title": "How Interview Coach Works",
+    "sectionTitle": "Two ways to get interview-ready",
+    "sectionDescription": "Use AI practice, book a coach session, or combine both for the best results.",
     "aiTab": "Practice with AI",
     "coachTab": "Book a Real Coach",
     "aiStep1Title": "Choose Your Role",
@@ -110,7 +112,19 @@
     "sectionLabel": "Testimonials",
     "title": "Real People. Real Results.",
     "subtitle": "Join professionals who landed their dream roles with AI practice + expert coaching.",
-    "verifiedUser": "Verified User"
+    "verifiedUser": "Verified User",
+    "testimonial1Quote": "The AI practice helped me nail the basics, then my coach session gave me the edge I needed. Got the Google offer! 🎉",
+    "testimonial1Name": "Sarah Chen",
+    "testimonial1Role": "Software Engineer · Google",
+    "testimonial2Quote": "My coach had worked at Amazon and knew exactly what they look for. 3 sessions later, I had the offer.",
+    "testimonial2Name": "Jessica Williams",
+    "testimonial2Role": "Product Manager · Amazon",
+    "testimonial3Quote": "I used the AI every day for 2 weeks, then booked one coach session the day before my interview. Perfect combo!",
+    "testimonial3Name": "Raj Patel",
+    "testimonial3Role": "Senior Engineer · Stripe",
+    "testimonial4Quote": "I've coached 50+ candidates through this platform. The AI pre-screens them so when they arrive, we can focus on the hard stuff.",
+    "testimonial4Name": "Michael Torres",
+    "testimonial4Role": "Career Coach · Ex-McKinsey"
   },
   "cta": {
     "title": "Ready to Land Your Dream Job?",

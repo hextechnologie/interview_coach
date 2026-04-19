@@ -77,8 +77,8 @@
     "unlimitedDesc": "Pas de limite sur les sessions. Continuez à vous améliorer jusqu'à être 100% confiant."
   },
   "howItWorks": {
-    "title": "Comment fonctionne Interview Coach",
-    "aiTab": "Pratiquer avec l'IA",
+    "title": "Comment fonctionne Interview Coach",    "sectionTitle": "Deux façons de se préparer aux entretiens",
+    "sectionDescription": "Utilisez la pratique IA, réservez une session avec un coach, ou combinez les deux pour de meilleurs résultats.",    "aiTab": "Pratiquer avec l'IA",
     "coachTab": "Réserver un vrai Coach",
     "aiStep1Title": "Choisissez votre rôle",
     "aiStep1Desc": "Sélectionnez votre poste cible, secteur et niveau. L'IA s'adapte à vous.",
@@ -110,7 +110,19 @@
     "sectionLabel": "Témoignages",
     "title": "De vraies personnes. De vrais résultats.",
     "subtitle": "Rejoignez des professionnels qui ont décroché le poste de leurs rêves grâce à l'IA et au coaching expert.",
-    "verifiedUser": "Utilisateur vérifié"
+    "verifiedUser": "Utilisateur vérifié",
+    "testimonial1Quote": "La pratique IA m'a aidé à maîtriser les bases, puis ma session de coaching m'a donné l'avantage dont j'avais besoin. J'ai eu l'offre de Google! 🎉",
+    "testimonial1Name": "Sarah Chen",
+    "testimonial1Role": "Ingénieur Logiciel · Google",
+    "testimonial2Quote": "Mon coach avait travaillé chez Amazon et savait exactement ce qu'ils recherchent. 3 sessions plus tard, j'avais l'offre.",
+    "testimonial2Name": "Jessica Williams",
+    "testimonial2Role": "Chef de Produit · Amazon",
+    "testimonial3Quote": "J'ai utilisé l'IA tous les jours pendant 2 semaines, puis j'ai réservé une session de coaching la veille de mon entretien. Combo parfait!",
+    "testimonial3Name": "Raj Patel",
+    "testimonial3Role": "Ingénieur Senior · Stripe",
+    "testimonial4Quote": "J'ai coaché plus de 50 candidats via cette plateforme. L'IA les pré-sélectionne donc quand ils arrivent, nous pouvons nous concentrer sur la partie difficile.",
+    "testimonial4Name": "Michael Torres",
+    "testimonial4Role": "Coach de Carrière · Ex-McKinsey"
   },
   "cta": {
     "title": "Prêt à   décrocher le job de vos rêves?",

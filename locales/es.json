@@ -77,8 +77,8 @@
     "unlimitedDesc": "Sin límites en las sesiones de práctica. Sigue mejorando hasta sentirte 100% seguro."
   },
   "howItWorks": {
-    "title": "Cómo funciona Interview Coach",
-    "aiTab": "Practicar con IA",
+    "title": "Cómo funciona Interview Coach",    "sectionTitle": "Dos formas de prepararse para las entrevistas",
+    "sectionDescription": "Usa práctica con IA, reserva una sesión con un coach, o combina ambas para mejores resultados.",    "aiTab": "Practicar con IA",
     "coachTab": "Reservar un Coach Real",
     "aiStep1Title": "Elige tu rol",
     "aiStep1Desc": "Selecciona tu trabajo objetivo, industria y nivel. La IA se adapta a ti.",
@@ -110,7 +110,19 @@
     "sectionLabel": "Testimonios",
     "title": "Personas reales. Resultados reales.",
     "subtitle": "Únete a profesionales que consiguieron el trabajo de sus sueños con IA y coaching experto.",
-    "verifiedUser": "Usuario verificado"
+    "verifiedUser": "Usuario Verificado",
+    "testimonial1Quote": "La práctica con IA me ayudó a dominar lo básico, luego mi sesión de coaching me dio la ventaja que necesitaba. ¡Conseguí la oferta de Google! 🎉",
+    "testimonial1Name": "Sarah Chen",
+    "testimonial1Role": "Ingeniero de Software · Google",
+    "testimonial2Quote": "Mi coach había trabajado en Amazon y sabía exactamente qué buscan. 3 sesiones después, tenía la oferta.",
+    "testimonial2Name": "Jessica Williams",
+    "testimonial2Role": "Gerente de Producto · Amazon",
+    "testimonial3Quote": "Usé la IA todos los días durante 2 semanas, luego reservé una sesión de coaching el día antes de mi entrevista. ¡Combo perfecto!",
+    "testimonial3Name": "Raj Patel",
+    "testimonial3Role": "Ingeniero Senior · Stripe",
+    "testimonial4Quote": "He entrenado a más de 50 candidatos a través de esta plataforma. La IA los preselecciona, así que cuando llegan, podemos enfocarnos en lo difícil.",
+    "testimonial4Name": "Michael Torres",
+    "testimonial4Role": "Coach de Carrera · Ex-McKinsey"
   },
   "cta": {
     "title": "¿Listo para conseguir el trabajo de tus sueños?",

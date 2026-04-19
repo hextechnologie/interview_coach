@@ -630,9 +630,9 @@ export default function HomePage() {
               className="text-center mb-12"
             >
               <p className="text-purple-400 text-sm font-bold mb-3 uppercase tracking-wider">{t('howItWorks.title').toUpperCase()}</p>
-              <h2 className="text-5xl md:text-6xl font-bold mb-6">Two ways to get interview-ready</h2>
+              <h2 className="text-5xl md:text-6xl font-bold mb-6">{t('howItWorks.sectionTitle')}</h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed">
-                Use AI practice, book a coach session, or combine both for the best results.
+                {t('howItWorks.sectionDescription')}
               </p>
 
               {/* Enhanced Tab bar */}
@@ -841,7 +841,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-base text-gray-200 mb-6 leading-relaxed">
-                  "The AI practice helped me nail the basics, then my coach session gave me the edge I needed. Got the Google offer! 🎉"
+                  &quot;{t('testimonials.testimonial1Quote')}&quot;
                 </p>
                 <div className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -852,11 +852,11 @@ export default function HomePage() {
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-white">Sarah Chen</p>
+                      <p className="font-bold text-white">{t('testimonials.testimonial1Name')}</p>
                       <Check className="w-4 h-4 text-green-400" />
                       <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
-                    <p className="text-sm text-gray-400">Software Engineer · Google</p>
+                    <p className="text-sm text-gray-400">{t('testimonials.testimonial1Role')}</p>
                   </div>
                 </div>
               </div>
@@ -880,7 +880,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-base text-gray-200 mb-6 leading-relaxed">
-                  "My coach had worked at Amazon and knew exactly what they look for. 3 sessions later, I had the offer."
+                  &quot;{t('testimonials.testimonial2Quote')}&quot;
                 </p>
                 <div className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -891,11 +891,11 @@ export default function HomePage() {
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-white">Jessica Williams</p>
+                      <p className="font-bold text-white">{t('testimonials.testimonial2Name')}</p>
                       <Check className="w-4 h-4 text-green-400" />
                       <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
-                    <p className="text-sm text-gray-400">Product Manager · Amazon</p>
+                    <p className="text-sm text-gray-400">{t('testimonials.testimonial2Role')}</p>
                   </div>
                 </div>
               </div>
@@ -919,7 +919,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-base text-gray-200 mb-6 leading-relaxed">
-                  "I used the AI every day for 2 weeks, then booked one coach session the day before my interview. Perfect combo!"
+                  &quot;{t('testimonials.testimonial3Quote')}&quot;
                 </p>
                 <div className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -930,11 +930,11 @@ export default function HomePage() {
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-white">Raj Patel</p>
+                      <p className="font-bold text-white">{t('testimonials.testimonial3Name')}</p>
                       <Check className="w-4 h-4 text-green-400" />
                       <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
-                    <p className="text-sm text-gray-400">Senior Engineer · Stripe</p>
+                    <p className="text-sm text-gray-400">{t('testimonials.testimonial3Role')}</p>
                   </div>
                 </div>
               </div>
@@ -958,7 +958,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <p className="text-base text-gray-200 mb-6 leading-relaxed">
-                  "I've coached 50+ candidates through this platform. The AI pre-screens them so when they arrive, we can focus on the hard stuff."
+                  &quot;{t('testimonials.testimonial4Quote')}&quot;
                 </p>
                 <div className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -969,11 +969,11 @@ export default function HomePage() {
                   />
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-white">Michael Torres</p>
+                      <p className="font-bold text-white">{t('testimonials.testimonial4Name')}</p>
                       <Check className="w-4 h-4 text-green-400" />
                       <span className="text-xs text-green-400">{t('testimonials.verifiedUser')}</span>
                     </div>
-                    <p className="text-sm text-gray-400">Career Coach · Ex-McKinsey</p>
+                    <p className="text-sm text-gray-400">{t('testimonials.testimonial4Role')}</p>
                   </div>
                 </div>
               </div>
