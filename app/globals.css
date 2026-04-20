@@ -1237,10 +1237,43 @@
   box-shadow: 0 6px 20px rgba(124,58,237,0.4) !important;
 }
 
-/* 11. SKILLS CATEGORIES - KEEP COLORS LIKE DARK MODE */
+/* 11. SKILLS CATEGORIES - COLORED TEXT IN LIGHT MODE */
 /* Keep skill category colors visible in light mode */
 [data-theme="light"] .border-t.border-gray-700 {
   border-color: #e5e7eb !important;
+}
+
+/* "Skill Categories:" label - only in skills section */
+[data-theme="light"] .mt-6.pt-6.border-t p.text-sm.text-gray-400 {
+  color: #374151 !important;
+  font-weight: 600 !important;
+}
+
+/* Category legend text colors to match their dots */
+[data-theme="light"] .flex.items-center.gap-2 span.text-gray-300 {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+/* Apply specific colors to each category - using nth-child selectors */
+/* Technical (blue) */
+[data-theme="light"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(1) span {
+  color: #3b82f6 !important;
+}
+
+/* Soft Skills (green) */
+[data-theme="light"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(2) span {
+  color: #22c55e !important;
+}
+
+/* Languages (purple) */
+[data-theme="light"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(3) span {
+  color: #a855f7 !important;
+}
+
+/* Tools (orange) */
+[data-theme="light"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(4) span {
+  color: #f97316 !important;
 }
 
 /* ==========================================================
