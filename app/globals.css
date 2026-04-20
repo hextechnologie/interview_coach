@@ -968,6 +968,216 @@
 }
 
 /* ==========================================================
+   PROFILE PAGE VISUAL POLISH - LIGHT MODE
+   ========================================================== */
+
+/* 1. TOGGLE SWITCHES - CONSISTENT AND VISIBLE */
+[data-theme="light"] .toggle-off,
+[data-theme="light"] [role="switch"][aria-checked="false"],
+[data-theme="light"] button[role="switch"][aria-checked="false"] {
+  background-color: #d1d5db !important;
+}
+
+[data-theme="light"] .toggle-on,
+[data-theme="light"] [role="switch"][aria-checked="true"],
+[data-theme="light"] button[role="switch"][aria-checked="true"] {
+  background-color: #7c3aed !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .toggle-circle,
+[data-theme="light"] [role="switch"] > span,
+[data-theme="light"] button[role="switch"] > span {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+}
+
+/* 2. INVISIBLE BUTTONS FIX - ADD VISIBLE BORDERS */
+[data-theme="light"] .outline-button,
+[data-theme="light"] button[class*="outline"],
+[data-theme="light"] a[class*="outline"] {
+  border: 1.5px solid #d1d5db !important;
+  color: #374151 !important;
+  background: #ffffff !important;
+}
+
+[data-theme="light"] .outline-button:hover,
+[data-theme="light"] button[class*="outline"]:hover {
+  border-color: #7c3aed !important;
+  color: #7c3aed !important;
+  background: #f5f3ff !important;
+}
+
+/* Manage Plan button specifically */
+[data-theme="light"] .manage-plan-btn,
+[data-theme="light"] button[class*="manage"],
+[data-theme="light"] a[class*="manage"] {
+  border: 1.5px solid #7c3aed !important;
+  color: #7c3aed !important;
+  font-weight: 600 !important;
+  background: #ffffff !important;
+}
+
+/* Change Password button */
+[data-theme="light"] .change-password-btn,
+[data-theme="light"] button[class*="password"] {
+  border: 1.5px solid #d1d5db !important;
+  color: #374151 !important;
+  background: #ffffff !important;
+}
+
+[data-theme="light"] .change-password-btn:hover {
+  border-color: #7c3aed !important;
+  color: #7c3aed !important;
+  background: #f5f3ff !important;
+}
+
+/* Delete Account button */
+[data-theme="light"] .delete-account-btn,
+[data-theme="light"] button[class*="delete"] {
+  border: 1.5px solid #fca5a5 !important;
+  color: #dc2626 !important;
+  background: #fff5f5 !important;
+}
+
+[data-theme="light"] .delete-account-btn:hover,
+[data-theme="light"] button[class*="delete"]:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+}
+
+/* 3. NOTIFICATION ROWS SEPARATION */
+[data-theme="light"] .notification-row {
+  border-bottom: 1px solid #f3f4f6 !important;
+  padding: 14px 16px !important;
+  background: #ffffff !important;
+}
+
+[data-theme="light"] .notification-row:last-child {
+  border-bottom: none !important;
+}
+
+[data-theme="light"] .notification-row:hover {
+  background: #f9f7ff !important;
+}
+
+[data-theme="light"] .notification-row span,
+[data-theme="light"] .notification-row p {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+/* 4. PRO BADGE VISIBILITY */
+[data-theme="light"] .pro-badge,
+[data-theme="light"] [class*="badge"][class*="pro"],
+[data-theme="light"] span[class*="pro"] {
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  padding: 2px 10px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* 5. CARDS DEPTH AND SHADOW */
+[data-theme="light"] .profile-section-card,
+[data-theme="light"] [data-section] {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06),
+              0 4px 16px rgba(139,92,246,0.04) !important;
+  border-radius: 16px !important;
+}
+
+[data-theme="light"] .profile-section-card:hover,
+[data-theme="light"] [data-section]:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08),
+              0 8px 24px rgba(139,92,246,0.08) !important;
+}
+
+/* 6. DANGER ZONE SECTION */
+[data-theme="light"] .danger-zone,
+[data-theme="light"] [class*="danger"] {
+  background: #fff5f5 !important;
+  border: 1px solid #fecaca !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+}
+
+[data-theme="light"] .danger-zone h3,
+[data-theme="light"] [class*="danger"] h3 {
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .danger-zone p,
+[data-theme="light"] [class*="danger"] p {
+  color: #ef4444 !important;
+}
+
+/* 7. PLAN DETAILS INNER CARD */
+[data-theme="light"] .plan-details-card,
+[data-theme="light"] [class*="plan-details"] {
+  background: #f9f7ff !important;
+  border: 1px solid #ddd6fe !important;
+  border-radius: 10px !important;
+}
+
+[data-theme="light"] .plan-details-card span,
+[data-theme="light"] .plan-details-card p,
+[data-theme="light"] [class*="plan-details"] span,
+[data-theme="light"] [class*="plan-details"] p {
+  color: #374151 !important;
+}
+
+[data-theme="light"] .interviews-count {
+  color: #7c3aed !important;
+  font-weight: 600 !important;
+}
+
+/* 8. PAGE BACKGROUND CONTRAST */
+[data-theme="light"] .profile-page,
+[data-theme="light"] .profile-main-content {
+  background: #f0ebff !important;
+}
+
+[data-theme="light"] .section-card {
+  background: #ffffff !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+
+/* 9. COMPLETION TAGS */
+[data-theme="light"] .completion-tag,
+[data-theme="light"] .completion-tags button {
+  background: #f3f4f6 !important;
+  border: 1px solid #d1d5db !important;
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="light"] .completion-tag:hover,
+[data-theme="light"] .completion-tags button:hover {
+  background: #ede9fe !important;
+  border-color: #7c3aed !important;
+  color: #7c3aed !important;
+}
+
+/* 10. SAVE CHANGES BUTTON */
+[data-theme="light"] .save-changes-btn,
+[data-theme="light"] button[type="submit"] {
+  background: linear-gradient(to right, #7c3aed, #3b82f6) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(124,58,237,0.3) !important;
+}
+
+[data-theme="light"] .save-changes-btn:hover,
+[data-theme="light"] button[type="submit"]:hover {
+  box-shadow: 0 6px 20px rgba(124,58,237,0.4) !important;
+}
+
+/* ==========================================================
    SHARED COMPONENT OVERRIDES FOR LIGHT MODE
    ========================================================== */
 
