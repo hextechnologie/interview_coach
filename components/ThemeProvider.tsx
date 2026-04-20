@@ -20,14 +20,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     const initialTheme = savedTheme || systemTheme
     setTheme(initialTheme)
+    
+    // Apply both data-theme attribute AND dark class
     document.documentElement.setAttribute('data-theme', initialTheme)
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark')
+      document.documentElement.classList.remove('light')
+    } else {
+      document.documentElement.classList.remove('dark')
+      document.documentElement.classList.add('light')
+    }
   }, [])
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
     setTheme(newTheme)
     localStorage.setItem('theme', newTheme)
+    
+    // Apply BOTH methods to ensure Tailwind picks it up
     document.documentElement.setAttribute('data-theme', newTheme)
+    
+    // Important for Tailwind dark: variant
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark')
+      document.documentElement.classList.remove('light')
+    } else {
+      document.documentElement.classList.remove('dark')
+      document.documentElement.classList.add('light')
+    }
   }
 
   return (

@@ -439,16 +439,111 @@
   color: #3b82f6 !important;
 }
 
+/* ==========================================================
+   COMPREHENSIVE DARK BACKGROUND OVERRIDES FOR LIGHT MODE
+   ========================================================== */
+
+/* Override ALL Tailwind dark background classes */
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-gray-950,
+[data-theme="light"] .bg-slate-800,
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-slate-950,
+[data-theme="light"] .bg-zinc-800,
+[data-theme="light"] .bg-zinc-900,
+[data-theme="light"] .bg-zinc-950,
+[data-theme="light"] .bg-neutral-800,
+[data-theme="light"] .bg-neutral-900,
+[data-theme="light"] .bg-neutral-950,
+[data-theme="light"] .bg-stone-800,
+[data-theme="light"] .bg-stone-900,
+[data-theme="light"] .bg-stone-950 {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Override custom hex dark backgrounds */
+[data-theme="light"] .bg-\[\#0a0f1e\],
+[data-theme="light"] .bg-\[\#111827\],
+[data-theme="light"] .bg-\[\#1a1a2e\],
+[data-theme="light"] .bg-\[\#0d1117\],
+[data-theme="light"] .bg-\[\#1e293b\],
+[data-theme="light"] .bg-\[\#18181b\] {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
 /* Universal card fix for light mode */
 [data-theme="light"] .card,
 [data-theme="light"] [class*="card"],
-[data-theme="light"] .bg-gray-800,
-[data-theme="light"] .bg-gray-900,
-[data-theme="light"] .bg-slate-800,
-[data-theme="light"] .bg-slate-900 {
+[data-theme="light"] .dashboard-card {
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Stats cards specific */
+[data-theme="light"] [class*="stats"],
+[data-theme="light"] [class*="stat-card"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Progress chart container */
+[data-theme="light"] [class*="chart"],
+[data-theme="light"] [class*="progress-section"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Credits card */
+[data-theme="light"] [class*="credits"],
+[data-theme="light"] [class*="balance"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Current balance inner card */
+[data-theme="light"] [class*="balance-card"] {
+  background: #f8f4ff !important;
+  border: 1px solid #ddd6fe !important;
+}
+
+/* Quick recharge buttons */
+[data-theme="light"] [class*="recharge"] button,
+[data-theme="light"] [class*="quick-recharge"] button {
+  background: #f3f4f6 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #7c3aed !important;
+}
+
+/* Coach Hub section */
+[data-theme="light"] [class*="coach-hub"],
+[data-theme="light"] [class*="upcoming-sessions"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Rounded containers that might have dark backgrounds */
+[data-theme="light"] .rounded-lg,
+[data-theme="light"] .rounded-xl,
+[data-theme="light"] .rounded-2xl {
+  /* Only override dark backgrounds */
+  background-color: var(--card-bg, inherit);
+}
+
+/* CSS variables for light mode */
+[data-theme="light"] {
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --bg-page: #f8f4ff;
 }
 
 /* Border colors globally */
@@ -583,9 +678,17 @@
   color: #0f172a !important;
 }
 
-/* Profile dropdown menu */
+/* Profile dropdown menu AND all inline dark styles */
 [data-theme="light"] [style*="background: #111827"],
-[data-theme="light"] [style*="background:#111827"] {
+[data-theme="light"] [style*="background:#111827"],
+[data-theme="light"] [style*="background: #0a0f1e"],
+[data-theme="light"] [style*="background:#0a0f1e"],
+[data-theme="light"] [style*="background: rgba(10,15,30"],
+[data-theme="light"] [style*="background:rgba(10,15,30"],
+[data-theme="light"] [style*="background: rgb(17, 24, 39)"],
+[data-theme="light"] [style*="background:rgb(17, 24, 39)"],
+[data-theme="light"] [style*="background: rgb(10, 15, 30)"],
+[data-theme="light"] [style*="background:rgb(10, 15, 30)"] {
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
@@ -616,10 +719,19 @@
   background: rgba(124, 58, 237, 0.1) !important;
 }
 
-/* Dashboard cards with specific background colors */
+/* Dashboard cards with specific background colors - FORCE WHITE */
 [data-theme="light"] [style*="background: rgba(10,15,30"],
 [data-theme="light"] [style*="background: #0a0f1e"],
-[data-theme="light"] [style*="background:#0a0f1e"] {
+[data-theme="light"] [style*="background:#0a0f1e"],
+[data-theme="light"] div[class*="rounded"],
+[data-theme="light"] section[class*="rounded"] {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Override any page/container backgrounds to gradient */
+[data-theme="light"] .min-h-screen[style*="background"],
+[data-theme="light"] main[style*="background"] {
   background: linear-gradient(135deg, #f8f4ff 0%, #f0f4ff 50%, #f8f4ff 100%) !important;
 }
 
@@ -628,6 +740,16 @@
 [data-theme="light"] [class*="bg-purple"] {
   background: rgba(124, 58, 237, 0.15) !important;
   color: #7c3aed !important;
+}
+
+/* Border color overrides for dark borders */
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-gray-800,
+[data-theme="light"] .border-slate-700,
+[data-theme="light"] .border-slate-800,
+[data-theme="light"] .border-zinc-700,
+[data-theme="light"] .border-zinc-800 {
+  border-color: #e2e8f0 !important;
 }
 
 /* Gradient text should remain visible */
