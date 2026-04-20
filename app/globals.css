@@ -399,6 +399,77 @@
 }
 
 /* ==========================================================
+   GLOBAL LIGHT MODE OVERRIDES - APPLY FIRST
+   ========================================================== */
+
+/* Global light mode color scheme */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="light"] body {
+  background: #f8f4ff !important;
+  color: #0f172a !important;
+}
+
+/* Override ALL white text in light mode */
+[data-theme="light"] .text-white {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .text-gray-100,
+[data-theme="light"] .text-gray-200,
+[data-theme="light"] .text-gray-300 {
+  color: #374151 !important;
+}
+
+[data-theme="light"] .text-gray-400,
+[data-theme="light"] .text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Keep purple/blue accent colors */
+[data-theme="light"] .text-purple-400,
+[data-theme="light"] .text-purple-500 {
+  color: #7c3aed !important;
+}
+
+[data-theme="light"] .text-blue-400,
+[data-theme="light"] .text-blue-500 {
+  color: #3b82f6 !important;
+}
+
+/* Universal card fix for light mode */
+[data-theme="light"] .card,
+[data-theme="light"] [class*="card"],
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-slate-800,
+[data-theme="light"] .bg-slate-900 {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Border colors globally */
+[data-theme="light"] .border-white\/10,
+[data-theme="light"] .border-white\/20 {
+  border-color: rgba(226, 232, 240, 1) !important;
+}
+
+/* Background overlays */
+[data-theme="light"] .bg-white\/5,
+[data-theme="light"] .bg-white\/10 {
+  background: rgba(241, 245, 249, 0.8) !important;
+}
+
+/* Hover states */
+[data-theme="light"] .hover\:bg-white\/5:hover,
+[data-theme="light"] .hover\:bg-white\/10:hover {
+  background: rgba(226, 232, 240, 0.5) !important;
+}
+
+/* ==========================================================
    DASHBOARD PAGE LIGHT MODE
    ========================================================== */
 
@@ -407,65 +478,106 @@
   background: linear-gradient(135deg, #f8f4ff 0%, #f0f4ff 50%, #f8f4ff 100%) !important;
 }
 
-/* Dashboard navbar/header in light mode */
+/* Dashboard navbar completely fixed */
+[data-theme="light"] .dashboard-navbar,
 [data-theme="light"] header {
   background: rgba(255, 255, 255, 0.95) !important;
   border-bottom: 1px solid #e2e8f0 !important;
   backdrop-filter: blur(10px);
 }
 
-/* All text white in dark mode should become dark in light mode */
-[data-theme="light"] .text-white {
+[data-theme="light"] .dashboard-navbar button,
+[data-theme="light"] .dashboard-navbar a,
+[data-theme="light"] .dashboard-navbar span,
+[data-theme="light"] header button,
+[data-theme="light"] header a,
+[data-theme="light"] header span {
   color: #0f172a !important;
 }
 
-[data-theme="light"] .text-gray-300 {
-  color: #475569 !important;
-}
-
-[data-theme="light"] .text-gray-400 {
-  color: #64748b !important;
-}
-
-[data-theme="light"] .text-gray-500 {
-  color: #94a3b8 !important;
-}
-
-/* Welcome section */
-[data-theme="light"] .welcome-text,
-[data-theme="light"] h1,
-[data-theme="light"] h2,
-[data-theme="light"] h3 {
+/* Credits button */
+[data-theme="light"] .credits-button {
+  background: #f3f4f6 !important;
+  border: 1px solid #e2e8f0 !important;
   color: #0f172a !important;
 }
 
-/* Stats cards in dashboard */
-[data-theme="light"] .stats-card,
-[data-theme="light"] [class*="rounded"][class*="border"][class*="bg-"] {
+/* Notification bell */
+[data-theme="light"] .notification-bell {
+  color: #374151 !important;
+}
+
+/* Welcome message - fix invisible text */
+[data-theme="light"] .welcome-section h1,
+[data-theme="light"] .welcome-section p {
+  color: #0f172a !important;
+}
+
+/* Stats cards - complete fix */
+[data-theme="light"] .stats-card {
   background: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="light"] .stats-card h3,
 [data-theme="light"] .stats-card p,
 [data-theme="light"] .stats-card span,
 [data-theme="light"] .stats-card div {
   color: #0f172a !important;
 }
 
-[data-theme="light"] .stats-card .text-gray-400,
-[data-theme="light"] .stats-card .text-gray-300 {
+/* Stats numbers */
+[data-theme="light"] .stats-number {
+  color: #0f172a !important;
+  font-weight: bold;
+}
+
+/* Stats helper text */
+[data-theme="light"] .stats-helper {
   color: #64748b !important;
 }
 
-/* Credits card */
-[data-theme="light"] .credits-card {
+/* Progress chart section */
+[data-theme="light"] .chart-container,
+[data-theme="light"] .chart-section {
   background: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid #e2e8f0 !important;
 }
 
-/* Chart/progress section */
-[data-theme="light"] .chart-section {
+[data-theme="light"] .chart-container p,
+[data-theme="light"] .chart-container span,
+[data-theme="light"] .chart-container h2,
+[data-theme="light"] .chart-section p,
+[data-theme="light"] .chart-section span,
+[data-theme="light"] .chart-section h2 {
+  color: #0f172a !important;
+}
+
+/* Coach Hub section */
+[data-theme="light"] .coach-hub-section,
+[data-theme="light"] .coach-hub-section * {
+  color: #0f172a;
+}
+
+/* Recent Sessions */
+[data-theme="light"] .recent-sessions p,
+[data-theme="light"] .recent-sessions span,
+[data-theme="light"] .recent-sessions h3 {
+  color: #0f172a !important;
+}
+
+/* Daily tip */
+[data-theme="light"] .daily-tip-card p,
+[data-theme="light"] .daily-tip-card span {
+  color: #374151 !important;
+}
+
+/* Credits section */
+[data-theme="light"] .credits-section p,
+[data-theme="light"] .credits-section span,
+[data-theme="light"] .credits-section h3,
+[data-theme="light"] .credits-card {
   background: rgba(255, 255, 255, 0.9) !important;
   border: 1px solid #e2e8f0 !important;
   color: #0f172a !important;
@@ -548,7 +660,7 @@
 }
 
 /* ==========================================================
-   PROFILE PAGE LIGHT MODE
+   PROFILE PAGE LIGHT MODE - COMPREHENSIVE FIXES
    ========================================================== */
 
 /* Profile page background */
@@ -556,42 +668,71 @@
   background: linear-gradient(135deg, #f8f4ff 0%, #f0f4ff 50%, #f8f4ff 100%) !important;
 }
 
-/* Profile sidebar navigation */
-[data-theme="light"] .profile-sidebar {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid #e2e8f0 !important;
+/* SIDEBAR COMPLETE FIX - Most Important */
+[data-theme="light"] .profile-sidebar,
+[data-theme="light"] aside {
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05) !important;
 }
 
-[data-theme="light"] .profile-sidebar a {
-  color: #475569 !important;
+[data-theme="light"] .profile-sidebar a,
+[data-theme="light"] aside a {
+  color: #374151 !important;
 }
 
-[data-theme="light"] .profile-sidebar a:hover {
-  background: rgba(124, 58, 237, 0.1) !important;
+[data-theme="light"] .profile-sidebar a:hover,
+[data-theme="light"] aside a:hover {
+  background: #f3f4f6 !important;
   color: #7c3aed !important;
 }
 
-[data-theme="light"] .profile-sidebar a.active {
+[data-theme="light"] .profile-sidebar a.active,
+[data-theme="light"] aside a.active {
   background: #7c3aed !important;
   color: #ffffff !important;
 }
 
-/* Profile section cards */
-[data-theme="light"] .profile-section-card,
-[data-theme="light"] [data-section] {
-  background: rgba(255, 255, 255, 0.9) !important;
+/* COMPLETION CARD COMPLETE FIX */
+[data-theme="light"] .completion-card {
+  background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .completion-card p,
+[data-theme="light"] .completion-card span {
+  color: #374151 !important;
+}
+
+[data-theme="light"] .completion-tags button {
+  background: #f3f4f6 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #374151 !important;
+}
+
+/* All section titles */
+[data-theme="light"] .profile-section h2,
+[data-theme="light"] .profile-section h3 {
   color: #0f172a !important;
 }
 
-/* Profile inputs */
-[data-theme="light"] .profile-input,
+/* All labels */
+[data-theme="light"] .profile-section label,
+[data-theme="light"] label {
+  color: #374151 !important;
+}
+
+/* All input text - CRITICAL FIX */
+[data-theme="light"] .profile-section input,
+[data-theme="light"] .profile-section textarea,
+[data-theme="light"] .profile-section select,
 [data-theme="light"] input,
 [data-theme="light"] textarea,
 [data-theme="light"] select {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
   color: #0f172a !important;
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
 }
 
 [data-theme="light"] input:focus,
@@ -601,15 +742,33 @@
   ring-color: rgba(124, 58, 237, 0.3) !important;
 }
 
+/* Input placeholders */
+[data-theme="light"] .profile-section input::placeholder,
+[data-theme="light"] .profile-section textarea::placeholder,
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder {
   color: #94a3b8 !important;
 }
 
-/* Profile labels */
-[data-theme="light"] .profile-label,
-[data-theme="light"] label {
+/* Bio section text */
+[data-theme="light"] .bio-section p,
+[data-theme="light"] .bio-section span {
   color: #374151 !important;
+}
+
+/* Career info text */
+[data-theme="light"] .career-section p,
+[data-theme="light"] .career-section span,
+[data-theme="light"] .career-section label {
+  color: #374151 !important;
+}
+
+/* Profile section cards */
+[data-theme="light"] .profile-section-card,
+[data-theme="light"] [data-section] {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
 }
 
 /* Profile completion bar */
@@ -650,11 +809,11 @@
   border-color: #e2e8f0 !important;
 }
 
-/* Skills selector */
+/* Skills tags - COMPLETE FIX */
 [data-theme="light"] .skill-tag {
-  background: rgba(124, 58, 237, 0.15) !important;
-  color: #7c3aed !important;
-  border: 1px solid rgba(124, 58, 237, 0.3) !important;
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 /* Timezone selector dropdown */
@@ -665,6 +824,13 @@
 
 [data-theme="light"] .timezone-option:hover {
   background: rgba(124, 58, 237, 0.1) !important;
+}
+
+/* Account section */
+[data-theme="light"] .account-section p,
+[data-theme="light"] .account-section span,
+[data-theme="light"] .account-section label {
+  color: #374151 !important;
 }
 
 /* Save button states */
