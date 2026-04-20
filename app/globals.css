@@ -729,10 +729,10 @@
   border: 1px solid #e2e8f0 !important;
 }
 
-/* Override any page/container backgrounds to gradient */
+/* Override any page/container backgrounds to clean white */
 [data-theme="light"] .min-h-screen[style*="background"],
 [data-theme="light"] main[style*="background"] {
-  background: linear-gradient(135deg, #f8f4ff 0%, #f0f4ff 50%, #f8f4ff 100%) !important;
+  background: #ffffff !important;
 }
 
 /* Badges and tags */
@@ -1136,10 +1136,10 @@
   font-weight: 600 !important;
 }
 
-/* 8. PAGE BACKGROUND CONTRAST */
+/* 8. PAGE BACKGROUND - CLEAN WHITE */
 [data-theme="light"] .profile-page,
 [data-theme="light"] .profile-main-content {
-  background: #f0ebff !important;
+  background: #ffffff !important;
 }
 
 [data-theme="light"] .section-card {
