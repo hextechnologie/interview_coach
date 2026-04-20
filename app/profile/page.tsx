@@ -15,6 +15,7 @@ import ChangePasswordModal from '@/components/ChangePasswordModal'
 import DeleteAccountModal from '@/components/DeleteAccountModal'
 import UnsavedChangesWarning from '@/components/UnsavedChangesWarning'
 import TimezoneSelector from '@/components/TimezoneSelector'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
@@ -407,16 +408,19 @@ export default function ProfilePage() {
               Interview Coach
             </span>
           </Link>
-          <Link
-            href="/dashboard"
-            title="Press Alt+← to go back"
-            aria-label={t('profile.nav.backToDashboard')}
-            className="group inline-flex items-center gap-2 rounded-lg border border-purple-500/50 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-200 shadow-sm transition-all duration-200 hover:scale-105 hover:border-purple-500 hover:bg-purple-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400/70"
-          >
-            <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-            <span className="sm:hidden">{translateWithFallback('profile.nav.dashboardShort', 'Dashboard')}</span>
-            <span className="hidden sm:inline">{t('profile.nav.backToDashboard')}</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/dashboard"
+              title="Press Alt+← to go back"
+              aria-label={t('profile.nav.backToDashboard')}
+              className="group inline-flex items-center gap-2 rounded-lg border border-purple-500/50 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-200 shadow-sm transition-all duration-200 hover:scale-105 hover:border-purple-500 hover:bg-purple-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400/70"
+            >
+              <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
+              <span className="sm:hidden">{translateWithFallback('profile.nav.dashboardShort', 'Dashboard')}</span>
+              <span className="hidden sm:inline">{t('profile.nav.backToDashboard')}</span>
+            </Link>
+          </div>
         </div>
       </header>
 

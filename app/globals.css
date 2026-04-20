@@ -790,12 +790,14 @@
   background: linear-gradient(135deg, #f8f4ff 0%, #f0f4ff 50%, #f8f4ff 100%) !important;
 }
 
-/* SIDEBAR COMPLETE FIX - Most Important */
+/* SIDEBAR COMPLETE FIX - FLAT WHITE DESIGN */
 [data-theme="light"] .profile-sidebar,
-[data-theme="light"] aside {
+[data-theme="light"] aside,
+[data-theme="light"] aside nav {
   background: #ffffff !important;
-  border-right: 1px solid #e2e8f0 !important;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05) !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-right: none !important;
 }
 
 [data-theme="light"] .profile-sidebar a,
@@ -1096,24 +1098,47 @@
               0 8px 24px rgba(139,92,246,0.08) !important;
 }
 
-/* 6. DANGER ZONE SECTION */
+/* 6. DANGER ZONE SECTION - BOLD RED */
 [data-theme="light"] .danger-zone,
-[data-theme="light"] [class*="danger"] {
-  background: #fff5f5 !important;
-  border: 1px solid #fecaca !important;
+[data-theme="light"] [class*="danger"],
+[data-theme="light"] div[style*="#1a0505"] {
+  background: #fef2f2 !important;
+  border: 2px solid #dc2626 !important;
   border-radius: 12px !important;
   padding: 16px !important;
 }
 
 [data-theme="light"] .danger-zone h3,
-[data-theme="light"] [class*="danger"] h3 {
+[data-theme="light"] [class*="danger"] h3,
+[data-theme="light"] div[style*="#1a0505"] h3 {
   color: #dc2626 !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
+  font-size: 1.125rem !important;
 }
 
 [data-theme="light"] .danger-zone p,
-[data-theme="light"] [class*="danger"] p {
-  color: #ef4444 !important;
+[data-theme="light"] [class*="danger"] p,
+[data-theme="light"] div[style*="#1a0505"] p {
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+}
+
+/* Delete Account Button - BOLD RED */
+[data-theme="light"] button[class*="border-red"],
+[data-theme="light"] .danger-zone button,
+[data-theme="light"] div[style*="#1a0505"] button {
+  background: #ffffff !important;
+  border: 2px solid #dc2626 !important;
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+  font-size: 0.9375rem !important;
+}
+
+[data-theme="light"] button[class*="border-red"]:hover,
+[data-theme="light"] .danger-zone button:hover,
+[data-theme="light"] div[style*="#1a0505"] button:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
 }
 
 /* 7. PLAN DETAILS INNER CARD */
@@ -1175,6 +1200,40 @@
 [data-theme="light"] .save-changes-btn:hover,
 [data-theme="light"] button[type="submit"]:hover {
   box-shadow: 0 6px 20px rgba(124,58,237,0.4) !important;
+}
+
+/* 11. SKILLS CATEGORIES - REMOVE COLORED DOTS */
+/* Hide all colored dots in skill tags */
+[data-theme="light"] .skill-tag .w-2.h-2.rounded-full,
+[data-theme="light"] div[class*="rounded-full"].w-2.h-2,
+[data-theme="light"] div[class*="bg-blue-500"],
+[data-theme="light"] div[class*="bg-green-500"],
+[data-theme="light"] div[class*="bg-purple-500"],
+[data-theme="light"] div[class*="bg-orange-500"] {
+  display: none !important;
+}
+
+/* Remove colored backgrounds from skill tags */
+[data-theme="light"] div[class*="bg-blue-500/10"],
+[data-theme="light"] div[class*="bg-green-500/10"],
+[data-theme="light"] div[class*="bg-purple-500/10"],
+[data-theme="light"] div[class*="bg-orange-500/10"],
+[data-theme="light"] div[class*="border-blue-500"],
+[data-theme="light"] div[class*="border-green-500"],
+[data-theme="light"] div[class*="border-purple-500"],
+[data-theme="light"] div[class*="border-orange-500"] {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Hide colored dots in category legend */
+[data-theme="light"] div[class*="w-3"][class*="h-3"][class*="rounded-full"] {
+  display: none !important;
+}
+
+/* Make category legend text plain */
+[data-theme="light"] .border-t.border-gray-700 {
+  border-color: #e5e7eb !important;
 }
 
 /* ==========================================================
