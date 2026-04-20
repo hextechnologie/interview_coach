@@ -92,7 +92,7 @@ export default function AchievementsCardsSection({ coachId, userId }: Achievemen
         <button
           type="button"
           onClick={openAddModal}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition"
         >
           <Plus className="w-4 h-4" />
           {t('profile.achievementsSection.addButton')}
@@ -469,7 +469,7 @@ function AchievementModal({ tableName, idField, idValue, achievement, onClose, o
               type="button"
               onClick={() => handleSubmit()}
               disabled={isSaving}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
             >
               {isSaving ? t('profile.saving') : achievement ? t('profile.achievementsSection.modal.updateButton') : t('profile.achievementsSection.modal.addButton')}
             </button>
