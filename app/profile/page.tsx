@@ -72,6 +72,73 @@ export default function ProfilePage() {
     { value: 'senior', label: `${translateWithFallback('profile.experienceLevels.senior', 'Senior')} (6+ yrs)` },
   ]
 
+  // Comprehensive timezone list
+  const timezoneOptions = [
+    // UTC
+    { value: 'UTC', label: 'UTC - Coordinated Universal Time' },
+    // Americas
+    { value: 'America/New_York', label: 'America/New_York (EST/EDT)' },
+    { value: 'America/Chicago', label: 'America/Chicago (CST/CDT)' },
+    { value: 'America/Denver', label: 'America/Denver (MST/MDT)' },
+    { value: 'America/Los_Angeles', label: 'America/Los_Angeles (PST/PDT)' },
+    { value: 'America/Phoenix', label: 'America/Phoenix (MST)' },
+    { value: 'America/Anchorage', label: 'America/Anchorage (AKST/AKDT)' },
+    { value: 'America/Toronto', label: 'America/Toronto (Canada Eastern)' },
+    { value: 'America/Vancouver', label: 'America/Vancouver (Canada Pacific)' },
+    { value: 'America/Mexico_City', label: 'America/Mexico_City' },
+    { value: 'America/Sao_Paulo', label: 'America/Sao_Paulo (Brazil)' },
+    { value: 'America/Buenos_Aires', label: 'America/Buenos_Aires (Argentina)' },
+    { value: 'America/Lima', label: 'America/Lima (Peru)' },
+    { value: 'America/Bogota', label: 'America/Bogota (Colombia)' },
+    { value: 'America/Caracas', label: 'America/Caracas (Venezuela)' },
+    // Europe
+    { value: 'Europe/London', label: 'Europe/London (GMT/BST)' },
+    { value: 'Europe/Paris', label: 'Europe/Paris (CET/CEST)' },
+    { value: 'Europe/Berlin', label: 'Europe/Berlin (CET/CEST)' },
+    { value: 'Europe/Rome', label: 'Europe/Rome (CET/CEST)' },
+    { value: 'Europe/Madrid', label: 'Europe/Madrid (CET/CEST)' },
+    { value: 'Europe/Amsterdam', label: 'Europe/Amsterdam (CET/CEST)' },
+    { value: 'Europe/Brussels', label: 'Europe/Brussels (CET/CEST)' },
+    { value: 'Europe/Vienna', label: 'Europe/Vienna (CET/CEST)' },
+    { value: 'Europe/Zurich', label: 'Europe/Zurich (CET/CEST)' },
+    { value: 'Europe/Athens', label: 'Europe/Athens (EET/EEST)' },
+    { value: 'Europe/Istanbul', label: 'Europe/Istanbul (TRT)' },
+    { value: 'Europe/Moscow', label: 'Europe/Moscow (MSK)' },
+    { value: 'Europe/Kiev', label: 'Europe/Kiev (EET/EEST)' },
+    { value: 'Europe/Dublin', label: 'Europe/Dublin (GMT/IST)' },
+    { value: 'Europe/Lisbon', label: 'Europe/Lisbon (WET/WEST)' },
+    // Asia
+    { value: 'Asia/Dubai', label: 'Asia/Dubai (GST)' },
+    { value: 'Asia/Tokyo', label: 'Asia/Tokyo (JST)' },
+    { value: 'Asia/Shanghai', label: 'Asia/Shanghai (CST)' },
+    { value: 'Asia/Hong_Kong', label: 'Asia/Hong_Kong (HKT)' },
+    { value: 'Asia/Singapore', label: 'Asia/Singapore (SGT)' },
+    { value: 'Asia/Seoul', label: 'Asia/Seoul (KST)' },
+    { value: 'Asia/Bangkok', label: 'Asia/Bangkok (ICT)' },
+    { value: 'Asia/Kolkata', label: 'Asia/Kolkata (IST - India)' },
+    { value: 'Asia/Karachi', label: 'Asia/Karachi (PKT)' },
+    { value: 'Asia/Jakarta', label: 'Asia/Jakarta (WIB)' },
+    { value: 'Asia/Manila', label: 'Asia/Manila (PHT)' },
+    { value: 'Asia/Taipei', label: 'Asia/Taipei (CST)' },
+    { value: 'Asia/Riyadh', label: 'Asia/Riyadh (AST)' },
+    { value: 'Asia/Jerusalem', label: 'Asia/Jerusalem (IST - Israel)' },
+    { value: 'Asia/Tehran', label: 'Asia/Tehran (IRST)' },
+    // Australia & Pacific
+    { value: 'Australia/Sydney', label: 'Australia/Sydney (AEDT/AEST)' },
+    { value: 'Australia/Melbourne', label: 'Australia/Melbourne (AEDT/AEST)' },
+    { value: 'Australia/Brisbane', label: 'Australia/Brisbane (AEST)' },
+    { value: 'Australia/Perth', label: 'Australia/Perth (AWST)' },
+    { value: 'Pacific/Auckland', label: 'Pacific/Auckland (NZDT/NZST)' },
+    { value: 'Pacific/Fiji', label: 'Pacific/Fiji (FJT)' },
+    { value: 'Pacific/Honolulu', label: 'Pacific/Honolulu (HST)' },
+    // Africa
+    { value: 'Africa/Cairo', label: 'Africa/Cairo (EET)' },
+    { value: 'Africa/Johannesburg', label: 'Africa/Johannesburg (SAST)' },
+    { value: 'Africa/Lagos', label: 'Africa/Lagos (WAT)' },
+    { value: 'Africa/Nairobi', label: 'Africa/Nairobi (EAT)' },
+    { value: 'Africa/Casablanca', label: 'Africa/Casablanca (WET)' },
+  ]
+
 
   // Personal info
   const [firstName, setFirstName] = useState('')
@@ -516,10 +583,11 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-3">
                   <Clock className="w-5 h-5 text-gray-400 mt-2" />
                   <div className="flex-1">
-                    <Input
+                    <Select
                       label={t('profile.personalInfo.timezone')}
                       value={timezone}
                       onChange={(v) => { setTimezone(v); setHasUnsaved(true) }}
+                      options={timezoneOptions}
                       placeholder={Intl.DateTimeFormat().resolvedOptions().timeZone}
                     />
                     <p className="text-xs text-gray-400 mt-1">{t('profile.personalInfo.timezoneHelper')}</p>
