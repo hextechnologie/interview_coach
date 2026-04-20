@@ -1006,40 +1006,51 @@
 [data-theme="light"] .outline-button,
 [data-theme="light"] button[class*="outline"],
 [data-theme="light"] a[class*="outline"] {
-  border: 1.5px solid #d1d5db !important;
-  color: #374151 !important;
+  border: 2px solid #7c3aed !important;
+  color: #7c3aed !important;
   background: #ffffff !important;
+  font-weight: 600 !important;
 }
 
 [data-theme="light"] .outline-button:hover,
 [data-theme="light"] button[class*="outline"]:hover {
   border-color: #7c3aed !important;
-  color: #7c3aed !important;
-  background: #f5f3ff !important;
+  color: #ffffff !important;
+  background: #7c3aed !important;
 }
 
 /* Manage Plan button specifically */
 [data-theme="light"] .manage-plan-btn,
 [data-theme="light"] button[class*="manage"],
 [data-theme="light"] a[class*="manage"] {
-  border: 1.5px solid #7c3aed !important;
+  border: 2px solid #7c3aed !important;
   color: #7c3aed !important;
   font-weight: 600 !important;
   background: #ffffff !important;
 }
 
+[data-theme="light"] .manage-plan-btn:hover,
+[data-theme="light"] button[class*="manage"]:hover,
+[data-theme="light"] a[class*="manage"]:hover {
+  border-color: #7c3aed !important;
+  color: #ffffff !important;
+  background: #7c3aed !important;
+}
+
 /* Change Password button */
 [data-theme="light"] .change-password-btn,
 [data-theme="light"] button[class*="password"] {
-  border: 1.5px solid #d1d5db !important;
-  color: #374151 !important;
+  border: 2px solid #7c3aed !important;
+  color: #7c3aed !important;
   background: #ffffff !important;
+  font-weight: 600 !important;
 }
 
-[data-theme="light"] .change-password-btn:hover {
+[data-theme="light"] .change-password-btn:hover,
+[data-theme="light"] button[class*="password"]:hover {
   border-color: #7c3aed !important;
-  color: #7c3aed !important;
-  background: #f5f3ff !important;
+  color: #ffffff !important;
+  background: #7c3aed !important;
 }
 
 /* Delete Account button */
@@ -1257,6 +1268,27 @@
 /* Ring colors for focus states */
 [data-theme="light"] .focus\:ring-purple-500\/50:focus {
   --tw-ring-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Primary color classes - ensure purple in light mode */
+[data-theme="light"] .border-primary {
+  border-color: #7c3aed !important;
+}
+
+[data-theme="light"] .text-primary {
+  color: #7c3aed !important;
+}
+
+[data-theme="light"] .hover\:bg-primary:hover {
+  background-color: #7c3aed !important;
+}
+
+[data-theme="light"] .hover\:text-white:hover {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .bg-primary {
+  background-color: #7c3aed !important;
 }
 
 /* ==========================================================
