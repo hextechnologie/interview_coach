@@ -720,11 +720,12 @@
 }
 
 /* Dashboard cards with specific background colors - FORCE WHITE */
-[data-theme="light"] [style*="background: rgba(10,15,30"],
-[data-theme="light"] [style*="background: #0a0f1e"],
-[data-theme="light"] [style*="background:#0a0f1e"],
-[data-theme="light"] div[class*="rounded"],
-[data-theme="light"] section[class*="rounded"] {
+/* BUT exclude danger zone (border-red classes) */
+[data-theme="light"] [style*="background: rgba(10,15,30"]:not([style*="#1a0505"]),
+[data-theme="light"] [style*="background: #0a0f1e"]:not([style*="#1a0505"]),
+[data-theme="light"] [style*="background:#0a0f1e"]:not([style*="#1a0505"]),
+[data-theme="light"] div[class*="rounded"]:not([class*="border-red"]),
+[data-theme="light"] section[class*="rounded"]:not([class*="border-red"]) {
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
 }
@@ -1105,46 +1106,61 @@
               0 8px 24px rgba(139,92,246,0.08) !important;
 }
 
-/* 6. DANGER ZONE SECTION - DARK RED LIKE DARK MODE */
+/* 6. DANGER ZONE SECTION - DARK RED BACKGROUND LIKE DARK MODE */
 [data-theme="light"] .danger-zone,
 [data-theme="light"] [class*="danger"],
+[data-theme="light"] div.rounded-lg.border-2[style*="background"],
+[data-theme="light"] div[class*="border-red"][style*="background"],
 [data-theme="light"] div[style*="#1a0505"] {
   background: #1a0505 !important;
-  border: 2px solid #dc2626 !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
+  background-color: #1a0505 !important;
+  border: 2px solid rgba(239, 68, 68, 0.4) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  border-radius: 0.5rem !important;
 }
 
 [data-theme="light"] .danger-zone h3,
 [data-theme="light"] [class*="danger"] h3,
-[data-theme="light"] div[style*="#1a0505"] h3 {
+[data-theme="light"] div[style*="#1a0505"] h3,
+[data-theme="light"] div.rounded-lg.border-2 h3 {
   color: #fca5a5 !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
   font-size: 1.125rem !important;
 }
 
 [data-theme="light"] .danger-zone p,
 [data-theme="light"] [class*="danger"] p,
-[data-theme="light"] div[style*="#1a0505"] p {
-  color: #fca5a5 !important;
-  font-weight: 600 !important;
+[data-theme="light"] div[style*="#1a0505"] p,
+[data-theme="light"] div.rounded-lg.border-2 p {
+  color: rgba(252, 165, 165, 0.8) !important;
+  font-weight: 400 !important;
+}
+
+/* Trash icon color */
+[data-theme="light"] .danger-zone svg,
+[data-theme="light"] div[style*="#1a0505"] svg.text-red-400 {
+  color: #f87171 !important;
 }
 
 /* Delete Account Button - RED LIKE DARK MODE */
 [data-theme="light"] button[class*="border-red"],
 [data-theme="light"] .danger-zone button,
-[data-theme="light"] div[style*="#1a0505"] button {
+[data-theme="light"] div[style*="#1a0505"] button,
+[data-theme="light"] div.rounded-lg.border-2 button {
   background: transparent !important;
+  background-color: transparent !important;
   border: 1px solid #ef4444 !important;
+  border-color: #ef4444 !important;
   color: #ef4444 !important;
-  font-weight: 600 !important;
-  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
 }
 
 [data-theme="light"] button[class*="border-red"]:hover,
 [data-theme="light"] .danger-zone button:hover,
-[data-theme="light"] div[style*="#1a0505"] button:hover {
+[data-theme="light"] div[style*="#1a0505"] button:hover,
+[data-theme="light"] div.rounded-lg.border-2 button:hover {
   background: #ef4444 !important;
+  background-color: #ef4444 !important;
   color: #ffffff !important;
 }
 
@@ -1240,5 +1256,18 @@
 /* Ring colors for focus states */
 [data-theme="light"] .focus\:ring-purple-500\/50:focus {
   --tw-ring-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+/* ==========================================================
+   FINAL OVERRIDES - HIGHEST PRIORITY
+   ========================================================== */
+
+/* DANGER ZONE - MUST STAY DARK RED - FINAL OVERRIDE */
+[data-theme="light"] div.rounded-lg.border-2.border-red-500\/40[style*="background"],
+[data-theme="light"] .border-2.border-red-500\/40,
+[data-theme="light"] [class*="border-red-500"] {
+  background: #1a0505 !important;
+  background-color: #1a0505 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
 }
 
