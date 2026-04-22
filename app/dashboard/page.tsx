@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner, Badge } from '@/components/ui'
 import { NotificationBell } from '@/components/NotificationBell'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import CreditBalanceButton from '@/components/CreditBalanceButton'
 import { supabase, InterviewSession, InterviewAnswer, getFirstName } from '@/lib/supabase'
 import { getCreditBalance } from '@/lib/credits'
@@ -431,6 +432,7 @@ export default function DashboardPage() {
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-3">
               <ThemeToggle />
+              <LanguageSwitcher />
               <CreditBalanceButton />
               <NotificationBell />
               {!isCoach && <Link href="/bookings"><Button variant="outline" className="text-sm gap-2"><Calendar className="w-4 h-4" />{t('dashboard.myBookings')}</Button></Link>}
@@ -487,6 +489,7 @@ export default function DashboardPage() {
             {/* Mobile: notification + hamburger */}
             <div className="md:hidden flex items-center gap-2">
               <ThemeToggle />
+              <LanguageSwitcher />
               <NotificationBell />
               <button
                 onClick={() => setMenuOpen((v) => !v)}

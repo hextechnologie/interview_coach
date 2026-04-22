@@ -16,6 +16,7 @@ import DeleteAccountModal from '@/components/DeleteAccountModal'
 import UnsavedChangesWarning from '@/components/UnsavedChangesWarning'
 import TimezoneSelector from '@/components/TimezoneSelector'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import ExperienceCardsSection from '@/components/coach/ExperienceCardsSection'
 import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
@@ -410,6 +411,7 @@ export default function ProfilePage() {
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            <LanguageSwitcher />
             <Link
               href="/dashboard"
               title="Press Alt+← to go back"
