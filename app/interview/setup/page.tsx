@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function InterviewSetupPage() {
   const { user, profile, loading: authLoading } = useAuth()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const router = useRouter()
 
   const ROLES = [
@@ -53,6 +53,17 @@ export default function InterviewSetupPage() {
     t('interviewSetup.intro.steps.3')
   ]
 
+  // Map locale code to display label for interview language dropdown
+  const getLanguageLabelFromLocale = (localeCode: string): string => {
+    const map: Record<string, string> = {
+      'en': 'English',
+      'fr': 'French',
+      'es': 'Spanish',
+      'ar': 'Arabic',
+    }
+    return map[localeCode] || 'English'
+  }
+
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [uploadingResume, setUploadingResume] = useState(false)
@@ -65,7 +76,7 @@ export default function InterviewSetupPage() {
   const [jobDescription, setJobDescription] = useState('')
   const [jobTitle, setJobTitle] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
-  const [language, setLanguage] = useState('English')
+  const [language, setLanguage] = useState(getLanguageLabelFromLocale(locale))
   const [interviewType, setInterviewType] = useState('Mixed')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
   const [targetCompany, setTargetCompany] = useState('')
@@ -78,6 +89,11 @@ export default function InterviewSetupPage() {
       router.push('/login')
     }
   }, [user, authLoading, router])
+
+  // Sync interview language with user's selected UI language
+  useEffect(() => {
+    setLanguage(getLanguageLabelFromLocale(locale))
+  }, [locale])
 
   const limitReached = !!profile && profile.interviews_used_this_month >= profile.interviews_limit
 
