@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Wallet } from 'lucide-react'
 import { useAuth } from './AuthProvider'
+import { useLanguage } from './LanguageProvider'
 import { getCreditBalance, getCreditBalanceColor, subscribeToCreditsUpdates } from '@/lib/credits'
 
 export default function CreditBalanceButton() {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const router = useRouter()
   const [balance, setBalance] = useState<number>(0)
   const [loading, setLoading] = useState(true)
@@ -44,7 +46,7 @@ export default function CreditBalanceButton() {
   return (
     <button
       onClick={() => router.push('/credits')}
-      title={isLow ? 'Low balance! Top up now' : 'Click to manage credits'}
+      title={isLow ? t('dashboard.lowBalanceTopUp') : t('dashboard.clickToManageCredits')}
       className={`
         group relative px-4 py-2 rounded-lg font-medium transition-all
         border ${colors.borderColor} ${colors.bgColor}
@@ -55,13 +57,13 @@ export default function CreditBalanceButton() {
       <div className="flex items-center gap-2">
         <Wallet className={`w-4 h-4 ${colors.textColor}`} />
         <span className={`${colors.textColor} font-bold`}>
-          {loading ? '...' : `${balance} Credits`}
+          {loading ? '...' : `${balance} ${t('dashboard.creditsText')}`}
         </span>
       </div>
       
       {/* Tooltip */}
       <div className="absolute hidden group-hover:block top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap z-50 shadow-lg">
-        {isLow ? 'Low balance! Top up now' : 'Top Up'}
+        {isLow ? t('dashboard.lowBalanceTopUp') : t('dashboard.topUp')}
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[-4px] border-4 border-transparent border-b-gray-900" />
       </div>
     </button>
