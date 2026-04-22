@@ -1199,6 +1199,12 @@
       "perfect": "مثالي",
       "tooLong": "طويل جداً"
     },
+    "fallbacks": {
+      "mixed": "مختلط",
+      "quickFixDefault": "ابدأ إجابتك بالموقف، ثم اشرح إجراءك، ثم النتيجة.",
+      "yourAnswerPlaceholder": "آخر إجابة لك تظهر هنا.",
+      "noIdealAnswer": "لا توجد إجابة مثالية متاحة بعد."
+    },
     "linkedInShare": "لقد حصلت للتو على {score}/10 في مقابلة تدريبية بالذكاء الاصطناعي لـ {role}! أتدرب مع Interview Coach 🎯",
     "summary": {
       "backToDashboard": "العودة إلى لوحة التحكم",

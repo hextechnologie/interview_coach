@@ -1199,6 +1199,12 @@
       "perfect": "Perfect",
       "tooLong": "Too Long"
     },
+    "fallbacks": {
+      "mixed": "Mixed",
+      "quickFixDefault": "Start your answer with the situation, explain your action, then the result.",
+      "yourAnswerPlaceholder": "Your latest answer appears here.",
+      "noIdealAnswer": "No ideal answer available yet."
+    },
     "linkedInShare": "I just scored {score}/10 on an AI mock interview for {role}! Practicing with Interview Coach 🎯",
     "summary": {
       "backToDashboard": "Back to Dashboard",

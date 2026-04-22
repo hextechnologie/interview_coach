@@ -233,6 +233,12 @@ export default function InterviewPage() {
       perfect: translate('interview.lengths.perfect'),
       tooLong: translate('interview.lengths.tooLong'),
     },
+    fallbacks: {
+      mixed: translate('interview.fallbacks.mixed'),
+      quickFixDefault: translate('interview.fallbacks.quickFixDefault'),
+      yourAnswerPlaceholder: translate('interview.fallbacks.yourAnswerPlaceholder'),
+      noIdealAnswer: translate('interview.fallbacks.noIdealAnswer'),
+    },
     linkedInShare: translate('interview.linkedInShare'),
   }
 
@@ -616,7 +622,7 @@ export default function InterviewPage() {
                   <p className="text-sm text-gray-400">
                     {t.header.questionCount.replace('{current}', String(questionCount)).replace('{total}', '6')}
                   </p>
-                  <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || 'Mixed'}</p>
+                  <p className="text-sm font-semibold">{session.job_role} • {session.difficulty_level} • {session.interview_config?.interviewType || t.fallbacks.mixed}</p>
                 </div>
               )}
               <Button variant="outline" className="px-3 py-2 text-xs" onClick={toggleSpeech}>
@@ -736,7 +742,7 @@ export default function InterviewPage() {
 
                       <div className="rounded-2xl border border-primary/30 bg-gradient-to-r from-violet-500/15 to-blue-500/15 p-4">
                         <h4 className="mb-1 flex items-center gap-2 font-semibold text-primary">💡 {t.feedback.quickFix}</h4>
-                        <p className="text-sm text-gray-200">{message.feedback.quick_fix || 'Start your answer with the situation, explain your action, then the result.'}</p>
+                        <p className="text-sm text-gray-200">{message.feedback.quick_fix || t.fallbacks.quickFixDefault}</p>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -769,11 +775,11 @@ export default function InterviewPage() {
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4">
                               <h4 className="font-semibold text-red-300 mb-2">{t.feedback.yourAnswer}</h4>
-                              <p className="text-sm text-gray-300 whitespace-pre-wrap">{messages[index - 1]?.role === 'user' ? messages[index - 1].content : 'Your latest answer appears here.'}</p>
+                              <p className="text-sm text-gray-300 whitespace-pre-wrap">{messages[index - 1]?.role === 'user' ? messages[index - 1].content : t.fallbacks.yourAnswerPlaceholder}</p>
                             </div>
                             <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4">
                               <h4 className="font-semibold text-green-300 mb-2">{t.feedback.idealAnswer}</h4>
-                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{message.feedback.ideal_answer || 'No ideal answer available yet.'}</p>
+                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{message.feedback.ideal_answer || t.fallbacks.noIdealAnswer}</p>
                             </div>
                           </div>
 

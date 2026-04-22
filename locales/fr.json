@@ -1197,6 +1197,12 @@
       "perfect": "Parfait",
       "tooLong": "Trop long"
     },
+    "fallbacks": {
+      "mixed": "Mixte",
+      "quickFixDefault": "Commencez votre réponse par la situation, expliquez votre action, puis le résultat.",
+      "yourAnswerPlaceholder": "Votre dernière réponse apparaît ici.",
+      "noIdealAnswer": "Aucune réponse idéale disponible pour le moment."
+    },
     "linkedInShare": "Je viens d'obtenir {score}/10 lors d'un entretien simulé IA pour {role} ! Je m'entraîne avec Interview Coach 🎯",
     "summary": {
       "backToDashboard": "Retour au Tableau de Bord",
