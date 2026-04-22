@@ -724,7 +724,7 @@
 [data-theme="light"] [style*="background: rgba(10,15,30"]:not([style*="#1a0505"]),
 [data-theme="light"] [style*="background: #0a0f1e"]:not([style*="#1a0505"]),
 [data-theme="light"] [style*="background:#0a0f1e"]:not([style*="#1a0505"]),
-[data-theme="light"] div[class*="rounded"]:not([class*="border-red"]):not(.photo-upload-btn),
+[data-theme="light"] div[class*="rounded"]:not([class*="border-red"]):not(.photo-upload-btn):not(.profile-avatar),
 [data-theme="light"] section[class*="rounded"]:not([class*="border-red"]) {
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
@@ -738,7 +738,7 @@
 
 /* Badges and tags */
 [data-theme="light"] .badge,
-[data-theme="light"] [class*="bg-purple"]:not(.photo-upload-btn) {
+[data-theme="light"] [class*="bg-purple"]:not(.photo-upload-btn):not(.profile-avatar) {
   background: rgba(124, 58, 237, 0.15) !important;
   color: #7c3aed !important;
 }
@@ -751,6 +751,13 @@
 
 [data-theme="light"] .photo-upload-btn:hover {
   background: rgb(126, 34, 206) !important;
+}
+
+/* Profile avatar - always keep gradient */
+.profile-avatar {
+  background: linear-gradient(to bottom right, rgb(147, 51, 234), rgb(37, 99, 235)) !important;
+  color: white !important;
+  border-color: rgba(168, 85, 247, 0.4) !important;
 }
 
 /* Border color overrides for dark borders */
