@@ -83,6 +83,14 @@ export default function InterviewSetupPage() {
   const [realCompanyMode, setRealCompanyMode] = useState(false)
   const [skillInput, setSkillInput] = useState('')
   const [mainSkills, setMainSkills] = useState<string[]>([])
+  
+  // Custom role fields when "Other" is selected
+  const [customRole, setCustomRole] = useState('')
+  const [companyPresentation, setCompanyPresentation] = useState('')
+  const [companyPresentationFile, setCompanyPresentationFile] = useState<string>('')
+  const [jobRequirements, setJobRequirements] = useState('')
+  const [jobRequirementsFile, setJobRequirementsFile] = useState<string>('')
+  const [uploadingDoc, setUploadingDoc] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -120,8 +128,12 @@ export default function InterviewSetupPage() {
     }
 
 
-    if (currentStep === 3 && !jobTitle) {
-      nextErrors.jobTitle = t('interviewSetup.step3.error')
+    if (currentStep === 3) {
+      if (!jobTitle) {
+        nextErrors.jobTitle = t('interviewSetup.step3.error')
+      } else if (jobTitle === t('interviewSetup.roles.other') && !customRole.trim()) {
+        nextErrors.customRole = t('interviewSetup.step3.error')
+      }
     }
 
     if (currentStep === 4 && !experienceLevel) {
@@ -208,6 +220,43 @@ export default function InterviewSetupPage() {
     }
   }
 
+  const handleDocumentUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: 'company' | 'requirements'
+  ) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setUploadingDoc(true)
+
+    try {
+      const extension = file.name.split('.').pop()?.toLowerCase()
+      let text = ''
+
+      if (file.type === 'application/pdf' || extension === 'pdf') {
+        text = await extractPdfText(file)
+      } else if (file.type.startsWith('text/') || extension === 'txt' || extension === 'md') {
+        text = await file.text()
+      } else {
+        alert('This file type is not supported. Please upload a PDF or text file.')
+        return
+      }
+
+      if (type === 'company') {
+        setCompanyPresentation(text)
+        setCompanyPresentationFile(file.name)
+      } else {
+        setJobRequirements(text)
+        setJobRequirementsFile(file.name)
+      }
+    } catch (error) {
+      console.error('Document upload error:', error)
+      alert('Could not parse the document. Please try again or paste the text manually.')
+    } finally {
+      setUploadingDoc(false)
+    }
+  }
+
   const addSkill = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && skillInput.trim()) {
       e.preventDefault()
@@ -244,7 +293,7 @@ export default function InterviewSetupPage() {
         body: JSON.stringify({
           resumeText,
           resumeFileName,
-          jobTitle,
+          jobTitle: jobTitle === t('interviewSetup.roles.other') ? customRole : jobTitle,
           industry: 'Tech',
           experienceLevel,
           jobDescription,
@@ -257,6 +306,8 @@ export default function InterviewSetupPage() {
           weakAreas: [],
           targetCompany,
           realCompanyMode,
+          companyPresentation: companyPresentation || null,
+          jobRequirements: jobRequirements || null,
         }),
       })
 
@@ -449,7 +500,10 @@ export default function InterviewSetupPage() {
                 </div>
                 <select
                   value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
+                  onChange={(e) => {
+                    setJobTitle(e.target.value)
+                    setErrors((prev) => ({ ...prev, jobTitle: '' }))
+                  }}
                   className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.jobTitle ? 'border-red-500' : 'border-border'}`}
                 >
                   <option value="">Select your role...</option>
@@ -458,6 +512,113 @@ export default function InterviewSetupPage() {
                   ))}
                 </select>
                 {errors.jobTitle && <p className="text-sm text-red-400">{errors.jobTitle}</p>}
+
+                {/* Show custom role fields when "Other" is selected */}
+                {jobTitle === t('interviewSetup.roles.other') && (
+                  <div className="space-y-4 p-4 rounded-lg border border-primary/30 bg-primary/5">
+                    {/* Custom role name */}
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step3.customRoleLabel')} *</label>
+                      <input
+                        type="text"
+                        value={customRole}
+                        onChange={(e) => {
+                          setCustomRole(e.target.value)
+                          setErrors((prev) => ({ ...prev, customRole: '' }))
+                        }}
+                        className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.customRole ? 'border-red-500' : 'border-border'}`}
+                        placeholder={t('interviewSetup.step3.customRolePlaceholder')}
+                      />
+                      {errors.customRole && <p className="text-sm text-red-400">{errors.customRole}</p>}
+                    </div>
+
+                    {/* Company presentation */}
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step3.companyPresentationLabel')}</label>
+                      {companyPresentationFile ? (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+                          <FileText className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step3.fileUploaded').replace('{filename}', companyPresentationFile)}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCompanyPresentation('')
+                              setCompanyPresentationFile('')
+                            }}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <label className="cursor-pointer">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-primary/10 transition-colors">
+                              <Upload className="w-4 h-4" />
+                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step3.uploadFile')}</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept=".pdf,.txt,.md"
+                              className="hidden"
+                              onChange={(e) => handleDocumentUpload(e, 'company')}
+                              disabled={uploadingDoc}
+                            />
+                          </label>
+                          <textarea
+                            value={companyPresentation}
+                            onChange={(e) => setCompanyPresentation(e.target.value)}
+                            className="w-full mt-2 bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                            placeholder={t('interviewSetup.step3.companyPresentationPlaceholder')}
+                          />
+                        </>
+                      )}
+                    </div>
+
+                    {/* Job requirements */}
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step3.jobRequirementsLabel')}</label>
+                      {jobRequirementsFile ? (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+                          <FileText className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step3.fileUploaded').replace('{filename}', jobRequirementsFile)}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setJobRequirements('')
+                              setJobRequirementsFile('')
+                            }}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <label className="cursor-pointer">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-primary/10 transition-colors">
+                              <Upload className="w-4 h-4" />
+                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step3.uploadFile')}</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept=".pdf,.txt,.md"
+                              className="hidden"
+                              onChange={(e) => handleDocumentUpload(e, 'requirements')}
+                              disabled={uploadingDoc}
+                            />
+                          </label>
+                          <textarea
+                            value={jobRequirements}
+                            onChange={(e) => setJobRequirements(e.target.value)}
+                            className="w-full mt-2 bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                            placeholder={t('interviewSetup.step3.jobRequirementsPlaceholder')}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

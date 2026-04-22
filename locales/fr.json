@@ -377,7 +377,16 @@
     "step3": {
       "title": "Étape 3 — Sélectionnez votre rôle",
       "description": "Choisissez le rôle pour que les questions correspondent aux attentes de l'équipe de recrutement.",
-      "error": "Sélectionnez le rôle pour lequel vous passez un entretien."
+      "error": "Sélectionnez le rôle pour lequel vous passez un entretien.",
+      "customRoleLabel": "Précisez votre rôle",
+      "customRolePlaceholder": "par ex., Designer UX, Analyste d'affaires, etc.",
+      "companyPresentationLabel": "Présentation de l'entreprise (optionnel)",
+      "companyPresentationPlaceholder": "Téléversez ou collez la présentation de l'entreprise si vous l'avez",
+      "jobRequirementsLabel": "Annonce / Exigences du poste (optionnel)",
+      "jobRequirementsPlaceholder": "Téléversez ou collez l'annonce ou les exigences du poste",
+      "uploadFile": "Téléverser fichier",
+      "fileUploaded": "Fichier téléversé : {filename}",
+      "removeFile": "Supprimer le fichier"
     },
     "step4": {
       "title": "Étape 4 — Définissez votre expérience et le mode d'entretien",

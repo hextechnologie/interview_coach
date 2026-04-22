@@ -377,7 +377,16 @@
     "step3": {
       "title": "Paso 3 — Selecciona tu puesto",
       "description": "Elige el puesto para que las preguntas coincidan con las expectativas del equipo de contratación.",
-      "error": "Selecciona el puesto para el que estás entrevistando."
+      "error": "Selecciona el puesto para el que estás entrevistando.",
+      "customRoleLabel": "Especifica tu puesto",
+      "customRolePlaceholder": "ej., Diseñador UX, Analista de Negocios, etc.",
+      "companyPresentationLabel": "Presentación de la empresa (opcional)",
+      "companyPresentationPlaceholder": "Sube o pega la presentación de la empresa si la tienes",
+      "jobRequirementsLabel": "Anuncio / Requisitos del puesto (opcional)",
+      "jobRequirementsPlaceholder": "Sube o pega el anuncio o los requisitos del puesto",
+      "uploadFile": "Subir archivo",
+      "fileUploaded": "Archivo subido: {filename}",
+      "removeFile": "Eliminar archivo"
     },
     "step4": {
       "title": "Paso 4 — Establece tu experiencia y modo de entrevista",

@@ -379,7 +379,16 @@
     "step3": {
       "title": "الخطوة 3 — حدد دورك",
       "description": "اختر الدور حتى تتطابق الأسئلة مع توقعات فريق التوظيف.",
-      "error": "حدد الدور الذي تجري مقابلة من أجله."
+      "error": "حدد الدور الذي تجري مقابلة من أجله.",
+      "customRoleLabel": "حدد دورك",
+      "customRolePlaceholder": "مثال: مصمم UX، محلل أعمال، إلخ.",
+      "companyPresentationLabel": "عرض الشركة (اختياري)",
+      "companyPresentationPlaceholder": "ارفع أو الصق عرض الشركة إذا كان لديك",
+      "jobRequirementsLabel": "إعلان الوظيفة / المتطلبات (اختياري)",
+      "jobRequirementsPlaceholder": "ارفع أو الصق إعلان الوظيفة أو المتطلبات",
+      "uploadFile": "رفع ملف",
+      "fileUploaded": "تم رفع الملف: {filename}",
+      "removeFile": "إزالة الملف"
     },
     "step4": {
       "title": "الخطوة 4 — حدد خبرتك ونمط المقابلة",
