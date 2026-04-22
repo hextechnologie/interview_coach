@@ -902,7 +902,7 @@
   border: 1px solid #e2e8f0 !important;
 }
 
-/* Profile photo uploader - ensure visibility */
+/* Profile photo uploader - ensure visibility and colors */
 [data-theme="light"] .profile-photo-uploader {
   background: transparent !important;
   border: none !important;
@@ -913,6 +913,41 @@
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
+}
+
+/* Profile photo gradient circle with initials */
+[data-theme="light"] .bg-gradient-to-br.from-purple-600.to-blue-600 {
+  background: linear-gradient(to bottom right, #7c3aed, #3b82f6) !important;
+  color: #ffffff !important;
+}
+
+/* Profile photo border */
+[data-theme="light"] .border-purple-500\/40 {
+  border-color: rgba(124, 58, 237, 0.4) !important;
+}
+
+/* Upload Photo button - keep purple */
+[data-theme="light"] .bg-purple-600,
+[data-theme="light"] label .bg-purple-600 {
+  background-color: #7c3aed !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .hover\:bg-purple-500:hover,
+[data-theme="light"] label:hover .hover\:bg-purple-500 {
+  background-color: #a855f7 !important;
+}
+
+/* Helper text below upload button - make it readable */
+[data-theme="light"] .flex.flex-col.items-center.gap-4 > p.text-xs.text-gray-400 {
+  color: #6b7280 !important;
+}
+
+/* Text purple classes - keep purple in light mode */
+[data-theme="light"] .text-purple-400,
+[data-theme="light"] .text-purple-300,
+[data-theme="light"] .text-purple-200 {
+  color: #7c3aed !important;
 }
 
 /* Experience/Education/Achievement cards */
