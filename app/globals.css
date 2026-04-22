@@ -1294,6 +1294,35 @@
 }
 
 /* ==========================================================
+   SKILLS CATEGORIES - COLORED TEXT IN DARK MODE
+   ========================================================== */
+
+/* Apply specific colors to each category in dark mode */
+/* Technical (blue) */
+[data-theme="dark"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(1) span,
+.flex.flex-wrap.gap-4.text-sm > div:nth-child(1) span {
+  color: #3b82f6 !important;
+}
+
+/* Soft Skills (green) */
+[data-theme="dark"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(2) span,
+.flex.flex-wrap.gap-4.text-sm > div:nth-child(2) span {
+  color: #22c55e !important;
+}
+
+/* Languages (purple) */
+[data-theme="dark"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(3) span,
+.flex.flex-wrap.gap-4.text-sm > div:nth-child(3) span {
+  color: #a855f7 !important;
+}
+
+/* Tools (orange) */
+[data-theme="dark"] .flex.flex-wrap.gap-4.text-sm > div:nth-child(4) span,
+.flex.flex-wrap.gap-4.text-sm > div:nth-child(4) span {
+  color: #f97316 !important;
+}
+
+/* ==========================================================
    SHARED COMPONENT OVERRIDES FOR LIGHT MODE
    ========================================================== */
 
