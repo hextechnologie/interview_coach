@@ -163,7 +163,7 @@ export default function ProfilePhotoUploader({
 
       {/* Upload button */}
       <label className="cursor-pointer">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 transition-colors text-white text-sm font-medium">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors text-white text-sm font-medium shadow-lg shadow-purple-500/50">
           {uploading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
