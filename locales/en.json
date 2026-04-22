@@ -359,7 +359,7 @@
       "title": "Build your AI interview coach",
       "description": "Upload your background, target the role, and get questions tailored to your next job.",
       "stepOf": "Step {step} of 4",
-      "steps": ["Resume", "Job Description", "Role", "Experience"]
+      "steps": ["Resume", "Role", "Experience"]
     },
     "step1": {
       "title": "Step 1 — Upload or paste your resume",
@@ -371,13 +371,8 @@
       "placeholder": "Paste your resume here only if you want to type it manually or edit the imported text.",
       "error": "Paste or upload enough resume content to personalize your interview."
     },
-    "step2": {
-      "title": "Step 2 — Add the job description (optional)",
-      "description": "If you have the job post, paste it here. If not, you can leave this blank and continue.",
-      "placeholder": "Optional: paste the full job description or just a few keywords from the role."
-    },
-    "step3": {
-      "title": "Step 3 — Select your role",
+    "step2Role": {
+      "title": "Step 2 — Select your role",
       "description": "Choose the role so the questions match the expectations of the hiring team.",
       "error": "Select the role you are interviewing for.",
       "customRoleLabel": "Specify your role",
@@ -390,19 +385,19 @@
       "fileUploaded": "File uploaded: {filename}",
       "removeFile": "Remove file"
     },
-    "step4": {
-      "title": "Step 4 — Set your experience and interview mode",
+    "step3FinalExperience": {
+      "title": "Step 3 — Set your experience and interview mode",
       "description": "We'll adjust the difficulty, tone, and evaluation style to fit your goals.",
-      "experienceLevel": "Experience level",
-      "interviewType": "Interview type",
-      "interviewLanguage": "Interview language",
-      "yearsOfExperience": "Years of experience",
+      "experienceLevelLabel": "Experience level",
+      "selectLevel": "Select experience level",
+      "interviewTypeLabel": "Interview type",
+      "interviewLanguageLabel": "Interview language",
+      "yearsOfExperienceLabel": "Years of experience",
       "yearsPlaceholder": "Example: 4",
       "realCompanyMode": "Enable real company interview mode",
-      "realCompanyDesc": "Adds more realistic pressure and higher-signal questions based on your target company.",
-      "targetCompany": "Target company",
+      "realCompanyModeDescription": "Adds more realistic pressure and higher-signal questions based on your target company.",
       "targetCompanyPlaceholder": "Target company, e.g. Google, Stripe, Amazon",
-      "focusSkills": "Optional focus skills",
+      "focusSkillsLabel": "Optional focus skills",
       "focusSkillsPlaceholder": "Type a skill and press Enter, e.g. React, SQL, roadmap planning",
       "error": "Choose your experience level."
     },

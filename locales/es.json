@@ -356,8 +356,8 @@
       "label": "INCORPORACIÓN PERSONALIZADA",
       "title": "Construye tu coach de entrevistas con IA",
       "description": "Sube tu trayectoria, apunta al puesto y obtén preguntas adaptadas a tu próximo trabajo.",
-      "stepOf": "Paso {step} de 4",
-      "steps": ["CV", "Descripción del trabajo", "Puesto", "Experiencia"]
+      "stepOf": "Paso {step} de 3",
+      "steps": ["CV", "Puesto", "Experiencia"]
     },
     "step1": {
       "title": "Paso 1 — Sube o pega tu currículum",

@@ -356,8 +356,8 @@
       "label": "ONBOARDING PERSONNALISÉ",
       "title": "Créez votre coach d'entretien IA",
       "description": "Téléchargez votre parcours, ciblez le poste, et obtenez des questions adaptées à votre prochain emploi.",
-      "stepOf": "Étape {step} sur 4",
-      "steps": ["CV", "Description de poste", "Rôle", "Expérience"]
+      "stepOf": "Étape {step} sur 3",
+      "steps": ["CV", "Rôle", "Expérience"]
     },
     "step1": {
       "title": "Étape 1 — Téléchargez ou collez votre CV",

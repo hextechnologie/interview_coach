@@ -49,8 +49,7 @@ export default function InterviewSetupPage() {
   const STEP_NAMES = [
     t('interviewSetup.intro.steps.0'),
     t('interviewSetup.intro.steps.1'),
-    t('interviewSetup.intro.steps.2'),
-    t('interviewSetup.intro.steps.3')
+    t('interviewSetup.intro.steps.2')
   ]
 
   // Map locale code to display label for interview language dropdown
@@ -73,7 +72,6 @@ export default function InterviewSetupPage() {
 
   const [resumeText, setResumeText] = useState('')
   const [resumeFileName, setResumeFileName] = useState('')
-  const [jobDescription, setJobDescription] = useState('')
   const [jobTitle, setJobTitle] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [language, setLanguage] = useState(getLanguageLabelFromLocale(locale))
@@ -127,17 +125,16 @@ export default function InterviewSetupPage() {
       nextErrors.resumeText = t('interviewSetup.step1.error')
     }
 
-
-    if (currentStep === 3) {
+    if (currentStep === 2) {
       if (!jobTitle) {
-        nextErrors.jobTitle = t('interviewSetup.step3.error')
+        nextErrors.jobTitle = t('interviewSetup.step2Role.error')
       } else if (jobTitle === t('interviewSetup.roles.other') && !customRole.trim()) {
-        nextErrors.customRole = t('interviewSetup.step3.error')
+        nextErrors.customRole = t('interviewSetup.step2Role.error')
       }
     }
 
-    if (currentStep === 4 && !experienceLevel) {
-      nextErrors.experienceLevel = t('interviewSetup.step4.error')
+    if (currentStep === 3 && !experienceLevel) {
+      nextErrors.experienceLevel = t('interviewSetup.step3FinalExperience.error')
     }
 
     setErrors(nextErrors)
@@ -272,7 +269,7 @@ export default function InterviewSetupPage() {
   }
 
   const handleStartInterview = async () => {
-    if (!validateStep(4) || limitReached) return
+    if (!validateStep(3) || limitReached) return
 
     setLoading(true)
 
@@ -296,7 +293,6 @@ export default function InterviewSetupPage() {
           jobTitle: jobTitle === t('interviewSetup.roles.other') ? customRole : jobTitle,
           industry: 'Tech',
           experienceLevel,
-          jobDescription,
           language: language === 'French' ? 'fr' : language === 'Spanish' ? 'es' : language === 'Arabic' ? 'ar' : 'en',
           interviewerType: realCompanyMode ? 'Real Company Panel' : 'Hiring Manager',
           interviewType,
@@ -424,7 +420,7 @@ export default function InterviewSetupPage() {
                 <span className="text-gray-400">{STEP_NAMES[step - 1]}</span>
               </div>
               <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full bg-gradient-primary transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }} />
+                <div className="h-full bg-gradient-primary transition-all duration-500" style={{ width: `${(step / 3) * 100}%` }} />
               </div>
             </div>
 
@@ -479,24 +475,8 @@ export default function InterviewSetupPage() {
             {step === 2 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step2.title')}</h2>
-                  <p className="text-gray-400">{t('interviewSetup.step2.description')}</p>
-                </div>
-                <textarea
-                  value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
-                  rows={12}
-                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  placeholder={t('interviewSetup.step2.placeholder')}
-                />
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-5 animate-fadeIn">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step3.title')}</h2>
-                  <p className="text-gray-400">{t('interviewSetup.step3.description')}</p>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step2Role.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step2Role.description')}</p>
                 </div>
                 <select
                   value={jobTitle}
@@ -518,7 +498,7 @@ export default function InterviewSetupPage() {
                   <div className="space-y-4 p-4 rounded-lg border border-primary/30 bg-primary/5">
                     {/* Custom role name */}
                     <div>
-                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step3.customRoleLabel')} *</label>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.customRoleLabel')} *</label>
                       <input
                         type="text"
                         value={customRole}
@@ -527,18 +507,18 @@ export default function InterviewSetupPage() {
                           setErrors((prev) => ({ ...prev, customRole: '' }))
                         }}
                         className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.customRole ? 'border-red-500' : 'border-border'}`}
-                        placeholder={t('interviewSetup.step3.customRolePlaceholder')}
+                        placeholder={t('interviewSetup.step2Role.customRolePlaceholder')}
                       />
                       {errors.customRole && <p className="text-sm text-red-400">{errors.customRole}</p>}
                     </div>
 
                     {/* Company presentation */}
                     <div>
-                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step3.companyPresentationLabel')}</label>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.companyPresentationLabel')}</label>
                       {companyPresentationFile ? (
                         <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
                           <FileText className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step3.fileUploaded').replace('{filename}', companyPresentationFile)}</span>
+                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step2Role.fileUploaded').replace('{filename}', companyPresentationFile)}</span>
                           <button
                             type="button"
                             onClick={() => {
@@ -555,7 +535,7 @@ export default function InterviewSetupPage() {
                           <label className="cursor-pointer">
                             <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-primary/10 transition-colors">
                               <Upload className="w-4 h-4" />
-                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step3.uploadFile')}</span>
+                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step2Role.uploadFile')}</span>
                             </div>
                             <input
                               type="file"
@@ -569,7 +549,7 @@ export default function InterviewSetupPage() {
                             value={companyPresentation}
                             onChange={(e) => setCompanyPresentation(e.target.value)}
                             className="w-full mt-2 bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
-                            placeholder={t('interviewSetup.step3.companyPresentationPlaceholder')}
+                            placeholder={t('interviewSetup.step2Role.companyPresentationPlaceholder')}
                           />
                         </>
                       )}
@@ -577,11 +557,11 @@ export default function InterviewSetupPage() {
 
                     {/* Job requirements */}
                     <div>
-                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step3.jobRequirementsLabel')}</label>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.jobRequirementsLabel')}</label>
                       {jobRequirementsFile ? (
                         <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
                           <FileText className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step3.fileUploaded').replace('{filename}', jobRequirementsFile)}</span>
+                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step2Role.fileUploaded').replace('{filename}', jobRequirementsFile)}</span>
                           <button
                             type="button"
                             onClick={() => {
@@ -598,7 +578,7 @@ export default function InterviewSetupPage() {
                           <label className="cursor-pointer">
                             <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-primary/10 transition-colors">
                               <Upload className="w-4 h-4" />
-                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step3.uploadFile')}</span>
+                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step2Role.uploadFile')}</span>
                             </div>
                             <input
                               type="file"
@@ -612,7 +592,7 @@ export default function InterviewSetupPage() {
                             value={jobRequirements}
                             onChange={(e) => setJobRequirements(e.target.value)}
                             className="w-full mt-2 bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
-                            placeholder={t('interviewSetup.step3.jobRequirementsPlaceholder')}
+                            placeholder={t('interviewSetup.step2Role.jobRequirementsPlaceholder')}
                           />
                         </>
                       )}
@@ -622,11 +602,11 @@ export default function InterviewSetupPage() {
               </div>
             )}
 
-            {step === 4 && (
+            {step === 3 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step4.title')}</h2>
-                  <p className="text-gray-400">{t('interviewSetup.step4.description')}</p>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step3FinalExperience.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step3FinalExperience.description')}</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -743,7 +723,7 @@ export default function InterviewSetupPage() {
                 </Link>
               )}
 
-              {step < 4 ? (
+              {step < 3 ? (
                 <Button onClick={handleNext}>
                   {t('interviewSetup.navigation.next')}
                   <ChevronRight className="w-4 h-4" />
