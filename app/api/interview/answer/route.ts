@@ -30,7 +30,7 @@ Evaluate the answer and return ONLY valid JSON in this exact shape:
   "improved_answer": "Rewrite the candidate's answer using the STAR method and stronger wording.",
   "quick_fix": "One most important actionable tip.",
   "difference_points": ["...", "...", "..."],
-  "language": "en|fr|ar",
+  "language": "en|fr|ar|es",
   "metrics": {
     "confidence": 0-100,
     "clarity": 0-100,
@@ -41,7 +41,8 @@ Evaluate the answer and return ONLY valid JSON in this exact shape:
     "tone": "Professional 🎯|Casual 😊|Nervous 😰"
   }
 }
-Be encouraging, practical, specific, and keep all natural-language text in the requested interview language only.`
+
+CRITICAL: ALL natural-language fields (strengths, weaknesses, ideal_answer, improved_answer, quick_fix, difference_points) MUST be written ENTIRELY in the language specified in the user prompt. If the interview language is Arabic, all text must be in Arabic. If French, all in French. Never mix languages.`
 
 export async function POST(request: NextRequest) {
   try {
@@ -136,7 +137,8 @@ Relevant Skills: ${relevantKeywords.join(', ')}
 Candidate Answer: ${answer}
 
 Return the coaching feedback as valid JSON only.
-All natural-language content must be written entirely in ${languageName}.`
+
+CRITICAL LANGUAGE REQUIREMENT: The interview is being conducted in ${languageName}. ALL text in your JSON response (strengths, weaknesses, ideal_answer, improved_answer, quick_fix, difference_points) MUST be written ENTIRELY in ${languageName}. The candidate expects feedback in ${languageName}, not English.`
 
       const response = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
