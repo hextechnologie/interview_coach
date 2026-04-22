@@ -29,7 +29,13 @@
     "watchDemo": "Watch Demo Video",
     "liveDemo": "Live Demo",
     "demoTitle": "AI Practice + Coach Feedback",
-    "demoSubtitle": "Live mock interview preview"
+    "demoSubtitle": "Live mock interview preview",
+    "demoMessages": {
+      "aiQuestion": "Tell me about a challenging project you led.",
+      "userAnswer": "I led a team of 5 to rebuild our payment system...",
+      "aiFeedback": "Score: 7/10 — Good structure! Add more metrics.",
+      "coachTip": "Great start! In real interviews, pause here and make eye contact."
+    }
   },
   "whyChoose": {
     "title": "Why Choose Interview Coach",

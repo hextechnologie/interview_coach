@@ -40,13 +40,6 @@ function useCountUp(end: number, duration: number = 2000, isInView: boolean = tr
   return count
 }
 
-const demoMessages = [
-  { role: 'ai',    label: 'AI 🤖',      text: 'Tell me about a challenging project you led.' },
-  { role: 'user',  label: 'You',         text: 'I led a team of 5 to rebuild our payment system...' },
-  { role: 'ai',    label: 'AI 🤖',      text: 'Score: 7/10 — Good structure! Add more metrics.' },
-  { role: 'coach', label: 'Coach 👨‍💼', text: 'Great start! In real interviews, pause here and make eye contact.' },
-]
-
 const STATS = [
   { icon: Users, value: 2500, suffix: '+', labelKey: 'stats.activeUsers', color: 'text-blue-400' },
   { icon: Briefcase, value: 50, suffix: '+', labelKey: 'stats.expertCoaches', color: 'text-purple-400' },
@@ -109,6 +102,14 @@ export default function HomePage() {
   const [howItWorksTab, setHowItWorksTab] = useState<'ai' | 'coach'>('ai')
   const [scrolled, setScrolled] = useState(false)
   const getStartedRef = useRef<HTMLDivElement>(null)
+
+  // Localized demo messages
+  const demoMessages = [
+    { role: 'ai',    label: 'AI 🤖',      text: t('hero.demoMessages.aiQuestion') },
+    { role: 'user',  label: 'You',         text: t('hero.demoMessages.userAnswer') },
+    { role: 'ai',    label: 'AI 🤖',      text: t('hero.demoMessages.aiFeedback') },
+    { role: 'coach', label: 'Coach 👨‍💼', text: t('hero.demoMessages.coachTip') },
+  ]
 
   // Navbar scroll effect
   useEffect(() => {

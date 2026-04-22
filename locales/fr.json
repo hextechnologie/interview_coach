@@ -29,7 +29,13 @@
     "watchDemo": "Voir la vidéo de démo",
     "liveDemo": "Démo en direct",
     "demoTitle": "Pratique IA + Feedback Coach",
-    "demoSubtitle": "Aperçu de l'entretien simulé"
+    "demoSubtitle": "Aperçu de l'entretien simulé",
+    "demoMessages": {
+      "aiQuestion": "Parlez-moi d'un projet difficile que vous avez dirigé.",
+      "userAnswer": "J'ai dirigé une équipe de 5 personnes pour reconstruire notre système de paiement...",
+      "aiFeedback": "Score : 7/10 — Bonne structure ! Ajoutez plus de métriques.",
+      "coachTip": "Excellent début ! Dans les vrais entretiens, faites une pause ici et établissez un contact visuel."
+    }
   },
   "whyChoose": {
     "title": "Pourquoi choisir Interview Coach",

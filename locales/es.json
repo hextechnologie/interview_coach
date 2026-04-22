@@ -29,7 +29,13 @@
     "watchDemo": "Ver video de demostración",
     "liveDemo": "Demo en vivo",
     "demoTitle": "Práctica IA + Feedback Coach",
-    "demoSubtitle": "Vista previa de entrevista simulada en vivo"
+    "demoSubtitle": "Vista previa de entrevista simulada en vivo",
+    "demoMessages": {
+      "aiQuestion": "Cuéntame sobre un proyecto desafiante que lideraste.",
+      "userAnswer": "Lideré un equipo de 5 personas para reconstruir nuestro sistema de pagos...",
+      "aiFeedback": "Puntuación: 7/10 — ¡Buena estructura! Añade más métricas.",
+      "coachTip": "¡Excelente inicio! En entrevistas reales, haz una pausa aquí y mantén contacto visual."
+    }
   },
   "whyChoose": {
     "title": "Por qué elegir Interview Coach",
