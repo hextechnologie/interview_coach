@@ -194,6 +194,47 @@ export function isValidUrl(url: string): boolean {
 }
 
 /**
+ * Check if profile has minimum required fields to start an interview
+ * Only checks 5 essential fields - rest are optional
+ */
+export function canStartInterview(profile: any): boolean {
+  if (!profile) return false
+  
+  const requiredFields = [
+    profile.first_name,
+    profile.last_name,
+    profile.country,
+    profile.current_status,
+    profile.target_job_role,
+  ]
+
+  // Only block if ANY required field is empty
+  return requiredFields.every(field =>
+    field !== null &&
+    field !== undefined &&
+    field.toString().trim() !== ''
+  )
+}
+
+/**
+ * Get list of missing required fields for interview
+ * Returns user-friendly field names
+ */
+export function getMissingRequiredFields(profile: any): string[] {
+  if (!profile) return ['First Name', 'Last Name', 'Country', 'Current Status', 'Target Job Role']
+  
+  const missing: string[] = []
+  
+  if (!profile.first_name?.trim()) missing.push('First Name')
+  if (!profile.last_name?.trim()) missing.push('Last Name')
+  if (!profile.country?.trim()) missing.push('Country')
+  if (!profile.current_status?.trim()) missing.push('Current Status')
+  if (!profile.target_job_role?.trim()) missing.push('Target Job Role')
+  
+  return missing
+}
+
+/**
  * Get country flag emoji from country name
  */
 export function getCountryFlag(countryName: string): string {

@@ -5,9 +5,10 @@ import { useAuth } from '@/components/AuthProvider'
 import { useLanguage } from '@/components/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { Button, Card, LoadingSpinner } from '@/components/ui'
-import { Sparkles, ChevronRight, ChevronLeft, Upload, Briefcase, FileText, ShieldCheck, X } from 'lucide-react'
+import { Sparkles, ChevronRight, ChevronLeft, Upload, Briefcase, FileText, ShieldCheck, X, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { canStartInterview, getMissingRequiredFields } from '@/lib/profile-utils'
 
 export default function InterviewSetupPage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -103,20 +104,9 @@ export default function InterviewSetupPage() {
 
   const limitReached = !!profile && profile.interviews_used_this_month >= profile.interviews_limit
 
-  // Check if profile is complete
-  const isProfileComplete = () => {
-    if (!profile) return false
-    const p = profile as any
-    
-    const hasBio = !!p.bio?.trim()
-    const hasExperience = p.experience_details === 'No experience' || !!p.experience_details?.trim()
-    const hasEducation = !!p.education_details?.trim()
-    const hasSkills = Array.isArray(p.skills) && p.skills.length > 0
-
-    return hasBio && hasExperience && hasEducation && hasSkills
-  }
-
-  const profileIncomplete = !isProfileComplete()
+  // Check if profile has required fields to start interview (only 5 fields required)
+  const profileIncomplete = !canStartInterview(profile)
+  const missingRequiredFields = getMissingRequiredFields(profile)
 
   const validateStep = (currentStep: number) => {
     const nextErrors: Record<string, string> = {}
@@ -335,23 +325,55 @@ export default function InterviewSetupPage() {
 
   if (profileIncomplete) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-6 py-20 max-w-3xl">
-          <Card className="text-center border-red-500/30 bg-red-500/5">
-            <FileText className="w-14 h-14 text-red-400 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold mb-3">{t('interviewSetup.profileIncomplete.title')}</h1>
-            <p className="text-gray-400 mb-6">
-              {t('interviewSetup.profileIncomplete.description')}
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3">
-              <Link href="/profile">
-                <Button variant="primary">{t('interviewSetup.profileIncomplete.completeProfile')}</Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button variant="outline">{t('interviewSetup.profileIncomplete.backToDashboard')}</Button>
-              </Link>
-            </div>
-          </Card>
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#0a0f1e' }}>
+        <div className="max-w-md w-full bg-gray-900 border border-gray-700 rounded-2xl p-8 text-center">
+          {/* Icon */}
+          <div className="w-16 h-16 bg-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">🎯</span>
+          </div>
+
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Almost Ready!
+          </h2>
+
+          {/* Subtitle */}
+          <p className="text-gray-400 mb-6">
+            Fill in {missingRequiredFields.length} required field{missingRequiredFields.length > 1 ? 's' : ''} to start your AI interview
+          </p>
+
+          {/* Missing fields list */}
+          <div className="bg-gray-800 rounded-xl p-4 mb-6 text-left">
+            {missingRequiredFields.map((field, i) => (
+              <div
+                key={field}
+                className="flex items-center gap-2 py-2 border-b border-gray-700 last:border-0"
+              >
+                <span className="text-red-400">⚠️</span>
+                <span className="text-white text-sm">{field}</span>
+                <span className="ml-auto text-xs text-gray-500">Required</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3">
+            <Link href="/profile" className="flex-1">
+              <Button variant="primary" fullWidth>
+                Complete Now →
+              </Button>
+            </Link>
+            <Link href="/dashboard" className="flex-1">
+              <Button variant="outline" fullWidth>
+                Back
+              </Button>
+            </Link>
+          </div>
+
+          {/* Reassurance */}
+          <p className="text-gray-500 text-xs mt-4">
+            Takes less than 1 minute ⚡
+          </p>
         </div>
       </div>
     )
