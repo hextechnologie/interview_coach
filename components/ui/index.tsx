@@ -118,6 +118,7 @@ type SelectProps = {
   placeholder?: string
   required?: boolean
   disabled?: boolean
+  error?: string
 }
 
 export function Select({
@@ -128,6 +129,7 @@ export function Select({
   placeholder,
   required = false,
   disabled = false,
+  error,
 }: SelectProps) {
   return (
     <div className="w-full">
@@ -142,7 +144,7 @@ export function Select({
         onChange={(e) => onChange(e.target.value)}
         required={required}
         disabled={disabled}
-        className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`w-full px-4 py-3 bg-background border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed ${error ? 'border-red-500' : 'border-border'}`}
       >
         {placeholder && <option value="">{placeholder}</option>}
         {options.map((option) => (
@@ -151,6 +153,7 @@ export function Select({
           </option>
         ))}
       </select>
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   )
 }

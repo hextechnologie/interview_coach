@@ -108,6 +108,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [hasUnsaved, setHasUnsaved] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
@@ -249,43 +250,145 @@ export default function ProfilePage() {
     setHasUnsaved(true)
   }
 
+  // Validation helpers
+  const validateField = (fieldName: string): Record<string, string> => {
+    const fieldErrors: Record<string, string> = {}
+    
+    switch (fieldName) {
+      case 'firstName':
+        if (!firstName || firstName.trim().length === 0) {
+          fieldErrors.firstName = t('profile.personalInfo.firstName') + ' is required'
+        }
+        break
+      case 'lastName':
+        if (!lastName || lastName.trim().length === 0) {
+          fieldErrors.lastName = t('profile.personalInfo.lastName') + ' is required'
+        }
+        break
+      case 'country':
+        if (!country) {
+          fieldErrors.country = 'Please select your country'
+        }
+        break
+      case 'region':
+        if (!region) {
+          fieldErrors.region = 'Region/State is required'
+        }
+        break
+      case 'city':
+        if (!city) {
+          fieldErrors.city = 'City is required'
+        }
+        break
+      case 'bio':
+        if (!bio || bio.trim().length === 0) {
+          fieldErrors.bio = 'Professional summary is required'
+        } else if (bio.trim().length < 50) {
+          fieldErrors.bio = `Too short! Please write at least 50 characters (${bio.trim().length}/50 currently)`
+        }
+        break
+      case 'linkedinUrl':
+        if (linkedinUrl && !isValidUrl(linkedinUrl)) {
+          fieldErrors.linkedinUrl = 'Please enter a valid URL (or leave empty)'
+        }
+        break
+    }
+    
+    return fieldErrors
+  }
+
+  const validateForm = (): Record<string, string> => {
+    const allErrors: Record<string, string> = {}
+
+    // First name validation
+    if (!firstName || firstName.trim().length === 0) {
+      allErrors.firstName = t('profile.personalInfo.firstName') + ' is required'
+    }
+
+    // Last name validation
+    if (!lastName || lastName.trim().length === 0) {
+      allErrors.lastName = t('profile.personalInfo.lastName') + ' is required'
+    }
+
+    // Country validation
+    if (!country) {
+      allErrors.country = 'Please select your country'
+    }
+
+    // Region validation
+    if (!region) {
+      allErrors.region = 'Region/State is required'
+    }
+
+    // City validation
+    if (!city) {
+      allErrors.city = 'City is required'
+    }
+
+    // Bio validation - STRICT minimum 50
+    if (!bio || bio.trim().length === 0) {
+      allErrors.bio = 'Professional summary is required'
+    } else if (bio.trim().length < 50) {
+      allErrors.bio = `Too short! Please write at least 50 characters (${bio.trim().length}/50 currently)`
+    }
+
+    // LinkedIn URL validation
+    if (linkedinUrl && !isValidUrl(linkedinUrl)) {
+      allErrors.linkedinUrl = 'Please enter a valid URL (or leave empty)'
+    }
+
+    return allErrors
+  }
+
+  const scrollToField = (fieldName: string) => {
+    const element = document.getElementById(`field-${fieldName}`)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Add temporary highlight animation
+      element.classList.add('highlight-field')
+      setTimeout(() => element.classList.remove('highlight-field'), 2000)
+      // Focus the input
+      const input = element.querySelector('input, textarea, select') as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      input?.focus()
+    }
+  }
+
+  const handleFieldBlur = (fieldName: string) => {
+    const fieldErrors = validateField(fieldName)
+    setErrors(prev => ({
+      ...prev,
+      ...fieldErrors
+    }))
+  }
+
+  const handleFieldChange = (fieldName: string) => {
+    // Clear error for this field as user types
+    if (errors[fieldName]) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[fieldName]
+        return newErrors
+      })
+    }
+  }
+
   const handleSave = async (e?: React.FormEvent) => {
     e?.preventDefault()
     if (!user) return
 
-    // Validation
-    if (!firstName.trim()) {
-      setError('First name is required')
-      return
-    }
-    if (!lastName.trim()) {
-      setError('Last name is required')
-      return
-    }
-    if (!country.trim()) {
-      setError('Country is required')
-      return
-    }
-    if (!region.trim()) {
-      setError('Region/State is required')
-      return
-    }
-    if (!city.trim()) {
-      setError('City is required')
-      return
-    }
-    if (!bio.trim()) {
-      setError('Bio is required')
-      return
-    }
-
-    // Validate URLs
-    if (!isValidUrl(linkedinUrl)) {
-      setError('Please enter a valid URL (or leave empty)')
-      return
+    // Validate form
+    const formErrors = validateForm()
+    
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors)
+      // Find first error field and scroll to it
+      const firstErrorField = Object.keys(formErrors)[0]
+      scrollToField(firstErrorField)
+      return // Stop save
     }
 
     setError('')
+    setErrors({})
     setSaved(false)
     setSaving(true)
 
@@ -457,6 +560,38 @@ export default function ProfilePage() {
             </div>
 
             <form onSubmit={handleSave} className="space-y-6">
+              {/* Error Summary Banner (Validation Errors) */}
+              {Object.keys(errors).length > 0 && (
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-4 space-y-2">
+                  <div className="flex items-center gap-2 text-red-300 font-medium">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293z" clipRule="evenodd" />
+                    </svg>
+                    Please fix the following errors:
+                  </div>
+                  <ul className="ml-7 space-y-1 text-sm text-red-300">
+                    {Object.entries(errors).map(([field, message]) => (
+                      <li key={field}>
+                        <button
+                          type="button"
+                          onClick={() => scrollToField(field)}
+                          className="text-left hover:underline focus:outline-none"
+                        >
+                          • {message}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {/* General Error Banner (Save Errors) */}
+              {error && (
+                <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {error}
+                </div>
+              )}
+
               {/* Profile Photo & Completion */}
               <div className="grid md:grid-cols-[auto_1fr] gap-6">
                 <ProfilePhotoUploader
@@ -480,51 +615,66 @@ export default function ProfilePage() {
                 </div>
                 
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <Input 
-                    label={t('profile.personalInfo.firstName')} 
-                    value={firstName} 
-                    onChange={handleFirstNameChange} 
-                    placeholder={t('profile.personalInfo.firstNamePlaceholder')} 
-                    required
-                    style={{ textTransform: 'capitalize' }}
-                  />
-                  <Input 
-                    label={t('profile.personalInfo.lastName')} 
-                    value={lastName} 
-                    onChange={handleLastNameChange} 
-                    placeholder={t('profile.personalInfo.lastNamePlaceholder')} 
-                    required
-                    style={{ textTransform: 'capitalize' }}
-                  />
+                  <div id="field-firstName">
+                    <Input 
+                      label={t('profile.personalInfo.firstName')} 
+                      value={firstName} 
+                      onChange={(v) => { handleFirstNameChange(v); handleFieldChange('firstName') }} 
+                      placeholder={t('profile.personalInfo.firstNamePlaceholder')} 
+                      required
+                      error={errors.firstName}
+                      style={{ textTransform: 'capitalize' }}
+                    />
+                  </div>
+                  <div id="field-lastName">
+                    <Input 
+                      label={t('profile.personalInfo.lastName')} 
+                      value={lastName} 
+                      onChange={(v) => { handleLastNameChange(v); handleFieldChange('lastName') }} 
+                      placeholder={t('profile.personalInfo.lastNamePlaceholder')} 
+                      required
+                      error={errors.lastName}
+                      style={{ textTransform: 'capitalize' }}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-3">
-                  <Select 
-                    label={t('profile.personalInfo.country')} 
-                    value={country}
-                    onChange={handleCountryChange} 
-                    options={countryOptions} 
-                    placeholder={country ? undefined : t('profile.personalInfo.selectCountry')}
-                    required 
-                  />
-                  <Select 
-                    label={t('profile.personalInfo.region')} 
-                    value={region} 
-                    onChange={handleRegionChange} 
-                    options={regionOptions} 
-                    placeholder={country ? (region ? undefined : t('profile.personalInfo.selectRegion')) : t('profile.personalInfo.selectCountryFirst')}
-                    required 
-                    disabled={!country}
-                  />
-                  <Select 
-                    label={t('profile.personalInfo.city')} 
-                    value={city} 
-                    onChange={(v) => { setCity(v); setHasUnsaved(true) }} 
-                    options={cityOptions} 
-                    placeholder={region ? (city ? undefined : t('profile.personalInfo.selectCity')) : t('profile.personalInfo.selectRegionFirst')}
-                    required 
-                    disabled={!region}
-                  />
+                  <div id="field-country">
+                    <Select 
+                      label={t('profile.personalInfo.country')} 
+                      value={country}
+                      onChange={(v) => { handleCountryChange(v); handleFieldChange('country') }} 
+                      options={countryOptions} 
+                      placeholder={country ? undefined : t('profile.personalInfo.selectCountry')}
+                      required 
+                      error={errors.country}
+                    />
+                  </div>
+                  <div id="field-region">
+                    <Select 
+                      label={t('profile.personalInfo.region')} 
+                      value={region} 
+                      onChange={(v) => { handleRegionChange(v); handleFieldChange('region') }} 
+                      options={regionOptions} 
+                      placeholder={country ? (region ? undefined : t('profile.personalInfo.selectRegion')) : t('profile.personalInfo.selectCountryFirst')}
+                      required 
+                      disabled={!country}
+                      error={errors.region}
+                    />
+                  </div>
+                  <div id="field-city">
+                    <Select 
+                      label={t('profile.personalInfo.city')} 
+                      value={city} 
+                      onChange={(v) => { setCity(v); setHasUnsaved(true); handleFieldChange('city') }} 
+                      options={cityOptions} 
+                      placeholder={region ? (city ? undefined : t('profile.personalInfo.selectCity')) : t('profile.personalInfo.selectRegionFirst')}
+                      required 
+                      disabled={!region}
+                      error={errors.city}
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-start gap-3">
@@ -542,12 +692,15 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <Input
-                  label={t('profile.personalInfo.linkedinUrl')}
-                  value={linkedinUrl}
-                  onChange={(v) => { setLinkedinUrl(v); setHasUnsaved(true) }}
-                  placeholder={t('profile.personalInfo.linkedinPlaceholder')}
-                />
+                <div id="field-linkedinUrl">
+                  <Input
+                    label={t('profile.personalInfo.linkedinUrl')}
+                    value={linkedinUrl}
+                    onChange={(v) => { setLinkedinUrl(v); setHasUnsaved(true); handleFieldChange('linkedinUrl') }}
+                    placeholder={t('profile.personalInfo.linkedinPlaceholder')}
+                    error={errors.linkedinUrl}
+                  />
+                </div>
               </div>
 
               {/* Bio */}
@@ -563,22 +716,62 @@ export default function ProfilePage() {
                   <span className="text-red-400 text-sm">*</span>
                 </div>
                 
-                <div>
+                <div id="field-bio">
                   <label className="mb-2 block text-sm font-medium text-gray-200">
                     {t('profile.bio.label')} <span className="text-red-400">{t('profile.bio.required')}</span>
                   </label>
                   <textarea
                     value={bio}
-                    onChange={(e) => { setBio(e.target.value); setHasUnsaved(true) }}
+                    onChange={(e) => { setBio(e.target.value); setHasUnsaved(true); handleFieldChange('bio') }}
                     rows={5}
                     placeholder={t('profile.bio.placeholder')}
-                    className="w-full rounded-lg border border-white/10 px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                    className={`w-full rounded-lg border px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none ${errors.bio ? 'border-red-500' : 'border-white/10'}`}
                     style={{ background: '#0a0f1e' }}
                     required
                   />
-                  <p className="text-xs text-gray-400 mt-1">
-                    {bio.length} / 500 {t('profile.bio.characters')} {bio.length < 50 && <span className="text-yellow-400">({t('profile.bio.minimum')})</span>}
-                  </p>
+                  
+                  {/* Enhanced Character Counter */}
+                  <div className="mt-2 space-y-2">
+                    {/* Progress Bar */}
+                    <div className="w-full h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-300 ${
+                          bio.length >= 50 ? 'bg-green-500' : 
+                          bio.length >= 25 ? 'bg-yellow-500' : 
+                          'bg-red-500'
+                        }`}
+                        style={{ width: `${Math.min((bio.length / 50) * 100, 100)}%` }}
+                      />
+                    </div>
+                    
+                    {/* Character Count & Status */}
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        {bio.length >= 50 ? (
+                          <span className="text-green-400 flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Minimum reached
+                          </span>
+                        ) : (
+                          <span className={bio.length >= 25 ? 'text-yellow-400' : 'text-red-400'}>
+                            {50 - bio.length} more character{50 - bio.length !== 1 ? 's' : ''} needed
+                          </span>
+                        )}
+                      </div>
+                      <span className={`${
+                        bio.length >= 50 ? 'text-green-400' : 
+                        bio.length >= 25 ? 'text-yellow-400' : 
+                        'text-gray-400'
+                      }`}>
+                        {bio.length} / 500 {t('profile.bio.characters')}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Error Message */}
+                  {errors.bio && <p className="mt-1 text-sm text-red-500">{errors.bio}</p>}
                 </div>
               </div>
 
@@ -842,12 +1035,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Error/Success Messages */}
-              {error && (
-                <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-                  {error}
-                </div>
-              )}
+              {/* Success Message */}
               {saved && (
                 <div className="flex items-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-300">
                   <CheckCircle className="w-4 h-4" /> {t('profile.savedSuccess')}
