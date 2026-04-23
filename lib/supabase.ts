@@ -44,6 +44,7 @@ export type Profile = {
   stripe_subscription_id?: string
   interviews_used_this_month: number
   interviews_limit: number
+  credits: number
   created_at: string
   updated_at: string
 }
