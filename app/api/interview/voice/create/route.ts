@@ -1,0 +1,121 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { calculateCreditsRequired } from '@/components/interview/VoiceDurationSelector'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+export async function POST(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get('authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const { panelMemberIds, durationMinutes, userProfile } = body
+
+    if (!panelMemberIds || panelMemberIds.length === 0) {
+      return NextResponse.json({ error: 'At least one panel member must be selected' }, { status: 400 })
+    }
+
+    if (panelMemberIds.length > 3) {
+      return NextResponse.json({ error: 'Maximum 3 panel members allowed' }, { status: 400 })
+    }
+
+    // Get user's current credits
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('credits, interviews_used_this_month, interviews_limit')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError) {
+      return NextResponse.json({ error: 'Failed to fetch user profile' }, { status: 500 })
+    }
+
+    // Check interview limit
+    if (profile.interviews_used_this_month >= profile.interviews_limit) {
+      return NextResponse.json({ error: 'Interview limit reached for this month' }, { status: 403 })
+    }
+
+    // Calculate and check credits
+    const creditsRequired = calculateCreditsRequired(durationMinutes)
+    const isFree = durationMinutes === 5
+
+    if (!isFree && profile.credits < creditsRequired) {
+      return NextResponse.json({ 
+        error: `Insufficient credits. You need ${creditsRequired} credits but have ${profile.credits}.`,
+        creditsNeeded: creditsRequired - profile.credits
+      }, { status: 402 })
+    }
+
+    // Deduct credits if not free
+    if (!isFree) {
+      const { error: deductError } = await supabase.rpc('deduct_credits', {
+        user_id: user.id,
+        amount: creditsRequired
+      })
+
+      if (deductError) {
+        console.error('Failed to deduct credits:', deductError)
+        return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 })
+      }
+    }
+
+    // Create voice session
+    const { data: session, error: sessionError } = await supabase
+      .from('voice_sessions')
+      .insert({
+        user_id: user.id,
+        panel_members: panelMemberIds,
+        duration_minutes: durationMinutes,
+        credits_charged: creditsRequired,
+        is_free: isFree,
+        status: 'active',
+        user_profile: userProfile || {}
+      })
+      .select()
+      .single()
+
+    if (sessionError) {
+      console.error('Failed to create voice session:', sessionError)
+      
+      // Refund credits if session creation failed
+      if (!isFree) {
+        await supabase.rpc('refund_credits', {
+          user_id: user.id,
+          amount: creditsRequired,
+          session_id: null
+        })
+      }
+      
+      return NextResponse.json({ error: 'Failed to create voice session' }, { status: 500 })
+    }
+
+    // Increment interviews_used_this_month
+    await supabase
+      .from('profiles')
+      .update({ interviews_used_this_month: profile.interviews_used_this_month + 1 })
+      .eq('id', user.id)
+
+    return NextResponse.json({
+      sessionId: session.id,
+      creditsCharged: creditsRequired,
+      isFree,
+      durationMinutes
+    })
+
+  } catch (error) {
+    console.error('Error creating voice interview:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}

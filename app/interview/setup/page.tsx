@@ -9,6 +9,9 @@ import { Sparkles, ChevronRight, ChevronLeft, Upload, Briefcase, FileText, Shiel
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { canStartInterview, getMissingRequiredFields } from '@/lib/profile-utils'
+import InterviewModeSelector from '@/components/interview/InterviewModeSelector'
+import VoicePanelSelector, { INTERVIEWERS } from '@/components/interview/VoicePanelSelector'
+import VoiceDurationSelector, { checkCreditsForVoiceInterview } from '@/components/interview/VoiceDurationSelector'
 
 export default function InterviewSetupPage() {
   const { user, profile, loading: authLoading } = useAuth()
@@ -64,12 +67,19 @@ export default function InterviewSetupPage() {
     return map[localeCode] || 'English'
   }
 
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0) // Start at 0 for mode selection
   const [loading, setLoading] = useState(false)
   const [uploadingResume, setUploadingResume] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [resumeStatus, setResumeStatus] = useState('')
   const [showResumeEditor, setShowResumeEditor] = useState(false)
+
+  // Interview mode
+  const [interviewMode, setInterviewMode] = useState<'chat' | 'voice'>('chat')
+  
+  // Voice interview specific states
+  const [selectedPanelIds, setSelectedPanelIds] = useState<string[]>([])
+  const [voiceDuration, setVoiceDuration] = useState(5) // Default to free 5 min
 
   const [resumeText, setResumeText] = useState('')
   const [resumeFileName, setResumeFileName] = useState('')
@@ -111,20 +121,44 @@ export default function InterviewSetupPage() {
   const validateStep = (currentStep: number) => {
     const nextErrors: Record<string, string> = {}
 
-    if (currentStep === 1 && resumeText.trim().length < 30) {
-      nextErrors.resumeText = t('interviewSetup.step1.error')
+    // Step 0: Mode selection - always valid
+    if (currentStep === 0) {
+      return true
     }
 
-    if (currentStep === 2) {
-      if (!jobTitle) {
-        nextErrors.jobTitle = t('interviewSetup.step2Role.error')
-      } else if (jobTitle === t('interviewSetup.roles.other') && !customRole.trim()) {
-        nextErrors.customRole = t('interviewSetup.step2Role.error')
+    // For voice mode
+    if (interviewMode === 'voice') {
+      if (currentStep === 1 && selectedPanelIds.length === 0) {
+        nextErrors.panel = 'Please select at least one interviewer'
+      }
+      if (currentStep === 2) {
+        const { canStart, creditsNeeded } = checkCreditsForVoiceInterview(
+          voiceDuration,
+          profile?.credits || 0
+        )
+        if (!canStart) {
+          nextErrors.credits = `You need ${creditsNeeded} more credits`
+        }
       }
     }
 
-    if (currentStep === 3 && !experienceLevel) {
-      nextErrors.experienceLevel = t('interviewSetup.step3FinalExperience.error')
+    // For chat mode (existing logic)
+    if (interviewMode === 'chat') {
+      if (currentStep === 1 && resumeText.trim().length < 30) {
+        nextErrors.resumeText = t('interviewSetup.step1.error')
+      }
+
+      if (currentStep === 2) {
+        if (!jobTitle) {
+          nextErrors.jobTitle = t('interviewSetup.step2Role.error')
+        } else if (jobTitle === t('interviewSetup.roles.other') && !customRole.trim()) {
+          nextErrors.customRole = t('interviewSetup.step2Role.error')
+        }
+      }
+
+      if (currentStep === 3 && !experienceLevel) {
+        nextErrors.experienceLevel = t('interviewSetup.step3FinalExperience.error')
+      }
     }
 
     setErrors(nextErrors)
@@ -140,6 +174,17 @@ export default function InterviewSetupPage() {
   const handleBack = () => {
     setErrors({})
     setStep((prev) => prev - 1)
+  }
+
+  const handleTogglePanel = (interviewerId: string) => {
+    setSelectedPanelIds(prev => {
+      if (prev.includes(interviewerId)) {
+        return prev.filter(id => id !== interviewerId)
+      } else if (prev.length < 3) {
+        return [...prev, interviewerId]
+      }
+      return prev
+    })
   }
 
   const extractPdfText = async (file: File) => {
@@ -315,6 +360,66 @@ export default function InterviewSetupPage() {
     }
   }
 
+  const handleStartVoiceInterview = async () => {
+    if (!validateStep(2) || limitReached) return
+
+    setLoading(true)
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        router.push('/login')
+        return
+      }
+
+      // Check microphone permission first
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        stream.getTracks().forEach(track => track.stop())
+      } catch (micError) {
+        alert('Microphone access is required for voice interviews. Please allow microphone access in your browser.')
+        setLoading(false)
+        return
+      }
+
+      const response = await fetch('/api/interview/voice/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          panelMemberIds: selectedPanelIds,
+          durationMinutes: voiceDuration,
+          userProfile: {
+            firstName: profile?.first_name,
+            lastName: profile?.last_name,
+            targetRole: profile?.target_job_role,
+            experienceLevel: profile?.experience_level,
+            currentStatus: profile?.current_status,
+          }
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        alert(data.error || 'Failed to create voice interview')
+        return
+      }
+
+      if (data.sessionId) {
+        router.push(`/interview/voice/${data.sessionId}`)
+      }
+    } catch (error) {
+      console.error('Error creating voice interview:', error)
+      alert('Failed to create voice interview. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -436,17 +541,59 @@ export default function InterviewSetupPage() {
               <p className="text-gray-400">{t('interviewSetup.intro.description')}</p>
             </div>
 
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-3 text-sm">
-                <span className="text-primary font-semibold">{t('interviewSetup.intro.stepOf').replace('{step}', step.toString())}</span>
-                <span className="text-gray-400">{STEP_NAMES[step - 1]}</span>
+            {step > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-3 text-sm">
+                  <span className="text-primary font-semibold">
+                    {interviewMode === 'voice' ? `Step ${step} of 3` : t('interviewSetup.intro.stepOf').replace('{step}', step.toString())}
+                  </span>
+                  <span className="text-gray-400">
+                    {interviewMode === 'voice' 
+                      ? step === 1 ? 'Select Panel' : step === 2 ? 'Duration' : 'Start'
+                      : STEP_NAMES[step - 1]
+                    }
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-full bg-gradient-primary transition-all duration-500" style={{ width: `${(step / 3) * 100}%` }} />
+                </div>
               </div>
-              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                <div className="h-full bg-gradient-primary transition-all duration-500" style={{ width: `${(step / 3) * 100}%` }} />
-              </div>
-            </div>
+            )}
 
-            {step === 1 && (
+            {/* Step 0: Mode Selection */}
+            {step === 0 && (
+              <div className="space-y-6 animate-fadeIn">
+                <InterviewModeSelector
+                  selectedMode={interviewMode}
+                  onSelectMode={(mode) => setInterviewMode(mode)}
+                />
+              </div>
+            )}
+
+            {/* Voice Interview Steps */}
+            {interviewMode === 'voice' && step === 1 && (
+              <div className="space-y-6 animate-fadeIn">
+                <VoicePanelSelector
+                  selectedPanelIds={selectedPanelIds}
+                  onTogglePanel={handleTogglePanel}
+                />
+                {errors.panel && <p className="text-sm text-red-400">{errors.panel}</p>}
+              </div>
+            )}
+
+            {interviewMode === 'voice' && step === 2 && (
+              <div className="space-y-6 animate-fadeIn">
+                <VoiceDurationSelector
+                  selectedDuration={voiceDuration}
+                  onSelectDuration={setVoiceDuration}
+                  userCredits={profile?.credits || 0}
+                />
+                {errors.credits && <p className="text-sm text-red-400 text-center">{errors.credits}</p>}
+              </div>
+            )}
+
+            {/* Chat Interview Steps (existing) */}
+            {interviewMode === 'chat' && step === 1 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step1.title')}</h2>
@@ -494,7 +641,7 @@ export default function InterviewSetupPage() {
               </div>
             )}
 
-            {step === 2 && (
+            {interviewMode === 'chat' && step === 2 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step2Role.title')}</h2>
@@ -624,7 +771,7 @@ export default function InterviewSetupPage() {
               </div>
             )}
 
-            {step === 3 && (
+            {interviewMode === 'chat' && step === 3 && (
               <div className="space-y-5 animate-fadeIn">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step3FinalExperience.title')}</h2>
@@ -734,7 +881,7 @@ export default function InterviewSetupPage() {
             )}
 
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-              {step > 1 ? (
+              {step > 0 ? (
                 <Button variant="outline" onClick={handleBack} disabled={loading}>
                   <ChevronLeft className="w-4 h-4" />
                   Back
@@ -745,12 +892,39 @@ export default function InterviewSetupPage() {
                 </Link>
               )}
 
-              {step < 3 ? (
+              {/* Mode selection step */}
+              {step === 0 && (
+                <Button onClick={handleNext}>
+                  Continue
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              )}
+
+              {/* Voice interview flow */}
+              {interviewMode === 'voice' && step > 0 && step < 2 && (
+                <Button onClick={handleNext} disabled={selectedPanelIds.length === 0}>
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              )}
+
+              {interviewMode === 'voice' && step === 2 && (
+                <Button onClick={handleStartVoiceInterview} loading={loading}>
+                  {!loading && '🎙️ '}
+                  Start Voice Interview
+                  {!loading && <Sparkles className="w-4 h-4" />}
+                </Button>
+              )}
+
+              {/* Chat interview flow */}
+              {interviewMode === 'chat' && step > 0 && step < 3 && (
                 <Button onClick={handleNext}>
                   {t('interviewSetup.navigation.next')}
                   <ChevronRight className="w-4 h-4" />
                 </Button>
-              ) : (
+              )}
+
+              {interviewMode === 'chat' && step === 3 && (
                 <Button onClick={handleStartInterview} loading={loading}>
                   {t('interviewSetup.navigation.startInterview')}
                   {!loading && <Sparkles className="w-4 h-4" />}
