@@ -26,7 +26,7 @@ import { JOB_TITLES } from '@/lib/types/profile'
 import { capitalizeName, getTimezoneFromCountry, isValidUrl } from '@/lib/profile-utils'
 
 export default function ProfilePage() {
-  const { user, profile, loading: authLoading } = useAuth()
+  const { user, profile, loading: authLoading, refreshProfile } = useAuth()
   const { t } = useLanguage()
   const router = useRouter()
 
@@ -320,6 +320,9 @@ export default function ProfilePage() {
         .eq('id', user.id)
 
       if (updateError) throw updateError
+
+      // Refresh the profile in the auth context
+      await refreshProfile()
 
       setSaved(true)
       setHasUnsaved(false)
