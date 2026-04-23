@@ -2,8 +2,10 @@
 CREATE TABLE IF NOT EXISTS public.voice_sessions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  panel_members TEXT[] NOT NULL,
+  mode TEXT DEFAULT 'voice',
+  interviewers TEXT[] NOT NULL,
   duration_minutes INT NOT NULL,
+  actual_duration_minutes INT,
   credits_charged INT DEFAULT 0,
   is_free BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'active' CHECK (status IN ('active', 'completed', 'cancelled')),
@@ -20,16 +22,12 @@ CREATE TABLE IF NOT EXISTS public.voice_sessions (
 CREATE TABLE IF NOT EXISTS public.voice_session_qa (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   session_id UUID REFERENCES public.voice_sessions(id) ON DELETE CASCADE NOT NULL,
-  interviewer_type TEXT NOT NULL,
-  interviewer_name TEXT NOT NULL,
+  interviewer_id TEXT NOT NULL,
   question TEXT NOT NULL,
-  question_audio_url TEXT,
-  answer_transcript TEXT,
-  answer_audio_url TEXT,
+  answer TEXT,
   score DECIMAL(3,1),
   feedback TEXT,
-  feedback_audio_url TEXT,
-  question_number INT NOT NULL,
+  asked_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 

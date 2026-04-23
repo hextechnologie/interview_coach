@@ -51,11 +51,6 @@ export function calculateProfileCompletion(profile: any): number {
     completion += 10
   }
   
-  // Target Job Role (10%)
-  if (profile.target_job_role?.trim()) {
-    completion += 10
-  }
-  
   // Work Experience (10%)
   // Check if experience_details exists and is not the default "No experience"
   if (profile.experience_details?.trim() && profile.experience_details !== 'No experience') {
@@ -104,10 +99,6 @@ export function getMissingFields(profile: any): string[] {
   
   if (!profile.current_status?.trim()) {
     missing.push('Add current status')
-  }
-  
-  if (!profile.target_job_role?.trim()) {
-    missing.push('Add target job role')
   }
   
   if (!profile.experience_details?.trim() || profile.experience_details === 'No experience') {
@@ -205,7 +196,6 @@ export function canStartInterview(profile: any): boolean {
     profile.last_name,
     profile.country,
     profile.current_status,
-    profile.target_job_role,
   ]
 
   // Only block if ANY required field is empty
@@ -221,7 +211,7 @@ export function canStartInterview(profile: any): boolean {
  * Returns user-friendly field names
  */
 export function getMissingRequiredFields(profile: any): string[] {
-  if (!profile) return ['First Name', 'Last Name', 'Country', 'Current Status', 'Target Job Role']
+  if (!profile) return ['First Name', 'Last Name', 'Country', 'Current Status']
   
   const missing: string[] = []
   
@@ -229,7 +219,6 @@ export function getMissingRequiredFields(profile: any): string[] {
   if (!profile.last_name?.trim()) missing.push('Last Name')
   if (!profile.country?.trim()) missing.push('Country')
   if (!profile.current_status?.trim()) missing.push('Current Status')
-  if (!profile.target_job_role?.trim()) missing.push('Target Job Role')
   
   return missing
 }

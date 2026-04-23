@@ -22,7 +22,6 @@ import EducationCardsSection from '@/components/coach/EducationCardsSection'
 import SkillsSelector from '@/components/coach/SkillsSelector'
 import AchievementsCardsSection from '@/components/coach/AchievementsCardsSection'
 import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
-import { JOB_TITLES } from '@/lib/types/profile'
 import { capitalizeName, getTimezoneFromCountry, isValidUrl } from '@/lib/profile-utils'
 
 export default function ProfilePage() {
@@ -38,22 +37,6 @@ export default function ProfilePage() {
     { value: 'career-change',  label: t('profile.statusOptions.careerChange') },
     { value: 'fresh-graduate', label: t('profile.statusOptions.freshGraduate') },
     { value: 'other',          label: t('profile.statusOptions.other') },
-  ]
-
-  const jobRoleOptions = [
-    { value: 'Software Engineer',  label: t('profile.jobRoles.softwareEngineer') },
-    { value: 'Product Manager',    label: t('profile.jobRoles.productManager') },
-    { value: 'Data Analyst',       label: t('profile.jobRoles.dataAnalyst') },
-    { value: 'Product Designer',   label: t('profile.jobRoles.productDesigner') },
-    { value: 'Marketing Manager',  label: t('profile.jobRoles.marketingManager') },
-    { value: 'Sales Executive',    label: t('profile.jobRoles.salesExecutive') },
-    { value: 'Business Analyst',   label: t('profile.jobRoles.businessAnalyst') },
-    { value: 'DevOps Engineer',    label: t('profile.jobRoles.devOpsEngineer') },
-    { value: 'Data Scientist',     label: t('profile.jobRoles.dataScientist') },
-    { value: 'UX Researcher',      label: t('profile.jobRoles.uxResearcher') },
-    { value: 'Finance Analyst',    label: t('profile.jobRoles.financeAnalyst') },
-    { value: 'HR Specialist',      label: t('profile.jobRoles.hrSpecialist') },
-    { value: 'Other',              label: t('profile.jobRoles.other') },
   ]
 
   const yearsExperienceOptions = [
@@ -92,9 +75,6 @@ export default function ProfilePage() {
   // Career info
   const [currentStatus, setCurrentStatus] = useState('')
   const [statusDetail, setStatusDetail] = useState('')
-  const [targetJobRole, setTargetJobRole] = useState('')
-  const [customJobRole, setCustomJobRole] = useState('')
-  const [showCustomJobSuggestions, setShowCustomJobSuggestions] = useState(false)
   const [experienceLevel, setExperienceLevel] = useState('')
   const [yearsOfExperience, setYearsOfExperience] = useState('')
 
@@ -114,20 +94,6 @@ export default function ProfilePage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState('')
-
-  const customJobSuggestions = targetJobRole === 'Other'
-    ? Array.from(new Set([
-        ...jobRoleOptions.filter((role) => role.value !== 'Other').map((role) => role.value),
-        ...JOB_TITLES,
-        'FPGA Engineer',
-        'Embedded Systems Engineer',
-        'RTL Design Engineer',
-        'Hardware Engineer',
-      ])).filter((role) => {
-        const query = customJobRole.trim().toLowerCase()
-        return query.length > 0 && role.toLowerCase().includes(query) && role.toLowerCase() !== query
-      }).slice(0, 8)
-    : []
 
   // Get location options
   const countryOptions = useMemo(() => getCountryOptions(), [])
@@ -203,15 +169,6 @@ export default function ProfilePage() {
     setCurrentStatus(profile.current_status || '')
     setStatusDetail(profile.status_detail || '')
     
-    const savedRole = profile.target_job_role || ''
-    const isKnownRole = jobRoleOptions.some(o => o.value === savedRole)
-    if (isKnownRole || savedRole === '') {
-      setTargetJobRole(savedRole)
-    } else {
-      setTargetJobRole('Other')
-      setCustomJobRole(savedRole)
-    }
-    
     setExperienceLevel(profile.experience_level || '')
     setYearsOfExperience((profile as any).years_of_experience || '')
     
@@ -230,14 +187,13 @@ export default function ProfilePage() {
     const interval = setInterval(() => {
       // Save to localStorage
       const draft = {
-        firstName, lastName, bio, currentStatus, statusDetail,
-        targetJobRole, customJobRole
+        firstName, lastName, bio, currentStatus, statusDetail
       }
       localStorage.setItem(`profile-draft-${user?.id}`, JSON.stringify(draft))
     }, 30000)
     
     return () => clearInterval(interval)
-  }, [hasUnsaved, firstName, lastName, bio, currentStatus, statusDetail, targetJobRole, customJobRole, user])
+  }, [hasUnsaved, firstName, lastName, bio, currentStatus, statusDetail, user])
 
   // Handle form changes
   const handleFirstNameChange = (value: string) => {
@@ -409,8 +365,6 @@ export default function ProfilePage() {
           bio: bio.trim(),
           current_status: currentStatus || null,
           status_detail: statusDetail || null,
-          target_job_role: targetJobRole === 'Other' ? (customJobRole.trim() || null) : (targetJobRole || null),
-          target_job_field: targetJobRole === 'Other' ? (customJobRole.trim().toLowerCase().replace(/\s+/g, '-') || null) : (targetJobRole?.toLowerCase().replace(/\s+/g, '-') || null),
           experience_level: (experienceLevel as 'junior' | 'mid' | 'senior') || null,
           years_of_experience: yearsOfExperience || null,
           notification_coach_message: notifyCoachMessage,
@@ -455,15 +409,6 @@ export default function ProfilePage() {
         
         setCurrentStatus(updatedProfile.current_status || '')
         setStatusDetail(updatedProfile.status_detail || '')
-        
-        const savedRole = updatedProfile.target_job_role || ''
-        const isKnownRole = jobRoleOptions.some(o => o.value === savedRole)
-        if (isKnownRole || savedRole === '') {
-          setTargetJobRole(savedRole)
-        } else {
-          setTargetJobRole('Other')
-          setCustomJobRole(savedRole)
-        }
         
         setExperienceLevel(updatedProfile.experience_level || '')
         setYearsOfExperience(updatedProfile.years_of_experience || '')
@@ -806,61 +751,6 @@ export default function ProfilePage() {
                       t('profile.careerInfo.statusDetailPlaceholder.other')
                     }
                   />
-                )}
-
-                <Select
-                  label={t('profile.careerInfo.targetJobRole')}
-                  value={targetJobRole}
-                  onChange={(val) => {
-                    setTargetJobRole(val)
-                    if (val !== 'Other') {
-                      setCustomJobRole('')
-                      setShowCustomJobSuggestions(false)
-                    }
-                    setHasUnsaved(true)
-                  }}
-                  options={jobRoleOptions}
-                  placeholder={t('profile.careerInfo.targetJobPlaceholder')}
-                />
-                
-                {targetJobRole === 'Other' && (
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      {t('profile.jobRoles.other')}
-                    </label>
-                    <input
-                      type="text"
-                      value={customJobRole}
-                      onChange={(e) => {
-                        setCustomJobRole(e.target.value)
-                        setShowCustomJobSuggestions(true)
-                        setHasUnsaved(true)
-                      }}
-                      onFocus={() => setShowCustomJobSuggestions(customJobSuggestions.length > 0)}
-                      onBlur={() => window.setTimeout(() => setShowCustomJobSuggestions(false), 150)}
-                      placeholder={t('profile.careerInfo.customRolePlaceholder')}
-                      className="w-full px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                    {showCustomJobSuggestions && customJobSuggestions.length > 0 && (
-                      <div className="absolute z-20 w-full mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-lg max-h-56 overflow-y-auto">
-                        {customJobSuggestions.map((role) => (
-                          <button
-                            key={role}
-                            type="button"
-                            onMouseDown={(e) => {
-                              e.preventDefault()
-                              setCustomJobRole(role)
-                              setShowCustomJobSuggestions(false)
-                              setHasUnsaved(true)
-                            }}
-                            className="w-full px-4 py-2 text-left text-white hover:bg-gray-800 transition"
-                          >
-                            {role}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 )}
 
                 <div className="grid gap-5 sm:grid-cols-2">

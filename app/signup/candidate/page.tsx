@@ -7,22 +7,6 @@ import { Button, Card, Input, Select } from '@/components/ui'
 import { supabase } from '@/lib/supabase'
 import { getCountryOptions, getRegionsForCountry, getCitiesForRegion } from '@/lib/locations'
 
-const jobRoleOptions = [
-  { value: 'Software Engineer', label: 'Software Engineer' },
-  { value: 'Product Manager', label: 'Product Manager' },
-  { value: 'Data Analyst', label: 'Data Analyst' },
-  { value: 'Product Designer', label: 'Product Designer' },
-  { value: 'Marketing Manager', label: 'Marketing Manager' },
-  { value: 'Sales Executive', label: 'Sales Executive' },
-  { value: 'Business Analyst', label: 'Business Analyst' },
-  { value: 'DevOps Engineer', label: 'DevOps Engineer' },
-  { value: 'Data Scientist', label: 'Data Scientist' },
-  { value: 'UX Researcher', label: 'UX Researcher' },
-  { value: 'Finance Analyst', label: 'Finance Analyst' },
-  { value: 'HR Specialist', label: 'HR Specialist' },
-  { value: 'Other', label: 'Other' },
-]
-
 const statusOptions = [
   { value: 'student', label: '🎓 Student' },
   { value: 'employed', label: '👨‍💼 Employed' },
@@ -49,8 +33,6 @@ export default function CandidateSignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [currentStatus, setCurrentStatus] = useState('')
   const [statusDetail, setStatusDetail] = useState('')
-  const [targetJobRole, setTargetJobRole] = useState('')
-  const [customJobRole, setCustomJobRole] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
   const [country, setCountry] = useState('')
   const [region, setRegion] = useState('')
@@ -149,7 +131,6 @@ export default function CandidateSignupPage() {
 
         const userId = signInData.user.id
         const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
-        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
 
         // Upload avatar if provided
         let avatarUrl: string | null = null
@@ -173,8 +154,6 @@ export default function CandidateSignupPage() {
           ...(avatarUrl && { avatar_url: avatarUrl }),
           current_status: currentStatus,
           status_detail: statusDetail || null,
-          target_job_role: finalJobRole || null,
-          target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
           experience_level: experienceLevel || null,
           country: country || null,
           region: region || null,
@@ -188,7 +167,6 @@ export default function CandidateSignupPage() {
       }
 
       const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ')
-      const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -201,8 +179,6 @@ export default function CandidateSignupPage() {
             last_name: lastName.trim() || null,
             current_status: currentStatus,
             status_detail: statusDetail || null,
-            target_job_role: finalJobRole || null,
-            target_job_field: finalJobRole?.toLowerCase().replace(/\s+/g, '-') || null,
             experience_level: experienceLevel || null,
             country: country || null,
             region: region || null,
@@ -250,11 +226,10 @@ export default function CandidateSignupPage() {
         }
 
         // Send welcome email (fire-and-forget)
-        const finalJobRole = targetJobRole === 'Other' ? customJobRole.trim() : targetJobRole
         fetch('/api/welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, firstName: firstName.trim(), userType: 'candidate', targetJobRole: finalJobRole }),
+          body: JSON.stringify({ email, firstName: firstName.trim(), userType: 'candidate' }),
         }).catch(() => {/* non-critical */})
       }
 
@@ -331,40 +306,6 @@ export default function CandidateSignupPage() {
                   value={statusDetail}
                   onChange={setStatusDetail}
                   placeholder={detailConfig.placeholder}
-                />
-              )}
-
-              {/* Target role + experience */}
-              <Select
-                label="Target Job Role"
-                value={targetJobRole}
-                onChange={(v) => { setTargetJobRole(v); setCustomJobRole('') }}
-                options={jobRoleOptions}
-                placeholder="What role are you aiming for? (optional)"
-              />
-
-              {/* Custom job role input - show when "Other" is selected */}
-              {targetJobRole === 'Other' && (
-                <Input
-                  label="Specify Your Target Role *"
-                  value={customJobRole}
-                  onChange={setCustomJobRole}
-                  placeholder="e.g. Machine Learning Engineer"
-                  required
-                />
-              )}
-
-              {targetJobRole && (
-                <Select
-                  label="Experience Level"
-                  value={experienceLevel}
-                  onChange={setExperienceLevel}
-                  options={[
-                    { value: 'junior', label: 'Junior (0–2 yrs)' },
-                    { value: 'mid', label: 'Mid-level (3–5 yrs)' },
-                    { value: 'senior', label: 'Senior (6+ yrs)' },
-                  ]}
-                  placeholder="Select level"
                 />
               )}
 
