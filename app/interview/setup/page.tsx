@@ -676,26 +676,90 @@ export default function InterviewSetupPage() {
                       {errors.customRole && <p className="text-sm text-red-400">{errors.customRole}</p>}
                     </div>
 
-                    {/* Company presentation */}
+                        {/* Company presentation */}
                     <div>
                       <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.companyPresentationLabel')}</label>
-                      <textarea
-                        value={companyPresentation}
-                        onChange={(e) => setCompanyPresentation(e.target.value)}
-                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
-                        placeholder={t('interviewSetup.step2Role.companyPresentationPlaceholder')}
-                      />
+                      {companyPresentationFile ? (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+                          <FileText className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step2Role.fileUploaded').replace('{filename}', companyPresentationFile)}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCompanyPresentation('')
+                              setCompanyPresentationFile('')
+                            }}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <label className="cursor-pointer">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-primary/10 transition-colors">
+                              <Upload className="w-4 h-4" />
+                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step2Role.uploadFile')}</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept=".pdf,.txt,.md"
+                              className="hidden"
+                              onChange={(e) => handleDocumentUpload(e, 'company')}
+                              disabled={uploadingDoc}
+                            />
+                          </label>
+                          <textarea
+                            value={companyPresentation}
+                            onChange={(e) => setCompanyPresentation(e.target.value)}
+                            className="w-full mt-2 bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                            placeholder={t('interviewSetup.step2Role.companyPresentationPlaceholder')}
+                          />
+                        </>
+                      )}
                     </div>
 
                     {/* Job requirements */}
                     <div>
                       <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.jobRequirementsLabel')}</label>
-                      <textarea
-                        value={jobRequirements}
-                        onChange={(e) => setJobRequirements(e.target.value)}
-                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
-                        placeholder={t('interviewSetup.step2Role.jobRequirementsPlaceholder')}
-                      />
+                      {jobRequirementsFile ? (
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/30">
+                          <FileText className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-green-300 flex-1">{t('interviewSetup.step2Role.fileUploaded').replace('{filename}', jobRequirementsFile)}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setJobRequirements('')
+                              setJobRequirementsFile('')
+                            }}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <label className="cursor-pointer">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background hover:bg-primary/10 transition-colors">
+                              <Upload className="w-4 h-4" />
+                              <span className="text-sm">{uploadingDoc ? 'Uploading...' : t('interviewSetup.step2Role.uploadFile')}</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept=".pdf,.txt,.md"
+                              className="hidden"
+                              onChange={(e) => handleDocumentUpload(e, 'requirements')}
+                              disabled={uploadingDoc}
+                            />
+                          </label>
+                          <textarea
+                            value={jobRequirements}
+                            onChange={(e) => setJobRequirements(e.target.value)}
+                            className="w-full mt-2 bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                            placeholder={t('interviewSetup.step2Role.jobRequirementsPlaceholder')}
+                          />
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
