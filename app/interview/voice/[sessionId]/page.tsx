@@ -13,7 +13,9 @@ interface VoiceSession {
   mode: string
   interviewers: string[]
   duration_minutes: number
+  actual_duration_minutes: number
   credits_charged: number
+  is_free: boolean
   started_at: string
   ended_at: string | null
   status: string
