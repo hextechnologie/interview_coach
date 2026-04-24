@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui'
 import { INTERVIEWERS, type Interviewer } from '@/components/interview/VoicePanelSelector'
 
@@ -39,7 +39,6 @@ interface InterviewerStats {
 
 export default function VoiceInterviewSummary({ params }: { params: { sessionId: string } }) {
   const router = useRouter()
-  const supabase = createClientComponentClient()
   const [session, setSession] = useState<VoiceSession | null>(null)
   const [qaRecords, setQaRecords] = useState<QuestionAnswer[]>([])
   const [loading, setLoading] = useState(true)

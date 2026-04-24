@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 import { MicrophoneRecorder } from '@/components/interview/MicrophoneRecorder'
 import { INTERVIEWERS, type Interviewer } from '@/components/interview/VoicePanelSelector'
 import { Button } from '@/components/ui'
@@ -39,7 +39,6 @@ type InterviewPhase =
 
 export default function VoiceInterviewRoom({ params }: { params: { sessionId: string } }) {
   const router = useRouter()
-  const supabase = createClientComponentClient()
   const [session, setSession] = useState<VoiceSession | null>(null)
   const [phase, setPhase] = useState<InterviewPhase>('loading')
   const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestion | null>(null)
