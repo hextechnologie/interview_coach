@@ -135,7 +135,7 @@ export default function VoiceDurationSelector({
       {DURATION_OPTIONS.some(opt => !opt.isFree && userCredits < opt.credits) && (
         <div className="text-center">
           <a
-            href="/pricing"
+            href="/credits"
             className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition text-sm"
           >
             <Coins className="w-4 h-4" />

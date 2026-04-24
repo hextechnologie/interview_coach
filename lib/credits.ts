@@ -82,7 +82,15 @@ export async function getCreditPackages(): Promise<CreditPackage[]> {
     return []
   }
 
-  return data || []
+  // Deduplicate by ID (in case of duplicate records in database)
+  const uniquePackages = data?.reduce((acc: CreditPackage[], pkg) => {
+    if (!acc.find(p => p.id === pkg.id)) {
+      acc.push(pkg)
+    }
+    return acc
+  }, []) || []
+
+  return uniquePackages
 }
 
 /**

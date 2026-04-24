@@ -126,12 +126,25 @@ export default function InterviewSetupPage() {
       return true
     }
 
-    // For voice mode
+    // For voice mode - same steps as chat mode (resume, role) then panel/duration
     if (interviewMode === 'voice') {
-      if (currentStep === 1 && selectedPanelIds.length === 0) {
+      if (currentStep === 1 && resumeText.trim().length < 30) {
+        nextErrors.resumeText = t('interviewSetup.step1.error')
+      }
+
+      if (currentStep === 2) {
+        if (!jobTitle) {
+          nextErrors.jobTitle = t('interviewSetup.step2Role.error')
+        } else if (jobTitle === t('interviewSetup.roles.other') && !customRole.trim()) {
+          nextErrors.customRole = t('interviewSetup.step2Role.error')
+        }
+      }
+
+      if (currentStep === 3 && selectedPanelIds.length === 0) {
         nextErrors.panel = 'Please select at least one interviewer'
       }
-      if (currentStep === 2) {
+
+      if (currentStep === 4) {
         const { canStart, creditsNeeded } = checkCreditsForVoiceInterview(
           voiceDuration,
           profile?.credits || 0
@@ -361,7 +374,7 @@ export default function InterviewSetupPage() {
   }
 
   const handleStartVoiceInterview = async () => {
-    if (!validateStep(2) || limitReached) return
+    if (!validateStep(4) || limitReached) return
 
     setLoading(true)
 
@@ -395,9 +408,13 @@ export default function InterviewSetupPage() {
           userProfile: {
             firstName: profile?.first_name,
             lastName: profile?.last_name,
-            targetRole: profile?.target_job_role,
+            targetRole: jobTitle === t('interviewSetup.roles.other') ? customRole : jobTitle,
             experienceLevel: profile?.experience_level,
             currentStatus: profile?.current_status,
+            resume: resumeText,
+            companyPresentation: companyPresentation || companyPresentationFile,
+            jobRequirements: jobRequirements || jobRequirementsFile,
+            targetCompany: targetCompany,
           }
         }),
       })
@@ -570,9 +587,127 @@ export default function InterviewSetupPage() {
               </div>
             )}
 
-            {/* Voice Interview Steps */}
+            {/* Voice Interview Steps - Same as Chat for resume and job role */}
             {interviewMode === 'voice' && step === 1 && (
+              <div className="space-y-5 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step1.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step1.description')}</p>
+                </div>
+
+                <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm cursor-pointer hover:bg-primary/10 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  {uploadingResume ? 'Reading resume...' : resumeFileName ? `Uploaded: ${resumeFileName}` : 'Upload a resume file'}
+                  <input type="file" accept=".pdf,.txt,.md" className="hidden" onChange={handleResumeUpload} />
+                </label>
+
+                {resumeFileName && !showResumeEditor ? (
+                  <div className="rounded-xl border border-green-500/30 bg-green-500/5 p-4">
+                    <p className="text-sm text-green-400 font-medium mb-2">{resumeStatus || t('interviewSetup.step1.resumeDetected')}</p>
+                    <p className="text-sm text-gray-300 mb-3">{t('interviewSetup.step1.resumeLoaded')}</p>
+                    <Button variant="outline" className="text-sm px-4 py-2" onClick={() => setShowResumeEditor(true)}>
+                      {t('interviewSetup.step1.editResume')}
+                    </Button>
+                  </div>
+                ) : (
+                  <textarea
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    rows={10}
+                    className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all ${errors.resumeText ? 'border-red-500' : 'border-border'}`}
+                    placeholder={t('interviewSetup.step1.placeholder')}
+                  />
+                )}
+                {resumeStatus && !resumeFileName && (
+                  <p className={`text-sm ${resumeText ? 'text-green-400' : 'text-yellow-300'}`}>
+                    {resumeStatus}
+                  </p>
+                )}
+                {resumeFileName && showResumeEditor && (
+                  <button
+                    type="button"
+                    onClick={() => setShowResumeEditor(false)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Hide extracted text
+                  </button>
+                )}
+                {errors.resumeText && <p className="text-sm text-red-400">{errors.resumeText}</p>}
+              </div>
+            )}
+
+            {interviewMode === 'voice' && step === 2 && (
+              <div className="space-y-5 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">{t('interviewSetup.step2Role.title')}</h2>
+                  <p className="text-gray-400">{t('interviewSetup.step2Role.description')}</p>
+                </div>
+                <select
+                  value={jobTitle}
+                  onChange={(e) => {
+                    setJobTitle(e.target.value)
+                    setErrors((prev) => ({ ...prev, jobTitle: '' }))
+                  }}
+                  className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.jobTitle ? 'border-red-500' : 'border-border'}`}
+                >
+                  <option value="">Select your role...</option>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
+                {errors.jobTitle && <p className="text-sm text-red-400">{errors.jobTitle}</p>}
+
+                {/* Show custom role fields when "Other" is selected */}
+                {jobTitle === t('interviewSetup.roles.other') && (
+                  <div className="space-y-4 p-4 rounded-lg border border-primary/30 bg-primary/5">
+                    {/* Custom role name */}
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.customRoleLabel')} *</label>
+                      <input
+                        type="text"
+                        value={customRole}
+                        onChange={(e) => {
+                          setCustomRole(e.target.value)
+                          setErrors((prev) => ({ ...prev, customRole: '' }))
+                        }}
+                        className={`w-full bg-background border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${errors.customRole ? 'border-red-500' : 'border-border'}`}
+                        placeholder={t('interviewSetup.step2Role.customRolePlaceholder')}
+                      />
+                      {errors.customRole && <p className="text-sm text-red-400">{errors.customRole}</p>}
+                    </div>
+
+                    {/* Company presentation */}
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.companyPresentationLabel')}</label>
+                      <textarea
+                        value={companyPresentation}
+                        onChange={(e) => setCompanyPresentation(e.target.value)}
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                        placeholder={t('interviewSetup.step2Role.companyPresentationPlaceholder')}
+                      />
+                    </div>
+
+                    {/* Job requirements */}
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-2">{t('interviewSetup.step2Role.jobRequirementsLabel')}</label>
+                      <textarea
+                        value={jobRequirements}
+                        onChange={(e) => setJobRequirements(e.target.value)}
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+                        placeholder={t('interviewSetup.step2Role.jobRequirementsPlaceholder')}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {interviewMode === 'voice' && step === 3 && (
               <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Choose Your Interview Panel</h2>
+                  <p className="text-gray-400">Select up to 3 AI interviewers to conduct your voice interview</p>
+                </div>
                 <VoicePanelSelector
                   selectedPanelIds={selectedPanelIds}
                   onTogglePanel={handleTogglePanel}
@@ -581,8 +716,12 @@ export default function InterviewSetupPage() {
               </div>
             )}
 
-            {interviewMode === 'voice' && step === 2 && (
+            {interviewMode === 'voice' && step === 4 && (
               <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">How long do you want to practice?</h2>
+                  <p className="text-gray-400">Choose your interview duration</p>
+                </div>
                 <VoiceDurationSelector
                   selectedDuration={voiceDuration}
                   onSelectDuration={setVoiceDuration}
