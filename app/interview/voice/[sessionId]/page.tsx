@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { MicrophoneRecorder } from '@/components/interview/MicrophoneRecorder'
+import MicrophoneRecorder from '@/components/interview/MicrophoneRecorder'
 import { INTERVIEWERS, type Interviewer } from '@/components/interview/VoicePanelSelector'
 import { Button } from '@/components/ui'
 
