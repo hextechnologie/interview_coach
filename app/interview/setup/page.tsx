@@ -1040,14 +1040,17 @@ export default function InterviewSetupPage() {
               )}
 
               {/* Voice interview flow */}
-              {interviewMode === 'voice' && step > 0 && step < 2 && (
-                <Button onClick={handleNext} disabled={selectedPanelIds.length === 0}>
+              {interviewMode === 'voice' && step > 0 && step < 4 && (
+                <Button
+                  onClick={handleNext}
+                  disabled={uploadingResume || uploadingDoc || (step === 3 && selectedPanelIds.length === 0)}
+                >
                   Next
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               )}
 
-              {interviewMode === 'voice' && step === 2 && (
+              {interviewMode === 'voice' && step === 4 && (
                 <Button onClick={handleStartVoiceInterview} loading={loading}>
                   {!loading && '🎙️ '}
                   Start Voice Interview
