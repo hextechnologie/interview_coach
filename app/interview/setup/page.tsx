@@ -225,6 +225,14 @@ export default function InterviewSetupPage() {
     return pages.join('\n').replace(/\s+/g, ' ').trim()
   }
 
+  const extractWordText = async (file: File) => {
+    // Use mammoth to extract text from Word documents (.docx format)
+    const mammoth = await import('mammoth')
+    const arrayBuffer = await file.arrayBuffer()
+    const result = await mammoth.extractRawText({ arrayBuffer })
+    return result.value.replace(/\s+/g, ' ').trim()
+  }
+
   const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -240,11 +248,17 @@ export default function InterviewSetupPage() {
 
       if (file.type === 'application/pdf' || extension === 'pdf') {
         text = await extractPdfText(file)
+      } else if (extension === 'docx' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        text = await extractWordText(file)
+      } else if (extension === 'doc' || file.type === 'application/msword') {
+        setResumeText('')
+        setResumeStatus('.doc files are not supported. Please use .docx, PDF, or paste your resume text.')
+        return
       } else if (file.type.startsWith('text/') || extension === 'txt' || extension === 'md') {
         text = await file.text()
       } else {
         setResumeText('')
-        setResumeStatus('This file type is not supported for automatic parsing yet. Please upload a PDF or paste your resume text.')
+        setResumeStatus('This file type is not supported for automatic parsing yet. Please upload a PDF, Word (.docx), or text file.')
         return
       }
 
@@ -260,7 +274,7 @@ export default function InterviewSetupPage() {
     } catch (error) {
       console.error('Resume upload error:', error)
       setResumeText('')
-      setResumeStatus('That resume could not be parsed. Please paste your resume text or use a text-based PDF.')
+      setResumeStatus('That resume could not be parsed. Please upload a text-based PDF, Word (.docx) file, or paste your resume text.')
     } finally {
       setUploadingResume(false)
     }
@@ -281,10 +295,15 @@ export default function InterviewSetupPage() {
 
       if (file.type === 'application/pdf' || extension === 'pdf') {
         text = await extractPdfText(file)
+      } else if (extension === 'docx' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        text = await extractWordText(file)
+      } else if (extension === 'doc' || file.type === 'application/msword') {
+        alert('.doc files are not supported. Please use .docx, PDF, or paste the text manually.')
+        return
       } else if (file.type.startsWith('text/') || extension === 'txt' || extension === 'md') {
         text = await file.text()
       } else {
-        alert('This file type is not supported. Please upload a PDF or text file.')
+        alert('This file type is not supported. Please upload a PDF, Word (.docx), or text file.')
         return
       }
 
@@ -297,7 +316,7 @@ export default function InterviewSetupPage() {
       }
     } catch (error) {
       console.error('Document upload error:', error)
-      alert('Could not parse the document. Please try again or paste the text manually.')
+      alert('Could not parse the Word or PDF document. Please try again or paste the text manually.')
     } finally {
       setUploadingDoc(false)
     }
@@ -606,7 +625,7 @@ export default function InterviewSetupPage() {
                 <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm cursor-pointer hover:bg-primary/10 transition-colors">
                   <Upload className="w-4 h-4" />
                   {uploadingResume ? 'Reading resume...' : resumeFileName ? `Uploaded: ${resumeFileName}` : 'Upload a resume file'}
-                  <input type="file" accept=".pdf,.txt,.md" className="hidden" onChange={handleResumeUpload} />
+                  <input type="file" accept=".pdf,.txt,.md,.docx" className="hidden" onChange={handleResumeUpload} />
                 </label>
 
                 {resumeFileName && !showResumeEditor ? (
@@ -717,7 +736,7 @@ export default function InterviewSetupPage() {
                           </div>
                           <input
                             type="file"
-                            accept=".pdf,.txt,.md"
+                            accept=".pdf,.txt,.md,.docx"
                             className="hidden"
                             onChange={(e) => handleDocumentUpload(e, 'company')}
                             disabled={uploadingDoc}
@@ -759,7 +778,7 @@ export default function InterviewSetupPage() {
                           </div>
                           <input
                             type="file"
-                            accept=".pdf,.txt,.md"
+                            accept=".pdf,.txt,.md,.docx"
                             className="hidden"
                             onChange={(e) => handleDocumentUpload(e, 'requirements')}
                             disabled={uploadingDoc}
@@ -818,7 +837,7 @@ export default function InterviewSetupPage() {
                 <label className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm cursor-pointer hover:bg-primary/10 transition-colors">
                   <Upload className="w-4 h-4" />
                   {uploadingResume ? 'Reading resume...' : resumeFileName ? `Uploaded: ${resumeFileName}` : 'Upload a resume file'}
-                  <input type="file" accept=".pdf,.txt,.md" className="hidden" onChange={handleResumeUpload} />
+                  <input type="file" accept=".pdf,.txt,.md,.docx" className="hidden" onChange={handleResumeUpload} />
                 </label>
 
                 {resumeFileName && !showResumeEditor ? (
@@ -931,7 +950,7 @@ export default function InterviewSetupPage() {
                           </div>
                           <input
                             type="file"
-                            accept=".pdf,.txt,.md"
+                            accept=".pdf,.txt,.md,.docx"
                             className="hidden"
                             onChange={(e) => handleDocumentUpload(e, 'company')}
                             disabled={uploadingDoc}
@@ -973,7 +992,7 @@ export default function InterviewSetupPage() {
                           </div>
                           <input
                             type="file"
-                            accept=".pdf,.txt,.md"
+                            accept=".pdf,.txt,.md,.docx"
                             className="hidden"
                             onChange={(e) => handleDocumentUpload(e, 'requirements')}
                             disabled={uploadingDoc}
