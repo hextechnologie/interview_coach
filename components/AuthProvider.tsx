@@ -24,21 +24,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   const fetchProfile = async (userId: string) => {
-    // Force fresh fetch by adding timestamp to bypass any caching
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    const [{ data, error }, { data: creditsData }] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', userId).single(),
+      supabase.from('user_credits').select('balance').eq('user_id', userId).single(),
+    ])
 
     if (!error && data) {
       console.log('✅ Profile fetched:', {
         email: data.email,
         tier: data.subscription_tier,
         limit: data.interviews_limit,
-        used: data.interviews_used_this_month
+        used: data.interviews_used_this_month,
+        credits: creditsData?.balance ?? 0,
       })
-      setProfile(data)
+      setProfile({ ...data, credits: creditsData?.balance ?? 0 })
     } else if (error) {
       console.error('❌ Profile fetch error:', error)
     }

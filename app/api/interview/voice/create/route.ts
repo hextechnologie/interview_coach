@@ -31,16 +31,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Maximum 3 panel members allowed' }, { status: 400 })
     }
 
-    // Get user's current credits
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('credits, interviews_used_this_month, interviews_limit')
-      .eq('id', user.id)
-      .single()
+    // Get user's profile and credits in parallel
+    const [{ data: profile, error: profileError }, { data: userCredits }] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('interviews_used_this_month, interviews_limit')
+        .eq('id', user.id)
+        .single(),
+      supabase
+        .from('user_credits')
+        .select('balance')
+        .eq('user_id', user.id)
+        .single(),
+    ])
 
     if (profileError) {
       return NextResponse.json({ error: 'Failed to fetch user profile' }, { status: 500 })
     }
+
+    const currentCredits = userCredits?.balance ?? 0
 
     // Check interview limit
     if (profile.interviews_used_this_month >= profile.interviews_limit) {
@@ -51,10 +60,10 @@ export async function POST(req: NextRequest) {
     const creditsRequired = calculateCreditsRequired(durationMinutes)
     const isFree = durationMinutes === 5
 
-    if (!isFree && profile.credits < creditsRequired) {
-      return NextResponse.json({ 
-        error: `Insufficient credits. You need ${creditsRequired} credits but have ${profile.credits}.`,
-        creditsNeeded: creditsRequired - profile.credits
+    if (!isFree && currentCredits < creditsRequired) {
+      return NextResponse.json({
+        error: `Insufficient credits. You need ${creditsRequired} credits but have ${currentCredits}.`,
+        creditsNeeded: creditsRequired - currentCredits
       }, { status: 402 })
     }
 
