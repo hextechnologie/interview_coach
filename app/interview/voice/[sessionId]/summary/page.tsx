@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui'
-import { INTERVIEWERS, type Interviewer } from '@/components/interview/VoicePanelSelector'
+import { INTERVIEWERS, type Interviewer } from '@/lib/interviewers'
 
 interface VoiceSession {
   id: string

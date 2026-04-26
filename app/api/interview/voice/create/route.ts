@@ -67,12 +67,12 @@ export async function POST(req: NextRequest) {
       }, { status: 402 })
     }
 
-    // Deduct credits if not free
+    // Deduct credits if not free (update user_credits directly — consistent with credits_system schema)
     if (!isFree) {
-      const { error: deductError } = await supabase.rpc('deduct_credits', {
-        user_id: user.id,
-        amount: creditsRequired
-      })
+      const { error: deductError } = await supabase
+        .from('user_credits')
+        .update({ balance: currentCredits - creditsRequired })
+        .eq('user_id', user.id)
 
       if (deductError) {
         console.error('Failed to deduct credits:', deductError)
@@ -80,33 +80,32 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create voice session
+    // Create voice session — column is `interviewers` (matches voice_interviews.sql migration)
     const { data: session, error: sessionError } = await supabase
       .from('voice_sessions')
       .insert({
         user_id: user.id,
-        panel_members: panelMemberIds,
+        interviewers: panelMemberIds,
         duration_minutes: durationMinutes,
         credits_charged: creditsRequired,
         is_free: isFree,
         status: 'active',
-        user_profile: userProfile || {}
+        user_profile: userProfile || {},
       })
       .select()
       .single()
 
     if (sessionError) {
       console.error('Failed to create voice session:', sessionError)
-      
+
       // Refund credits if session creation failed
       if (!isFree) {
-        await supabase.rpc('refund_credits', {
-          user_id: user.id,
-          amount: creditsRequired,
-          session_id: null
-        })
+        await supabase
+          .from('user_credits')
+          .update({ balance: currentCredits })
+          .eq('user_id', user.id)
       }
-      
+
       return NextResponse.json({ error: 'Failed to create voice session' }, { status: 500 })
     }
 
