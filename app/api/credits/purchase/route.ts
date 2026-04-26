@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { APP_URL } from '@/lib/auth'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -85,8 +86,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_URL}/credits?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/credits?cancelled=true`,
+      success_url: `${APP_URL}/credits?success=true`,
+      cancel_url: `${APP_URL}/credits?cancelled=true`,
       metadata: {
         user_id: user.id,
         credits: credits.toString(),
@@ -96,11 +97,9 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ url: session.url })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to process purchase'
     console.error('Credit purchase error:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to process purchase' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

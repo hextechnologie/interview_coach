@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { APP_URL } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
@@ -81,7 +82,7 @@ function candidateEmail(firstName: string, targetJobRole?: string) {
         <li>Book 1-on-1 sessions with expert coaches</li>
         <li>Track your progress with visual charts</li>
       </ul>
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://interview-coach.app'}/dashboard"
+      <a href="${APP_URL}/dashboard"
         style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:10px">
         Start Practising →
       </a>
@@ -89,7 +90,7 @@ function candidateEmail(firstName: string, targetJobRole?: string) {
     <!-- Footer -->
     <div style="padding:20px 32px;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;color:#6b7280">
       You're receiving this because you created an account on Interview Coach. 
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://interview-coach.app'}" style="color:#8b5cf6;text-decoration:none">interview-coach.app</a>
+      <a href="${APP_URL}" style="color:#8b5cf6;text-decoration:none">interview-coach.app</a>
     </div>
   </div>
 </body>
@@ -119,7 +120,7 @@ function coachEmail(firstName: string, title?: string) {
         <li>Respond to booking requests promptly</li>
         <li>Earn 80% of every session fee (we take 20%)</li>
       </ul>
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://interview-coach.app'}/coach/dashboard"
+      <a href="${APP_URL}/coach/dashboard"
         style="display:inline-block;background:linear-gradient(135deg,#059669,#2563eb);color:#fff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:10px">
         Go to Coach Dashboard →
       </a>
@@ -127,7 +128,7 @@ function coachEmail(firstName: string, title?: string) {
     <!-- Footer -->
     <div style="padding:20px 32px;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;color:#6b7280">
       You're receiving this because you registered as a coach on Interview Coach.
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://interview-coach.app'}" style="color:#34d399;text-decoration:none">interview-coach.app</a>
+      <a href="${APP_URL}" style="color:#34d399;text-decoration:none">interview-coach.app</a>
     </div>
   </div>
 </body>

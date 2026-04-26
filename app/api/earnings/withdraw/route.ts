@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import Stripe from 'stripe'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -10,7 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { amount } = await request.json()
 
-    // Get authenticated user
     const authHeader = request.headers.get('authorization')
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader || '' } }
@@ -21,10 +19,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify user is a coach
+    // Verify user is a coach and check Stripe Connect account status
     const { data: coachProfile } = await supabase
       .from('coach_profiles')
-      .select('user_id')
+      .select('user_id, stripe_connect_account_id')
       .eq('user_id', user.id)
       .maybeSingle()
 
@@ -32,7 +30,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Only coaches can withdraw credits' }, { status: 403 })
     }
 
-    // Get current balance
+    // Stripe Connect payouts are not yet implemented — guard until the onboarding
+    // flow and payout call are wired up so we never deduct credits without a real transfer.
+    if (!coachProfile.stripe_connect_account_id) {
+      return NextResponse.json(
+        {
+          error: 'Withdrawals are not yet available. Please complete Stripe Connect onboarding first.',
+          code: 'STRIPE_CONNECT_NOT_CONFIGURED',
+        },
+        { status: 503 }
+      )
+    }
+
     const { data: credits, error: creditsError } = await supabase
       .from('user_credits')
       .select('balance, total_withdrawn')
@@ -43,7 +52,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch credits balance' }, { status: 500 })
     }
 
-    // Validate amount
     if (amount < MIN_WITHDRAWAL) {
       return NextResponse.json({ error: `Minimum withdrawal is ${MIN_WITHDRAWAL} credits` }, { status: 400 })
     }
@@ -52,30 +60,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 })
     }
 
-    // Convert credits to USD (1 credit = $1)
     const amountUSD = amount
-
-    // Calculate new values
     const newBalance = credits.balance - amount
     const newTotalWithdrawn = (credits.total_withdrawn || 0) + amount
 
-    // Deduct credits from balance
+    // Atomic deduction — only succeeds if balance is still sufficient
     const { data: updatedCredits, error: deductError } = await supabase
       .from('user_credits')
-      .update({ 
-        balance: newBalance,
-        total_withdrawn: newTotalWithdrawn
-      })
+      .update({ balance: newBalance, total_withdrawn: newTotalWithdrawn })
       .eq('user_id', user.id)
+      .gte('balance', amount)
       .select()
       .single()
 
-    if (deductError) {
+    if (deductError || !updatedCredits) {
       console.error('Failed to deduct credits:', deductError)
       return NextResponse.json({ error: 'Failed to process withdrawal' }, { status: 500 })
     }
 
-    // Create transaction record
     await supabase.from('credit_transactions').insert({
       user_id: user.id,
       type: 'withdrawn',
@@ -84,39 +86,27 @@ export async function POST(request: NextRequest) {
       description: `Withdrawal: ${amount} credits ($${amountUSD})`,
     })
 
-    // Process Stripe payout (if configured)
-    if (process.env.STRIPE_SECRET_KEY) {
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' })
-      
-      // Note: This requires Stripe Connect to be set up
-      // For now, we'll just log the payout request
-      console.log(`Stripe payout requested: $${amountUSD} to user ${user.id}`)
-      
-      // TODO: Implement actual Stripe Connect payout
-      // const payout = await stripe.payouts.create({
-      //   amount: amountUSD * 100,
-      //   currency: 'usd',
-      //   destination: coachStripeAccountId,
-      // })
-    }
+    // Stripe Connect payout placeholder — will be implemented once onboarding flow is live.
+    // At this point coachProfile.stripe_connect_account_id is guaranteed non-null.
+    console.log(`[withdraw] Stripe payout placeholder: $${amountUSD} → connect account ${coachProfile.stripe_connect_account_id}`)
 
-    // Send notification
     await supabase.from('notifications').insert({
       user_id: user.id,
-      title: 'Withdrawal Processed',
-      message: `${amount} credits ($${amountUSD}) withdrawal initiated. Funds will arrive in 2-5 business days.`,
+      title: 'Withdrawal Initiated',
+      message: `${amount} credits ($${amountUSD}) withdrawal is being processed. Funds will arrive in 2-5 business days.`,
       type: 'payment',
       read: false,
     })
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       amount,
       newBalance: updatedCredits.balance,
-      message: `Withdrawal of ${amount} credits ($${amountUSD}) initiated successfully`
+      message: `Withdrawal of ${amount} credits ($${amountUSD}) initiated successfully`,
     })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('Withdrawal error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

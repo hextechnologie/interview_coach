@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 import { Resend } from 'resend'
 import { estimateCommunicationMetrics, normalizeFeedback } from '@/lib/interview-personalization'
+import { getUserFromBearer, APP_URL } from '@/lib/auth'
 
 const getLanguageName = (code: string) => {
   const languages: Record<string, string> = {
@@ -46,6 +47,11 @@ CRITICAL: ALL natural-language fields (strengths, weaknesses, ideal_answer, impr
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getUserFromBearer(request)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { sessionId, answer, questionNumber, questionText } = await request.json()
 
     const { data: session } = await supabaseAdmin
@@ -56,6 +62,10 @@ export async function POST(request: NextRequest) {
 
     if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    }
+
+    if (session.user_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const config = session.interview_config || {}
@@ -213,7 +223,7 @@ CRITICAL LANGUAGE REQUIREMENT: The interview is being conducted in ${languageNam
         try {
           const resend = new Resend(process.env.RESEND_API_KEY)
           const scoreColor = averageScore >= 8 ? '#22c55e' : averageScore >= 5 ? '#f59e0b' : '#ef4444'
-          const summaryUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://interview-coach-tau.vercel.app'}/interview/summary/${sessionId}`
+          const summaryUrl = `${APP_URL}/interview/summary/${sessionId}`
           const motivation = averageScore >= 7
             ? 'Great job — keep practicing and try to beat your score next time.'
             : 'You are getting closer. Focus on one improvement area and come back stronger.'
@@ -252,8 +262,9 @@ CRITICAL LANGUAGE REQUIREMENT: The interview is being conducted in ${languageNam
     }
 
     return NextResponse.json({ feedback, completed })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('Error processing answer:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

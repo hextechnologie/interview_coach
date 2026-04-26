@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { getUserFromBearer } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getUserFromBearer(request)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { feedback, targetLanguage } = await request.json()
 
     if (!feedback || !targetLanguage) {
@@ -37,8 +43,9 @@ ${JSON.stringify(feedback)}`
     }
 
     return NextResponse.json({ feedback: JSON.parse(jsonMatch[0]) })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('Translate feedback error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

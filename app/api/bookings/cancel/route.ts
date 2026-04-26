@@ -260,8 +260,9 @@ export async function POST(request: NextRequest) {
       refundStatus,
       message: refundAmount > 0 ? `${refundAmount} credits refunded` : 'Cancellation processed'
     })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('Cancellation error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

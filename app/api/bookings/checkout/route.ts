@@ -79,44 +79,47 @@ export async function POST(request: NextRequest) {
     // Calculate credits distribution (platform fee 20%, coach gets 80%)
     const { platformFee, coachEarnings } = calculateCreditsDistribution(creditsCost)
 
-    // Get current balance and deduct credits atomically
-    const { data: userCreditsData, error: fetchError } = await supabase
+    // Read current balance
+    const { data: currentCreditRow, error: fetchError } = await supabase
       .from('user_credits')
       .select('balance')
       .eq('user_id', user.id)
       .single()
 
-    if (fetchError || !userCreditsData) {
+    if (fetchError || !currentCreditRow) {
       console.error('Failed to fetch user credits:', fetchError)
       await supabase.from('bookings').delete().eq('id', bookingId)
       return NextResponse.json({ error: 'Failed to fetch credits balance' }, { status: 500 })
     }
 
-    const newBalance = userCreditsData.balance - creditsCost
+    const newBalance = currentCreditRow.balance - creditsCost
 
     if (newBalance < 0) {
       await supabase.from('bookings').delete().eq('id', bookingId)
       return NextResponse.json({ error: 'Insufficient credits' }, { status: 400 })
     }
 
-    // Update balance
-    const { error: deductError } = await supabase
+    // Atomic deduction — the .gte guard ensures this UPDATE only matches if the balance is
+    // still sufficient at execution time, preventing double-spend under concurrent requests.
+    const { data: deductedRows, error: deductError } = await supabase
       .from('user_credits')
       .update({ balance: newBalance })
       .eq('user_id', user.id)
+      .gte('balance', creditsCost)
+      .select('balance')
 
-    if (deductError) {
-      console.error('Credits deduction error:', deductError)
-      // Rollback booking
+    if (deductError || !deductedRows || deductedRows.length === 0) {
+      console.error('Credits deduction failed (race or insufficient balance):', deductError)
       await supabase.from('bookings').delete().eq('id', bookingId)
-      return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 })
+      return NextResponse.json({ error: 'Insufficient credits' }, { status: 400 })
     }
 
-    // Create credit transaction record
+    // Create credit transaction record using canonical schema fields
     await supabase.from('credit_transactions').insert({
       user_id: user.id,
-      credits: -creditsCost,
-      transaction_type: 'spent',
+      type: 'spent',
+      amount: -creditsCost,
+      balance_after: newBalance,
       description: `Booked ${durationMinutes}min session with ${coachDisplayName}`,
       booking_id: bookingId,
     })
@@ -163,8 +166,9 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ bookingId, calendarUrl, message: 'Booking created successfully' })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('Booking checkout error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

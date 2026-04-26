@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getUserFromBearer } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getUserFromBearer(req)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { text, voice = 'nova' } = await req.json()
 
     if (!text) {

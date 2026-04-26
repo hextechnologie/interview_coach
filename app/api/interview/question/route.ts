@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
+import { getUserFromBearer } from '@/lib/auth'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -74,6 +75,11 @@ function buildFallbackQuestion(session: any, questionNumber: number) {
 
 export async function POST(request: NextRequest) {
   try {
+    const user = await getUserFromBearer(request)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { sessionId } = await request.json()
 
     const { data: session, error: sessionError } = await supabaseAdmin
@@ -84,6 +90,10 @@ export async function POST(request: NextRequest) {
 
     if (sessionError || !session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    }
+
+    if (session.user_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const questionNumber = session.questions_answered + 1
@@ -158,8 +168,9 @@ Ask only the interview question.`
       questionNumber,
       completed: false,
     })
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('Error generating question:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

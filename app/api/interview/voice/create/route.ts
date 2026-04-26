@@ -51,12 +51,10 @@ export async function POST(req: NextRequest) {
 
     const currentCredits = userCredits?.balance ?? 0
 
-    // Check interview limit
     if (profile.interviews_used_this_month >= profile.interviews_limit) {
       return NextResponse.json({ error: 'Interview limit reached for this month' }, { status: 403 })
     }
 
-    // Calculate and check credits
     const creditsRequired = calculateCreditsRequired(durationMinutes)
     const isFree = durationMinutes === 5
 
@@ -67,16 +65,19 @@ export async function POST(req: NextRequest) {
       }, { status: 402 })
     }
 
-    // Deduct credits if not free (update user_credits directly — consistent with credits_system schema)
+    // Atomic deduction — the .gte guard prevents going negative under concurrent requests.
     if (!isFree) {
-      const { error: deductError } = await supabase
+      const newBalance = currentCredits - creditsRequired
+      const { data: deductedRows, error: deductError } = await supabase
         .from('user_credits')
-        .update({ balance: currentCredits - creditsRequired })
+        .update({ balance: newBalance })
         .eq('user_id', user.id)
+        .gte('balance', creditsRequired)
+        .select('balance')
 
-      if (deductError) {
-        console.error('Failed to deduct credits:', deductError)
-        return NextResponse.json({ error: 'Failed to deduct credits' }, { status: 500 })
+      if (deductError || !deductedRows || deductedRows.length === 0) {
+        console.error('Failed to deduct credits (race or insufficient balance):', deductError)
+        return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 })
       }
     }
 
@@ -99,7 +100,7 @@ export async function POST(req: NextRequest) {
     if (sessionError) {
       console.error('Failed to create voice session:', sessionError)
 
-      // Refund credits if session creation failed
+      // Refund credits if session creation failed — restore to pre-deduction balance
       if (!isFree) {
         await supabase
           .from('user_credits')

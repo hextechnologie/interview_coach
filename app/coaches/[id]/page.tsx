@@ -53,7 +53,6 @@ export default function CoachDetailPage() {
 
       if (cpError || !cp) { setNotFound(true); setLoading(false); return }
 
-      // Get profile row
       const { data: profile } = await supabase
         .from('profiles')
         .select('id, full_name, first_name, last_name, email, avatar_url, city, country, linkedin_url, bio, experience_details, education_details, projects_details, skills')
@@ -82,11 +81,11 @@ export default function CoachDetailPage() {
         city: profile?.city ?? null,
         country: profile?.country ?? null,
         linkedin_url: profile?.linkedin_url ?? null,
-        bio: (profile as any)?.bio ?? null,
-        experience_details: (profile as any)?.experience_details ?? null,
-        education_details: (profile as any)?.education_details ?? null,
-        projects_details: (profile as any)?.projects_details ?? null,
-        skills: (profile as any)?.skills ?? [],
+        bio: profile?.bio ?? null,
+        experience_details: profile?.experience_details ?? null,
+        education_details: profile?.education_details ?? null,
+        projects_details: profile?.projects_details ?? null,
+        skills: profile?.skills ?? [],
         coach_profiles: {
           title: cp.title,
           bio: cp.bio,

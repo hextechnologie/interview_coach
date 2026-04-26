@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { getUserFromBearer } from '@/lib/auth'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,9 +12,13 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const user = await getUserFromBearer(request)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const sessionId = params.id
 
-    // Fetch session
     const { data: session, error: sessionError } = await supabaseAdmin
       .from('interview_sessions')
       .select('*')
@@ -22,6 +27,10 @@ export async function GET(
 
     if (sessionError || !session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    }
+
+    if (session.user_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Fetch answers
@@ -44,8 +53,9 @@ export async function GET(
     }
 
     return NextResponse.json({ session, messages })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Internal server error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -105,11 +115,9 @@ export async function DELETE(
       },
       { status: 200 }
     )
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to delete interview'
     console.error('Error deleting interview:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to delete interview' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
