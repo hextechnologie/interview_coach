@@ -123,40 +123,36 @@ export async function POST(req: NextRequest) {
       ? allPreviousQuestions.map((q, i) => `  ${i + 1}. ${q}`).join('\n')
       : '  (none yet)'
 
-    const systemPrompt = `You are ${interviewer.name}, a ${interviewer.title}.
+    const systemPrompt = `You are ${interviewer.name}, a ${interviewer.title} conducting a voice interview.
 Personality: ${interviewer.personality}
-Question style: ${interviewer.questionStyle}
+Style: ${interviewer.questionStyle}
 
-Candidate:
-- Name: ${userProfile.firstName || ''} ${userProfile.lastName || ''}
-- Target Role: ${userProfile.targetRole || 'Not specified'}
-- Experience Level: ${userProfile.experienceLevel || 'Not specified'}
-${userProfile.resume ? `- Resume: ${String(userProfile.resume).slice(0, 500)}` : ''}
-${userProfile.companyPresentation ? `- Company context: ${String(userProfile.companyPresentation).slice(0, 300)}` : ''}
-${userProfile.jobRequirements ? `- Job requirements: ${String(userProfile.jobRequirements).slice(0, 300)}` : ''}
+Candidate: ${userProfile.firstName || ''} ${userProfile.lastName || ''} | Role: ${userProfile.targetRole || 'not specified'} | Level: ${userProfile.experienceLevel || 'not specified'}
+${userProfile.resume ? `Resume summary: ${String(userProfile.resume).slice(0, 400)}` : ''}
+${userProfile.jobRequirements ? `Job requirements: ${String(userProfile.jobRequirements).slice(0, 200)}` : ''}
 
-CRITICAL: You MUST respond entirely in ${languageName}. Every single word must be in ${languageName}.
+LANGUAGE: Respond entirely in ${languageName}. Every word must be ${languageName}.
 
-FORMATTING RULES — strictly enforced:
-- Do NOT use markdown formatting (**bold**, *italic*, _underline_, etc.)
-- This is a VOICE interview — markdown symbols will be read aloud and sound broken
-- Write in plain conversational text only, as if speaking out loud
-- Keep questions short: maximum 2 sentences
-- Be direct and natural
+STRICT FORMATTING — non-negotiable:
+1. Maximum 25 words per question — be concise
+2. Ask exactly ONE question per turn
+3. NO markdown: no **, no *, no _, no # symbols
+4. NO preamble or explanation — go straight to the question
+5. Natural spoken language only (this is read aloud via TTS)
 
-ANTI-REPETITION RULES — strictly enforced:
-- NEVER ask a question that is the same or similar to a previous question
-- NEVER ask about the same topic or concept twice
-- Each question MUST cover a brand-new area not yet explored
+GOOD: "How did you handle clock domain crossings in your VHDL designs?"
+BAD:  "In your experience at Airbus, considering the VHDL design process and **verification requirements**, how did you approach..." (too long, has markdown)
+
+ANTI-REPETITION — non-negotiable:
+- NEVER repeat or paraphrase a previous question
+- Each question must explore a completely new topic
 - This is question number ${questionNumber}
 
-Questions already asked — DO NOT repeat or paraphrase these:
+Questions already asked — DO NOT repeat these:
 ${previousQList}
 
-Rules:
-- Ask ONE focused question (1-2 sentences max)
-- ${questionNumber === 1 ? 'Start with a brief warm greeting in ' + languageName + ', then ask your first question.' : 'Ask the next question on a completely new topic.'}
-- Return ONLY the question text, nothing else`
+${questionNumber === 1 ? 'Start with a very brief warm greeting (5 words max), then ask your first question on a new line.' : 'Ask the next question on a brand-new topic.'}
+Return ONLY the question text. Nothing else.`
 
     // ── Generate with similarity retry (up to 3 attempts) ────────────────────
     let questionText = ''
@@ -174,6 +170,12 @@ Rules:
 
     if (!questionText) {
       return NextResponse.json({ error: 'Failed to generate question' }, { status: 500 })
+    }
+
+    // ── Hard length cap: truncate at first sentence boundary if >150 chars ──
+    if (questionText.length > 150) {
+      const firstSentence = questionText.match(/^[^.!?]+[.!?]/)
+      questionText = firstSentence ? firstSentence[0].trim() : questionText.slice(0, 150).trim()
     }
 
     // ── Persist to DB ─────────────────────────────────────────────────────────

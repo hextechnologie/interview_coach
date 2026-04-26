@@ -54,6 +54,13 @@ const INTERVIEW_TIPS = [
 const TRANSCRIPT_TRUNCATE = 60
 const QUESTION_MAX_CHARS = 200
 
+// Hard question limits by duration — interview ends when reached
+function getMaxQuestions(durationMinutes: number): number {
+  const exact: Record<number, number> = { 5: 3, 10: 4, 15: 5, 20: 7, 30: 10, 45: 14, 60: 18 }
+  if (exact[durationMinutes]) return exact[durationMinutes]
+  return Math.max(2, Math.floor(durationMinutes / 3))
+}
+
 type Phase =
   | 'loading' | 'intro'
   | 'generating-question' | 'speaking-question'
@@ -194,11 +201,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     ? session.interviewers.map(id => INTERVIEWERS.find(i => i.id === id)).filter(Boolean) as Interviewer[]
     : []
 
-  // Estimated total: ~1 question per 3 minutes (voice interviews need time for answers + feedback)
-  // 5 min → 2, 15 min → 5, 30 min → 10, 45 min → 15, 60 min → 20
-  const estimatedTotal = session ? Math.max(2, Math.round(session.duration_minutes / 3)) : 8
-  // Cap progress bar at 100% even if questionCount exceeds estimate
-  const progressPercent = Math.min(100, Math.round((questionCount / estimatedTotal) * 100))
+  // Hard max — interview stops once this is reached
+  const maxQuestions = session ? getMaxQuestions(session.duration_minutes) : 3
+  // Progress capped at 100%
+  const progressPercent = Math.min(100, Math.round((questionCount / maxQuestions) * 100))
 
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -239,8 +245,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     timerRef.current = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) { handleEndSession('completed'); return 0 }
-        // warn at 2 min remaining
-        if (prev === 120) toast('⏰ 2 minutes remaining!', { icon: '⚠️', style: { background: '#1c2128', color: '#facc15', border: '1px solid #ca8a04' } })
+        if (prev === 120) toast('⏰ 2 minutes remaining!', { duration: 3000, style: { background: '#1c2128', color: '#facc15', border: '1px solid #ca8a04' } })
+        if (prev === 60)  toast('⏰ 1 minute remaining!',  { duration: 3000, style: { background: '#1c2128', color: '#f97316', border: '1px solid #ea580c' } })
+        if (prev === 30)  toast('⏰ 30 seconds left!',     { duration: 3000, style: { background: '#1c2128', color: '#ef4444', border: '1px solid #dc2626' } })
         return prev - 1
       })
     }, 1000)
@@ -288,7 +295,14 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
   function addToTranscript(entry: Omit<TranscriptEntry, 'id'>, markAsCurrent = false) {
     const id = Math.random().toString(36).slice(2)
-    setTranscript(prev => [...prev, { ...entry, id }])
+    setTranscript(prev => {
+      // Dedup: don't add if same role + first 50 chars already exists
+      const isDuplicate = prev.some(
+        m => m.role === entry.role && m.text.slice(0, 50) === entry.text.slice(0, 50)
+      )
+      if (isDuplicate) return prev
+      return [...prev, { ...entry, id }]
+    })
     if (markAsCurrent) {
       setCurrentQuestionEntryId(id)
       setExpandedQuestion(false)
@@ -298,6 +312,14 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   // ── Generate next question ─────────────────────────────────────────────────
   const generateNextQuestion = useCallback(async () => {
     if (sessionEndedRef.current) return
+
+    // Hard question limit — end interview gracefully instead of continuing
+    const nextCount = questionCount + 1
+    if (nextCount > maxQuestions) {
+      toast('🎉 Interview complete!', { duration: 2000, style: { background: '#1c2128', color: '#86efac', border: '1px solid #16a34a' } })
+      handleEndSession('completed')
+      return
+    }
     setPhase('generating-question')
     setLiveCaption('')
     setStatusText('')
@@ -306,7 +328,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       const { data: { session: auth } } = await supabase.auth.getSession()
       if (!auth) return
 
-      const nextCount = questionCount + 1
       setQuestionCount(nextCount)
 
       const currentInterviewers = (session?.interviewers ?? [])
@@ -347,7 +368,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       setError('Failed to generate question.')
       setPhase('error')
     }
-  }, [questionCount, session, params.sessionId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [questionCount, maxQuestions, session, params.sessionId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Microphone recording (inline, no external component needed for controls) ─
   async function startRecording() {
@@ -636,8 +657,15 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
             <span className="text-xs text-gray-400 hidden sm:block">You</span>
           </div>
 
-          {/* Center: brand */}
-          <span className="text-xs font-semibold text-gray-500 hidden sm:block">Interview Coach</span>
+          {/* Center: session info */}
+          <div className="hidden sm:flex flex-col items-center">
+            <span className="text-white font-semibold text-sm leading-tight">
+              {sessionInterviewers.map(i => i.name).join(' & ')} Interview
+            </span>
+            <span className="text-gray-500 text-xs">
+              {session?.duration_minutes} min · {session?.user_profile?.targetRole || 'Voice Interview'}
+            </span>
+          </div>
 
           {/* Right: timer + controls */}
           <div className="flex items-center gap-2">
@@ -812,18 +840,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                   )}
                 </AnimatePresence>
 
-                {/* Skip audio button */}
-                {isAISpeaking && ttsEnabled && (
-                  <div className="mt-3 flex justify-center">
-                    <button
-                      onClick={() => audioRef.current?.dispatchEvent(new Event('ended'))}
-                      className="flex items-center gap-1 text-xs text-gray-600 hover:text-gray-400 transition-colors"
-                    >
-                      <SkipForward className="w-3 h-3" />
-                      Skip audio
-                    </button>
-                  </div>
-                )}
+                {/* Skip audio moved to control bar */}
               </div>
 
               {/* Status text (transcribing, feedback) */}
@@ -909,8 +926,19 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                 )}
               </div>
 
-              {/* Skip question with label */}
-              {phase === 'waiting-for-answer' ? (
+              {/* Skip audio (when AI speaking) or Skip question (when waiting) */}
+              {isAISpeaking && ttsEnabled ? (
+                <button
+                  onClick={() => audioRef.current?.dispatchEvent(new Event('ended'))}
+                  className="flex flex-col items-center gap-1 group"
+                  title="Skip audio"
+                >
+                  <div className="w-11 h-11 rounded-full bg-gray-800 group-hover:bg-gray-700 flex items-center justify-center transition-colors">
+                    <SkipForward className="w-4 h-4 text-gray-400 group-hover:text-white" />
+                  </div>
+                  <span className="text-xs text-gray-500">Skip audio</span>
+                </button>
+              ) : phase === 'waiting-for-answer' ? (
                 <button
                   onClick={() => generateNextQuestion()}
                   className="flex flex-col items-center gap-1 group"
@@ -922,7 +950,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                   <span className="text-xs text-gray-500">Skip</span>
                 </button>
               ) : (
-                /* placeholder to keep layout stable */
                 <div className="w-11 opacity-0 pointer-events-none flex flex-col items-center gap-1">
                   <div className="w-11 h-11 rounded-full" />
                   <span className="text-xs">Skip</span>
@@ -967,10 +994,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                 {/* Progress bar */}
                 <div>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>
-                      Question {questionCount}
-                      {questionCount <= estimatedTotal ? ` of ~${estimatedTotal}` : '+'}
-                    </span>
+                    <span>Question {Math.min(questionCount, maxQuestions)} of {maxQuestions}</span>
                     <span>{progressPercent}%</span>
                   </div>
                   <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
@@ -983,10 +1007,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                 </div>
               </div>
 
-              {/* Messages */}
+              {/* Messages — hide the CURRENT question entry (shown in interviewer card) */}
               <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2.5">
                 <AnimatePresence initial={false}>
-                  {transcript.map(entry => {
+                  {transcript.filter(e => !(e.role === 'interviewer' && e.id === currentQuestionEntryId)).map(entry => {
                     if (entry.role === 'user') {
                       return (
                         <motion.div key={entry.id}
