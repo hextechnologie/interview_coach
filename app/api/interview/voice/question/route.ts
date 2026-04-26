@@ -134,7 +134,7 @@ ${userProfile.jobRequirements ? `Job requirements: ${String(userProfile.jobRequi
 LANGUAGE: Respond entirely in ${languageName}. Every word must be ${languageName}.
 
 STRICT FORMATTING — non-negotiable:
-1. Maximum 25 words per question — be concise
+1. Maximum 75 words per question — be clear but not overly long
 2. Ask exactly ONE question per turn
 3. NO markdown: no **, no *, no _, no # symbols
 4. NO preamble or explanation — go straight to the question
