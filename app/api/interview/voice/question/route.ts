@@ -17,6 +17,39 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ar: 'Arabic',
 }
 
+// ── Similarity guard: returns true if newQ shares >50% meaningful words with any previous Q
+function isTooSimilar(newQ: string, previousQs: string[]): boolean {
+  const meaningful = (s: string) =>
+    new Set(s.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 4))
+
+  const newWords = meaningful(newQ)
+  if (newWords.size === 0) return false
+
+  return previousQs.some(prev => {
+    const prevWords = meaningful(prev)
+    const overlap = [...newWords].filter(w => prevWords.has(w)).length
+    return overlap / newWords.size > 0.5
+  })
+}
+
+// ── Generate one question from Claude ─────────────────────────────────────
+async function askClaude(
+  systemPrompt: string,
+  contextMessages: { role: 'user' | 'assistant'; content: string }[],
+  questionNumber: number,
+): Promise<string> {
+  const response = await anthropic.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 150,
+    system: systemPrompt,
+    messages: [
+      ...contextMessages,
+      { role: 'user', content: `Ask interview question #${questionNumber} on a completely new topic.` },
+    ],
+  })
+  return response.content[0].type === 'text' ? response.content[0].text.trim() : ''
+}
+
 export async function POST(req: NextRequest) {
   try {
     const authHeader = req.headers.get('authorization')
@@ -36,6 +69,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'sessionId and interviewerId are required' }, { status: 400 })
     }
 
+    // ── Load session ─────────────────────────────────────────────────────────
     const { data: session, error: sessionError } = await supabase
       .from('voice_sessions')
       .select('*')
@@ -52,20 +86,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Interviewer not found' }, { status: 404 })
     }
 
+    // ── Load ALL previously asked questions from DB (source of truth) ────────
+    const { data: previousQARows } = await supabase
+      .from('voice_session_qa')
+      .select('question, answer')
+      .eq('session_id', sessionId)
+      .order('asked_at', { ascending: true })
+
+    const dbPreviousQuestions: string[] = (previousQARows ?? [])
+      .map(r => r.question)
+      .filter(Boolean)
+
+    // Also collect from the client-sent previousAnswers in case DB is slightly behind
+    const clientPreviousQuestions: string[] = (previousAnswers as { question: string; answer: string }[])
+      .map(qa => qa.question)
+      .filter(Boolean)
+
+    // Merge, deduplicate
+    const allPreviousQuestions: string[] = [
+      ...new Set([...dbPreviousQuestions, ...clientPreviousQuestions]),
+    ]
+
     const userProfile = session.user_profile || {}
     const language = session.language || 'en'
     const languageName = LANGUAGE_NAMES[language] || 'English'
 
+    // ── Build conversation history for Claude context ─────────────────────────
     const contextMessages: { role: 'user' | 'assistant'; content: string }[] = []
     for (const qa of previousAnswers as { question: string; answer: string }[]) {
       contextMessages.push({ role: 'assistant', content: qa.question })
-      contextMessages.push({ role: 'user', content: qa.answer })
+      contextMessages.push({ role: 'user', content: qa.answer || '(no answer given)' })
     }
 
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 200,
-      system: `You are ${interviewer.name}, a ${interviewer.title}.
+    // ── System prompt with explicit DO-NOT-REPEAT list ─────────────────────
+    const previousQList = allPreviousQuestions.length > 0
+      ? allPreviousQuestions.map((q, i) => `  ${i + 1}. ${q}`).join('\n')
+      : '  (none yet)'
+
+    const systemPrompt = `You are ${interviewer.name}, a ${interviewer.title}.
 Personality: ${interviewer.personality}
 Question style: ${interviewer.questionStyle}
 
@@ -86,19 +144,39 @@ FORMATTING RULES — strictly enforced:
 - Keep questions short: maximum 2 sentences
 - Be direct and natural
 
+ANTI-REPETITION RULES — strictly enforced:
+- NEVER ask a question that is the same or similar to a previous question
+- NEVER ask about the same topic or concept twice
+- Each question MUST cover a brand-new area not yet explored
+- This is question number ${questionNumber}
+
+Questions already asked — DO NOT repeat or paraphrase these:
+${previousQList}
+
 Rules:
 - Ask ONE focused question (1-2 sentences max)
-- ${questionNumber === 1 ? 'Start with a brief warm greeting in ' + languageName + ', then ask your first question.' : 'Ask the next question based on the conversation.'}
-- Return ONLY the question text, nothing else`,
-      messages: [
-        ...contextMessages,
-        { role: 'user', content: `Ask interview question #${questionNumber}.` },
-      ],
-    })
+- ${questionNumber === 1 ? 'Start with a brief warm greeting in ' + languageName + ', then ask your first question.' : 'Ask the next question on a completely new topic.'}
+- Return ONLY the question text, nothing else`
 
-    const questionText =
-      response.content[0].type === 'text' ? response.content[0].text.trim() : ''
+    // ── Generate with similarity retry (up to 3 attempts) ────────────────────
+    let questionText = ''
+    let attempts = 0
+    const MAX_ATTEMPTS = 3
 
+    do {
+      questionText = await askClaude(systemPrompt, contextMessages, questionNumber)
+      attempts++
+    } while (
+      attempts < MAX_ATTEMPTS &&
+      questionText &&
+      isTooSimilar(questionText, allPreviousQuestions)
+    )
+
+    if (!questionText) {
+      return NextResponse.json({ error: 'Failed to generate question' }, { status: 500 })
+    }
+
+    // ── Persist to DB ─────────────────────────────────────────────────────────
     const { data: qaRecord, error: qaError } = await supabase
       .from('voice_session_qa')
       .insert({

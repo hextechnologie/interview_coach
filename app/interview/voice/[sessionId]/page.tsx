@@ -194,8 +194,11 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     ? session.interviewers.map(id => INTERVIEWERS.find(i => i.id === id)).filter(Boolean) as Interviewer[]
     : []
 
-  // estimated total questions based on duration (~2 min per Q)
-  const estimatedTotal = session ? Math.max(3, Math.round(session.duration_minutes / 2)) : 8
+  // Estimated total: ~1 question per 3 minutes (voice interviews need time for answers + feedback)
+  // 5 min → 2, 15 min → 5, 30 min → 10, 45 min → 15, 60 min → 20
+  const estimatedTotal = session ? Math.max(2, Math.round(session.duration_minutes / 3)) : 8
+  // Cap progress bar at 100% even if questionCount exceeds estimate
+  const progressPercent = Math.min(100, Math.round((questionCount / estimatedTotal) * 100))
 
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -964,13 +967,16 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                 {/* Progress bar */}
                 <div>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Question {questionCount} of ~{estimatedTotal}</span>
-                    <span>{Math.round((questionCount / estimatedTotal) * 100)}%</span>
+                    <span>
+                      Question {questionCount}
+                      {questionCount <= estimatedTotal ? ` of ~${estimatedTotal}` : '+'}
+                    </span>
+                    <span>{progressPercent}%</span>
                   </div>
                   <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-gradient-to-r from-purple-600 to-blue-500 rounded-full"
-                      animate={{ width: `${Math.min(100, (questionCount / estimatedTotal) * 100)}%` }}
+                      animate={{ width: `${progressPercent}%` }}
                       transition={{ duration: 0.5 }}
                     />
                   </div>
