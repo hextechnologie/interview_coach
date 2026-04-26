@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { INTERVIEWERS, type Interviewer } from '@/lib/interviewers'
@@ -60,6 +60,28 @@ type Phase =
   | 'waiting-for-answer' | 'recording-answer'
   | 'processing-answer' | 'speaking-feedback'
   | 'completed' | 'error'
+
+// ── Strip any residual markdown from voice text ────────────────────────────
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')   // **bold**
+    .replace(/\*(.*?)\*/g, '$1')        // *italic*
+    .replace(/_(.*?)_/g, '$1')          // _underline_
+    .replace(/`(.*?)`/g, '$1')          // `code`
+    .replace(/#{1,6}\s/g, '')           // # headings
+    .trim()
+}
+
+// ── Render text with **bold** → <strong> (for display only) ───────────────
+function renderMarkdown(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-white">{part.slice(2, -2)}</strong>
+    }
+    return <span key={i}>{part}</span>
+  })
+}
 
 // ── Voice wave visualizer ──────────────────────────────────────────────────
 function VoiceWave({ isActive, color = 'purple' }: { isActive: boolean; color?: 'purple' | 'red' | 'green' }) {
@@ -649,12 +671,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       {/* ── MAIN CONTENT ─────────────────────────────────────────────────── */}
       <div className="flex-1 flex overflow-hidden min-h-0">
 
-        {/* ── LEFT / CENTER: Interviewer card ──────────────────────────── */}
-        <div className="flex-1 flex flex-col p-4 gap-3 overflow-hidden min-w-0">
+        {/* ── CENTER: Interviewer card + tip + controls ─────────────────── */}
+        <div className="flex-1 flex flex-col items-center p-4 gap-3 overflow-y-auto min-w-0">
 
-          {/* Interviewer card */}
-          <div className="flex-1 flex items-center justify-center min-h-0">
-            <div className="w-full max-w-sm">
+          {/* Spacer pushes card toward vertical center */}
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 w-full min-h-0">
+            <div className="w-full max-w-md">
               <div className={`rounded-2xl bg-gray-900 border-2 transition-all duration-300 p-6 ${
                 isAISpeaking && isSpeakingNow(currentInterviewer.id)
                   ? 'border-purple-500 shadow-xl shadow-purple-500/20'
@@ -753,7 +775,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                       <p className="text-sm text-gray-100 mt-1.5 leading-relaxed">
                         {currentQuestion.question.length > QUESTION_MAX_CHARS && !expandedQuestion
                           ? <>
-                              {currentQuestion.question.slice(0, QUESTION_MAX_CHARS)}
+                              {renderMarkdown(currentQuestion.question.slice(0, QUESTION_MAX_CHARS))}
                               <span className="text-gray-500">...</span>
                               <button
                                 onClick={() => setExpandedQuestion(true)}
@@ -762,7 +784,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                                 Show more
                               </button>
                             </>
-                          : currentQuestion.question
+                          : renderMarkdown(currentQuestion.question)
                         }
                       </p>
                     </motion.div>
@@ -812,9 +834,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
               )}
             </div>
 
-            {/* ── Live Tips card ──────────────────────────────────────── */}
-            <div className="mt-3 rounded-xl bg-gray-900 border-l-4 border-purple-600 border border-white/5 px-4 py-3 flex items-start gap-3">
-              <span className="text-lg flex-shrink-0 mt-0.5">💡</span>
+            {/* ── Live Tips card — same width as interviewer card ──────── */}
+            <div className="w-full max-w-md rounded-xl bg-gray-800/40 border border-purple-500/20 border-l-4 border-l-purple-600 px-4 py-3 flex items-start gap-3">
+              <span className="text-base flex-shrink-0 mt-0.5">💡</span>
               <div className="min-w-0">
                 <div className="text-xs font-semibold text-purple-400 mb-1">Interview Tip</div>
                 <AnimatePresence mode="wait">
@@ -824,14 +846,14 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.4 }}
-                    className="text-xs text-gray-400 leading-relaxed"
+                    className="text-xs text-gray-300 leading-relaxed"
                   >
                     {INTERVIEW_TIPS[tipIndex]}
                   </motion.p>
                 </AnimatePresence>
               </div>
             </div>
-          </div>
+          </div> {/* end centering flex */}
 
           {/* ── BOTTOM CONTROLS ──────────────────────────────────────────── */}
           <div className="flex-shrink-0 bg-gray-900/80 backdrop-blur rounded-2xl border border-white/5 px-4 py-3">
@@ -966,7 +988,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                           className="flex gap-2 justify-end"
                         >
                           <div className="bg-purple-900/50 border border-purple-500/30 rounded-2xl rounded-tr-sm px-3 py-2 max-w-[82%]">
-                            <p className="text-xs text-gray-200 leading-relaxed">{entry.text}</p>
+                            <p className="text-xs text-gray-200 leading-relaxed">{renderMarkdown(entry.text)}</p>
                           </div>
                           <div className="w-6 h-6 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
                             Y
@@ -981,7 +1003,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                           className="bg-blue-900/25 border border-blue-500/25 rounded-xl px-3 py-2"
                         >
                           <span className="text-xs text-blue-400 font-medium">💡 Feedback</span>
-                          <p className="text-xs text-gray-300 mt-1 leading-relaxed">{entry.text}</p>
+                          <p className="text-xs text-gray-300 mt-1 leading-relaxed">{renderMarkdown(entry.text)}</p>
                         </motion.div>
                       )
                     }
@@ -1007,7 +1029,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-gray-200 leading-relaxed">{displayText}</p>
+                          <p className="text-xs text-gray-200 leading-relaxed">{renderMarkdown(displayText)}</p>
                         </div>
                       </motion.div>
                     )
@@ -1023,7 +1045,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                     <div className="bg-gray-800/70 rounded-2xl rounded-tl-sm px-3 py-2 max-w-[82%] border border-purple-500/20">
                       <span className="text-xs text-purple-400 font-medium">{currentInterviewer.name}</span>
                       <p className="text-xs text-gray-300 mt-0.5 leading-relaxed">
-                        {liveCaption}
+                        {renderMarkdown(liveCaption)}
                         <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.9 }}>▌</motion.span>
                       </p>
                     </div>
