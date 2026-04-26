@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { panelMemberIds, durationMinutes, userProfile } = body
+    const { panelMemberIds, durationMinutes, userProfile, language = 'en' } = body
 
     if (!panelMemberIds || panelMemberIds.length === 0) {
       return NextResponse.json({ error: 'At least one panel member must be selected' }, { status: 400 })
@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
         is_free: isFree,
         status: 'active',
         user_profile: userProfile || {},
+        language,
       })
       .select()
       .single()

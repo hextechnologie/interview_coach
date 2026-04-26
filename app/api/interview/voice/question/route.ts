@@ -10,6 +10,13 @@ const supabase = createClient(
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  fr: 'French',
+  es: 'Spanish',
+  ar: 'Arabic',
+}
+
 export async function POST(req: NextRequest) {
   try {
     const authHeader = req.headers.get('authorization')
@@ -46,14 +53,13 @@ export async function POST(req: NextRequest) {
     }
 
     const userProfile = session.user_profile || {}
+    const language = session.language || 'en'
+    const languageName = LANGUAGE_NAMES[language] || 'English'
 
-    // Build prior context for follow-up questions
     const contextMessages: { role: 'user' | 'assistant'; content: string }[] = []
-    if (previousAnswers.length > 0) {
-      for (const qa of previousAnswers as { question: string; answer: string }[]) {
-        contextMessages.push({ role: 'assistant', content: qa.question })
-        contextMessages.push({ role: 'user', content: qa.answer })
-      }
+    for (const qa of previousAnswers as { question: string; answer: string }[]) {
+      contextMessages.push({ role: 'assistant', content: qa.question })
+      contextMessages.push({ role: 'user', content: qa.answer })
     }
 
     const response = await anthropic.messages.create({
@@ -67,27 +73,25 @@ Candidate:
 - Name: ${userProfile.firstName || ''} ${userProfile.lastName || ''}
 - Target Role: ${userProfile.targetRole || 'Not specified'}
 - Experience Level: ${userProfile.experienceLevel || 'Not specified'}
-${userProfile.resume ? `- Resume summary: ${String(userProfile.resume).slice(0, 500)}` : ''}
+${userProfile.resume ? `- Resume: ${String(userProfile.resume).slice(0, 500)}` : ''}
 ${userProfile.companyPresentation ? `- Company context: ${String(userProfile.companyPresentation).slice(0, 300)}` : ''}
 ${userProfile.jobRequirements ? `- Job requirements: ${String(userProfile.jobRequirements).slice(0, 300)}` : ''}
 
+CRITICAL: You MUST respond entirely in ${languageName}. Every single word must be in ${languageName}.
+
 Rules:
-- Ask ONE focused interview question (1-2 sentences max)
-- ${questionNumber === 1 ? 'Start with a brief warm greeting, then ask your first question.' : 'Ask the next question based on the conversation so far.'}
-- Return ONLY the question text, no extra commentary`,
+- Ask ONE focused question (1-2 sentences max)
+- ${questionNumber === 1 ? 'Start with a brief warm greeting in ' + languageName + ', then ask your first question.' : 'Ask the next question based on the conversation.'}
+- Return ONLY the question text, nothing else`,
       messages: [
         ...contextMessages,
-        {
-          role: 'user',
-          content: `Ask interview question #${questionNumber}.`,
-        },
+        { role: 'user', content: `Ask interview question #${questionNumber}.` },
       ],
     })
 
     const questionText =
       response.content[0].type === 'text' ? response.content[0].text.trim() : ''
 
-    // Save question to DB so feedback route has a real ID to update
     const { data: qaRecord, error: qaError } = await supabase
       .from('voice_session_qa')
       .insert({
@@ -100,11 +104,9 @@ Rules:
 
     if (qaError) {
       console.error('Failed to save question to DB:', qaError)
-      // Return question without a DB id — feedback route will handle null gracefully
       return NextResponse.json({ question: questionText, questionId: null })
     }
 
-    // Update question count on session
     await supabase
       .from('voice_sessions')
       .update({ total_questions: questionNumber })

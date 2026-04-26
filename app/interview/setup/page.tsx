@@ -81,6 +81,7 @@ export default function InterviewSetupPage() {
   // Voice interview specific states
   const [selectedPanelIds, setSelectedPanelIds] = useState<string[]>([])
   const [voiceDuration, setVoiceDuration] = useState(5) // Default to free 5 min
+  const [voiceLanguage, setVoiceLanguage] = useState('en')
 
   const [resumeText, setResumeText] = useState('')
   const [resumeFileName, setResumeFileName] = useState('')
@@ -425,6 +426,7 @@ export default function InterviewSetupPage() {
         body: JSON.stringify({
           panelMemberIds: selectedPanelIds,
           durationMinutes: voiceDuration,
+          language: voiceLanguage,
           userProfile: {
             firstName: profile?.first_name,
             lastName: profile?.last_name,
@@ -814,15 +816,54 @@ export default function InterviewSetupPage() {
             {interviewMode === 'voice' && step === 5 && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
-                  <h2 className="text-2xl font-bold mb-2">How long do you want to practice?</h2>
-                  <p className="text-gray-400">Choose your interview duration</p>
+                  <h2 className="text-2xl font-bold mb-2">Final settings</h2>
+                  <p className="text-gray-400">Choose your interview language and duration</p>
                 </div>
-                <VoiceDurationSelector
-                  selectedDuration={voiceDuration}
-                  onSelectDuration={setVoiceDuration}
-                  userCredits={profile?.credits || 0}
-                />
-                {errors.credits && <p className="text-sm text-red-400 text-center">{errors.credits}</p>}
+
+                {/* Language selector */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-300">
+                    🌐 Interview Language
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      { code: 'en', label: 'English', flag: '🇬🇧' },
+                      { code: 'fr', label: 'Français', flag: '🇫🇷' },
+                      { code: 'es', label: 'Español', flag: '🇪🇸' },
+                      { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+                    ].map(lang => (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => setVoiceLanguage(lang.code)}
+                        className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                          voiceLanguage === lang.code
+                            ? 'border-purple-500 bg-purple-500/20 text-white'
+                            : 'border-border bg-card/40 text-gray-400 hover:border-gray-500'
+                        }`}
+                      >
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Questions, feedback, and voice recognition will all be in this language.
+                  </p>
+                </div>
+
+                {/* Duration selector */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-300">
+                    ⏱ Interview Duration
+                  </label>
+                  <VoiceDurationSelector
+                    selectedDuration={voiceDuration}
+                    onSelectDuration={setVoiceDuration}
+                    userCredits={profile?.credits || 0}
+                  />
+                  {errors.credits && <p className="text-sm text-red-400 text-center">{errors.credits}</p>}
+                </div>
               </div>
             )}
 

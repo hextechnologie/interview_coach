@@ -10,13 +10,20 @@ const supabase = createClient(
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
-// Detect if the answer is an audio/mic test rather than a real answer
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  fr: 'French',
+  es: 'Spanish',
+  ar: 'Arabic',
+}
+
 function isTestPhrase(answer: string): boolean {
   const lower = answer.toLowerCase().trim()
   const testPatterns = [
-    /^(hello|hi|hey)[\s?!.]*$/,
+    /^(hello|hi|hey|bonjour|hola|مرحبا)[\s?!.]*$/,
     /can you hear/,
     /do you hear/,
+    /vous m['']entendez/,
     /is this (working|on)/,
     /testing.*mic/,
     /mic.*test/,
@@ -50,40 +57,72 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'sessionId, question, and answer are required' }, { status: 400 })
     }
 
+    // Get session language
+    const { data: session } = await supabase
+      .from('voice_sessions')
+      .select('language')
+      .eq('id', sessionId)
+      .single()
+
+    const language = session?.language || 'en'
+    const languageName = LANGUAGE_NAMES[language] || 'English'
+
     const interviewer = INTERVIEWERS.find(i => i.id === interviewerId)
     const interviewerName = interviewer?.name ?? 'Sarah'
+    const interviewerTitle = interviewer?.title ?? 'Interviewer'
 
-    // If it's just a mic test, redirect warmly without scoring
+    // Redirect mic tests without scoring
     if (isTestPhrase(answer)) {
-      const redirects = [
-        `Got it! Sounds like you're all set — go ahead and answer the question whenever you're ready.`,
-        `I can hear you! Take a moment and answer the question when you're ready.`,
-        `Loud and clear! Whenever you're ready, give me your answer.`,
-      ]
-      const feedback = redirects[Math.floor(Math.random() * redirects.length)]
+      const redirects: Record<string, string[]> = {
+        en: [
+          "Got it! Sounds like you're all set — go ahead and answer the question.",
+          "Loud and clear! Take your time and answer whenever you're ready.",
+          "I can hear you! Go ahead with your answer.",
+        ],
+        fr: [
+          "Je vous entends bien ! Prenez votre temps et répondez quand vous êtes prêt.",
+          "Très bien ! Allez-y avec votre réponse.",
+          "Parfait, je vous entends ! Vous pouvez répondre à la question.",
+        ],
+        es: [
+          "¡Te escucho bien! Tómate tu tiempo y responde cuando estés listo.",
+          "¡Perfecto! Adelante con tu respuesta.",
+          "¡Puedo escucharte! Responde la pregunta cuando quieras.",
+        ],
+        ar: [
+          "أسمعك بوضوح! خذ وقتك وأجب على السؤال.",
+          "ممتاز، أسمعك! تفضل بالإجابة.",
+          "سمعتك! يمكنك الإجابة على السؤال الآن.",
+        ],
+      }
+      const pool = redirects[language] || redirects.en
+      const feedback = pool[Math.floor(Math.random() * pool.length)]
       return NextResponse.json({ feedback, score: null, isRedirect: true })
     }
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 150,
-      system: `You are ${interviewerName}, a real interviewer giving BRIEF spoken feedback.
+      system: `You are ${interviewerName}, a ${interviewerTitle} giving brief spoken feedback.
 
-CRITICAL RULES:
+CRITICAL: You MUST respond entirely in ${languageName}. Every single word must be in ${languageName}.
+
+Rules:
 - Maximum ONE short sentence. Never more.
-- Sound like a real person talking casually, not a corporate email.
-- No filler openers like "Great answer!", "That's a solid point!", "Excellent!"
-- Just react naturally to what they said, then give ONE concrete tip or acknowledgment.
+- Sound like a real person talking, not a corporate email.
+- No filler openers ("Great answer!", "That's excellent!")
+- React naturally to what they said + give ONE concrete tip.
 - Return ONLY valid JSON: {"feedback": "one sentence here", "score": 7}
 - Score 1-10: 1-3 poor, 4-6 okay, 7-8 good, 9-10 excellent.
 
-Examples of GOOD feedback (natural, short):
-{"feedback": "You explained the concept clearly — next time add a concrete example to make it stick.", "score": 7}
-{"feedback": "Solid answer, though I'd like to hear more about how you measured the outcome.", "score": 6}
-{"feedback": "That's exactly the kind of ownership mindset we look for.", "score": 9}
-
-Examples of BAD feedback (too long, too formal — DO NOT do this):
-"That was a wonderful response that demonstrated excellent communication skills and leadership..."`,
+Good examples (${languageName}, short, natural):
+${language === 'fr'
+  ? '{"feedback": "Bonne réponse — la prochaine fois, donnez un exemple concret pour illustrer.", "score": 7}'
+  : language === 'es'
+  ? '{"feedback": "Buena respuesta — la próxima vez, da un ejemplo concreto.", "score": 7}'
+  : language === 'ar'
+  ? '{"feedback": "إجابة جيدة — في المرة القادمة، أضف مثالاً ملموساً.", "score": 7}'
+  : '{"feedback": "Solid point — next time add a concrete example to make it land.", "score": 7}'}`,
       messages: [
         {
           role: 'user',
@@ -94,23 +133,19 @@ Examples of BAD feedback (too long, too formal — DO NOT do this):
 
     const rawText = response.content[0].type === 'text' ? response.content[0].text.trim() : ''
 
-    let feedback = 'Got it, let\'s keep going.'
+    let feedback = language === 'fr' ? "Très bien, continuons." :
+                   language === 'es' ? "Bien, sigamos." :
+                   language === 'ar' ? "حسناً، لنكمل." : "Got it, let's keep going."
     let score = 6.0
 
-    // Extract JSON — handle ``` code blocks and extra whitespace
     const cleaned = rawText.replace(/```json\s*/gi, '').replace(/```/g, '').trim()
     const jsonMatch = cleaned.match(/\{[^{}]*"feedback"[^{}]*"score"[^{}]*\}/)
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[0])
-        if (parsed.feedback && typeof parsed.feedback === 'string') {
-          feedback = parsed.feedback.trim()
-        }
-        if (typeof parsed.score === 'number' && parsed.score >= 1 && parsed.score <= 10) {
-          score = parsed.score
-        }
+        if (parsed.feedback && typeof parsed.feedback === 'string') feedback = parsed.feedback.trim()
+        if (typeof parsed.score === 'number' && parsed.score >= 1 && parsed.score <= 10) score = parsed.score
       } catch {
-        // fallback: try to extract feedback string directly
         const fbMatch = rawText.match(/"feedback"\s*:\s*"([^"]+)"/)
         if (fbMatch) feedback = fbMatch[1]
         const scMatch = rawText.match(/"score"\s*:\s*(\d+(?:\.\d+)?)/)
@@ -118,7 +153,6 @@ Examples of BAD feedback (too long, too formal — DO NOT do this):
       }
     }
 
-    // Save to DB
     if (questionId) {
       await supabase
         .from('voice_session_qa')
