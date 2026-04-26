@@ -206,6 +206,17 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   // Progress capped at 100%
   const progressPercent = Math.min(100, Math.round((questionCount / maxQuestions) * 100))
 
+  // ── Toast deduplication ────────────────────────────────────────────────────
+  const shownToasts = useRef<Set<string>>(new Set())
+
+  const showUniqueToast = useCallback((id: string, fn: () => void) => {
+    if (shownToasts.current.has(id)) return
+    shownToasts.current.add(id)
+    toast.dismiss()
+    fn()
+    setTimeout(() => shownToasts.current.delete(id), 5000)
+  }, [])
+
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [transcript, liveCaption])
@@ -245,9 +256,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     timerRef.current = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) { handleEndSession('completed'); return 0 }
-        if (prev === 120) toast('⏰ 2 minutes remaining!', { duration: 3000, style: { background: '#1c2128', color: '#facc15', border: '1px solid #ca8a04' } })
-        if (prev === 60)  toast('⏰ 1 minute remaining!',  { duration: 3000, style: { background: '#1c2128', color: '#f97316', border: '1px solid #ea580c' } })
-        if (prev === 30)  toast('⏰ 30 seconds left!',     { duration: 3000, style: { background: '#1c2128', color: '#ef4444', border: '1px solid #dc2626' } })
         return prev - 1
       })
     }, 1000)
@@ -316,7 +324,8 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     // Hard question limit — end interview gracefully instead of continuing
     const nextCount = questionCount + 1
     if (nextCount > maxQuestions) {
-      toast('🎉 Interview complete!', { duration: 2000, style: { background: '#1c2128', color: '#86efac', border: '1px solid #16a34a' } })
+      toast.dismiss()
+      toast.success('🎉 Interview complete!', { duration: 3000, style: { background: '#065f46', color: '#fff', border: '1px solid #059669' } })
       handleEndSession('completed')
       return
     }
@@ -390,9 +399,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       mr.start(100)
       setIsRecording(true)
       setPhase('recording-answer')
-      toast('🎙️ Recording started...', { duration: 1500, style: { background: '#1c2128', color: '#e2e8f0', border: '1px solid #6d28d9' } })
     } catch {
-      toast.error('Microphone access denied.')
+      toast.dismiss()
+      toast.error('Microphone error. Please try again.', { duration: 4000 })
     }
   }
 
@@ -434,7 +443,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         return
       }
 
-      toast('✅ Answer recorded!', { duration: 1500, style: { background: '#1c2128', color: '#86efac', border: '1px solid #16a34a' } })
+      showUniqueToast('answer-recorded', () =>
+        toast.success('Answer recorded!', { duration: 2000, icon: '✅', style: { background: '#065f46', color: '#fff', border: '1px solid #059669' } })
+      )
       setCurrentQuestionEntryId(null) // question is now answered — show full text in transcript
 
       addToTranscript({
@@ -446,7 +457,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       })
 
       setStatusText('Getting feedback...')
-      toast('💡 Feedback incoming...', { duration: 1500, style: { background: '#1c2128', color: '#93c5fd', border: '1px solid #2563eb' } })
 
       const feedbackRes = await fetch('/api/interview/voice/feedback', {
         method: 'POST',
@@ -634,7 +644,28 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
   return (
     <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 2000,
+          style: { background: '#1f2937', color: '#fff', border: '1px solid #374151' },
+        }}
+        containerStyle={{ top: 20 }}
+      />
+
+      {/* ── Time warning banner (replaces time toasts) ────────────────────── */}
+      {timeRemaining > 0 && timeRemaining <= 60 && phase !== 'completed' && (
+        <div className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-2 text-sm font-medium transition-all duration-300 ${
+          timeRemaining <= 30
+            ? 'bg-red-600/90 text-white animate-pulse'
+            : 'bg-yellow-600/90 text-white'
+        }`}>
+          ⏰ {timeRemaining <= 30
+            ? `${timeRemaining} seconds remaining!`
+            : '1 minute remaining!'
+          }
+        </div>
+      )}
 
       {/* ── TOP BAR ──────────────────────────────────────────────────────── */}
       <div className="flex-shrink-0 bg-gray-900 border-b border-white/5 px-4 py-2.5">
