@@ -282,19 +282,31 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         }),
       })
 
-      let feedbackText = 'Thank you for your answer. Let\'s move on to the next question.'
+      let feedbackText = "Got it, let's keep going."
+      let isRedirect = false
       if (feedbackRes.ok) {
         const feedbackData = await feedbackRes.json()
         feedbackText = feedbackData.feedback || feedbackText
+        isRedirect = feedbackData.isRedirect === true
       }
 
-      // Save to previous answers for context
+      setStatusText('')
+
+      // If it was a mic test / redirect, speak the nudge and stay on the same question
+      if (isRedirect) {
+        await speakText(feedbackText, currentQuestion.interviewer.voice, 'speaking-feedback')
+        if (!sessionEndedRef.current) {
+          setQuestionCount(prev => prev - 1) // don't count this as a real question
+          setPhase('waiting-for-answer')
+        }
+        return
+      }
+
+      // Save to previous answers for context (only real answers)
       previousAnswersRef.current = [
         ...previousAnswersRef.current,
         { question: currentQuestion.question, answer: transcript },
       ]
-
-      setStatusText('')
 
       // Speak feedback aloud, then generate next question
       await speakText(feedbackText, currentQuestion.interviewer.voice, 'speaking-feedback')
