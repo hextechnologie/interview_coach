@@ -40,6 +40,20 @@ interface TranscriptEntry {
 
 interface PreviousAnswer { question: string; answer: string }
 
+const INTERVIEW_TIPS = [
+  'Use the STAR method: Situation, Task, Action, Result',
+  "Take a breath before answering — it's okay to pause",
+  'Be specific — use real numbers and concrete examples',
+  "It's okay to say \"I don't know\" — follow with what you would do",
+  'Speak clearly and at a moderate pace',
+  'Structure your answer: Context → Challenge → Solution → Impact',
+  'Listen carefully to the full question before answering',
+  'Keep answers focused — 90 seconds to 2 minutes is ideal',
+]
+
+const TRANSCRIPT_TRUNCATE = 60
+const QUESTION_MAX_CHARS = 200
+
 type Phase =
   | 'loading' | 'intro'
   | 'generating-question' | 'speaking-question'
@@ -138,6 +152,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const [activeSpeakerId, setActiveSpeakerId] = useState<string | null>(null)
   const [statusText, setStatusText] = useState('')
   const [showTranscriptMobile, setShowTranscriptMobile] = useState(false)
+  const [currentQuestionEntryId, setCurrentQuestionEntryId] = useState<string | null>(null)
+  const [tipIndex, setTipIndex] = useState(0)
+  const [expandedQuestion, setExpandedQuestion] = useState(false)
 
   // mic state
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -161,6 +178,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [transcript, liveCaption])
+
+  // ── Rotating tips ──────────────────────────────────────────────────────────
+  useEffect(() => {
+    const t = setInterval(() => setTipIndex(i => (i + 1) % INTERVIEW_TIPS.length), 15000)
+    return () => clearInterval(t)
+  }, [])
 
   // ── Fetch session ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -238,8 +261,13 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     setActiveSpeakerId(null)
   }
 
-  function addToTranscript(entry: Omit<TranscriptEntry, 'id'>) {
-    setTranscript(prev => [...prev, { ...entry, id: Math.random().toString(36).slice(2) }])
+  function addToTranscript(entry: Omit<TranscriptEntry, 'id'>, markAsCurrent = false) {
+    const id = Math.random().toString(36).slice(2)
+    setTranscript(prev => [...prev, { ...entry, id }])
+    if (markAsCurrent) {
+      setCurrentQuestionEntryId(id)
+      setExpandedQuestion(false)
+    }
   }
 
   // ── Generate next question ─────────────────────────────────────────────────
@@ -283,7 +311,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         speakerName: interviewer.name,
         speakerAvatar: interviewer.avatar,
         text: data.question,
-      })
+      }, true /* markAsCurrent */)
 
       await speakText(data.question, interviewer.voice, interviewer.id, 'speaking-question')
       if (!sessionEndedRef.current) {
@@ -361,6 +389,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       }
 
       toast('✅ Answer recorded!', { duration: 1500, style: { background: '#1c2128', color: '#86efac', border: '1px solid #16a34a' } })
+      setCurrentQuestionEntryId(null) // question is now answered — show full text in transcript
 
       addToTranscript({
         role: 'user',
@@ -721,7 +750,21 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                       className="mt-5 p-4 bg-gray-800/60 rounded-xl border border-purple-500/20 text-left"
                     >
                       <span className="text-xs text-purple-400 font-semibold">Question {questionCount}</span>
-                      <p className="text-sm text-gray-100 mt-1.5 leading-relaxed">{currentQuestion.question}</p>
+                      <p className="text-sm text-gray-100 mt-1.5 leading-relaxed">
+                        {currentQuestion.question.length > QUESTION_MAX_CHARS && !expandedQuestion
+                          ? <>
+                              {currentQuestion.question.slice(0, QUESTION_MAX_CHARS)}
+                              <span className="text-gray-500">...</span>
+                              <button
+                                onClick={() => setExpandedQuestion(true)}
+                                className="text-purple-400 text-xs ml-1 hover:underline"
+                              >
+                                Show more
+                              </button>
+                            </>
+                          : currentQuestion.question
+                        }
+                      </p>
                     </motion.div>
                   )}
                   {isAIThinking && (
@@ -768,80 +811,114 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                 </motion.div>
               )}
             </div>
+
+            {/* ── Live Tips card ──────────────────────────────────────── */}
+            <div className="mt-3 rounded-xl bg-gray-900 border-l-4 border-purple-600 border border-white/5 px-4 py-3 flex items-start gap-3">
+              <span className="text-lg flex-shrink-0 mt-0.5">💡</span>
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-purple-400 mb-1">Interview Tip</div>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={tipIndex}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-xs text-gray-400 leading-relaxed"
+                  >
+                    {INTERVIEW_TIPS[tipIndex]}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </div>
           </div>
 
           {/* ── BOTTOM CONTROLS ──────────────────────────────────────────── */}
-          <div className="flex-shrink-0 bg-gray-900/80 backdrop-blur rounded-2xl border border-white/5 px-4 py-4">
-            <div className="flex items-center justify-center gap-3">
+          <div className="flex-shrink-0 bg-gray-900/80 backdrop-blur rounded-2xl border border-white/5 px-4 py-3">
+            <div className="flex items-end justify-center gap-4">
 
-              {/* TTS mute (visible here too for clarity) */}
+              {/* Mute button with label */}
               <button
                 onClick={() => setTtsEnabled(v => !v)}
-                className="w-11 h-11 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+                className="flex flex-col items-center gap-1 group"
                 title={ttsEnabled ? 'Mute AI voice' : 'Unmute AI voice'}
               >
-                {ttsEnabled
-                  ? <Volume2 className="w-5 h-5 text-gray-300" />
-                  : <VolumeX className="w-5 h-5 text-gray-500" />}
+                <div className="w-11 h-11 rounded-full bg-gray-800 group-hover:bg-gray-700 flex items-center justify-center transition-colors">
+                  {ttsEnabled
+                    ? <Volume2 className="w-5 h-5 text-gray-300" />
+                    : <VolumeX className="w-5 h-5 text-gray-500" />}
+                </div>
+                <span className="text-xs text-gray-500">{ttsEnabled ? 'Mute' : 'Unmute'}</span>
               </button>
 
               {/* Main speak button */}
-              {canRecord && !isUserRecording && (
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={startRecording}
-                  className="flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 font-semibold text-white shadow-lg shadow-purple-900/40 transition-all"
-                >
-                  <Mic className="w-5 h-5" />
-                  Start Speaking
-                </motion.button>
-              )}
+              <div className="flex flex-col items-center gap-1">
+                {canRecord && !isUserRecording && (
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={startRecording}
+                    className="flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 font-semibold text-white shadow-lg shadow-purple-900/40 transition-all"
+                  >
+                    <Mic className="w-5 h-5" />
+                    Start Speaking
+                  </motion.button>
+                )}
+                {isUserRecording && (
+                  <motion.button
+                    animate={{ boxShadow: ['0 0 0 0 rgba(239,68,68,0.4)', '0 0 0 12px rgba(239,68,68,0)', '0 0 0 0 rgba(239,68,68,0)'] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                    onClick={stopRecording}
+                    className="flex items-center gap-2 px-8 py-3 rounded-full bg-red-600 hover:bg-red-500 font-semibold text-white shadow-lg"
+                  >
+                    <span className="w-3 h-3 rounded-sm bg-white" />
+                    Stop &nbsp;
+                    <RecordingTimer isRecording={isUserRecording} />
+                  </motion.button>
+                )}
+                {isUserProcessing && (
+                  <div className="flex items-center gap-2 px-8 py-3 rounded-full bg-gray-800 text-gray-400 font-semibold cursor-not-allowed">
+                    <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 1 }}>⏳</motion.span>
+                    Processing...
+                  </div>
+                )}
+              </div>
 
-              {isUserRecording && (
-                <motion.button
-                  animate={{ boxShadow: ['0 0 0 0 rgba(239,68,68,0.4)', '0 0 0 12px rgba(239,68,68,0)', '0 0 0 0 rgba(239,68,68,0)'] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                  onClick={stopRecording}
-                  className="flex items-center gap-2 px-8 py-3 rounded-full bg-red-600 hover:bg-red-500 font-semibold text-white shadow-lg"
+              {/* Skip question with label */}
+              {phase === 'waiting-for-answer' ? (
+                <button
+                  onClick={() => generateNextQuestion()}
+                  className="flex flex-col items-center gap-1 group"
+                  title="Skip question"
                 >
-                  <span className="w-3 h-3 rounded-sm bg-white" />
-                  Stop &nbsp;
-                  <RecordingTimer isRecording={isUserRecording} />
-                </motion.button>
-              )}
-
-              {isUserProcessing && (
-                <div className="flex items-center gap-2 px-8 py-3 rounded-full bg-gray-800 text-gray-400 font-semibold cursor-not-allowed">
-                  <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 1 }}>⏳</motion.span>
-                  Processing...
+                  <div className="w-11 h-11 rounded-full bg-gray-800 group-hover:bg-gray-700 flex items-center justify-center transition-colors">
+                    <SkipForward className="w-4 h-4 text-gray-500 group-hover:text-gray-300" />
+                  </div>
+                  <span className="text-xs text-gray-500">Skip</span>
+                </button>
+              ) : (
+                /* placeholder to keep layout stable */
+                <div className="w-11 opacity-0 pointer-events-none flex flex-col items-center gap-1">
+                  <div className="w-11 h-11 rounded-full" />
+                  <span className="text-xs">Skip</span>
                 </div>
               )}
 
-              {/* Skip question */}
-              {phase === 'waiting-for-answer' && (
-                <button
-                  onClick={() => generateNextQuestion()}
-                  className="w-11 h-11 rounded-full bg-gray-800 hover:bg-gray-700 flex flex-col items-center justify-center transition-colors text-gray-500 hover:text-gray-300"
-                  title="Skip question"
-                >
-                  <SkipForward className="w-4 h-4" />
-                </button>
-              )}
-
-              {/* End interview */}
+              {/* End button with label */}
               <button
                 onClick={() => confirm('End interview early?') && handleEndSession('cancelled')}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-red-500/40 text-red-400 hover:bg-red-900/30 text-sm transition-colors"
+                className="flex flex-col items-center gap-1 group"
               >
-                <PhoneOff className="w-4 h-4" />
-                End
+                <div className="w-11 h-11 rounded-full bg-red-900/30 group-hover:bg-red-900/50 border border-red-500/30 flex items-center justify-center transition-colors">
+                  <PhoneOff className="w-4 h-4 text-red-400" />
+                </div>
+                <span className="text-xs text-red-400">End</span>
               </button>
             </div>
 
             {/* Voice wave when recording */}
             {isUserRecording && (
-              <div className="flex justify-center mt-3">
+              <div className="flex justify-center mt-2">
                 <VoiceWave isActive color="red" />
               </div>
             )}
@@ -909,6 +986,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                       )
                     }
                     // interviewer question
+                    const isCurrent = entry.id === currentQuestionEntryId
+                    const displayText = isCurrent && entry.text.length > TRANSCRIPT_TRUNCATE
+                      ? entry.text.slice(0, TRANSCRIPT_TRUNCATE) + '...'
+                      : entry.text
                     return (
                       <motion.div key={entry.id}
                         initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
@@ -917,9 +998,16 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                         <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
                           {entry.speakerAvatar}
                         </div>
-                        <div className="bg-gray-800 rounded-2xl rounded-tl-sm px-3 py-2 max-w-[82%]">
-                          <span className="text-xs text-purple-400 font-medium">Question</span>
-                          <p className="text-xs text-gray-200 mt-0.5 leading-relaxed">{entry.text}</p>
+                        <div className={`bg-gray-800 rounded-2xl rounded-tl-sm px-3 py-2 max-w-[82%] ${isCurrent ? 'border border-purple-500/30' : ''}`}>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-xs text-purple-400 font-medium">Question</span>
+                            {isCurrent && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/25 text-purple-300 font-semibold leading-none">
+                                Current
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-200 leading-relaxed">{displayText}</p>
                         </div>
                       </motion.div>
                     )
