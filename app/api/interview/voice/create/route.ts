@@ -106,7 +106,12 @@ export async function POST(req: NextRequest) {
           .eq('user_id', user.id)
       }
 
-      return NextResponse.json({ error: 'Failed to create voice session' }, { status: 500 })
+      // Surface the real DB error so it's visible in the browser alert
+      const dbMsg = (sessionError as { message?: string })?.message || 'unknown DB error'
+      return NextResponse.json(
+        { error: `Failed to create voice session: ${dbMsg}` },
+        { status: 500 }
+      )
     }
 
     // Increment interviews_used_this_month
