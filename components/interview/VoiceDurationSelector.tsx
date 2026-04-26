@@ -1,6 +1,8 @@
 'use client'
 
 import { Clock, Coins } from 'lucide-react'
+import { calculateCreditsRequired, checkCreditsForVoiceInterview } from '@/lib/credits'
+export { calculateCreditsRequired, checkCreditsForVoiceInterview }
 
 export interface DurationOption {
   minutes: number
@@ -147,20 +149,3 @@ export default function VoiceDurationSelector({
   )
 }
 
-export function calculateCreditsRequired(durationMinutes: number): number {
-  if (durationMinutes === 5) return 0
-  return (durationMinutes / 15) * 10
-}
-
-export function checkCreditsForVoiceInterview(
-  duration: number,
-  userCredits: number
-): { canStart: boolean; creditsNeeded: number } {
-  if (duration === 5) return { canStart: true, creditsNeeded: 0 }
-  
-  const required = calculateCreditsRequired(duration)
-  return {
-    canStart: userCredits >= required,
-    creditsNeeded: Math.max(0, required - userCredits)
-  }
-}

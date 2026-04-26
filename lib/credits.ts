@@ -94,6 +94,29 @@ export async function getCreditPackages(): Promise<CreditPackage[]> {
 }
 
 /**
+ * Calculate credits required for a voice interview duration
+ */
+export function calculateCreditsRequired(durationMinutes: number): number {
+  if (durationMinutes === 5) return 0
+  return (durationMinutes / 15) * 10
+}
+
+/**
+ * Check if user has enough credits for a voice interview duration
+ */
+export function checkCreditsForVoiceInterview(
+  duration: number,
+  userCredits: number
+): { canStart: boolean; creditsNeeded: number } {
+  if (duration === 5) return { canStart: true, creditsNeeded: 0 }
+  const required = calculateCreditsRequired(duration)
+  return {
+    canStart: userCredits >= required,
+    creditsNeeded: Math.max(0, required - userCredits),
+  }
+}
+
+/**
  * Calculate credits cost for a session
  */
 export function calculateSessionCreditsCost(
