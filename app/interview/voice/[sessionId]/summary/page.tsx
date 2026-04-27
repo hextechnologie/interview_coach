@@ -135,7 +135,7 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
 
   // Calculate stats
   const averageScore = qaRecords.length > 0
-    ? qaRecords.reduce((sum, qa) => sum + (qa.score || 0), 0) / qaRecords.length
+    ? qaRecords.reduce((sum, qa) => sum + Number(qa.score || 0), 0) / qaRecords.length
     : 0
 
   // Group by interviewer
@@ -145,7 +145,7 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
 
     const questions = qaRecords.filter(qa => qa.interviewer_id === interviewerId)
     const averageScore = questions.length > 0
-      ? questions.reduce((sum, qa) => sum + (qa.score || 0), 0) / questions.length
+      ? questions.reduce((sum, qa) => sum + Number(qa.score || 0), 0) / questions.length
       : 0
 
     return {
@@ -180,7 +180,8 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
     return 'Keep Practicing 💪'
   }
 
-  function cleanQuestion(text: string): string {
+  function cleanQuestion(text: string | null | undefined): string {
+    if (!text || typeof text !== 'string') return ''
     const prefixes = [
       /^got it[.,!]?\s*/i,
       /^good answer[.,!]?\s*/i,
@@ -205,7 +206,8 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
   function getBarHeight(score: number): number {
     const MIN_HEIGHT = 24
     const MAX_HEIGHT = 80
-    const normalized = Math.min(10, Math.max(1, score || 1))
+    const safeScore = Number.isFinite(score) ? score : 1
+    const normalized = Math.min(10, Math.max(1, safeScore || 1))
     return MIN_HEIGHT + ((normalized - 1) / 9) * (MAX_HEIGHT - MIN_HEIGHT)
   }
 
@@ -268,7 +270,7 @@ ${'='.repeat(50)}
     return feedback.replace(/^["']|["']$/g, '').trim()
   }
 
-  const questionScores = qaRecords.map((qa) => qa.score || 0)
+  const questionScores = qaRecords.map((qa) => Number(qa.score || 0))
   const qaWithFeedbackData = qaRecords.map((qa) => ({
     ...qa,
     feedbackData: parseFeedbackData(qa),
@@ -310,12 +312,18 @@ ${'='.repeat(50)}
   const practiceRecommendations = getPracticeRecommendations(qaRecords)
 
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof requestAnimationFrame === 'undefined') {
+      setAnimatedScore(Math.max(0, Math.min(10, averageScore)))
+      return
+    }
+
     const target = Math.max(0, Math.min(10, averageScore))
     const durationMs = 1200
-    const start = performance.now()
+    const start = typeof performance !== 'undefined' ? performance.now() : Date.now()
 
     const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / durationMs)
+      const nowTs = typeof performance !== 'undefined' ? now : Date.now()
+      const progress = Math.min(1, (nowTs - start) / durationMs)
       // Ease-out cubic for smoother finish.
       const eased = 1 - Math.pow(1 - progress, 3)
       setAnimatedScore(target * eased)
