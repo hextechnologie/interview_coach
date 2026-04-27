@@ -47,6 +47,15 @@ interface InterviewerStats {
   averageScore: number
 }
 
+function toSafeScore(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  return 0
+}
+
 export default function VoiceInterviewSummary({ params }: { params: { sessionId: string } }) {
   const router = useRouter()
   const [session, setSession] = useState<VoiceSession | null>(null)
@@ -104,6 +113,34 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
     fetchResults()
   }, [params.sessionId, router, supabase])
 
+  // Keep hook order stable across loading/error/success renders.
+  const averageScore = qaRecords.length > 0
+    ? qaRecords.reduce((sum, qa) => sum + toSafeScore(qa.score), 0) / qaRecords.length
+    : 0
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof requestAnimationFrame === 'undefined') {
+      setAnimatedScore(Math.max(0, Math.min(10, averageScore)))
+      return
+    }
+
+    const safeAverageScore = toSafeScore(averageScore)
+    const target = Math.max(0, Math.min(10, safeAverageScore))
+    const durationMs = 1200
+    const start = typeof performance !== 'undefined' ? performance.now() : Date.now()
+
+    const tick = (now: number) => {
+      const nowTs = typeof performance !== 'undefined' ? now : Date.now()
+      const progress = Math.min(1, (nowTs - start) / durationMs)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setAnimatedScore(target * eased)
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+
+    setAnimatedScore(0)
+    requestAnimationFrame(tick)
+  }, [averageScore])
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
@@ -133,11 +170,6 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
     )
   }
 
-  // Calculate stats
-  const averageScore = qaRecords.length > 0
-    ? qaRecords.reduce((sum, qa) => sum + Number(qa.score || 0), 0) / qaRecords.length
-    : 0
-
   // Group by interviewer
   const interviewerStats: InterviewerStats[] = session.interviewers.map(interviewerId => {
     const interviewer = INTERVIEWERS.find(i => i.id === interviewerId)
@@ -145,7 +177,7 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
 
     const questions = qaRecords.filter(qa => qa.interviewer_id === interviewerId)
     const averageScore = questions.length > 0
-      ? questions.reduce((sum, qa) => sum + Number(qa.score || 0), 0) / questions.length
+      ? questions.reduce((sum, qa) => sum + toSafeScore(qa.score), 0) / questions.length
       : 0
 
     return {
@@ -270,7 +302,7 @@ ${'='.repeat(50)}
     return feedback.replace(/^["']|["']$/g, '').trim()
   }
 
-  const questionScores = qaRecords.map((qa) => Number(qa.score || 0))
+  const questionScores = qaRecords.map((qa) => toSafeScore(qa.score))
   const qaWithFeedbackData = qaRecords.map((qa) => ({
     ...qa,
     feedbackData: parseFeedbackData(qa),
@@ -310,29 +342,6 @@ ${'='.repeat(50)}
   }
 
   const practiceRecommendations = getPracticeRecommendations(qaRecords)
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof requestAnimationFrame === 'undefined') {
-      setAnimatedScore(Math.max(0, Math.min(10, averageScore)))
-      return
-    }
-
-    const target = Math.max(0, Math.min(10, averageScore))
-    const durationMs = 1200
-    const start = typeof performance !== 'undefined' ? performance.now() : Date.now()
-
-    const tick = (now: number) => {
-      const nowTs = typeof performance !== 'undefined' ? now : Date.now()
-      const progress = Math.min(1, (nowTs - start) / durationMs)
-      // Ease-out cubic for smoother finish.
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setAnimatedScore(target * eased)
-      if (progress < 1) requestAnimationFrame(tick)
-    }
-
-    setAnimatedScore(0)
-    requestAnimationFrame(tick)
-  }, [averageScore])
 
   function shareOnLinkedIn() {
     const score = averageScore.toFixed(1)
@@ -375,7 +384,7 @@ ${'='.repeat(50)}
                   strokeLinecap="round"
                   strokeDasharray="339"
                   initial={{ strokeDashoffset: 339 }}
-                  animate={{ strokeDashoffset: 339 - (averageScore / 10) * 339 }}
+                  animate={{ strokeDashoffset: 339 - (toSafeScore(averageScore) / 10) * 339 }}
                   transition={{ duration: 1.4, ease: 'easeOut' }}
                 />
               </svg>
@@ -540,11 +549,12 @@ ${'='.repeat(50)}
           <div className="space-y-6">
             {qaRecords.map((qa, index) => {
               const interviewer = INTERVIEWERS.find(i => i.id === qa.interviewer_id)
-              const scoreClasses = qa.score >= 7
+              const qaScore = toSafeScore(qa.score)
+              const scoreClasses = qaScore >= 7
                 ? 'bg-green-900/40 border-green-500/40 text-green-400'
-                : qa.score >= 6
+                : qaScore >= 6
                   ? 'bg-yellow-900/40 border-yellow-500/40 text-yellow-400'
-                  : qa.score >= 4
+                  : qaScore >= 4
                     ? 'bg-orange-900/40 border-orange-500/40 text-orange-400'
                   : 'bg-red-900/40 border-red-500/40 text-red-400'
               return (
@@ -562,7 +572,7 @@ ${'='.repeat(50)}
                       </div>
                     </div>
                     <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full border font-bold text-sm ${scoreClasses}`}>
-                      {qa.score}/10
+                      {qaScore}/10
                     </div>
                   </div>
 
