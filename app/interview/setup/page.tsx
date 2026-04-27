@@ -827,10 +827,10 @@ export default function InterviewSetupPage() {
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                      { code: 'en', label: 'English', flag: '🇬🇧' },
-                      { code: 'fr', label: 'Français', flag: '🇫🇷' },
-                      { code: 'es', label: 'Español', flag: '🇪🇸' },
-                      { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+                      { code: 'en', label: 'English' },
+                      { code: 'fr', label: 'Français' },
+                      { code: 'es', label: 'Español' },
+                      { code: 'ar', label: 'العربية' },
                     ].map(lang => (
                       <button
                         key={lang.code}
@@ -842,7 +842,6 @@ export default function InterviewSetupPage() {
                             : 'border-border bg-card/40 text-gray-400 hover:border-gray-500'
                         }`}
                       >
-                        <span className="text-lg">{lang.flag}</span>
                         <span>{lang.label}</span>
                       </button>
                     ))}
