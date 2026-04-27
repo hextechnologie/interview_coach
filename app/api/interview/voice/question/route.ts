@@ -19,19 +19,27 @@ const LANGUAGE_NAMES: Record<string, string> = {
 
 function cleanQuestion(question: string): string {
   const prefixesToRemove = [
-    /^got it[.,]?\s*/i,
-    /^good answer[.,]?\s*/i,
-    /^interesting[.,]?\s*/i,
-    /^i see[.,]?\s*/i,
-    /^that'?s? (correct|right|great|good|nice)[.,]?\s*/i,
-    /^perfect[.,]?\s*/i,
-    /^excellent[.,]?\s*/i,
-    /^noted[.,]?\s*/i,
+    /^got it[.,!]?\s*/i,
+    /^good answer[.,!]?\s*/i,
+    /^great answer[.,!]?\s*/i,
+    /^interesting[.,!]?\s*/i,
+    /^i see[.,!]?\s*/i,
+    /^noted[.,!]?\s*/i,
+    /^perfect[.,!]?\s*/i,
+    /^excellent[.,!]?\s*/i,
+    /^that'?s? (correct|right|great|good|nice)[.,!]?\s*/i,
   ]
 
-  let cleaned = question.trim()
+  let cleaned = question
+    .replace(/^["'`]+/, '')
+    .replace(/^[-–—:\s]+/, '')
+    .trim()
+
   for (const prefix of prefixesToRemove) {
-    cleaned = cleaned.replace(prefix, '')
+    // Repeat removal in case Claude chains multiple acknowledgements.
+    while (prefix.test(cleaned)) {
+      cleaned = cleaned.replace(prefix, '').trim()
+    }
   }
 
   if (!cleaned) return ''

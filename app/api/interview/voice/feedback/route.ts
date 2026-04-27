@@ -102,27 +102,28 @@ export async function POST(req: NextRequest) {
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 150,
+      max_tokens: 300,
       system: `You are ${interviewerName}, a ${interviewerTitle} giving brief spoken feedback.
 
 CRITICAL: You MUST respond entirely in ${languageName}. Every single word must be in ${languageName}.
 
 Rules:
-- Maximum ONE short sentence. Never more.
-- Sound like a real person talking, not a corporate email.
+- Sound like a real person talking while staying concise.
 - No filler openers ("Great answer!", "That's excellent!")
 - React naturally to what they said + give ONE concrete tip.
-- Return ONLY valid JSON: {"feedback": "one sentence here", "score": 7}
+- Return ONLY valid JSON in this exact shape:
+  {"feedback":"one sentence","score":7,"strengths":["..."],"improvements":["..."]}
+- strengths and improvements must each be 1-2 short items.
 - Score 1-10: 1-3 poor, 4-6 okay, 7-8 good, 9-10 excellent.
 
-Good examples (${languageName}, short, natural):
+Good examples (${languageName}, short, natural, valid JSON):
 ${language === 'fr'
-  ? '{"feedback": "Bonne réponse — la prochaine fois, donnez un exemple concret pour illustrer.", "score": 7}'
+  ? '{"feedback":"Bonne réponse — la prochaine fois, donnez un exemple concret.","score":7,"strengths":["Réponse claire"],"improvements":["Ajouter un résultat chiffré"]}'
   : language === 'es'
-  ? '{"feedback": "Buena respuesta — la próxima vez, da un ejemplo concreto.", "score": 7}'
+  ? '{"feedback":"Buena respuesta — la próxima vez, da un ejemplo concreto.","score":7,"strengths":["Respuesta clara"],"improvements":["Añadir un resultado medible"]}'
   : language === 'ar'
-  ? '{"feedback": "إجابة جيدة — في المرة القادمة، أضف مثالاً ملموساً.", "score": 7}'
-  : '{"feedback": "Solid point — next time add a concrete example to make it land.", "score": 7}'}`,
+  ? '{"feedback":"إجابة جيدة — في المرة القادمة، أضف مثالاً ملموساً.","score":7,"strengths":["إجابة واضحة"],"improvements":["أضف نتيجة رقمية"]}'
+  : '{"feedback":"Solid point — next time add a concrete example to make it land.","score":7,"strengths":["Clear answer"],"improvements":["Add measurable impact"]}'}`,
       messages: [
         {
           role: 'user',
@@ -137,14 +138,27 @@ ${language === 'fr'
                    language === 'es' ? "Bien, sigamos." :
                    language === 'ar' ? "حسناً، لنكمل." : "Got it, let's keep going."
     let score = 6.0
+    let strengths: string[] = []
+    let improvements: string[] = []
 
     const cleaned = rawText.replace(/```json\s*/gi, '').replace(/```/g, '').trim()
-    const jsonMatch = cleaned.match(/\{[^{}]*"feedback"[^{}]*"score"[^{}]*\}/)
+    const jsonMatch = cleaned.match(/\{[\s\S]*"feedback"[\s\S]*"score"[\s\S]*\}/)
     if (jsonMatch) {
       try {
-        const parsed = JSON.parse(jsonMatch[0])
+        const parsed = JSON.parse(jsonMatch[0]) as {
+          feedback?: unknown
+          score?: unknown
+          strengths?: unknown
+          improvements?: unknown
+        }
         if (parsed.feedback && typeof parsed.feedback === 'string') feedback = parsed.feedback.trim()
         if (typeof parsed.score === 'number' && parsed.score >= 1 && parsed.score <= 10) score = parsed.score
+        if (Array.isArray(parsed.strengths)) {
+          strengths = parsed.strengths.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).slice(0, 3)
+        }
+        if (Array.isArray(parsed.improvements)) {
+          improvements = parsed.improvements.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).slice(0, 3)
+        }
       } catch {
         const fbMatch = rawText.match(/"feedback"\s*:\s*"([^"]+)"/)
         if (fbMatch) feedback = fbMatch[1]
@@ -156,11 +170,11 @@ ${language === 'fr'
     if (questionId) {
       await supabase
         .from('voice_session_qa')
-        .update({ answer, score, feedback })
+        .update({ answer, score, feedback, strengths, improvements })
         .eq('id', questionId)
     }
 
-    return NextResponse.json({ feedback, score })
+    return NextResponse.json({ feedback, score, strengths, improvements })
   } catch (error) {
     console.error('Error generating feedback:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -31,6 +31,8 @@ interface QuestionAnswer {
   score: number
   asked_at: string
   feedback_data?: FeedbackData | null
+  strengths?: string[] | null
+  improvements?: string[] | null
 }
 
 interface FeedbackData {
@@ -153,24 +155,57 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
   }).filter(Boolean) as InterviewerStats[]
 
   function getScoreColor(score: number): string {
-    if (score >= 8) return 'text-green-400'
-    if (score >= 6) return 'text-yellow-400'
-    return 'text-red-400'
-  }
-
-  function getScoreAccent(score: number): string {
-    if (score >= 7) return '#22c55e'
-    if (score >= 5) return '#eab308'
+    if (score >= 8) return '#22c55e'
+    if (score >= 6) return '#eab308'
+    if (score >= 4) return '#f97316'
     return '#ef4444'
   }
 
+  function getScoreTextClass(score: number): string {
+    if (score >= 8) return 'text-green-400'
+    if (score >= 6) return 'text-yellow-400'
+    if (score >= 4) return 'text-orange-400'
+    return 'text-red-400'
+  }
+
   function getScoreLabel(score: number): string {
-    if (score >= 9) return 'Excellent'
-    if (score >= 8) return 'Very Good'
-    if (score >= 7) return 'Good'
-    if (score >= 6) return 'Fair'
-    if (score >= 5) return 'Needs Improvement'
-    return 'Poor'
+    if (score >= 9) return 'Excellent! 🏆'
+    if (score >= 8) return 'Very Good! 👏'
+    if (score >= 7) return 'Good Job! 👍'
+    if (score >= 6) return 'Above Average'
+    if (score >= 5) return 'Average'
+    if (score >= 4) return 'Needs Improvement'
+    if (score >= 3) return 'Needs Work'
+    return 'Keep Practicing 💪'
+  }
+
+  function cleanQuestion(text: string): string {
+    const prefixes = [
+      /^got it[.,!]?\s*/i,
+      /^good answer[.,!]?\s*/i,
+      /^great answer[.,!]?\s*/i,
+      /^interesting[.,!]?\s*/i,
+      /^i see[.,!]?\s*/i,
+      /^noted[.,!]?\s*/i,
+      /^perfect[.,!]?\s*/i,
+      /^excellent[.,!]?\s*/i,
+      /^that'?s? (correct|right|great|good)[.,!]?\s*/i,
+    ]
+    let cleaned = text.trim()
+    for (const prefix of prefixes) {
+      while (prefix.test(cleaned)) {
+        cleaned = cleaned.replace(prefix, '').trim()
+      }
+    }
+    if (!cleaned) return ''
+    return cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
+  }
+
+  function getBarHeight(score: number): number {
+    const MIN_HEIGHT = 24
+    const MAX_HEIGHT = 80
+    const normalized = Math.min(10, Math.max(1, score || 1))
+    return MIN_HEIGHT + ((normalized - 1) / 9) * (MAX_HEIGHT - MIN_HEIGHT)
   }
 
   function downloadTranscript() {
@@ -203,6 +238,13 @@ ${'='.repeat(50)}
   }
 
   function parseFeedbackData(record: QuestionAnswer): FeedbackData {
+    if (Array.isArray(record.strengths) || Array.isArray(record.improvements)) {
+      return {
+        strengths: Array.isArray(record.strengths) ? record.strengths : [],
+        improvements: Array.isArray(record.improvements) ? record.improvements : [],
+      }
+    }
+
     if (record.feedback_data && typeof record.feedback_data === 'object') {
       return record.feedback_data
     }
@@ -285,7 +327,7 @@ ${'='.repeat(50)}
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Overall Score */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -302,7 +344,7 @@ ${'='.repeat(50)}
                   cy="60"
                   r="54"
                   fill="none"
-                  stroke={getScoreAccent(averageScore)}
+                  stroke={getScoreColor(averageScore)}
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${(averageScore / 10) * 339} 339`}
@@ -310,14 +352,14 @@ ${'='.repeat(50)}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className={`text-5xl font-black ${getScoreColor(averageScore)}`}>
+                <span className={`text-5xl font-black ${getScoreTextClass(averageScore)}`}>
                   {averageScore.toFixed(1)}
                 </span>
                 <span className="text-gray-400 text-sm font-medium">/10</span>
               </div>
             </div>
 
-            <h2 className={`text-2xl font-bold mb-1 ${getScoreColor(averageScore)}`}>
+            <h2 className={`text-2xl font-bold mb-1 ${getScoreTextClass(averageScore)}`}>
               {getScoreLabel(averageScore)}
             </h2>
             <p className="text-gray-400 text-sm">
@@ -327,17 +369,17 @@ ${'='.repeat(50)}
             <div className="flex gap-2 mt-4 items-end">
               {questionScores.map((s, i) => (
                 <div key={`${i}-${s}`} className="flex flex-col items-center gap-1">
-                  <span className="text-xs text-gray-400">Q{i + 1}</span>
-                  <div
-                    className="w-8 rounded-t-sm transition-all duration-500"
-                    style={{
-                      height: `${Math.max(16, s * 8)}px`,
-                      backgroundColor: getScoreAccent(s),
-                    }}
-                  />
-                  <span className="text-xs font-medium" style={{ color: getScoreAccent(s) }}>
+                  <span className="text-xs font-bold" style={{ color: getScoreColor(s) }}>
                     {s}
                   </span>
+                  <div
+                    className="w-10 rounded-t-md transition-all duration-700"
+                    style={{
+                      height: `${getBarHeight(s)}px`,
+                      backgroundColor: getScoreColor(s),
+                    }}
+                  />
+                  <span className="text-xs text-gray-400">Q{i + 1}</span>
                 </div>
               ))}
             </div>
@@ -459,8 +501,10 @@ ${'='.repeat(50)}
               const interviewer = INTERVIEWERS.find(i => i.id === qa.interviewer_id)
               const scoreClasses = qa.score >= 7
                 ? 'bg-green-900/40 border-green-500/40 text-green-400'
-                : qa.score >= 5
+                : qa.score >= 6
                   ? 'bg-yellow-900/40 border-yellow-500/40 text-yellow-400'
+                  : qa.score >= 4
+                    ? 'bg-orange-900/40 border-orange-500/40 text-orange-400'
                   : 'bg-red-900/40 border-red-500/40 text-red-400'
               return (
                 <div key={qa.id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-5 hover:border-gray-600/50 transition-colors">
@@ -484,7 +528,7 @@ ${'='.repeat(50)}
                   <div className="mb-4">
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Question</p>
                     <p className="text-gray-200 text-sm leading-relaxed bg-gray-900/40 rounded-lg p-3">
-                      {qa.question}
+                      {cleanQuestion(qa.question)}
                     </p>
                   </div>
 
