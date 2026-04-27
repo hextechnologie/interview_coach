@@ -17,6 +17,27 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ar: 'Arabic',
 }
 
+function cleanQuestion(question: string): string {
+  const prefixesToRemove = [
+    /^got it[.,]?\s*/i,
+    /^good answer[.,]?\s*/i,
+    /^interesting[.,]?\s*/i,
+    /^i see[.,]?\s*/i,
+    /^that'?s? (correct|right|great|good|nice)[.,]?\s*/i,
+    /^perfect[.,]?\s*/i,
+    /^excellent[.,]?\s*/i,
+    /^noted[.,]?\s*/i,
+  ]
+
+  let cleaned = question.trim()
+  for (const prefix of prefixesToRemove) {
+    cleaned = cleaned.replace(prefix, '')
+  }
+
+  if (!cleaned) return ''
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
+}
+
 // ── Similarity guard: returns true if newQ shares >50% meaningful words with any previous Q
 function isTooSimilar(newQ: string, previousQs: string[]): boolean {
   const meaningful = (s: string) =>
@@ -155,7 +176,9 @@ ${previousQList}
 
 Rules:
 - Ask ONE focused question (1-2 sentences max)
-- ${questionNumber === 1 ? 'Start with a brief warm greeting in ' + languageName + ', then ask your first question.' : 'Ask the next question on a completely new topic.'}
+- Ask the next question on a completely new topic.
+- Go DIRECTLY to the question with no preamble.
+- Never start with acknowledgements like "Got it.", "Good answer.", "Interesting.", "I see.", "That's correct.", "Nice.", "Perfect.", or "Great."
 - Return ONLY the question text, nothing else`
 
     // ── Generate with similarity retry (up to 3 attempts) ────────────────────
@@ -164,7 +187,7 @@ Rules:
     const MAX_ATTEMPTS = 3
 
     do {
-      questionText = await askClaude(systemPrompt, contextMessages, questionNumber)
+      questionText = cleanQuestion(await askClaude(systemPrompt, contextMessages, questionNumber))
       attempts++
     } while (
       attempts < MAX_ATTEMPTS &&

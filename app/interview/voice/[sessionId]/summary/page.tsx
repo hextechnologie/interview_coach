@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Button } from '@/components/ui'
 import { INTERVIEWERS, type Interviewer } from '@/lib/interviewers'
+import { motion } from 'framer-motion'
+import { Linkedin } from 'lucide-react'
 
 interface VoiceSession {
   id: string
@@ -25,10 +26,17 @@ interface QuestionAnswer {
   session_id: string
   interviewer_id: string
   question: string
-  answer: string
-  feedback: string
+  answer: string | null
+  feedback: string | null
   score: number
   asked_at: string
+  feedback_data?: FeedbackData | null
+}
+
+interface FeedbackData {
+  strengths?: string[]
+  improvements?: string[]
+  weaknesses?: string[]
 }
 
 interface InterviewerStats {
@@ -111,9 +119,12 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold mb-2">Error Loading Results</h1>
           <p className="text-gray-400 mb-6">{error}</p>
-          <Button onClick={() => router.push('/dashboard')}>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:opacity-90 transition"
+          >
             Return to Dashboard
-          </Button>
+          </button>
         </div>
       </div>
     )
@@ -145,6 +156,12 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
     if (score >= 8) return 'text-green-400'
     if (score >= 6) return 'text-yellow-400'
     return 'text-red-400'
+  }
+
+  function getScoreAccent(score: number): string {
+    if (score >= 7) return '#22c55e'
+    if (score >= 5) return '#eab308'
+    return '#ef4444'
   }
 
   function getScoreLabel(score: number): string {
@@ -185,6 +202,77 @@ ${'='.repeat(50)}
     URL.revokeObjectURL(url)
   }
 
+  function parseFeedbackData(record: QuestionAnswer): FeedbackData {
+    if (record.feedback_data && typeof record.feedback_data === 'object') {
+      return record.feedback_data
+    }
+
+    if (!record.feedback) return {}
+
+    const raw = record.feedback.trim()
+    if (!raw.startsWith('{')) return {}
+
+    try {
+      const parsed = JSON.parse(raw) as FeedbackData
+      return parsed
+    } catch {
+      return {}
+    }
+  }
+
+  function cleanFeedbackText(feedback: string | null): string {
+    if (!feedback) return ''
+    return feedback.replace(/^["']|["']$/g, '').trim()
+  }
+
+  const questionScores = qaRecords.map((qa) => qa.score || 0)
+  const qaWithFeedbackData = qaRecords.map((qa) => ({
+    ...qa,
+    feedbackData: parseFeedbackData(qa),
+  }))
+
+  const allStrengths = qaWithFeedbackData
+    .flatMap((q) => q.feedbackData.strengths || [])
+    .filter(Boolean)
+    .slice(0, 3)
+
+  const allImprovements = qaWithFeedbackData
+    .flatMap((q) => q.feedbackData.improvements || q.feedbackData.weaknesses || [])
+    .filter(Boolean)
+    .slice(0, 3)
+
+  const getPracticeRecommendations = (records: QuestionAnswer[]) => {
+    const weakQuestions = records.filter((q) => (q.score || 0) < 6)
+    const hasLowScores = weakQuestions.length > 0
+
+    return [
+      {
+        icon: '🎤',
+        title: 'Voice Clarity',
+        description: hasLowScores ? 'Practice speaking more concisely' : 'Keep your answers crisp and focused',
+      },
+      {
+        icon: '⭐',
+        title: 'STAR Method',
+        description: 'Structure answers with concrete examples',
+      },
+      {
+        icon: '🔢',
+        title: 'Add Numbers',
+        description: 'Quantify your impact with measurable outcomes',
+      },
+    ]
+  }
+
+  const practiceRecommendations = getPracticeRecommendations(qaRecords)
+
+  function shareOnLinkedIn() {
+    const score = averageScore.toFixed(1)
+    const text = `I just completed an AI mock interview and scored ${score}/10! 🎯 Practicing with Interview Coach to land my dream job. #InterviewPrep #AI`
+    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://interview-coach-tau.vercel.app')}&summary=${encodeURIComponent(text)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
@@ -199,16 +287,70 @@ ${'='.repeat(50)}
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Overall Score */}
-        <div className="bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 rounded-lg p-8 mb-8 text-center">
-          <div className="text-gray-400 text-sm uppercase tracking-wide mb-2">Overall Performance</div>
-          <div className={`text-6xl font-bold mb-2 ${getScoreColor(averageScore)}`}>
-            {averageScore.toFixed(1)}/10
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20 rounded-2xl p-8 mb-8"
+        >
+          <div className="relative flex flex-col items-center py-2">
+            <div className="relative w-48 h-48 mb-4">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#1f2937" strokeWidth="10" />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  fill="none"
+                  stroke={getScoreAccent(averageScore)}
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(averageScore / 10) * 339} 339`}
+                  className="transition-all duration-[1500ms] ease-out"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className={`text-5xl font-black ${getScoreColor(averageScore)}`}>
+                  {averageScore.toFixed(1)}
+                </span>
+                <span className="text-gray-400 text-sm font-medium">/10</span>
+              </div>
+            </div>
+
+            <h2 className={`text-2xl font-bold mb-1 ${getScoreColor(averageScore)}`}>
+              {getScoreLabel(averageScore)}
+            </h2>
+            <p className="text-gray-400 text-sm">
+              Based on {qaRecords.length} questions answered
+            </p>
+
+            <div className="flex gap-2 mt-4 items-end">
+              {questionScores.map((s, i) => (
+                <div key={`${i}-${s}`} className="flex flex-col items-center gap-1">
+                  <span className="text-xs text-gray-400">Q{i + 1}</span>
+                  <div
+                    className="w-8 rounded-t-sm transition-all duration-500"
+                    style={{
+                      height: `${Math.max(16, s * 8)}px`,
+                      backgroundColor: getScoreAccent(s),
+                    }}
+                  />
+                  <span className="text-xs font-medium" style={{ color: getScoreAccent(s) }}>
+                    {s}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-xl text-gray-300">{getScoreLabel(averageScore)}</div>
-        </div>
+        </motion.div>
 
         {/* Session Info */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.05 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8"
+        >
           <div className="bg-gray-800 rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-blue-400">{qaRecords.length}</div>
             <div className="text-sm text-gray-400">Questions</div>
@@ -223,10 +365,61 @@ ${'='.repeat(50)}
             </div>
             <div className="text-sm text-gray-400">Cost</div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Strengths and Improvements */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.08 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+        >
+          <div className="bg-green-950/30 border border-green-500/30 rounded-2xl p-5">
+            <h3 className="text-green-400 font-bold mb-3 flex items-center gap-2">
+              <span>✅</span> Your Strengths
+            </h3>
+            <ul className="space-y-2">
+              {allStrengths.map((s, i) => (
+                <li key={`${s}-${i}`} className="flex items-start gap-2">
+                  <span className="text-green-400 mt-1 flex-shrink-0">•</span>
+                  <span className="text-gray-300 text-sm">{s}</span>
+                </li>
+              ))}
+              {allStrengths.length === 0 && (
+                <li className="text-gray-500 text-sm">
+                  Complete more interviews to surface strengths
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <div className="bg-orange-950/30 border border-orange-500/30 rounded-2xl p-5">
+            <h3 className="text-orange-400 font-bold mb-3 flex items-center gap-2">
+              <span>📈</span> Areas to Improve
+            </h3>
+            <ul className="space-y-2">
+              {allImprovements.map((imp, i) => (
+                <li key={`${imp}-${i}`} className="flex items-start gap-2">
+                  <span className="text-orange-400 mt-1 flex-shrink-0">•</span>
+                  <span className="text-gray-300 text-sm">{imp}</span>
+                </li>
+              ))}
+              {allImprovements.length === 0 && (
+                <li className="text-gray-500 text-sm">
+                  Keep practicing to get richer improvement insights
+                </li>
+              )}
+            </ul>
+          </div>
+        </motion.div>
 
         {/* Per-Interviewer Performance */}
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+          className="mb-8"
+        >
           <h2 className="text-2xl font-bold mb-4">Performance by Interviewer</h2>
           <div className="space-y-4">
             {interviewerStats.map((stats) => (
@@ -251,63 +444,132 @@ ${'='.repeat(50)}
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Detailed Q&A */}
-        <div className="mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.12 }}
+          className="mb-8"
+        >
           <h2 className="text-2xl font-bold mb-4">Question & Answer Details</h2>
           <div className="space-y-6">
             {qaRecords.map((qa, index) => {
               const interviewer = INTERVIEWERS.find(i => i.id === qa.interviewer_id)
+              const scoreClasses = qa.score >= 7
+                ? 'bg-green-900/40 border-green-500/40 text-green-400'
+                : qa.score >= 5
+                  ? 'bg-yellow-900/40 border-yellow-500/40 text-yellow-400'
+                  : 'bg-red-900/40 border-red-500/40 text-red-400'
               return (
-                <div key={qa.id} className="bg-gray-800 rounded-lg p-6">
-                  <div className="flex items-start justify-between mb-4">
+                <div key={qa.id} className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-5 hover:border-gray-600/50 transition-colors">
+                  <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        {interviewer?.avatar}
+                      <div className="w-10 h-10 rounded-full bg-purple-600/30 border border-purple-500/50 flex items-center justify-center">
+                        <span className="text-purple-300 font-bold text-sm">{index + 1}</span>
                       </div>
                       <div>
-                        <div className="font-semibold">Question {index + 1}</div>
-                        <div className="text-sm text-gray-400">{interviewer?.name}</div>
+                        <p className="text-white font-semibold text-sm">Question {index + 1}</p>
+                        <p className="text-gray-400 text-xs">
+                          {interviewer?.name || 'Interviewer'} · {interviewer?.title || 'AI Interviewer'}
+                        </p>
                       </div>
                     </div>
-                    <div className={`text-2xl font-bold ${getScoreColor(qa.score)}`}>
+                    <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full border font-bold text-sm ${scoreClasses}`}>
                       {qa.score}/10
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <div className="text-sm text-gray-400 mb-2">Question:</div>
-                    <div className="text-gray-200">{qa.question}</div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Question</p>
+                    <p className="text-gray-200 text-sm leading-relaxed bg-gray-900/40 rounded-lg p-3">
+                      {qa.question}
+                    </p>
                   </div>
 
                   <div className="mb-4">
-                    <div className="text-sm text-gray-400 mb-2">Your Answer:</div>
-                    <div className="text-gray-300 bg-gray-900 rounded p-3">{qa.answer}</div>
+                    <p className="text-xs text-purple-400 uppercase tracking-wider mb-1">Your Answer</p>
+                    <p className="text-gray-300 text-sm leading-relaxed bg-purple-950/20 border border-purple-500/20 rounded-lg p-3">
+                      {qa.answer || 'No answer recorded'}
+                    </p>
                   </div>
 
-                  <div>
-                    <div className="text-sm text-gray-400 mb-2">Feedback:</div>
-                    <div className="text-gray-200 italic">"{qa.feedback}"</div>
-                  </div>
+                  {qa.feedback && (
+                    <div className="bg-blue-950/20 border border-blue-500/20 rounded-lg p-3">
+                      <p className="text-xs text-blue-400 uppercase tracking-wider mb-1">💡 Coach Feedback</p>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        {cleanFeedbackText(qa.feedback)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )
             })}
           </div>
-        </div>
+        </motion.div>
+
+        {/* Practice Next */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.14 }}
+          className="bg-gray-800/40 border border-purple-500/20 rounded-2xl p-5 mb-6"
+        >
+          <h3 className="text-purple-400 font-bold mb-3">🎯 What to Practice Next</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {practiceRecommendations.map((rec) => (
+              <div key={rec.title} className="bg-gray-900/50 rounded-xl p-3 border border-gray-700/50">
+                <span className="text-2xl mb-2 block">{rec.icon}</span>
+                <p className="text-white text-sm font-medium">{rec.title}</p>
+                <p className="text-gray-400 text-xs mt-1">{rec.description}</p>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => router.push('/interview/setup')}
+            className="mt-4 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:opacity-90 transition"
+          >
+            Practice Again →
+          </button>
+        </motion.div>
 
         {/* Actions */}
-        <div className="flex gap-4 justify-center">
-          <Button onClick={downloadTranscript} variant="secondary">
-            Download Transcript
-          </Button>
-          <Button onClick={() => router.push('/interview/setup')}>
-            Start New Interview
-          </Button>
-          <Button onClick={() => router.push('/dashboard')} variant="secondary">
-            Return to Dashboard
-          </Button>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.16 }}
+          className="flex flex-col sm:flex-row gap-3 mt-6"
+        >
+          <button
+            onClick={downloadTranscript}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition text-sm font-medium"
+          >
+            📥 Download Transcript
+          </button>
+
+          <button
+            onClick={() => router.push('/interview/setup')}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:opacity-90 transition text-sm"
+          >
+            🎯 Practice Again
+          </button>
+
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition text-sm font-medium"
+          >
+            🏠 Dashboard
+          </button>
+
+          <button
+            onClick={shareOnLinkedIn}
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-700 hover:bg-blue-600 text-white transition text-sm font-medium"
+          >
+            <Linkedin className="w-4 h-4" />
+            Share
+          </button>
+        </motion.div>
       </div>
     </div>
   )
