@@ -53,6 +53,7 @@ export default function VoiceInterviewSummary({ params }: { params: { sessionId:
   const [qaRecords, setQaRecords] = useState<QuestionAnswer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [animatedScore, setAnimatedScore] = useState(0)
 
   useEffect(() => {
     async function fetchResults() {
@@ -308,6 +309,23 @@ ${'='.repeat(50)}
 
   const practiceRecommendations = getPracticeRecommendations(qaRecords)
 
+  useEffect(() => {
+    const target = Math.max(0, Math.min(10, averageScore))
+    const durationMs = 1200
+    const start = performance.now()
+
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - start) / durationMs)
+      // Ease-out cubic for smoother finish.
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setAnimatedScore(target * eased)
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+
+    setAnimatedScore(0)
+    requestAnimationFrame(tick)
+  }, [averageScore])
+
   function shareOnLinkedIn() {
     const score = averageScore.toFixed(1)
     const text = `I just completed an AI mock interview and scored ${score}/10! 🎯 Practicing with Interview Coach to land my dream job. #InterviewPrep #AI`
@@ -339,7 +357,7 @@ ${'='.repeat(50)}
             <div className="relative w-48 h-48 mb-4">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
                 <circle cx="60" cy="60" r="54" fill="none" stroke="#1f2937" strokeWidth="10" />
-                <circle
+                <motion.circle
                   cx="60"
                   cy="60"
                   r="54"
@@ -347,14 +365,21 @@ ${'='.repeat(50)}
                   stroke={getScoreColor(averageScore)}
                   strokeWidth="10"
                   strokeLinecap="round"
-                  strokeDasharray={`${(averageScore / 10) * 339} 339`}
-                  className="transition-all duration-[1500ms] ease-out"
+                  strokeDasharray="339"
+                  initial={{ strokeDashoffset: 339 }}
+                  animate={{ strokeDashoffset: 339 - (averageScore / 10) * 339 }}
+                  transition={{ duration: 1.4, ease: 'easeOut' }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className={`text-5xl font-black ${getScoreTextClass(averageScore)}`}>
-                  {averageScore.toFixed(1)}
-                </span>
+                <motion.span
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className={`text-5xl font-black ${getScoreTextClass(averageScore)}`}
+                >
+                  {animatedScore.toFixed(1)}
+                </motion.span>
                 <span className="text-gray-400 text-sm font-medium">/10</span>
               </div>
             </div>
@@ -369,13 +394,21 @@ ${'='.repeat(50)}
             <div className="flex gap-2 mt-4 items-end">
               {questionScores.map((s, i) => (
                 <div key={`${i}-${s}`} className="flex flex-col items-center gap-1">
-                  <span className="text-xs font-bold" style={{ color: getScoreColor(s) }}>
+                  <motion.span
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: 0.15 + i * 0.08 }}
+                    className="text-xs font-bold"
+                    style={{ color: getScoreColor(s) }}
+                  >
                     {s}
-                  </span>
-                  <div
-                    className="w-10 rounded-t-md transition-all duration-700"
+                  </motion.span>
+                  <motion.div
+                    className="w-10 rounded-t-md"
+                    initial={{ height: 0, opacity: 0.6 }}
+                    animate={{ height: getBarHeight(s), opacity: 1 }}
+                    transition={{ duration: 0.75, delay: 0.2 + i * 0.1, ease: 'easeOut' }}
                     style={{
-                      height: `${getBarHeight(s)}px`,
                       backgroundColor: getScoreColor(s),
                     }}
                   />
