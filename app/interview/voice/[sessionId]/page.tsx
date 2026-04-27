@@ -654,7 +654,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       />
 
       {/* ── Time warning banner (replaces time toasts) ────────────────────── */}
-      {timeRemaining > 0 && timeRemaining <= 60 && phase !== 'completed' && (
+      {timeRemaining > 0 && timeRemaining <= 60 && (
         <div className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-2 text-sm font-medium transition-all duration-300 ${
           timeRemaining <= 30
             ? 'bg-red-600/90 text-white animate-pulse'
