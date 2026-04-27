@@ -7,22 +7,10 @@ import { INTERVIEWERS, type Interviewer } from '@/lib/interviewers'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mic,
-  MicOff,
   PhoneOff,
-  Volume2,
-  VolumeX,
-  SkipForward,
   Shield,
-  Grid3X3,
-  Pause,
-  ArrowRightLeft,
   MessageSquare,
   Users,
-  LayoutGrid,
-  Plus,
-  MoreHorizontal,
-  CameraOff,
-  Share2,
   X,
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
@@ -71,8 +59,6 @@ const INTERVIEW_TIPS = [
 ]
 
 const TRANSCRIPT_TRUNCATE = 60
-const QUESTION_MAX_CHARS = 200
-
 // Hard question limits by duration — interview ends when reached
 function getMaxQuestions(durationMinutes: number): number {
   const exact: Record<number, number> = { 5: 3, 10: 4, 15: 5, 20: 7, 30: 10, 45: 14, 60: 18 }
@@ -203,7 +189,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const [showParticipants, setShowParticipants] = useState(false)
   const [currentQuestionEntryId, setCurrentQuestionEntryId] = useState<string | null>(null)
   const [tipIndex, setTipIndex] = useState(0)
-  const [expandedQuestion, setExpandedQuestion] = useState(false)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
 
   // mic state
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -240,6 +226,17 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [transcript, liveCaption])
+
+  useEffect(() => {
+    if (!isRecording) {
+      setRecordingSeconds(0)
+      return
+    }
+    const interval = setInterval(() => {
+      setRecordingSeconds((prev) => prev + 1)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [isRecording])
 
   // ── Rotating tips ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -333,7 +330,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     })
     if (markAsCurrent) {
       setCurrentQuestionEntryId(id)
-      setExpandedQuestion(false)
     }
   }
 
@@ -681,16 +677,16 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     return `${mins}:${secs}`
   }
   const displayMessages = transcript.filter((entry) => !(entry.role === 'interviewer' && entry.id === currentQuestionEntryId))
-  const teamsButtons = [
-    { icon: Grid3X3, label: 'Pavé', onClick: () => setShowParticipants((v) => !v) },
-    { icon: Pause, label: 'Pause', onClick: () => undefined },
-    { icon: ArrowRightLeft, label: 'Transférer', onClick: () => undefined },
-    { icon: MessageSquare, label: 'Conversation', onClick: () => setShowTranscript((v) => !v), badge: displayMessages.length > 0 ? displayMessages.length : undefined },
-    { icon: Users, label: 'Participants', onClick: () => setShowParticipants((v) => !v), badge: 2 },
-    { icon: LayoutGrid, label: 'Affichage', onClick: () => undefined },
-    { icon: Plus, label: 'Applis', onClick: () => undefined },
-    { icon: MoreHorizontal, label: 'Autres', onClick: () => undefined },
-  ]
+  const questionText = currentQuestion ? stripMarkdown(currentQuestion.question) : ''
+  const cleanedQuestionText = questionText.replace(/^(Got it|Good answer|Great answer|Interesting|I see|Noted|Perfect|Excellent)[.,!]?\s*/i, '')
+  const micDisabled = isAISpeaking || isUserProcessing || !canRecord
+  const statusLine = isAISpeaking
+    ? '🔊 Speaking...'
+    : isUserProcessing
+      ? '⏳ Processing your answer...'
+      : isUserRecording
+        ? '👂 Listening...'
+        : '⏸ Waiting for your answer'
 
   return (
     <div
@@ -720,171 +716,160 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
       {/* Main stage */}
       <div className="flex-1 relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
-          <div className="relative rounded-2xl overflow-hidden bg-white/20 backdrop-blur-sm shadow-2xl border border-white/30 w-full max-w-[520px] h-[320px] md:h-[380px]">
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #c8d8c8, #d8e4d8)' }} />
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="relative">
-                {isAISpeaking && isSpeakingNow(currentInterviewer.id) && (
-                  <>
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-4 border-white/40"
-                      style={{ margin: '-10px' }}
-                      animate={{ scale: [1, 1.16, 1], opacity: [0.75, 0, 0.75] }}
-                      transition={{ duration: 1.4, repeat: Infinity }}
-                    />
-                    <motion.div
-                      className="absolute inset-0 rounded-full border-4 border-white/20"
-                      style={{ margin: '-22px' }}
-                      animate={{ scale: [1, 1.25, 1], opacity: [0.6, 0, 0.6] }}
-                      transition={{ duration: 1.4, repeat: Infinity, delay: 0.2 }}
-                    />
-                  </>
-                )}
-                <div
-                  className="w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center shadow-lg"
-                  style={{ background: 'linear-gradient(135deg, #4a5568, #2d3748)' }}
-                >
-                  <span className="text-white text-4xl md:text-5xl font-bold">{interviewerInitials || 'AI'}</span>
+        <div className="h-full flex flex-col items-center justify-center gap-4 p-6">
+          <div className="flex-1 flex items-center justify-center" style={{ minHeight: 0 }}>
+            <div
+              className="relative rounded-2xl overflow-hidden shadow-xl"
+              style={{
+                width: '480px',
+                height: '360px',
+                flexShrink: 0,
+                backgroundColor: '#c8d4c8',
+                backgroundImage: 'none',
+              }}
+            >
+              <div className="absolute inset-0" style={{ backgroundColor: '#c8d4c8' }} />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full gap-4">
+                <div className="relative">
+                  {isAISpeaking && (
+                    <>
+                      <div className="absolute inset-0 rounded-full border-4 border-white/30 animate-ping scale-110 pointer-events-none" />
+                      <div className="absolute inset-0 rounded-full border-4 border-white/20 animate-ping scale-125 pointer-events-none [animation-delay:200ms]" />
+                    </>
+                  )}
+                  <div className="w-36 h-36 rounded-full flex items-center justify-center shadow-2xl" style={{ backgroundColor: '#2d3748' }}>
+                    <span className="text-white text-6xl font-black">{interviewerInitials || 'AI'}</span>
+                  </div>
                 </div>
+
+                <div className="text-center px-4">
+                  <p className="text-gray-800 text-xl font-bold">{currentInterviewer.name} · {currentInterviewer.title}</p>
+                  <p className="text-gray-500 text-sm mt-1">{statusText || statusLine}</p>
+                </div>
+
+                {isAISpeaking && (
+                  <div className="flex items-end gap-1 h-8">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-2 rounded-full"
+                        style={{
+                          backgroundColor: '#4a5568',
+                          height: `${8 + (i % 4) * 4}px`,
+                          animation: `audioWave 0.6s ease-in-out ${i * 0.06}s infinite alternate`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-
-            {(isAISpeaking || isAIThinking) && (
-              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-end gap-0.5">
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="w-1.5 rounded-full bg-white/80"
-                    animate={{ height: [6, 20 + (i % 3) * 4, 6] }}
-                    transition={{ duration: 0.55, repeat: Infinity, delay: i * 0.05, repeatType: 'reverse' }}
-                  />
-                ))}
-              </div>
-            )}
-
-            <div className="absolute bottom-3 left-3">
-              <span className="bg-black/60 text-white text-sm px-2 py-1 rounded-md font-medium">{currentInterviewer.name}</span>
-            </div>
-            {isAISpeaking && (
-              <div className="absolute top-3 right-3 bg-black/60 rounded-full p-1.5">
-                <Mic className="w-4 h-4 text-white" />
-              </div>
-            )}
           </div>
-        </div>
 
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-28 md:bottom-24 text-center">
-          <p className="text-base md:text-lg font-semibold text-gray-800">{currentInterviewer.name} · {currentInterviewer.title}</p>
-          <p className="text-xs md:text-sm text-gray-600 mt-1">
-            {statusText || (isAIThinking ? 'Preparing next question...' : phase === 'waiting-for-answer' ? 'Listening for your answer...' : 'Interview in progress')}
-          </p>
           {currentQuestion && (
-            <div className="mt-3 max-w-xl rounded-xl bg-black/35 text-white px-4 py-2 text-sm">
-              {renderMarkdown(currentQuestion.question)}
+            <div
+              className="rounded-xl px-6 py-4 text-center"
+              style={{
+                width: '480px',
+                backgroundColor: 'rgba(0,0,0,0.55)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <span className="text-xs text-gray-300 font-medium uppercase tracking-wider block mb-2">
+                Question {questionCount}
+              </span>
+              <p className="text-white text-sm leading-relaxed">
+                {cleanedQuestionText || questionText}
+              </p>
             </div>
           )}
         </div>
 
         {/* Self tile bottom-right */}
-        <div className="absolute bottom-24 right-3 md:right-4 w-36 md:w-44 h-24 md:h-32 rounded-xl overflow-hidden shadow-xl border-2 border-white/30">
-          <div className="absolute inset-0 bg-amber-100" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-amber-400 flex items-center justify-center mb-1">
-              <span className="text-white text-lg md:text-xl font-bold">{userInitials}</span>
+        <div
+          className="absolute bottom-24 right-6 rounded-xl overflow-hidden shadow-lg border-2 border-white/50"
+          style={{ width: '160px', height: '120px' }}
+        >
+          <div className="absolute inset-0" style={{ backgroundColor: '#f6d860' }} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: '#d4a017' }}>
+              <span className="text-white text-lg font-black">{userInitials}</span>
             </div>
           </div>
-          <div className="absolute bottom-2 left-2">
-            <span className="bg-black/50 text-white text-xs px-1.5 py-0.5 rounded">{userName}</span>
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+            <span className="bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+              {userName.split(' ')[0] || 'You'}
+            </span>
           </div>
           {isRecording && (
-            <>
-              <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-              <div className="absolute bottom-0 left-0 right-0 flex items-end justify-center gap-0.5 h-6 px-2 pb-1">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="w-1 bg-green-400 rounded-t"
-                    animate={{ height: [4, 14 + (i % 4) * 2, 4] }}
-                    transition={{ duration: 0.35, repeat: Infinity, delay: i * 0.04, repeatType: 'reverse' }}
-                  />
-                ))}
-              </div>
-            </>
+            <div className="absolute top-2 right-2 flex items-center gap-1 bg-red-600 rounded-full px-2 py-0.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-white text-xs font-medium">{recordingSeconds}s</span>
+            </div>
           )}
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="h-20 flex-shrink-0 bg-white/80 backdrop-blur-md border-t border-gray-200/50 overflow-x-auto">
-        <div className="min-w-max h-full flex items-center justify-center gap-1 px-3">
-          {teamsButtons.map((btn) => {
-            const Icon = btn.icon
-            return (
-              <button
-                key={btn.label}
-                onClick={btn.onClick}
-                className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-gray-200/60 transition min-w-[64px] text-gray-600 hover:text-gray-900"
-              >
-                <div className="relative">
-                  <Icon className="w-5 h-5" />
-                  {btn.badge ? (
-                    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-blue-600 text-white text-[10px] rounded-full flex items-center justify-center">
-                      {btn.badge}
-                    </span>
-                  ) : null}
-                </div>
-                <span className="text-xs font-medium whitespace-nowrap">{btn.label}</span>
-              </button>
-            )
-          })}
+      <div className="h-20 flex-shrink-0 flex items-center justify-center gap-6 bg-white/70 backdrop-blur-md border-t border-gray-200/50 overflow-x-auto px-4">
+        <button
+          onClick={() => setShowTranscript(!showTranscript)}
+          className={`flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl transition min-w-[80px] ${
+            showTranscript ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200/60 text-gray-600'
+          }`}
+        >
+          <div className="relative">
+            <MessageSquare className="w-6 h-6" />
+            {displayMessages.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                {displayMessages.length > 9 ? '9+' : displayMessages.length}
+              </span>
+            )}
+          </div>
+          <span className="text-xs font-medium">Conversation</span>
+        </button>
 
-          <div className="w-px h-10 bg-gray-300 mx-2" />
+        <button
+          onClick={() => setShowParticipants(!showParticipants)}
+          className={`flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl transition min-w-[80px] ${
+            showParticipants ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200/60 text-gray-600'
+          }`}
+        >
+          <div className="relative">
+            <Users className="w-6 h-6" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+              2
+            </span>
+          </div>
+          <span className="text-xs font-medium">Participants</span>
+        </button>
 
-          <button
-            onClick={() => setTtsEnabled((v) => !v)}
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition min-w-[64px] ${ttsEnabled ? 'hover:bg-gray-200/60' : 'bg-gray-200/70'}`}
-          >
-            {ttsEnabled ? <Volume2 className="w-5 h-5 text-gray-600" /> : <VolumeX className="w-5 h-5 text-gray-600" />}
-            <span className="text-xs text-gray-600 whitespace-nowrap">Audio</span>
-          </button>
+        <div className="w-px h-10 bg-gray-300" />
 
-          <button className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-gray-200/60 transition min-w-[64px]">
-            <CameraOff className="w-5 h-5 text-gray-600" />
-            <span className="text-xs text-gray-600 whitespace-nowrap">Caméra</span>
-          </button>
+        <button
+          onClick={isRecording ? stopRecording : startRecording}
+          disabled={micDisabled}
+          className={`flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl transition min-w-[80px] ${
+            isRecording
+              ? 'bg-red-100 text-red-600'
+              : micDisabled
+                ? 'opacity-50 cursor-not-allowed text-gray-400'
+                : 'hover:bg-gray-200/60 text-gray-600'
+          }`}
+        >
+          <Mic className={`w-6 h-6 ${isRecording ? 'text-red-600' : ''}`} />
+          <span className="text-xs font-medium">{isRecording ? 'Stop' : 'Microphone'}</span>
+        </button>
 
-          <button
-            onClick={isRecording ? stopRecording : (canRecord ? startRecording : undefined)}
-            className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition min-w-[64px] ${isRecording ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-gray-200/60'}`}
-          >
-            <Mic className={`w-5 h-5 ${isRecording ? 'text-red-600' : 'text-gray-600'}`} />
-            <span className={`text-xs whitespace-nowrap ${isRecording ? 'text-red-600' : 'text-gray-600'}`}>Microphone</span>
-          </button>
+        <div className="w-px h-10 bg-gray-300" />
 
-          <button
-            onClick={() => audioRef.current?.dispatchEvent(new Event('ended'))}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-gray-200/60 transition min-w-[64px]"
-          >
-            <SkipForward className="w-5 h-5 text-gray-600" />
-            <span className="text-xs text-gray-600 whitespace-nowrap">Passer</span>
-          </button>
-
-          <button className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-gray-200/60 transition min-w-[64px]">
-            <Share2 className="w-5 h-5 text-gray-600" />
-            <span className="text-xs text-gray-600 whitespace-nowrap">Partager</span>
-          </button>
-
-          <div className="w-px h-10 bg-gray-300 mx-2" />
-
-          <button
-            onClick={() => confirm('End interview early?') && handleEndSession('cancelled')}
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition min-w-[74px]"
-          >
-            <PhoneOff className="w-5 h-5 text-white" />
-            <span className="text-xs text-white font-medium whitespace-nowrap">Quitter</span>
-          </button>
-        </div>
+        <button
+          onClick={() => confirm('End interview early?') && handleEndSession('cancelled')}
+          className="flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition min-w-[80px]"
+        >
+          <PhoneOff className="w-6 h-6 text-white" />
+          <span className="text-xs font-medium text-white">Quitter</span>
+        </button>
       </div>
 
       {/* Transcript panel */}
