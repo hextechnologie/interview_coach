@@ -315,6 +315,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const lastVoiceActivityRef = useRef(0)
   const recordingSafetyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const speechRecognitionRef = useRef<BrowserSpeechRecognition | null>(null)
+  const isFinalizingRecordingRef = useRef(false)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -700,6 +701,39 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     }
   }
 
+  function finalizeRecordingFromBuffers(preferredMime?: string) {
+    if (isFinalizingRecordingRef.current) return
+    isFinalizingRecordingRef.current = true
+
+    const blob = new Blob(audioChunksRef.current, { type: preferredMime ?? 'audio/webm' })
+    const mergedRealtimeTranscript = `${finalTranscriptRef.current} ${partialTranscriptRef.current}`.trim()
+    cleanupSilenceDetection()
+    deepgramConnectionRef.current?.finish()
+    deepgramConnectionRef.current = null
+    speechRecognitionRef.current?.stop()
+    speechRecognitionRef.current = null
+    if (recordingSafetyTimeoutRef.current) {
+      clearTimeout(recordingSafetyTimeoutRef.current)
+      recordingSafetyTimeoutRef.current = null
+    }
+    streamRef.current?.getTracks().forEach((track) => track.stop())
+    setIsRecording(false)
+    setCurrentPartialTranscript('')
+    partialTranscriptRef.current = ''
+    isRecordingRef.current = false
+
+    if (blob.size === 0 && !mergedRealtimeTranscript) {
+      setPhase('waiting-for-answer')
+      toast.error(t.hearError, { duration: 3000 })
+      isFinalizingRecordingRef.current = false
+      return
+    }
+
+    void handleRecordingComplete(blob, mergedRealtimeTranscript).finally(() => {
+      isFinalizingRecordingRef.current = false
+    })
+  }
+
   // ── Microphone recording (auto-start after question audio) ─────────────────
   async function startRecording() {
     if (sessionEndedRef.current || mediaRecorderRef.current?.state === 'recording') return
@@ -740,28 +774,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         }
       }
       mr.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: preferredMime ?? 'audio/webm' })
-        const mergedRealtimeTranscript = `${finalTranscriptRef.current} ${partialTranscriptRef.current}`.trim()
-        cleanupSilenceDetection()
-        deepgramConnectionRef.current?.finish()
-        deepgramConnectionRef.current = null
-        speechRecognitionRef.current?.stop()
-        speechRecognitionRef.current = null
-        if (recordingSafetyTimeoutRef.current) {
-          clearTimeout(recordingSafetyTimeoutRef.current)
-          recordingSafetyTimeoutRef.current = null
-        }
-        streamRef.current?.getTracks().forEach((track) => track.stop())
-        setIsRecording(false)
-        setCurrentPartialTranscript('')
-        partialTranscriptRef.current = ''
-        isRecordingRef.current = false
-        if (blob.size === 0 && !mergedRealtimeTranscript) {
-          setPhase('waiting-for-answer')
-          toast.error(t.hearError, { duration: 3000 })
-          return
-        }
-        void handleRecordingComplete(blob, mergedRealtimeTranscript)
+        finalizeRecordingFromBuffers(preferredMime)
       }
       mr.start(100)
       recordingSafetyTimeoutRef.current = setTimeout(() => {
@@ -769,6 +782,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
           stopRecording()
         }
       }, 15000)
+      // Extra failsafe in case recorder events break on some browsers.
+      setTimeout(() => {
+        if (isRecordingRef.current) {
+          finalizeRecordingFromBuffers(preferredMime)
+        }
+      }, 17000)
       setIsRecording(true)
       setPhase('recording-answer')
     } catch (err) {
@@ -793,6 +812,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         // Some browsers throw if requestData is called near stop.
       }
       mediaRecorderRef.current.stop()
+    } else {
+      // Recorder can be inactive on some browsers; still finalize what we have.
+      finalizeRecordingFromBuffers(mediaRecorderRef.current?.mimeType)
     }
   }
 
