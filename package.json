@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
+    "@deepgram/sdk": "^5.1.0",
     "@stripe/stripe-js": "^3.0.0",
     "@supabase/supabase-js": "^2.39.0",
     "date-fns": "^3.3.0",

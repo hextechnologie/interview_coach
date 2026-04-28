@@ -4,18 +4,14 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { INTERVIEWERS, type Interviewer } from '@/lib/interviewers'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Check,
-  ChevronDown,
   MessageSquare,
   Mic,
-  MoreHorizontal,
   PhoneOff,
   Shield,
   Sparkles,
-  Users,
-  Video,
   X,
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
@@ -51,19 +47,6 @@ interface TranscriptEntry {
 }
 
 interface PreviousAnswer { question: string; answer: string }
-
-const INTERVIEW_TIPS = [
-  'Use the STAR method: Situation, Task, Action, Result',
-  "Take a breath before answering — it's okay to pause",
-  'Be specific — use real numbers and concrete examples',
-  "It's okay to say \"I don't know\" — follow with what you would do",
-  'Speak clearly and at a moderate pace',
-  'Structure your answer: Context → Challenge → Solution → Impact',
-  'Listen carefully to the full question before answering',
-  'Keep answers focused — 90 seconds to 2 minutes is ideal',
-]
-
-const TRANSCRIPT_TRUNCATE = 60
 
 /** Fixed bar heights for Marcus tile wave (avoid Math.random on render). */
 const VOICE_TILE_WAVE_HEIGHTS = [
@@ -266,80 +249,6 @@ function renderMarkdown(text: string): React.ReactNode[] {
   })
 }
 
-// ── Voice wave visualizer ──────────────────────────────────────────────────
-function VoiceWave({ isActive, color = 'purple' }: { isActive: boolean; color?: 'purple' | 'red' | 'green' }) {
-  const colorMap = {
-    purple: 'bg-purple-500',
-    red: 'bg-red-500',
-    green: 'bg-green-500',
-  }
-  return (
-    <div className="flex items-center gap-0.5 h-8">
-      {Array.from({ length: 16 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className={`w-1 rounded-full ${colorMap[color]}`}
-          animate={isActive ? {
-            scaleY: [0.2, Math.random() * 0.8 + 0.4, 0.2],
-            opacity: [0.6, 1, 0.6],
-          } : { scaleY: 0.2, opacity: 0.3 }}
-          transition={isActive ? {
-            repeat: Infinity,
-            duration: 0.4 + (i % 4) * 0.1,
-            delay: i * 0.04,
-            ease: 'easeInOut',
-          } : { duration: 0.2 }}
-          style={{ height: '100%' }}
-        />
-      ))}
-    </div>
-  )
-}
-
-// ── Recording timer ────────────────────────────────────────────────────────
-function RecordingTimer({ isRecording }: { isRecording: boolean }) {
-  const [secs, setSecs] = useState(0)
-  useEffect(() => {
-    if (!isRecording) { setSecs(0); return }
-    const t = setInterval(() => setSecs(p => p + 1), 1000)
-    return () => clearInterval(t)
-  }, [isRecording])
-  if (!isRecording) return null
-  const m = Math.floor(secs / 60).toString().padStart(2, '0')
-  const s = (secs % 60).toString().padStart(2, '0')
-  return <span className="text-red-400 font-mono text-sm tabular-nums">{m}:{s}</span>
-}
-
-// ── Circular timer ring ────────────────────────────────────────────────────
-function TimerRing({ timeRemaining, totalSeconds }: { timeRemaining: number; totalSeconds: number }) {
-  const pct = totalSeconds > 0 ? timeRemaining / totalSeconds : 1
-  const r = 22
-  const circ = 2 * Math.PI * r
-  const dash = circ * pct
-  const color = pct > 0.5 ? '#22c55e' : pct > 0.25 ? '#eab308' : '#ef4444'
-  const fmt = `${Math.floor(timeRemaining / 60)}:${(timeRemaining % 60).toString().padStart(2, '0')}`
-  return (
-    <div className="relative w-14 h-14 flex items-center justify-center">
-      <svg className="absolute inset-0 -rotate-90" width="56" height="56">
-        <circle cx="28" cy="28" r={r} stroke="rgba(255,255,255,0.08)" strokeWidth="3" fill="none" />
-        <motion.circle
-          cx="28" cy="28" r={r}
-          stroke={color}
-          strokeWidth="3"
-          fill="none"
-          strokeDasharray={circ}
-          animate={{ strokeDashoffset: circ - dash }}
-          transition={{ duration: 1 }}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className={`text-xs font-mono font-bold tabular-nums ${pct < 0.25 ? 'text-red-400 animate-pulse' : pct < 0.5 ? 'text-yellow-400' : 'text-white'}`}>
-        {fmt}
-      </span>
-    </div>
-  )
-}
-
 export default function VoiceInterviewRoom({ params }: { params: { sessionId: string } }) {
   const router = useRouter()
   const [session, setSession] = useState<VoiceSession | null>(null)
@@ -351,20 +260,25 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const [isRecording, setIsRecording] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [ttsAvailable, setTtsAvailable] = useState(true)
-  const [ttsEnabled, setTtsEnabled] = useState(true)
+  const [ttsEnabled] = useState(true)
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([])
+  const [currentPartialTranscript, setCurrentPartialTranscript] = useState('')
+  const [audioLevel, setAudioLevel] = useState(0)
   const [liveCaption, setLiveCaption] = useState('')
-  const [activeSpeakerId, setActiveSpeakerId] = useState<string | null>(null)
   const [showTranscript, setShowTranscript] = useState(true)
-  const [showParticipants, setShowParticipants] = useState(false)
   const [currentQuestionEntryId, setCurrentQuestionEntryId] = useState<string | null>(null)
-  const [tipIndex, setTipIndex] = useState(0)
-  const [recordingSeconds, setRecordingSeconds] = useState(0)
 
   // mic state
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const streamRef = useRef<MediaStream | null>(null)
+  const isRecordingRef = useRef(false)
+  const finalTranscriptRef = useRef('')
+  const deepgramConnectionRef = useRef<{ send: (data: Blob) => void; finish: () => void; getReadyState: () => number } | null>(null)
+  const silenceAudioContextRef = useRef<AudioContext | null>(null)
+  const silenceAnimationRef = useRef<number | null>(null)
+  const silenceStartRef = useRef<number | null>(null)
+  const recordingStartRef = useRef(0)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -379,8 +293,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
   // Hard max — interview stops once this is reached
   const maxQuestions = session ? getMaxQuestions(session.duration_minutes) : 3
-  // Progress capped at 100%
-  const progressPercent = Math.min(100, Math.round((questionCount / maxQuestions) * 100))
 
   const t = useMemo(
     () => TOOLBAR_LABELS[getVoiceUiLang(session?.language)],
@@ -400,23 +312,18 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [transcript, liveCaption])
+  }, [transcript, liveCaption, currentPartialTranscript])
 
   useEffect(() => {
-    if (!isRecording) {
-      setRecordingSeconds(0)
-      return
-    }
-    const interval = setInterval(() => {
-      setRecordingSeconds((prev) => prev + 1)
-    }, 1000)
-    return () => clearInterval(interval)
+    isRecordingRef.current = isRecording
   }, [isRecording])
 
-  // ── Rotating tips ──────────────────────────────────────────────────────────
   useEffect(() => {
-    const t = setInterval(() => setTipIndex(i => (i + 1) % INTERVIEW_TIPS.length), 15000)
-    return () => clearInterval(t)
+    return () => {
+      if (silenceAnimationRef.current !== null) cancelAnimationFrame(silenceAnimationRef.current)
+      silenceAudioContextRef.current?.close().catch(() => undefined)
+      deepgramConnectionRef.current?.finish()
+    }
   }, [])
 
   // ── Fetch session ──────────────────────────────────────────────────────────
@@ -462,12 +369,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   }, [phase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── TTS ────────────────────────────────────────────────────────────────────
-  async function speakText(text: string, voice: string, speakerId: string, duringPhase: Phase) {
+  async function speakText(text: string, voice: string, _speakerId: string, duringPhase: Phase) {
     setPhase(duringPhase)
-    setActiveSpeakerId(speakerId)
     if (!ttsAvailable || !ttsEnabled) {
       await new Promise(r => setTimeout(r, 800))
-      setActiveSpeakerId(null)
       return
     }
     try {
@@ -478,7 +383,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth.access_token}` },
         body: JSON.stringify({ text, voice }),
       })
-      if (!res.ok) { setTtsAvailable(false); setActiveSpeakerId(null); return }
+      if (!res.ok) { setTtsAvailable(false); return }
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
       const audio = new Audio(url)
@@ -490,7 +395,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       })
       URL.revokeObjectURL(url)
     } catch { setTtsAvailable(false) }
-    setActiveSpeakerId(null)
   }
 
   function addToTranscript(entry: Omit<TranscriptEntry, 'id'>, markAsCurrent = false) {
@@ -562,6 +466,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       if (!sessionEndedRef.current) {
         setLiveCaption('')
         setPhase('waiting-for-answer')
+        setTimeout(() => {
+          void startRecording()
+        }, 800)
       }
     } catch {
       setError('Failed to generate question.')
@@ -569,62 +476,187 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     }
   }, [questionCount, maxQuestions, session, params.sessionId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Microphone recording (inline, no external component needed for controls) ─
+  function cleanupSilenceDetection() {
+    if (silenceAnimationRef.current !== null) {
+      cancelAnimationFrame(silenceAnimationRef.current)
+      silenceAnimationRef.current = null
+    }
+    silenceAudioContextRef.current?.close().catch(() => undefined)
+    silenceAudioContextRef.current = null
+    silenceStartRef.current = null
+    setAudioLevel(0)
+  }
+
+  function startSilenceDetection(stream: MediaStream) {
+    cleanupSilenceDetection()
+    const audioContext = new AudioContext()
+    silenceAudioContextRef.current = audioContext
+
+    const analyser = audioContext.createAnalyser()
+    const source = audioContext.createMediaStreamSource(stream)
+    source.connect(analyser)
+
+    analyser.fftSize = 256
+    const dataArray = new Uint8Array(analyser.frequencyBinCount)
+    const SILENCE_THRESHOLD = 10
+    const SILENCE_DURATION = 2000
+    const MIN_RECORDING_TIME = 2000
+    recordingStartRef.current = Date.now()
+    silenceStartRef.current = null
+
+    const checkSilence = () => {
+      if (!isRecordingRef.current) {
+        cleanupSilenceDetection()
+        return
+      }
+
+      analyser.getByteFrequencyData(dataArray)
+      const average = dataArray.reduce((acc, val) => acc + val, 0) / dataArray.length
+      setAudioLevel(Math.min(average / 50, 1))
+
+      const recordingDuration = Date.now() - recordingStartRef.current
+      if (average < SILENCE_THRESHOLD) {
+        if (!silenceStartRef.current) {
+          silenceStartRef.current = Date.now()
+        } else if (Date.now() - silenceStartRef.current > SILENCE_DURATION && recordingDuration > MIN_RECORDING_TIME) {
+          stopRecording()
+          cleanupSilenceDetection()
+          return
+        }
+      } else {
+        silenceStartRef.current = null
+      }
+
+      silenceAnimationRef.current = requestAnimationFrame(checkSilence)
+    }
+
+    silenceAnimationRef.current = requestAnimationFrame(checkSilence)
+  }
+
+  function startRealtimeTranscription(stream: MediaStream) {
+    const apiKey = process.env.NEXT_PUBLIC_DEEPGRAM_API_KEY
+    if (!apiKey) return
+
+    const language = getVoiceUiLang(session?.language)
+    const ws = new WebSocket(
+      `wss://api.deepgram.com/v1/listen?model=nova-2&language=${language}&smart_format=true&interim_results=true&utterance_end_ms=2000`,
+      ['token', apiKey]
+    )
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data as string) as {
+          channel?: { alternatives?: Array<{ transcript?: string }> }
+          is_final?: boolean
+          type?: string
+        }
+        if (data.type === 'UtteranceEnd') {
+          stopRecording()
+          return
+        }
+        const transcriptText = data.channel?.alternatives?.[0]?.transcript ?? ''
+        if (!transcriptText.trim()) return
+        if (data.is_final) {
+          finalTranscriptRef.current = `${finalTranscriptRef.current} ${transcriptText}`.trim()
+          setCurrentPartialTranscript('')
+        } else {
+          setCurrentPartialTranscript(transcriptText)
+        }
+      } catch {
+        // Ignore malformed websocket payloads.
+      }
+    }
+
+    deepgramConnectionRef.current = {
+      send: (data: Blob) => {
+        if (ws.readyState === WebSocket.OPEN) ws.send(data)
+      },
+      finish: () => {
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) ws.close()
+      },
+      getReadyState: () => ws.readyState,
+    }
+    streamRef.current = stream
+  }
+
+  // ── Microphone recording (auto-start after question audio) ─────────────────
   async function startRecording() {
+    if (sessionEndedRef.current || mediaRecorderRef.current?.state === 'recording') return
+
     try {
       audioChunksRef.current = []
+      finalTranscriptRef.current = ''
+      setCurrentPartialTranscript('')
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 16000,
+        },
       })
       streamRef.current = stream
-      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' })
+      startSilenceDetection(stream)
+      startRealtimeTranscription(stream)
+
+      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' })
       mediaRecorderRef.current = mr
-      mr.ondataavailable = e => { if (e.data.size > 0) audioChunksRef.current.push(e.data) }
+      mr.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data)
+          if (deepgramConnectionRef.current?.getReadyState() === 1) {
+            deepgramConnectionRef.current.send(e.data)
+          }
+        }
+      }
       mr.onstop = () => {
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
-        streamRef.current?.getTracks().forEach(t => t.stop())
+        cleanupSilenceDetection()
+        deepgramConnectionRef.current?.finish()
+        deepgramConnectionRef.current = null
+        streamRef.current?.getTracks().forEach((track) => track.stop())
         setIsRecording(false)
-        handleRecordingComplete(blob)
+        setCurrentPartialTranscript('')
+        void handleRecordingComplete(blob, finalTranscriptRef.current.trim())
       }
       mr.start(100)
       setIsRecording(true)
       setPhase('recording-answer')
-    } catch {
+    } catch (err) {
+      console.error('Mic error:', err)
       toast.dismiss()
-      toast.error('Microphone error. Please try again.', { duration: 4000 })
+      toast.error('Microphone access required', { duration: 4000 })
     }
   }
 
   function stopRecording() {
-    if (mediaRecorderRef.current?.state !== 'inactive') {
-      mediaRecorderRef.current?.stop()
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop()
     }
   }
 
   // ── Handle recording complete ──────────────────────────────────────────────
-  async function handleRecordingComplete(audioBlob: Blob) {
+  async function handleRecordingComplete(audioBlob: Blob, deepgramTranscript?: string) {
     if (sessionEndedRef.current || !currentQuestion) return
     setPhase('processing-answer')
-    setActiveSpeakerId('user')
 
     try {
       const { data: { session: auth } } = await supabase.auth.getSession()
       if (!auth) return
 
-      const formData = new FormData()
-      formData.append('audio', audioBlob, 'answer.webm')
-      formData.append('sessionId', params.sessionId)
+      let transcribedText = deepgramTranscript ?? ''
+      if (!transcribedText.trim()) {
+        const formData = new FormData()
+        formData.append('audio', audioBlob, 'answer.webm')
+        formData.append('sessionId', params.sessionId)
 
-      const transcribeRes = await fetch('/api/interview/voice/transcribe', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${auth.access_token}` },
-        body: formData,
-      })
-
-      let transcribedText = ''
-      if (transcribeRes.ok) transcribedText = (await transcribeRes.json()).transcript || ''
-
-      setActiveSpeakerId(null)
+        const transcribeRes = await fetch('/api/interview/voice/transcribe', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${auth.access_token}` },
+          body: formData,
+        })
+        if (transcribeRes.ok) transcribedText = (await transcribeRes.json()).transcript || ''
+      }
 
       if (!transcribedText.trim()) {
         setPhase('waiting-for-answer')
@@ -703,6 +735,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     sessionEndedRef.current = true
     if (timerRef.current) clearInterval(timerRef.current)
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+    stopRecording()
+    cleanupSilenceDetection()
+    deepgramConnectionRef.current?.finish()
+    deepgramConnectionRef.current = null
 
     try {
       const { data: { session: auth } } = await supabase.auth.getSession()
@@ -730,11 +766,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
     setPhase('completed')
     setTimeout(() => router.push(`/interview/voice/${params.sessionId}/summary`), 2000)
-  }
-
-  function getProgress() {
-    if (!session) return 0
-    return Math.min(100, ((totalSeconds - timeRemaining) / totalSeconds) * 100)
   }
 
   // ── Loading ────────────────────────────────────────────────────────────────
@@ -823,7 +854,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const isUserRecording = phase === 'recording-answer'
   const isUserProcessing = phase === 'processing-answer'
   const isAISpeaking = phase === 'speaking-question' || phase === 'speaking-feedback'
-  const canRecord = phase === 'waiting-for-answer' || phase === 'recording-answer'
   const userName = `${session?.user_profile?.firstName || ''} ${session?.user_profile?.lastName || ''}`.trim() || 'Candidate'
   const userInitials = userName
     .split(' ')
@@ -845,7 +875,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const displayMessages = transcript.filter((entry) => !(entry.role === 'interviewer' && entry.id === currentQuestionEntryId))
   const questionText = currentQuestion ? stripMarkdown(currentQuestion.question) : ''
   const cleanedQuestionText = questionText.replace(/^(Got it|Good answer|Great answer|Interesting|I see|Noted|Perfect|Excellent)[.,!]?\s*/i, '')
-  const micDisabled = isAISpeaking || isUserProcessing || !canRecord
   const isSpeaking = isAISpeaking
   const isRecordingUser = isUserRecording
   const isProcessing = isUserProcessing
@@ -1096,6 +1125,16 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                   </div>
                 )
               })}
+              {currentPartialTranscript && (
+                <div className="flex justify-end gap-3">
+                  <div className="max-w-[75%] rounded-2xl rounded-tr-sm border border-purple-500/30 bg-purple-600/50 px-4 py-3 text-sm italic leading-relaxed text-white/70">
+                    {currentPartialTranscript}...
+                  </div>
+                  <div className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-500">
+                    <span className="text-xs font-bold text-white">{userInitials}</span>
+                  </div>
+                </div>
+              )}
               <div ref={transcriptBottomRef} />
             </div>
             <div className="flex-shrink-0 p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
@@ -1116,46 +1155,38 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
       {/* Bottom toolbar */}
       <footer
-        className="flex h-16 flex-shrink-0 items-center justify-between gap-2 overflow-x-auto px-6"
+        className="flex h-16 flex-shrink-0 items-center justify-between px-8"
         style={{ backgroundColor: '#0d0d1a', borderTop: '1px solid rgba(255,255,255,0.06)' }}
       >
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-300 transition hover:bg-white/5"
-          >
-            <Video className="h-5 w-5" />
-            <span>{t.camera}</span>
-            <ChevronDown className="h-3 w-3 text-gray-500" />
-          </button>
-          <button
-            type="button"
-            onClick={isRecording ? stopRecording : startRecording}
-            disabled={micDisabled}
-            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
-              isRecording
-                ? 'bg-red-500/10 text-red-400'
-                : 'text-gray-300 hover:bg-white/5'
-            } ${micDisabled ? 'cursor-not-allowed opacity-40' : ''}`}
-          >
-            <Mic className="h-5 w-5" />
-            <span>{t.mic}</span>
-            <ChevronDown className="h-3 w-3 text-gray-500" />
-          </button>
+        <div
+          className="flex items-center gap-2 rounded-lg px-4 py-2"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+        >
+          <Mic className={`h-5 w-5 ${isRecording ? 'text-red-400' : 'text-gray-400'}`} />
+          {isRecording ? (
+            <div className="flex h-4 items-end gap-0.5">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-1 rounded-full bg-red-400 transition-all"
+                  style={{
+                    height: `${Math.max(2, audioLevel * 16 * (0.5 + (i + 1) / 12))}px`,
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <span className="text-sm text-gray-400">{t.mic}</span>
+          )}
+          {isRecording && (
+            <>
+              <span className="text-sm text-red-400">Recording...</span>
+              <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+            </>
+          )}
         </div>
 
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setShowParticipants(!showParticipants)}
-            className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-300 transition hover:bg-white/5"
-          >
-            <Users className="h-5 w-5" />
-            <span>{t.participants}</span>
-            <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-xs font-bold text-white">
-              2
-            </span>
-          </button>
+        <div className="flex items-center">
           <button
             type="button"
             onClick={() => setShowTranscript(!showTranscript)}
@@ -1166,13 +1197,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
             <MessageSquare className="h-5 w-5" />
             <span>{t.chat}</span>
           </button>
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-300 transition hover:bg-white/5"
-          >
-            <MoreHorizontal className="h-5 w-5" />
-            <span>{t.more}</span>
-          </button>
         </div>
 
         <button
@@ -1180,71 +1204,16 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
           onClick={() => {
             if (confirm(t.confirmEnd)) handleEndSession('cancelled')
           }}
-          className="flex flex-shrink-0 items-center gap-2 rounded-xl px-6 py-2.5 font-semibold text-white transition hover:opacity-90"
-          style={{ backgroundColor: '#c0392b' }}
+          className="flex items-center gap-2 rounded-full px-6 py-2.5 font-semibold text-white transition hover:opacity-90 active:scale-95"
+          style={{
+            backgroundColor: '#c0392b',
+            boxShadow: '0 4px 15px rgba(192, 57, 43, 0.4)',
+          }}
         >
           <PhoneOff className="h-5 w-5" />
           <span>{t.leave}</span>
         </button>
       </footer>
-
-      {/* Participants overlay */}
-      <AnimatePresence>
-        {showParticipants && (
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25 }}
-            className="absolute bottom-16 right-0 top-14 z-[60] flex w-72 flex-col shadow-2xl"
-            style={{
-              backgroundColor: '#0d0d1a',
-              borderLeft: '1px solid rgba(255,255,255,0.06)',
-            }}
-          >
-            <div
-              className="flex flex-shrink-0 items-center justify-between p-4"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <h3 className="font-semibold text-white">
-                {t.participants} (2)
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowParticipants(false)}
-                className="rounded p-1 text-gray-400 hover:bg-white/5 hover:text-white"
-                aria-label="Close participants"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="space-y-3 overflow-y-auto p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-600">
-                  <span className="text-sm font-bold text-white">{interviewerInitials || 'AI'}</span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-white">{currentInterviewer.name}</p>
-                  <p className="text-xs text-gray-400">
-                    {currentInterviewer.title} · {t.aiInterviewer}
-                  </p>
-                </div>
-                <Mic className="h-4 w-4 flex-shrink-0 text-gray-400" />
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-amber-500">
-                  <span className="text-sm font-bold text-white">{userInitials}</span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-white">{userName}</p>
-                  <p className="text-xs text-gray-400">{t.you}</p>
-                </div>
-                <Mic className={`h-4 w-4 flex-shrink-0 ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
