@@ -1204,10 +1204,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
           onClick={() => {
             if (confirm(t.confirmEnd)) handleEndSession('cancelled')
           }}
-          className="flex items-center gap-2 rounded-full px-6 py-2.5 font-semibold text-white transition hover:opacity-90 active:scale-95"
+          className="flex min-w-[220px] items-center justify-center gap-2 rounded-full px-8 py-3 font-semibold text-white transition hover:opacity-95 active:scale-95"
           style={{
-            backgroundColor: '#c0392b',
-            boxShadow: '0 4px 15px rgba(192, 57, 43, 0.4)',
+            background: 'linear-gradient(180deg, #cf3f32 0%, #b12f26 100%)',
+            boxShadow: '0 6px 22px rgba(192, 57, 43, 0.42), inset 0 1px 0 rgba(255,255,255,0.14)',
           }}
         >
           <PhoneOff className="h-5 w-5" />
