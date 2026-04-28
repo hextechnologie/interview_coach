@@ -274,6 +274,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const streamRef = useRef<MediaStream | null>(null)
   const isRecordingRef = useRef(false)
   const finalTranscriptRef = useRef('')
+  const partialTranscriptRef = useRef('')
   const deepgramConnectionRef = useRef<{ send: (data: Blob) => void; finish: () => void; getReadyState: () => number } | null>(null)
   const silenceAudioContextRef = useRef<AudioContext | null>(null)
   const silenceAnimationRef = useRef<number | null>(null)
@@ -313,6 +314,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   useEffect(() => {
     transcriptBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [transcript, liveCaption, currentPartialTranscript])
+
+  useEffect(() => {
+    partialTranscriptRef.current = currentPartialTranscript
+  }, [currentPartialTranscript])
 
   useEffect(() => {
     isRecordingRef.current = isRecording
@@ -563,8 +568,10 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         if (!transcriptText.trim()) return
         if (data.is_final) {
           finalTranscriptRef.current = `${finalTranscriptRef.current} ${transcriptText}`.trim()
+          partialTranscriptRef.current = ''
           setCurrentPartialTranscript('')
         } else {
+          partialTranscriptRef.current = transcriptText
           setCurrentPartialTranscript(transcriptText)
         }
       } catch {
@@ -591,6 +598,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     try {
       audioChunksRef.current = []
       finalTranscriptRef.current = ''
+      partialTranscriptRef.current = ''
       setCurrentPartialTranscript('')
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -606,7 +614,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       startSilenceDetection(stream)
       startRealtimeTranscription(stream)
 
-      const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' })
+      const preferredMime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/webm')
+          ? 'audio/webm'
+          : undefined
+      const mr = preferredMime ? new MediaRecorder(stream, { mimeType: preferredMime }) : new MediaRecorder(stream)
       mediaRecorderRef.current = mr
       mr.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -617,15 +630,22 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         }
       }
       mr.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        const blob = new Blob(audioChunksRef.current, { type: preferredMime ?? 'audio/webm' })
+        const mergedRealtimeTranscript = `${finalTranscriptRef.current} ${partialTranscriptRef.current}`.trim()
         cleanupSilenceDetection()
         deepgramConnectionRef.current?.finish()
         deepgramConnectionRef.current = null
         streamRef.current?.getTracks().forEach((track) => track.stop())
         setIsRecording(false)
         setCurrentPartialTranscript('')
+        partialTranscriptRef.current = ''
         isRecordingRef.current = false
-        void handleRecordingComplete(blob, finalTranscriptRef.current.trim())
+        if (blob.size === 0 && !mergedRealtimeTranscript) {
+          setPhase('waiting-for-answer')
+          toast.error(t.hearError, { duration: 3000 })
+          return
+        }
+        void handleRecordingComplete(blob, mergedRealtimeTranscript)
       }
       mr.start(100)
       setIsRecording(true)
@@ -640,6 +660,11 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   function stopRecording() {
     isRecordingRef.current = false
     if (mediaRecorderRef.current?.state === 'recording') {
+      try {
+        mediaRecorderRef.current.requestData()
+      } catch {
+        // Some browsers throw if requestData is called near stop.
+      }
       mediaRecorderRef.current.stop()
     }
   }
