@@ -227,6 +227,16 @@ function getVoiceUiLang(code: string | undefined): VoiceUiLang {
   return 'en'
 }
 
+async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit, timeoutMs = 15000): Promise<Response> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(input, { ...init, signal: controller.signal })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 // ── Strip any residual markdown from voice text ────────────────────────────
 function stripMarkdown(text: string): string {
   return text
@@ -684,11 +694,11 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         formData.append('audio', audioBlob, 'answer.webm')
         formData.append('sessionId', params.sessionId)
 
-        const transcribeRes = await fetch('/api/interview/voice/transcribe', {
+        const transcribeRes = await fetchWithTimeout('/api/interview/voice/transcribe', {
           method: 'POST',
           headers: { Authorization: `Bearer ${auth.access_token}` },
           body: formData,
-        })
+        }, 15000)
         if (transcribeRes.ok) transcribedText = (await transcribeRes.json()).transcript || ''
       }
 
@@ -711,24 +721,28 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         text: transcribedText,
       })
 
-      const feedbackRes = await fetch('/api/interview/voice/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth.access_token}` },
-        body: JSON.stringify({
-          sessionId: params.sessionId,
-          questionId: currentQuestion.id,
-          question: currentQuestion.question,
-          answer: transcribedText,
-          interviewerId: currentQuestion.interviewer.id,
-        }),
-      })
-
       let feedbackText = "Got it, let's keep going."
       let isRedirect = false
-      if (feedbackRes.ok) {
-        const fd = await feedbackRes.json()
-        feedbackText = fd.feedback || feedbackText
-        isRedirect = fd.isRedirect === true
+      try {
+        const feedbackRes = await fetchWithTimeout('/api/interview/voice/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth.access_token}` },
+          body: JSON.stringify({
+            sessionId: params.sessionId,
+            questionId: currentQuestion.id,
+            question: currentQuestion.question,
+            answer: transcribedText,
+            interviewerId: currentQuestion.interviewer.id,
+          }),
+        }, 20000)
+
+        if (feedbackRes.ok) {
+          const fd = await feedbackRes.json()
+          feedbackText = fd.feedback || feedbackText
+          isRedirect = fd.isRedirect === true
+        }
+      } catch {
+        // Keep local fallback feedbackText so the flow never stalls on network/API hiccups.
       }
 
       if (isRedirect) {
@@ -758,8 +772,9 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
       if (!sessionEndedRef.current) setTimeout(() => generateNextQuestion(), 1200)
     } catch {
-      setError('Failed to process answer.')
-      setPhase('error')
+      // Never hard-fail the room on answer processing; recover and let user continue.
+      setPhase('waiting-for-answer')
+      toast.error('Could not process this answer. Please try again.', { duration: 4000 })
     }
   }
 
