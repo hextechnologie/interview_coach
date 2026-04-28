@@ -290,6 +290,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const silenceAnimationRef = useRef<number | null>(null)
   const silenceStartRef = useRef<number | null>(null)
   const recordingStartRef = useRef(0)
+  const lastVoiceActivityRef = useRef(0)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -499,6 +500,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     silenceAudioContextRef.current?.close().catch(() => undefined)
     silenceAudioContextRef.current = null
     silenceStartRef.current = null
+    lastVoiceActivityRef.current = 0
     setAudioLevel(0)
   }
 
@@ -514,9 +516,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     analyser.fftSize = 256
     const dataArray = new Uint8Array(analyser.frequencyBinCount)
     const SILENCE_RMS_THRESHOLD = 0.018
-    const SILENCE_DURATION = 2000
+    const SILENCE_DURATION = 1800
     const MIN_RECORDING_TIME = 2000
+    const MAX_RECORDING_DURATION = 20000
+    const MAX_NO_SPEECH_DURATION = 7000
     recordingStartRef.current = Date.now()
+    lastVoiceActivityRef.current = recordingStartRef.current
     silenceStartRef.current = null
 
     const checkSilence = () => {
@@ -535,6 +540,14 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       setAudioLevel(Math.min(rms * 8, 1))
 
       const recordingDuration = Date.now() - recordingStartRef.current
+      const noSpeechDuration = Date.now() - lastVoiceActivityRef.current
+
+      if (recordingDuration > MAX_RECORDING_DURATION || noSpeechDuration > MAX_NO_SPEECH_DURATION) {
+        stopRecording()
+        cleanupSilenceDetection()
+        return
+      }
+
       if (rms < SILENCE_RMS_THRESHOLD) {
         if (!silenceStartRef.current) {
           silenceStartRef.current = Date.now()
@@ -545,6 +558,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         }
       } else {
         silenceStartRef.current = null
+        lastVoiceActivityRef.current = Date.now()
       }
 
       silenceAnimationRef.current = requestAnimationFrame(checkSilence)
@@ -576,6 +590,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         }
         const transcriptText = data.channel?.alternatives?.[0]?.transcript ?? ''
         if (!transcriptText.trim()) return
+        lastVoiceActivityRef.current = Date.now()
         if (data.is_final) {
           finalTranscriptRef.current = `${finalTranscriptRef.current} ${transcriptText}`.trim()
           partialTranscriptRef.current = ''
