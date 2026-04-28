@@ -48,6 +48,28 @@ interface TranscriptEntry {
 
 interface PreviousAnswer { question: string; answer: string }
 
+type BrowserSpeechRecognition = {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: Event) => void) | null
+  onend: (() => void) | null
+  start: () => void
+  stop: () => void
+}
+
+type SpeechRecognitionEvent = Event & {
+  resultIndex: number
+  results: {
+    length: number
+    [index: number]: {
+      isFinal: boolean
+      [index: number]: { transcript: string }
+    }
+  }
+}
+
 /** Fixed bar heights for Marcus tile wave (avoid Math.random on render). */
 const VOICE_TILE_WAVE_HEIGHTS = [
   10, 16, 8, 20, 12, 14, 6, 18, 11, 15, 9, 17, 7, 13, 19, 10, 14, 8, 16, 12,
@@ -291,6 +313,8 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const silenceStartRef = useRef<number | null>(null)
   const recordingStartRef = useRef(0)
   const lastVoiceActivityRef = useRef(0)
+  const recordingSafetyTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const speechRecognitionRef = useRef<BrowserSpeechRecognition | null>(null)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -339,6 +363,8 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       if (silenceAnimationRef.current !== null) cancelAnimationFrame(silenceAnimationRef.current)
       silenceAudioContextRef.current?.close().catch(() => undefined)
       deepgramConnectionRef.current?.finish()
+      if (recordingSafetyTimeoutRef.current) clearTimeout(recordingSafetyTimeoutRef.current)
+      speechRecognitionRef.current?.stop()
     }
   }, [])
 
@@ -616,6 +642,64 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     streamRef.current = stream
   }
 
+  function startBrowserSpeechRecognition() {
+    const SpeechCtor = (window as Window & {
+      webkitSpeechRecognition?: new () => BrowserSpeechRecognition
+      SpeechRecognition?: new () => BrowserSpeechRecognition
+    }).SpeechRecognition
+      || (window as Window & {
+        webkitSpeechRecognition?: new () => BrowserSpeechRecognition
+      }).webkitSpeechRecognition
+
+    if (!SpeechCtor) return
+
+    try {
+      const recognition = new SpeechCtor()
+      recognition.continuous = true
+      recognition.interimResults = true
+      recognition.lang = getVoiceUiLang(session?.language)
+      recognition.onresult = (event) => {
+        let interim = ''
+        let finalChunk = ''
+        for (let i = event.resultIndex; i < event.results.length; i += 1) {
+          const transcript = event.results[i][0]?.transcript ?? ''
+          if (!transcript.trim()) continue
+          if (event.results[i].isFinal) {
+            finalChunk += ` ${transcript}`
+          } else {
+            interim += ` ${transcript}`
+          }
+        }
+        if (finalChunk.trim()) {
+          finalTranscriptRef.current = `${finalTranscriptRef.current} ${finalChunk}`.trim()
+        }
+        const interimText = interim.trim()
+        partialTranscriptRef.current = interimText
+        setCurrentPartialTranscript(interimText)
+        if (interimText || finalChunk.trim()) {
+          lastVoiceActivityRef.current = Date.now()
+        }
+      }
+      recognition.onerror = () => {
+        // Silent fallback; Deepgram/Whisper still handle transcript.
+      }
+      recognition.onend = () => {
+        // Auto-restart while recording to keep live transcript continuous.
+        if (isRecordingRef.current) {
+          try {
+            recognition.start()
+          } catch {
+            // Ignore restart failures; other pipelines continue.
+          }
+        }
+      }
+      recognition.start()
+      speechRecognitionRef.current = recognition
+    } catch {
+      // Browser recognition unavailable or blocked.
+    }
+  }
+
   // ── Microphone recording (auto-start after question audio) ─────────────────
   async function startRecording() {
     if (sessionEndedRef.current || mediaRecorderRef.current?.state === 'recording') return
@@ -638,6 +722,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       isRecordingRef.current = true
       startSilenceDetection(stream)
       startRealtimeTranscription(stream)
+      startBrowserSpeechRecognition()
 
       const preferredMime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
@@ -660,6 +745,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         cleanupSilenceDetection()
         deepgramConnectionRef.current?.finish()
         deepgramConnectionRef.current = null
+        speechRecognitionRef.current?.stop()
+        speechRecognitionRef.current = null
+        if (recordingSafetyTimeoutRef.current) {
+          clearTimeout(recordingSafetyTimeoutRef.current)
+          recordingSafetyTimeoutRef.current = null
+        }
         streamRef.current?.getTracks().forEach((track) => track.stop())
         setIsRecording(false)
         setCurrentPartialTranscript('')
@@ -673,6 +764,11 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         void handleRecordingComplete(blob, mergedRealtimeTranscript)
       }
       mr.start(100)
+      recordingSafetyTimeoutRef.current = setTimeout(() => {
+        if (isRecordingRef.current) {
+          stopRecording()
+        }
+      }, 15000)
       setIsRecording(true)
       setPhase('recording-answer')
     } catch (err) {
@@ -684,6 +780,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
   function stopRecording() {
     isRecordingRef.current = false
+    if (recordingSafetyTimeoutRef.current) {
+      clearTimeout(recordingSafetyTimeoutRef.current)
+      recordingSafetyTimeoutRef.current = null
+    }
+    speechRecognitionRef.current?.stop()
+    speechRecognitionRef.current = null
     if (mediaRecorderRef.current?.state === 'recording') {
       try {
         mediaRecorderRef.current.requestData()
