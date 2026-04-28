@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useRef, useCallback } from 'react'
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { INTERVIEWERS, type Interviewer } from '@/lib/interviewers'
@@ -9,7 +9,6 @@ import {
   Mic,
   PhoneOff,
   Shield,
-  MessageSquare,
   Users,
   X,
 } from 'lucide-react'
@@ -72,6 +71,120 @@ type Phase =
   | 'waiting-for-answer' | 'recording-answer'
   | 'processing-answer' | 'speaking-feedback'
   | 'completed' | 'error'
+
+type VoiceUiLang = 'en' | 'fr' | 'ar' | 'es'
+
+const TOOLBAR_LABELS: Record<VoiceUiLang, {
+  participants: string
+  microphone: string
+  stop: string
+  leave: string
+  speaking: string
+  listening: string
+  processing: string
+  waiting: string
+  transcribing: string
+  gettingFeedback: string
+  hearError: string
+  confirmEnd: string
+  liveTranscript: string
+  transcriptLive: string
+  question: string
+  feedback: string
+  you: string
+  emptyTranscript: string
+  aiInterviewer: string
+}> = {
+  en: {
+    participants: 'Participants',
+    microphone: 'Microphone',
+    stop: 'Stop',
+    leave: 'Leave',
+    speaking: 'Speaking...',
+    listening: 'Listening...',
+    processing: 'Processing your answer...',
+    waiting: 'Waiting for your answer...',
+    transcribing: 'Transcribing...',
+    gettingFeedback: 'Getting feedback...',
+    hearError: "Couldn't hear you — please try again.",
+    confirmEnd: 'End interview early?',
+    liveTranscript: 'Live Transcript',
+    transcriptLive: 'Transcript live...',
+    question: 'Question',
+    feedback: 'Feedback',
+    you: 'You',
+    emptyTranscript: 'No messages yet',
+    aiInterviewer: 'AI Interviewer',
+  },
+  fr: {
+    participants: 'Participants',
+    microphone: 'Microphone',
+    stop: 'Arrêter',
+    leave: 'Quitter',
+    speaking: 'En train de parler...',
+    listening: "À l'écoute...",
+    processing: 'Traitement de votre réponse...',
+    waiting: 'En attente de votre réponse...',
+    transcribing: 'Transcription en cours...',
+    gettingFeedback: 'Obtention du retour...',
+    hearError: "Je n'ai pas entendu — réessayez.",
+    confirmEnd: "Mettre fin à l'entretien maintenant ?",
+    liveTranscript: 'Transcription en direct',
+    transcriptLive: 'Transcription en cours...',
+    question: 'Question',
+    feedback: 'Retour',
+    you: 'Vous',
+    emptyTranscript: 'Aucun message pour l’instant',
+    aiInterviewer: 'Interviewer IA',
+  },
+  ar: {
+    participants: 'المشاركون',
+    microphone: 'الميكروفون',
+    stop: 'إيقاف',
+    leave: 'مغادرة',
+    speaking: 'يتحدث...',
+    listening: 'يستمع...',
+    processing: 'جاري معالجة إجابتك...',
+    waiting: 'في انتظار إجابتك...',
+    transcribing: 'جاري النسخ...',
+    gettingFeedback: 'جاري تلقي الملاحظات...',
+    hearError: 'لم نسمعك — حاول مرة أخرى.',
+    confirmEnd: 'إنهاء المقابلة مبكراً؟',
+    liveTranscript: 'النص المباشر',
+    transcriptLive: 'النص جارٍ...',
+    question: 'سؤال',
+    feedback: 'ملاحظات',
+    you: 'أنت',
+    emptyTranscript: 'لا توجد رسائل بعد',
+    aiInterviewer: 'مُحاور بالذكاء الاصطناعي',
+  },
+  es: {
+    participants: 'Participantes',
+    microphone: 'Micrófono',
+    stop: 'Detener',
+    leave: 'Salir',
+    speaking: 'Hablando...',
+    listening: 'Escuchando...',
+    processing: 'Procesando tu respuesta...',
+    waiting: 'Esperando tu respuesta...',
+    transcribing: 'Transcribiendo...',
+    gettingFeedback: 'Obteniendo comentarios...',
+    hearError: 'No te oí — inténtalo de nuevo.',
+    confirmEnd: '¿Terminar la entrevista ahora?',
+    liveTranscript: 'Transcripción en vivo',
+    transcriptLive: 'Transcripción en curso...',
+    question: 'Pregunta',
+    feedback: 'Comentario',
+    you: 'Tú',
+    emptyTranscript: 'Aún no hay mensajes',
+    aiInterviewer: 'Entrevistador IA',
+  },
+}
+
+function getVoiceUiLang(code: string | undefined): VoiceUiLang {
+  if (code === 'fr' || code === 'ar' || code === 'es' || code === 'en') return code
+  return 'en'
+}
 
 // ── Strip any residual markdown from voice text ────────────────────────────
 function stripMarkdown(text: string): string {
@@ -211,6 +324,11 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const maxQuestions = session ? getMaxQuestions(session.duration_minutes) : 3
   // Progress capped at 100%
   const progressPercent = Math.min(100, Math.round((questionCount / maxQuestions) * 100))
+
+  const t = useMemo(
+    () => TOOLBAR_LABELS[getVoiceUiLang(session?.language)],
+    [session?.language]
+  )
 
   // ── Toast deduplication ────────────────────────────────────────────────────
   const shownToasts = useRef<Set<string>>(new Set())
@@ -432,7 +550,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     if (sessionEndedRef.current || !currentQuestion) return
     setPhase('processing-answer')
     setActiveSpeakerId('user')
-    setStatusText('Transcribing...')
+    setStatusText(t.transcribing)
 
     try {
       const { data: { session: auth } } = await supabase.auth.getSession()
@@ -455,7 +573,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
       if (!transcribedText.trim()) {
         setPhase('waiting-for-answer')
-        setStatusText("Couldn't hear you — please try again.")
+        setStatusText(t.hearError)
         return
       }
 
@@ -467,12 +585,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       addToTranscript({
         role: 'user',
         speakerId: 'user',
-        speakerName: 'You',
+        speakerName: t.you,
         speakerAvatar: '🧑',
         text: transcribedText,
       })
 
-      setStatusText('Getting feedback...')
+      setStatusText(t.gettingFeedback)
 
       const feedbackRes = await fetch('/api/interview/voice/feedback', {
         method: 'POST',
@@ -657,7 +775,6 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const isAISpeaking = phase === 'speaking-question' || phase === 'speaking-feedback'
   const isAIThinking = phase === 'generating-question'
   const canRecord = phase === 'waiting-for-answer' || phase === 'recording-answer'
-  const elapsedSeconds = Math.max(0, totalSeconds - timeRemaining)
   const userName = `${session?.user_profile?.firstName || ''} ${session?.user_profile?.lastName || ''}`.trim() || 'Candidate'
   const userInitials = userName
     .split(' ')
@@ -671,7 +788,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
     .slice(0, 2)
     .map((chunk) => chunk[0]?.toUpperCase() || '')
     .join('')
-  const formatElapsed = (value: number): string => {
+  const formatTime = (value: number): string => {
     const mins = Math.floor(value / 60).toString().padStart(2, '0')
     const secs = (value % 60).toString().padStart(2, '0')
     return `${mins}:${secs}`
@@ -681,17 +798,17 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   const cleanedQuestionText = questionText.replace(/^(Got it|Good answer|Great answer|Interesting|I see|Noted|Perfect|Excellent)[.,!]?\s*/i, '')
   const micDisabled = isAISpeaking || isUserProcessing || !canRecord
   const statusLine = isAISpeaking
-    ? '🔊 Speaking...'
+    ? t.speaking
     : isUserProcessing
-      ? '⏳ Processing your answer...'
+      ? t.processing
       : isUserRecording
-        ? '👂 Listening...'
-        : '⏸ Waiting for your answer'
+        ? t.listening
+        : t.waiting
 
   return (
     <div
-      className="h-screen text-gray-900 flex flex-col overflow-hidden relative"
-      style={{ background: 'linear-gradient(135deg, #dde8dd 0%, #e8ede8 100%)' }}
+      className="h-screen text-gray-200 flex flex-col overflow-hidden relative"
+      style={{ backgroundColor: '#0a0f1e' }}
     >
       <Toaster
         position="top-center"
@@ -702,49 +819,70 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         containerStyle={{ top: 20 }}
       />
 
-      {/* Top bar */}
-      <div className="h-14 flex-shrink-0 flex items-center justify-between px-4 bg-transparent">
-        <div className="flex items-center gap-2 bg-black/10 rounded-full px-3 py-1.5">
-          <Shield className="w-4 h-4 text-gray-700" />
-          <span className="text-sm font-medium text-gray-700">{userName}</span>
+      {/* Top bar: user (left) · timer (center) · balance (right) */}
+      <div className="absolute top-0 left-0 right-0 z-50 grid grid-cols-3 items-center h-16 px-6 pointer-events-none">
+        <div
+          className="flex items-center gap-2 rounded-full px-3 py-1.5 w-fit max-w-full"
+          style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+        >
+          <Shield className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <span className="text-gray-200 text-sm font-medium truncate">{userName}</span>
         </div>
-        <div className="flex items-center gap-2 bg-black/10 rounded-full px-3 py-1.5">
-          <div className={`w-2 h-2 rounded-full ${isUserRecording ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`} />
-          <span className="text-sm font-mono font-medium text-gray-700">{formatElapsed(elapsedSeconds)}</span>
+        <div className="flex justify-center min-w-0">
+          <div
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full shadow-md"
+            style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
+          >
+            <div
+              className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                timeRemaining < 60 ? 'bg-red-500 animate-pulse' : timeRemaining < 120 ? 'bg-yellow-500' : 'bg-green-500'
+              }`}
+            />
+            <span className="font-mono font-semibold text-gray-200 text-sm tabular-nums">
+              {formatTime(timeRemaining)}
+            </span>
+          </div>
         </div>
+        <div className="w-32 justify-self-end" />
       </div>
 
       {/* Main stage */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden pt-16 pb-0">
         <div className="h-full flex flex-col items-center justify-center gap-4 p-6">
           <div className="flex-1 flex items-center justify-center" style={{ minHeight: 0 }}>
             <div
-              className="relative rounded-2xl overflow-hidden shadow-xl"
+              className="relative rounded-2xl overflow-hidden shadow-xl flex flex-col"
               style={{
                 width: '480px',
-                height: '360px',
+                height: '320px',
                 flexShrink: 0,
-                backgroundColor: '#c8d4c8',
-                backgroundImage: 'none',
+                backgroundColor: '#111827',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '16px',
               }}
             >
-              <div className="absolute inset-0" style={{ backgroundColor: '#c8d4c8' }} />
-              <div className="relative z-10 flex flex-col items-center justify-center h-full gap-4">
+              <div className="absolute inset-0" style={{ backgroundColor: '#111827' }} />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full gap-4 px-4">
                 <div className="relative">
                   {isAISpeaking && (
                     <>
-                      <div className="absolute inset-0 rounded-full border-4 border-white/30 animate-ping scale-110 pointer-events-none" />
-                      <div className="absolute inset-0 rounded-full border-4 border-white/20 animate-ping scale-125 pointer-events-none [animation-delay:200ms]" />
+                      <div className="absolute inset-0 rounded-full border-4 border-white/20 animate-ping scale-110 pointer-events-none" />
+                      <div className="absolute inset-0 rounded-full border-4 border-white/10 animate-ping scale-125 pointer-events-none [animation-delay:200ms]" />
                     </>
                   )}
-                  <div className="w-36 h-36 rounded-full flex items-center justify-center shadow-2xl" style={{ backgroundColor: '#2d3748' }}>
+                  <div
+                    className="w-36 h-36 rounded-full flex items-center justify-center shadow-2xl"
+                    style={{ backgroundColor: '#1f2937' }}
+                  >
                     <span className="text-white text-6xl font-black">{interviewerInitials || 'AI'}</span>
                   </div>
                 </div>
 
                 <div className="text-center px-4">
-                  <p className="text-gray-800 text-xl font-bold">{currentInterviewer.name} · {currentInterviewer.title}</p>
-                  <p className="text-gray-500 text-sm mt-1">{statusText || statusLine}</p>
+                  <p className="text-white text-xl font-bold">
+                    {currentInterviewer.name} · {currentInterviewer.title}
+                  </p>
+                  <p className="text-gray-400 text-sm mt-1">{statusText || statusLine}</p>
                 </div>
 
                 {isAISpeaking && (
@@ -754,7 +892,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
                         key={i}
                         className="w-2 rounded-full"
                         style={{
-                          backgroundColor: '#4a5568',
+                          backgroundColor: '#7c3aed',
                           height: `${8 + (i % 4) * 4}px`,
                           animation: `audioWave 0.6s ease-in-out ${i * 0.06}s infinite alternate`,
                         }}
@@ -768,15 +906,16 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
           {currentQuestion && (
             <div
-              className="rounded-xl px-6 py-4 text-center"
+              className="rounded-xl px-6 py-4 text-left sm:text-center w-full"
               style={{
-                width: '480px',
-                backgroundColor: 'rgba(0,0,0,0.55)',
-                backdropFilter: 'blur(8px)',
+                maxWidth: '480px',
+                backgroundColor: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(10px)',
               }}
             >
-              <span className="text-xs text-gray-300 font-medium uppercase tracking-wider block mb-2">
-                Question {questionCount}
+              <span className="text-purple-400 text-xs font-semibold uppercase tracking-wider block mb-2">
+                {t.question} {questionCount}
               </span>
               <p className="text-white text-sm leading-relaxed">
                 {cleanedQuestionText || questionText}
@@ -787,18 +926,28 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
         {/* Self tile bottom-right */}
         <div
-          className="absolute bottom-24 right-6 rounded-xl overflow-hidden shadow-lg border-2 border-white/50"
-          style={{ width: '160px', height: '120px' }}
+          className="absolute bottom-24 right-6 rounded-xl overflow-hidden shadow-lg"
+          style={{
+            width: '160px',
+            height: '120px',
+            backgroundColor: '#1f2937',
+            border: '2px solid rgba(255,255,255,0.1)',
+          }}
         >
-          <div className="absolute inset-0" style={{ backgroundColor: '#f6d860' }} />
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center shadow-md" style={{ backgroundColor: '#d4a017' }}>
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center shadow-md"
+              style={{ backgroundColor: 'rgba(124, 58, 237, 0.4)' }}
+            >
               <span className="text-white text-lg font-black">{userInitials}</span>
             </div>
           </div>
           <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-            <span className="bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-              {userName.split(' ')[0] || 'You'}
+            <span
+              className="text-gray-200 text-xs px-2 py-0.5 rounded-full"
+              style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
+            >
+              {userName.split(' ')[0] || t.you}
             </span>
           </div>
           {isRecording && (
@@ -811,64 +960,53 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
       </div>
 
       {/* Toolbar */}
-      <div className="h-20 flex-shrink-0 flex items-center justify-center gap-6 bg-white/70 backdrop-blur-md border-t border-gray-200/50 overflow-x-auto px-4">
+      <div
+        className="h-20 flex-shrink-0 flex items-center justify-center gap-6 overflow-x-auto px-4"
+        style={{ backgroundColor: '#111827', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+      >
         <button
-          onClick={() => setShowTranscript(!showTranscript)}
-          className={`flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl transition min-w-[80px] ${
-            showTranscript ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200/60 text-gray-600'
-          }`}
-        >
-          <div className="relative">
-            <MessageSquare className="w-6 h-6" />
-            {displayMessages.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                {displayMessages.length > 9 ? '9+' : displayMessages.length}
-              </span>
-            )}
-          </div>
-          <span className="text-xs font-medium">Conversation</span>
-        </button>
-
-        <button
+          type="button"
           onClick={() => setShowParticipants(!showParticipants)}
           className={`flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl transition min-w-[80px] ${
-            showParticipants ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-200/60 text-gray-600'
+            showParticipants ? 'bg-gray-800 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-800'
           }`}
         >
           <div className="relative">
             <Users className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-gray-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-violet-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
               2
             </span>
           </div>
-          <span className="text-xs font-medium">Participants</span>
+          <span className="text-xs font-medium">{t.participants}</span>
         </button>
 
-        <div className="w-px h-10 bg-gray-300" />
+        <div className="w-px h-10 bg-gray-700" />
 
         <button
+          type="button"
           onClick={isRecording ? stopRecording : startRecording}
           disabled={micDisabled}
           className={`flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl transition min-w-[80px] ${
             isRecording
-              ? 'bg-red-100 text-red-600'
+              ? 'bg-red-900/50 text-red-200 border border-red-500/40'
               : micDisabled
-                ? 'opacity-50 cursor-not-allowed text-gray-400'
-                : 'hover:bg-gray-200/60 text-gray-600'
+                ? 'opacity-50 cursor-not-allowed text-gray-500'
+                : 'text-gray-300 hover:text-white hover:bg-gray-800'
           }`}
         >
-          <Mic className={`w-6 h-6 ${isRecording ? 'text-red-600' : ''}`} />
-          <span className="text-xs font-medium">{isRecording ? 'Stop' : 'Microphone'}</span>
+          <Mic className={`w-6 h-6 ${isRecording ? 'text-red-300' : ''}`} />
+          <span className="text-xs font-medium">{isRecording ? t.stop : t.microphone}</span>
         </button>
 
-        <div className="w-px h-10 bg-gray-300" />
+        <div className="w-px h-10 bg-gray-700" />
 
         <button
-          onClick={() => confirm('End interview early?') && handleEndSession('cancelled')}
-          className="flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition min-w-[80px]"
+          type="button"
+          onClick={() => { if (confirm(t.confirmEnd)) handleEndSession('cancelled') }}
+          className="flex flex-col items-center gap-1.5 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 transition min-w-[80px] text-white"
         >
-          <PhoneOff className="w-6 h-6 text-white" />
-          <span className="text-xs font-medium text-white">Quitter</span>
+          <PhoneOff className="w-6 h-6" />
+          <span className="text-xs font-medium">{t.leave}</span>
         </button>
       </div>
 
@@ -880,39 +1018,58 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="absolute right-0 top-0 bottom-20 w-80 bg-white shadow-2xl flex flex-col z-40"
+            className="absolute right-0 top-0 bottom-20 w-80 flex flex-col z-40"
+            style={{
+              backgroundColor: '#111827',
+              borderLeft: '1px solid rgba(255,255,255,0.08)',
+            }}
           >
-            <div className="h-14 flex items-center justify-between px-4 border-b border-gray-200">
-              <h3 className="font-semibold text-gray-800">Live Transcript</h3>
-              <button onClick={() => setShowTranscript(false)} className="p-1 hover:bg-gray-100 rounded">
-                <X className="w-5 h-5 text-gray-500" />
+            <div
+              className="h-14 flex items-center justify-between px-4 flex-shrink-0"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              <h3 className="text-white font-semibold">{t.liveTranscript}</h3>
+              <button
+                type="button"
+                onClick={() => setShowTranscript(false)}
+                className="p-1 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                aria-label="Close transcript"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+              {displayMessages.length === 0 && (
+                <div className="flex items-center justify-center h-32">
+                  <p className="text-gray-500 text-sm text-center px-2">{t.emptyTranscript}</p>
+                </div>
+              )}
               {displayMessages.map((msg) => {
                 const isUser = msg.role === 'user'
                 const isFeedback = msg.role === 'feedback'
                 return (
                   <div key={msg.id} className={`flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
                     {!isUser && (
-                      <div className="w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <span className="text-white text-xs font-bold">{interviewerInitials || 'AI'}</span>
                       </div>
                     )}
                     <div
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                         isUser
-                          ? 'bg-blue-600 text-white rounded-tr-sm'
+                          ? 'bg-purple-600 text-white rounded-tr-sm'
                           : isFeedback
-                            ? 'bg-yellow-50 border border-yellow-200 text-gray-700 rounded-tl-sm'
-                            : 'bg-gray-100 text-gray-800 rounded-tl-sm'
+                            ? 'bg-blue-900/50 border border-blue-500/30 text-blue-200 rounded-tl-sm'
+                            : 'bg-gray-700 text-gray-200 rounded-tl-sm'
                       }`}
                     >
-                      {isFeedback && <span className="text-xs text-yellow-600 font-medium block mb-1">💡 Feedback</span>}
-                      <p>{msg.text}</p>
+                      {isFeedback && (
+                        <span className="text-xs text-blue-300 font-medium block mb-1">{t.feedback}</span>
+                      )}
+                      <p className="leading-relaxed">{msg.text}</p>
                     </div>
                     {isUser && (
-                      <div className="w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <span className="text-white text-xs font-bold">{userInitials}</span>
                       </div>
                     )}
@@ -921,9 +1078,12 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
               })}
               <div ref={transcriptBottomRef} />
             </div>
-            <div className="p-3 border-t border-gray-200">
-              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
-                <span className="text-gray-400 text-sm flex-1">Transcript live...</span>
+            <div className="p-3 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div
+                className="flex items-center gap-2 rounded-full px-4 py-2"
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+              >
+                <span className="text-gray-500 text-sm flex-1">{t.transcriptLive}</span>
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               </div>
             </div>
@@ -939,34 +1099,50 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="absolute right-0 top-0 bottom-20 w-72 bg-white shadow-2xl flex flex-col z-40"
+            className="absolute right-0 top-0 bottom-20 w-72 flex flex-col z-40"
+            style={{
+              backgroundColor: '#111827',
+              borderLeft: '1px solid rgba(255,255,255,0.08)',
+            }}
           >
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-800">Participants (2)</h3>
-              <button onClick={() => setShowParticipants(false)} className="p-1 hover:bg-gray-100 rounded">
-                <X className="w-4 h-4 text-gray-500" />
+            <div
+              className="p-4 flex items-center justify-between flex-shrink-0"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              <h3 className="font-semibold text-white">
+                {t.participants} (2)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowParticipants(false)}
+                className="p-1 rounded hover:bg-gray-700 text-gray-400 hover:text-white"
+                aria-label="Close participants"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-4 space-y-3">
+            <div className="p-4 space-y-3 overflow-y-auto">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-bold text-sm">{interviewerInitials || 'AI'}</span>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-800">{currentInterviewer.name}</p>
-                  <p className="text-xs text-gray-500">{currentInterviewer.title} · AI Interviewer</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-white truncate">{currentInterviewer.name}</p>
+                  <p className="text-xs text-gray-400">
+                    {currentInterviewer.title} · {t.aiInterviewer}
+                  </p>
                 </div>
-                <Mic className="w-4 h-4 text-gray-400 ml-auto" />
+                <Mic className="w-4 h-4 text-gray-400 flex-shrink-0" />
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-bold text-sm">{userInitials}</span>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-800">{userName}</p>
-                  <p className="text-xs text-gray-500">You</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-white truncate">{userName}</p>
+                  <p className="text-xs text-gray-400">{t.you}</p>
                 </div>
-                <Mic className={`w-4 h-4 ml-auto ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
+                <Mic className={`w-4 h-4 flex-shrink-0 ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
               </div>
             </div>
           </motion.div>
