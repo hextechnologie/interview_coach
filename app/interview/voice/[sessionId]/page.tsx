@@ -498,7 +498,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
 
     analyser.fftSize = 256
     const dataArray = new Uint8Array(analyser.frequencyBinCount)
-    const SILENCE_THRESHOLD = 10
+    const SILENCE_RMS_THRESHOLD = 0.018
     const SILENCE_DURATION = 2000
     const MIN_RECORDING_TIME = 2000
     recordingStartRef.current = Date.now()
@@ -510,12 +510,17 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         return
       }
 
-      analyser.getByteFrequencyData(dataArray)
-      const average = dataArray.reduce((acc, val) => acc + val, 0) / dataArray.length
-      setAudioLevel(Math.min(average / 50, 1))
+      analyser.getByteTimeDomainData(dataArray)
+      let sumSquares = 0
+      for (let i = 0; i < dataArray.length; i += 1) {
+        const normalized = (dataArray[i] - 128) / 128
+        sumSquares += normalized * normalized
+      }
+      const rms = Math.sqrt(sumSquares / dataArray.length)
+      setAudioLevel(Math.min(rms * 8, 1))
 
       const recordingDuration = Date.now() - recordingStartRef.current
-      if (average < SILENCE_THRESHOLD) {
+      if (rms < SILENCE_RMS_THRESHOLD) {
         if (!silenceStartRef.current) {
           silenceStartRef.current = Date.now()
         } else if (Date.now() - silenceStartRef.current > SILENCE_DURATION && recordingDuration > MIN_RECORDING_TIME) {
@@ -596,6 +601,8 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         },
       })
       streamRef.current = stream
+      // Important: arm the recording ref before silence loop starts.
+      isRecordingRef.current = true
       startSilenceDetection(stream)
       startRealtimeTranscription(stream)
 
@@ -617,6 +624,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
         streamRef.current?.getTracks().forEach((track) => track.stop())
         setIsRecording(false)
         setCurrentPartialTranscript('')
+        isRecordingRef.current = false
         void handleRecordingComplete(blob, finalTranscriptRef.current.trim())
       }
       mr.start(100)
@@ -630,6 +638,7 @@ export default function VoiceInterviewRoom({ params }: { params: { sessionId: st
   }
 
   function stopRecording() {
+    isRecordingRef.current = false
     if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop()
     }
