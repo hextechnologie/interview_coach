@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { Button, Input, Card } from '@/components/ui'
 import { useLanguage } from '@/components/LanguageProvider'
 
@@ -20,14 +19,20 @@ export default function ForgotPasswordPage() {
     setMessage('')
     setLoading(true)
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    })
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
 
-    if (error) {
+      if (!res.ok) {
+        setError(t('forgotPassword.errorMessage'))
+      } else {
+        setMessage(t('forgotPassword.successMessage'))
+      }
+    } catch {
       setError(t('forgotPassword.errorMessage'))
-    } else {
-      setMessage(t('forgotPassword.successMessage'))
     }
 
     setLoading(false)

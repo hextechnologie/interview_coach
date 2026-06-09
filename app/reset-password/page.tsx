@@ -15,8 +15,43 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [sessionReady, setSessionReady] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    let subscription: { unsubscribe: () => void } | undefined
+
+    const establishRecoverySession = async () => {
+      const params = new URLSearchParams(window.location.search)
+      const code = params.get('code')
+
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        if (exchangeError) {
+          setError(t('resetPassword.errorInvalidLink'))
+          return
+        }
+        window.history.replaceState({}, '', '/reset-password')
+      }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        setSessionReady(true)
+        return
+      }
+
+      const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+        if (event === 'PASSWORD_RECOVERY' || nextSession) {
+          setSessionReady(true)
+        }
+      })
+      subscription = data.subscription
+    }
+
+    void establishRecoverySession()
+    return () => subscription?.unsubscribe()
+  }, [t])
 
   useEffect(() => {
     if (success) {
@@ -37,6 +72,12 @@ export default function ResetPasswordPage() {
 
     if (password !== confirmPassword) {
       setError(t('resetPassword.errorMismatch'))
+      return
+    }
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      setError(t('resetPassword.errorInvalidLink'))
       return
     }
 
@@ -67,6 +108,11 @@ export default function ResetPasswordPage() {
           <p className="text-gray-400 text-center mb-6">{t('resetPassword.subtitle')}</p>
           {success && <div className="mb-4 rounded-lg border border-green-500 bg-green-500/10 px-4 py-3 text-green-400">{success}</div>}
           {error && <div className="mb-4 rounded-lg border border-red-500 bg-red-500/10 px-4 py-3 text-red-400">{error}</div>}
+          {!sessionReady && !error && (
+            <div className="mb-4 rounded-lg border border-border bg-background/50 px-4 py-3 text-gray-400 text-sm text-center">
+              {t('resetPassword.verifyingLink')}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">{t('resetPassword.newPasswordLabel')}</label>
@@ -95,7 +141,7 @@ export default function ResetPasswordPage() {
                 required
               />
             </div>
-            <Button type="submit" variant="primary" fullWidth loading={loading}>{t('resetPassword.updateButton')}</Button>
+            <Button type="submit" variant="primary" fullWidth loading={loading} disabled={!sessionReady}>{t('resetPassword.updateButton')}</Button>
           </form>
         </Card>
       </div>

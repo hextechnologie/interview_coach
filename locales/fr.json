@@ -1976,6 +1976,8 @@
     "updateButton": "Mettre à Jour le Mot de Passe",
     "successMessage": "Mot de passe mis à jour avec succès ✅ Redirection vers la connexion...",
     "errorTooShort": "Le mot de passe doit comporter au moins 6 caractères.",
-    "errorMismatch": "Les mots de passe ne correspondent pas."
+    "errorMismatch": "Les mots de passe ne correspondent pas.",
+    "errorInvalidLink": "Ce lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau.",
+    "verifyingLink": "Vérification de votre lien de réinitialisation..."
   }
 }

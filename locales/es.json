@@ -1976,6 +1976,8 @@
     "updateButton": "Actualizar Contraseña",
     "successMessage": "Contraseña actualizada exitosamente ✅ Redirigiendo al inicio de sesión...",
     "errorTooShort": "La contraseña debe tener al menos 6 caracteres.",
-    "errorMismatch": "Las contraseñas no coinciden."
+    "errorMismatch": "Las contraseñas no coinciden.",
+    "errorInvalidLink": "Este enlace de restablecimiento no es válido o ha expirado. Solicita uno nuevo.",
+    "verifyingLink": "Verificando tu enlace de restablecimiento..."
   }
 }

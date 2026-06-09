@@ -1973,6 +1973,8 @@
     "updateButton": "Update Password",
     "successMessage": "Password updated successfully ✅ Redirecting to login...",
     "errorTooShort": "Password must be at least 6 characters long.",
-    "errorMismatch": "Passwords do not match."
+    "errorMismatch": "Passwords do not match.",
+    "errorInvalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "verifyingLink": "Verifying your reset link..."
   }
 }
