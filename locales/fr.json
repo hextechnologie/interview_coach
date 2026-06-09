@@ -1964,8 +1964,8 @@
     "emailPlaceholder": "vous@exemple.com",
     "sendButton": "Envoyer le Lien de Réinitialisation",
     "backToLogin": "Retour à la connexion",
-    "successMessage": "Vérifiez votre boîte de réception — un lien de réinitialisation du mot de passe a été envoyé.",
-    "errorMessage": "Nous n'avons pas pu envoyer d'e-mail de réinitialisation. Veuillez vérifier l'adresse et réessayer."
+    "successMessage": "Si un compte existe pour cet e-mail, un lien de réinitialisation a été envoyé. Vérifiez votre boîte de réception et les spams.",
+    "errorMessage": "Impossible d'envoyer l'e-mail de réinitialisation. Le service e-mail n'est peut-être pas encore configuré — réessayez plus tard."
   },
   "resetPassword": {
     "pageTitle": "Réinitialiser le Mot de Passe",

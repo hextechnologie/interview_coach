@@ -1961,8 +1961,8 @@
     "emailPlaceholder": "you@example.com",
     "sendButton": "Send Reset Link",
     "backToLogin": "Back to login",
-    "successMessage": "Check your inbox — a password reset link has been sent.",
-    "errorMessage": "We couldn't send a reset email. Please check the address and try again."
+    "successMessage": "If an account exists for this email, a reset link has been sent. Check your inbox and spam folder.",
+    "errorMessage": "We couldn't send a reset email. The email service may not be configured yet — contact support or try again later."
   },
   "resetPassword": {
     "pageTitle": "Reset Password",

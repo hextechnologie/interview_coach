@@ -2,12 +2,75 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { APP_URL } from '@/lib/auth'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !serviceKey) return null
+  return createClient(url, serviceKey)
+}
+
+function getSupabaseAnon() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !anonKey) return null
+  return createClient(url, anonKey)
+}
+
+async function sendViaResend(email: string, resetLink: string): Promise<boolean> {
+  const resendApiKey = process.env.RESEND_API_KEY
+  if (!resendApiKey) return false
+
+  const from = process.env.RESEND_FROM_EMAIL || 'Interview Coach <onboarding@resend.dev>'
+  const subject = 'Reset your Interview Coach password'
+  const text = [
+    'We received a request to reset your Interview Coach password.',
+    '',
+    `Reset your password here: ${resetLink}`,
+    '',
+    'This link expires in 1 hour. If you did not request this, ignore this email.',
+  ].join('\n')
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from,
+      to: email,
+      subject,
+      text,
+      html: resetPasswordEmail(resetLink),
+    }),
+  })
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    console.error('[forgot-password] Resend error:', errData)
+    return false
+  }
+
+  return true
+}
+
+async function sendViaSupabase(email: string, redirectTo: string): Promise<boolean> {
+  const supabaseAnon = getSupabaseAnon()
+  if (!supabaseAnon) {
+    console.error('[forgot-password] Supabase anon client not configured')
+    return false
+  }
+
+  const { error } = await supabaseAnon.auth.resetPasswordForEmail(email, { redirectTo })
+  if (error) {
+    console.error('[forgot-password] resetPasswordForEmail error:', error.message)
+    return false
+  }
+
+  return true
+}
 
 export async function POST(request: Request) {
   try {
@@ -18,67 +81,38 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY
-    if (!resendApiKey) {
-      console.error('[forgot-password] RESEND_API_KEY is not configured — cannot send reset email')
-      return NextResponse.json(
-        { error: 'Email service is not configured. Please contact support.' },
-        { status: 503 }
-      )
-    }
-
     const redirectTo = `${APP_URL}/reset-password`
+    const supabaseAdmin = getSupabaseAdmin()
 
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-      type: 'recovery',
-      email,
-      options: { redirectTo },
-    })
+    if (supabaseAdmin) {
+      const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'recovery',
+        email,
+        options: { redirectTo },
+      })
 
-    if (error) {
-      console.error('[forgot-password] generateLink error:', error.message)
-      // Avoid revealing whether the email exists
-      return NextResponse.json({ ok: true })
+      if (!error) {
+        const resetLink = data.properties?.action_link
+        if (resetLink && (await sendViaResend(email, resetLink))) {
+          return NextResponse.json({ ok: true, via: 'resend' })
+        }
+      } else {
+        console.error('[forgot-password] generateLink error:', error.message)
+      }
+    } else {
+      console.error('[forgot-password] Supabase service role not configured')
     }
 
-    const resetLink = data.properties?.action_link
-    if (!resetLink) {
-      console.error('[forgot-password] generateLink returned no action_link')
-      return NextResponse.json({ ok: true })
+    // Fallback: Supabase built-in email (fix template in dashboard — see supabase/email-templates/reset-password.html)
+    const sent = await sendViaSupabase(email, redirectTo)
+    if (sent) {
+      return NextResponse.json({ ok: true, via: 'supabase' })
     }
 
-    const from = process.env.RESEND_FROM_EMAIL || 'Interview Coach <onboarding@resend.dev>'
-    const subject = 'Reset your Interview Coach password'
-    const text = [
-      'We received a request to reset your Interview Coach password.',
-      '',
-      `Reset your password here: ${resetLink}`,
-      '',
-      'This link expires in 1 hour. If you did not request this, ignore this email.',
-    ].join('\n')
-
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from,
-        to: email,
-        subject,
-        text,
-        html: resetPasswordEmail(resetLink),
-      }),
-    })
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}))
-      console.error('[forgot-password] Resend error:', errData)
-      return NextResponse.json({ error: 'Failed to send reset email' }, { status: 500 })
-    }
-
-    return NextResponse.json({ ok: true })
+    return NextResponse.json(
+      { error: 'Email service is not configured. Add RESEND_API_KEY in Vercel or fix Supabase email settings.' },
+      { status: 503 }
+    )
   } catch (err) {
     console.error('[forgot-password] unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -1964,8 +1964,8 @@
     "emailPlaceholder": "tu@ejemplo.com",
     "sendButton": "Enviar Enlace de Restablecimiento",
     "backToLogin": "Volver al inicio de sesión",
-    "successMessage": "Revisa tu bandeja de entrada — se ha enviado un enlace de restablecimiento de contraseña.",
-    "errorMessage": "No pudimos enviar un correo de restablecimiento. Por favor verifica la dirección e inténtalo de nuevo."
+    "successMessage": "Si existe una cuenta con este correo, se ha enviado un enlace de restablecimiento. Revisa tu bandeja de entrada y spam.",
+    "errorMessage": "No pudimos enviar el correo de restablecimiento. El servicio de correo puede no estar configurado — inténtalo más tarde."
   },
   "resetPassword": {
     "pageTitle": "Restablecer Contraseña",
