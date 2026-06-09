@@ -50,6 +50,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    const redirectRecoveryIfNeeded = () => {
+      const path = window.location.pathname
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+      if (hashParams.get('type') === 'recovery' && path !== '/reset-password') {
+        window.location.replace(`/reset-password${window.location.hash}`)
+        return true
+      }
+
+      const code = new URLSearchParams(window.location.search).get('code')
+      if (code && path !== '/reset-password') {
+        window.location.replace(`/reset-password?code=${encodeURIComponent(code)}`)
+        return true
+      }
+
+      return false
+    }
+
+    if (redirectRecoveryIfNeeded()) return
+
     // Check active sessions
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -62,7 +81,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && window.location.pathname !== '/reset-password') {
+        router.push('/reset-password')
+      }
+
       setUser(session?.user ?? null)
       if (session?.user) {
         fetchProfile(session.user.id)
@@ -73,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [router])
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({

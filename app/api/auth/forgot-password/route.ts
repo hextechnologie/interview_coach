@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { APP_URL } from '@/lib/auth'
+import { RESET_PASSWORD_REDIRECT, withResetPasswordRedirect } from '@/lib/auth'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    const redirectTo = `${APP_URL}/reset-password`
+    const redirectTo = RESET_PASSWORD_REDIRECT
     const supabaseAdmin = getSupabaseAdmin()
 
     if (supabaseAdmin) {
@@ -93,6 +93,8 @@ export async function POST(request: Request) {
 
       if (!error) {
         const resetLink = data.properties?.action_link
+          ? withResetPasswordRedirect(data.properties.action_link)
+          : null
         if (resetLink && (await sendViaResend(email, resetLink))) {
           return NextResponse.json({ ok: true, via: 'resend' })
         }

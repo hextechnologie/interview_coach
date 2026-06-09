@@ -16,6 +16,19 @@ export const APP_URL =
   process.env.NEXT_PUBLIC_URL ||
   'https://interview-coach-tau.vercel.app'
 
+export const RESET_PASSWORD_REDIRECT = `${APP_URL.replace(/\/$/, '')}/reset-password`
+
+/** Ensure Supabase verify links redirect to the password reset page. */
+export function withResetPasswordRedirect(actionLink: string): string {
+  try {
+    const url = new URL(actionLink)
+    url.searchParams.set('redirect_to', RESET_PASSWORD_REDIRECT)
+    return url.toString()
+  } catch {
+    return actionLink
+  }
+}
+
 /**
  * Validate a Bearer token from the Authorization header and return the
  * authenticated user, or null if missing / invalid.

@@ -35,14 +35,17 @@ export default function ResetPasswordPage() {
         window.history.replaceState({}, '', '/reset-password')
       }
 
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+      const isRecoveryHash = hashParams.get('type') === 'recovery'
+
       const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
+      if (session && (isRecoveryHash || code)) {
         setSessionReady(true)
         return
       }
 
-      const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
-        if (event === 'PASSWORD_RECOVERY' || nextSession) {
+      const { data } = supabase.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') {
           setSessionReady(true)
         }
       })
@@ -87,6 +90,7 @@ export default function ResetPasswordPage() {
     if (error) {
       setError(error.message)
     } else {
+      await supabase.auth.signOut()
       setSuccess(t('resetPassword.successMessage'))
       setPassword('')
       setConfirmPassword('')
