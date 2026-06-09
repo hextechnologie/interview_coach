@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
 import { APP_URL } from '@/lib/auth'
 
 const supabaseAdmin = createClient(
@@ -19,6 +18,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
+    const resendApiKey = process.env.RESEND_API_KEY
+    if (!resendApiKey) {
+      console.error('[forgot-password] RESEND_API_KEY is not configured — cannot send reset email')
+      return NextResponse.json(
+        { error: 'Email service is not configured. Please contact support.' },
+        { status: 503 }
+      )
+    }
+
     const redirectTo = `${APP_URL}/reset-password`
 
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
@@ -29,7 +37,7 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('[forgot-password] generateLink error:', error.message)
-      // Always return success to avoid email enumeration
+      // Avoid revealing whether the email exists
       return NextResponse.json({ ok: true })
     }
 
@@ -39,27 +47,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true })
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY
-    if (!resendApiKey) {
-      // Fallback: Supabase default email (dashboard template must include {{ .ConfirmationURL }})
-      const supabaseAnon = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
-      await supabaseAnon.auth.resetPasswordForEmail(email, { redirectTo })
-      return NextResponse.json({ ok: true })
-    }
+    const from = process.env.RESEND_FROM_EMAIL || 'Interview Coach <onboarding@resend.dev>'
+    const subject = 'Reset your Interview Coach password'
+    const text = [
+      'We received a request to reset your Interview Coach password.',
+      '',
+      `Reset your password here: ${resetLink}`,
+      '',
+      'This link expires in 1 hour. If you did not request this, ignore this email.',
+    ].join('\n')
 
-    const resend = new Resend(resendApiKey)
-    const { error: sendError } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Interview Coach <onboarding@resend.dev>',
-      to: email,
-      subject: 'Reset your Interview Coach password',
-      html: resetPasswordEmail(resetLink),
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to: email,
+        subject,
+        text,
+        html: resetPasswordEmail(resetLink),
+      }),
     })
 
-    if (sendError) {
-      console.error('[forgot-password] Resend error:', sendError)
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}))
+      console.error('[forgot-password] Resend error:', errData)
       return NextResponse.json({ error: 'Failed to send reset email' }, { status: 500 })
     }
 
@@ -71,6 +86,7 @@ export async function POST(request: Request) {
 }
 
 function resetPasswordEmail(resetLink: string) {
+  const escaped = resetLink.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
   return `
 <!DOCTYPE html>
 <html>
@@ -85,14 +101,14 @@ function resetPasswordEmail(resetLink: string) {
       <p style="margin:0 0 24px;line-height:1.6;color:#d1d5db">
         We received a request to reset your password. Click the button below to choose a new one. This link expires in 1 hour.
       </p>
-      <a href="${resetLink}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:16px">
+      <a href="${escaped}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#ffffff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:10px;font-size:16px">
         Reset Password
       </a>
       <p style="margin:24px 0 0;line-height:1.6;color:#9ca3af;font-size:14px">
         If you didn't request this, you can safely ignore this email.
       </p>
       <p style="margin:16px 0 0;line-height:1.6;color:#6b7280;font-size:12px;word-break:break-all">
-        Or copy this link: ${resetLink}
+        Or copy this link:<br><a href="${escaped}" style="color:#a78bfa">${escaped}</a>
       </p>
     </div>
   </div>
